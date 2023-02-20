@@ -1,0 +1,24 @@
+{
+    "email": {
+        "required": "E-mail é um campo obrigatório",
+        "email": "E-mail não está no formato correto"
+    },
+    "nome": {
+        "required": "Nome completo é um campo obrigatório"
+    },
+    "password": {
+        "required": "Senha é um campo obrigatório",
+        "matches": "A senha deve conter pelo menos 8 caracteres, pelo menos uma letra e um número"
+    },
+    "repetirSenha" : {
+        "required": "Repetir senha é um campo obrigatório",
+        "oneOf": "As duas senhas não conferem!"
+    },
+    "billingStreet": {
+        "required": "Nome da rua é um campo obrigatório"
+    },
+    "billingNumber": {
+        "required": "Numero da casa é um campo obrigatório"
+    }
+}
+
