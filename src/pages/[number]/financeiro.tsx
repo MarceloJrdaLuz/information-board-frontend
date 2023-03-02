@@ -4,6 +4,7 @@ import LayoutPrincipal from "@/Components/LayoutPrincipal";
 import { api } from "@/services/api";
 import { useState } from "react";
 
+
 export interface CongregationTypes {
     id: string
     name: string
@@ -38,28 +39,27 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
     }
 }
 
-export default function Limpeza (props: CongregationTypes){
-
-    console.log(props)
+export default function Financeiro(props: CongregationTypes) {
 
     const [pdfShow, setPdfShow] = useState(false)
 
     function renderizarPdf(opcao: string) {
         return (
             <span>A</span>
-            // <GeradorPdf nomeArquivo="Limpeza" setPdfShow={setPdfShow}/>
+            // <GeradorPdf nomeArquivo="Financeiro" setPdfShow={setPdfShow}/>
         )
     }
     return !pdfShow ? (
         <>
-        <HeadComponent title="Limpeza" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg"/>
-        <LayoutPrincipal circuit={props.circuit} congregationName={props.name} heightConteudo={'1/2'} header className="bg-limpeza bg-left-bottom bg-cover lg:bg-right" textoHeader="Limpeza do Salão" >
-               
+        <HeadComponent title="Financeiro" urlMiniatura="https://luisgomes.netlify.app/images/contas.jpg"/>
+        <LayoutPrincipal congregationName={props.name}  circuit={props.circuit}  heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
             <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
-            <ButtonHome onClick={() => {setPdfShow(true)}}texto='Designações de Limpeza'/>
-            <ButtonHome href={`/${props.number}`} texto='Voltar'/>
-        </LayoutPrincipal>
-        </> 
-    ) : renderizarPdf('limpeza')
-}
 
+            <ButtonHome onClick={()=>setPdfShow(true)} texto='Relatório das Contas' />
+            <ButtonHome href={`/${props.number}`} texto='Voltar' />
+        </LayoutPrincipal>
+        </>
+    ) : (
+        renderizarPdf('financeiro')
+    )
+}

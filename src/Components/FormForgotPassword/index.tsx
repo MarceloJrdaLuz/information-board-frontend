@@ -13,36 +13,22 @@ import { useContext } from 'react'
 import { AuthContext } from '@/context/AuthContext'
 
 
-export default function FormLogin() {
+export default function FormForgotPassword() {
 
-    const { login } = useContext(AuthContext)
+    const { forgotMyPassword } = useContext(AuthContext)
 
     const esquemaValidacao = yup.object({
         email: yup.string().email().required(),
-        password: yup.string().required()//.matches(validacaoSenha)
     })
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             email: '',
-            password: ''
         }, resolver: yupResolver(esquemaValidacao)
     })
 
    function onSubmit(data: FormValues) {
-        // await api.post('/login', {
-        //     email: data.email,
-        //     password: data.senha
-        // }).then(res => {
-        //     const resposta =  {
-        //         user: res.data.user,
-        //         token: res.data.token
-        //     }
-        //    console.log(resposta)
-        // }).catch(res => {
-        //     console.log(res)
-        // })
-        toast.promise(login(data.email, data.password), {
+        toast.promise(forgotMyPassword(data.email), {
             pending: 'Autenticando...',
         })
     }
@@ -55,27 +41,14 @@ export default function FormLogin() {
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-blue-500`}>Login</div>
+                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-blue-500`}>Digite o seu e-mail</div>
+                    <p>Insira o e-mail que você deseja resetar a senha!</p>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
                             { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
-                    <Input type="password" placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} />
-                    {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
-                    <div>
-                        <div>
-                            <Link href={'/forgot-password'} className='text-principais-primary hover:underline text-center text-sm sm:text-lg'>
-                                Esqueci minha senha
-                            </Link>
-                        </div>
-                        <div>
-                            <Link href={'/cadastro'} className='text-principais-primary hover:underline text-center text-sm sm:text-lg'>
-                                Criar nova conta
-                            </Link>
-                        </div>
-                    </div>
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         {/* <div className={`flex justify-center items-center`}>
                         <input className='mr-1' type='checkbox' title='Mantenha-me conectado'></input>

@@ -2,17 +2,18 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState
 import { toast } from "react-toastify";
 import { ResponseAuth, RolesType } from "../entities/types";
 import Router from 'next/router'
-import { setCookie, parseCookies } from 'nookies'
+import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from "@/services/api";
 
 type AuthContextTypes = {
     authenticated: boolean
-    user: User  | null
+    user: User | null
     login: (email: string, password: string) => Promise<any>
-    // // logout: () => void
+    roleContains: (role: string) => boolean | undefined
+    logout: () => void
     // // cadastro: (nome: string, email: string, senha: string)=> Promise<any>
-    // // resetPassword: (email: string | undefined, token: string | undefined, newPassword: string) => Promise<any>
-    // // esqueciMinhaSenha: (email: string) => Promise<any>
+    resetPassword: (email: string | undefined, token: string | undefined, newPassword: string) => Promise<any>
+    forgotMyPassword: (email: string) => Promise<any>
     loading: boolean
     erroCadastro: boolean
     setErroCadastro?: Dispatch<SetStateAction<boolean>>
@@ -42,8 +43,8 @@ export function AuthProvider(props: AuthContextProviderProps) {
     useEffect(() => {
         const { 'quadro-token': token } = parseCookies()
 
-        if(token){
-            api.post('/recover-user-information', {token}).then(res => {
+        if (token) {
+            api.post('/recover-user-information', { token }).then(res => {
                 setUser(res.data)
             })
         }
@@ -77,21 +78,9 @@ export function AuthProvider(props: AuthContextProviderProps) {
 
             Router.push('/dashboard')
 
-            // if (usuarioLogado.token) {
-            //     setUser(usuarioLogado)
-            //     localStorage.setItem('user', JSON.stringify(usuarioLogado))
-            //     localStorage.setItem('token', JSON.stringify(usuarioLogado.token))
-            //     toast.success('Usuário Autenticado!')
-            //     router.push('/')
-            // }
-            // if(usuarioLogado.permissions === "ADMIN"){
-            //     setAdmin(true)
-            //     navigate('/admin')
-            // }
         }).catch(res => {
             const { response: { data: { message } } } = res
 
-            console.log(message)
             if (message === 'Senha inválida') {
                 toast.error('Senha não confere!')
             }
@@ -102,12 +91,11 @@ export function AuthProvider(props: AuthContextProviderProps) {
         })
     }
 
-    // function logout() {
-    //     setUser(undefined)
-    //     localStorage.removeItem('user')
-    //     setAdmin(false)
-    //     navigate('/')
-    // }
+    function logout() {
+        setUser(null)
+        destroyCookie(undefined, 'quadro-token')
+        Router.push('/login')
+    }
 
     // async function cadastro(nome: string, email: string, senha: string){
     //     await api.post<ResponseAuth>('auth/register', {
@@ -136,42 +124,60 @@ export function AuthProvider(props: AuthContextProviderProps) {
     //     })
     // }
 
-    // async function resetPassword(email: string | undefined, token: string | undefined, password: string){
-    //     api.post('/reset_password', {
-    //         email, 
-    //         token,
-    //         password
-    //     })
-    //     .then(res => {
-    //         setBtnDisabled(false)
-    //         toast.success('Senha atualizada com sucesso!')
-    //         navigate('/login')   
-    //     })
-    //     .catch(res => {
-    //         setBtnDisabled(false)
-    //         toast.error('Houve algum erro ao atualizar a senha! Tente novamente.')
-    //         navigate('/esqueci-minha-senha')
-    //     })
-    // }
+    async function resetPassword(email: string | undefined, token: string | undefined, newPassword: string) {
+        api.post('/reset_password', {
+            email,
+            token,
+            newPassword
+        })
+            .then(res => {
+                console.log(res)
+                toast.success('Senha atualizada com sucesso!')
+                Router.push('/login')
+            })
+            .catch(res => {
 
-    // async function esqueciMinhaSenha (email: string){
-    //     api.post('/forgot_password', {
-    //         email
-    //     })
-    //     .then(res => {
-    //         setBtnDisabled(false)
-    //         toast.success('E-mail enviado com sucesso!')
-    //         navigate('/')
-    //     }).catch(res => {
-    //         setBtnDisabled(false)
-    //         toast.error('Usuário ainda não cadastrado! Se desejar faça seu cadastro.')
-    //         navigate('/cadastro')
-    //     })
-    // }
+                const {response: {data: {message}}} = res
+                
+                switch (message) {
+                    case "User not found":
+                        toast.error('Email de redefinição de senha não encontrado!')
+                        break;
+                    case "Token invalid":
+                        toast.error('Token inválido!')
+                        break;
+                    case "Token expired, generate a new one":
+                        toast.error('Token expirado, gere um novo token!')
+                        break;
+                }
+                Router.push('/forgot-password')
+            })
+    }
+
+    async function forgotMyPassword(email: string) {
+        api.post('/forgot_password', {
+            email
+        })
+            .then(res => {
+                setBtnDisabled(false)
+                toast.success('E-mail enviado com sucesso!')
+                Router.push('/login')
+            }).catch(res => {
+                setBtnDisabled(false)
+                toast.error('Usuário ainda não cadastrado! Se desejar faça seu cadastro.')
+                Router.push('/cadastro')
+            })
+    }
+
+    function roleContains(role: string) {
+        const rolesName = user?.roles.map(userRole => userRole.name)
+        const contain = rolesName?.includes(role)
+        return contain
+    }
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, /*logout, cadastro, */erroCadastro, setErroCadastro, /*resetPassword, esqueciMinhaSenha,*/ btnDisabled, setBtnDisabled
+            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, /*cadastro, */erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains
         }}>
             {props.children}
         </AuthContext.Provider>

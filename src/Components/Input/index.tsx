@@ -5,6 +5,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     invalid?: string
     focus?: any
     registro?: any
+    mes?: number | null
 }
 
 export default function Input(props: InputProps) {

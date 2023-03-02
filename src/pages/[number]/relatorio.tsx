@@ -1,8 +1,12 @@
+import { IconeSeta } from "@/assets/icons";
 import ButtonHome from "@/Components/ButtonHome";
 import HeadComponent from "@/Components/HeadComponent";
 import LayoutPrincipal from "@/Components/LayoutPrincipal";
+import RelatorioForm from "@/Components/RelatorioForm";
 import { api } from "@/services/api";
+import Link from "next/link";
 import { useState } from "react";
+
 
 export interface CongregationTypes {
     id: string
@@ -38,28 +42,18 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
     }
 }
 
-export default function Limpeza (props: CongregationTypes){
-
-    console.log(props)
-
-    const [pdfShow, setPdfShow] = useState(false)
-
-    function renderizarPdf(opcao: string) {
-        return (
-            <span>A</span>
-            // <GeradorPdf nomeArquivo="Limpeza" setPdfShow={setPdfShow}/>
-        )
-    }
-    return !pdfShow ? (
+export default function Relatorio(props: CongregationTypes) {
+    return (
         <>
-        <HeadComponent title="Limpeza" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg"/>
-        <LayoutPrincipal circuit={props.circuit} congregationName={props.name} heightConteudo={'1/2'} header className="bg-limpeza bg-left-bottom bg-cover lg:bg-right" textoHeader="Limpeza do Salão" >
-               
-            <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
-            <ButtonHome onClick={() => {setPdfShow(true)}}texto='Designações de Limpeza'/>
-            <ButtonHome href={`/${props.number}`} texto='Voltar'/>
-        </LayoutPrincipal>
-        </> 
-    ) : renderizarPdf('limpeza')
-}
-
+            <HeadComponent title="Relatório" urlMiniatura="https://luisgomes.netlify.app/images/miniatura.png"/>
+            <LayoutPrincipal congregationName={props.name} circuit={props.circuit} bgFundo={'bg-teste-100'} heightConteudo="auto">
+                <Link href={'/'} passHref>
+                    <div className="absolute top-10 left-11 rounded-full bg-teste-200 p-2 hover:border hover:border-teste-100">
+                        {IconeSeta}
+                    </div>
+                </Link>
+                <RelatorioForm />
+            </LayoutPrincipal>
+        </>
+    )
+} 
