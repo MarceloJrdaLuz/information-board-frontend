@@ -55,7 +55,7 @@ export default function FormLogin() {
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-blue-500`}>Login</div>
+                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Login</div>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
                             { required: "Campo obrigatório" })
@@ -81,7 +81,7 @@ export default function FormLogin() {
                         <input className='mr-1' type='checkbox' title='Mantenha-me conectado'></input>
                         <span className={`ml-2 text-sm sm:text-lg sm:ml-0`}>Mantenha-me conectado</span>
                     </div> */}
-                        <Button color='bg-blue-500' hoverColor='bg-button-hover' title='Entrar' type='submit' />
+                        <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Entrar' type='submit' />
                     </div>
                 </div>
             </FormStyle>

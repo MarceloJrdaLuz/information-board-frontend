@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { ResponseAuth, RolesType } from "../entities/types";
+import { ICongregation, ResponseAuth, RolesType } from "../entities/types";
 import Router from 'next/router'
 import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from "@/services/api";
@@ -26,8 +26,10 @@ type AuthContextProviderProps = {
 }
 
 type User = {
-    id: string
+    id: String
     email: string
+    code: string
+    congregation: ICongregation
     roles: RolesType[]
 }
 
@@ -44,7 +46,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
         const { 'quadro-token': token } = parseCookies()
 
         if (token) {
-            api.post('/recover-user-information', { token }).then(res => {
+            api.post('/recover-user-information').then(res => {
                 setUser(res.data)
             })
         }
@@ -63,6 +65,8 @@ export function AuthProvider(props: AuthContextProviderProps) {
             const usuarioLogado = {
                 id: res.data.user.id,
                 email: res.data.user.email,
+                code: res.data.user.code,
+                congregation: res.data.user.congregation,
                 roles: res.data.user.roles,
             }
 
@@ -125,7 +129,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
     // }
 
     async function resetPassword(email: string | undefined, token: string | undefined, newPassword: string) {
-        api.post('/reset_password', {
+        await api.post('/reset_password', {
             email,
             token,
             newPassword
@@ -155,7 +159,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
     }
 
     async function forgotMyPassword(email: string) {
-        api.post('/forgot_password', {
+        await api.post('/forgot_password', {
             email
         })
             .then(res => {

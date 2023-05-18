@@ -1,4 +1,7 @@
 import ContentDashboard from "@/Components/ContentDashboard";
+import FormAddPermission from "@/Components/FormAddPermission";
+import FormAddRole from "@/Components/FormAddRole";
+import FormUserRoles from "@/Components/FormUserRoles";
 import Layout from "@/Components/Layout";
 import { getAPIClient } from "@/services/axios";
 import { GetServerSideProps } from "next";
@@ -8,7 +11,11 @@ export default function Permissoes(){
     return (
         <Layout pageActive="permissoes">
             <ContentDashboard>
-                <div>Permissoes</div>
+               <div className="p-5">
+                   <FormAddPermission/>
+                   <FormAddRole/>
+                   <FormUserRoles/>
+               </div>
             </ContentDashboard>
         </Layout>
     )

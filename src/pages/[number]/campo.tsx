@@ -32,7 +32,9 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
 
     const getCongregation = await api.get(`/congregation/${params.number}`)
 
+    
     const { data: congregationData } = getCongregation
+    console.log(congregationData)
     return {
         // Passed to the page component as props
         props: { ...congregationData },

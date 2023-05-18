@@ -19,6 +19,36 @@
     },
     "billingNumber": {
         "required": "Numero da casa é um campo obrigatório"
+    },
+    "city":{
+        "required": "Cidade é um campo obrigatório"
+    },
+    "number":{
+        "required": "Número da congregação é um campo obrigatório"
+    },
+    "circuit":{
+        "required": "Circuito é um campo obrigatório"
+    }, 
+    "name":{
+        "required": "Nome da congregação é um campo obrigatório"
+    },
+    "userCode":{
+        "required": "Código do usuário é um campo obrigatório"
+    },
+    "userId":{
+        "required": "Id do usuário é um campo obrigatório"
+    },
+    "categoryName": {
+        "required": "Nome da categoria é um campo obrigatório"
+    },
+    "categoryDescription": {
+        "required": "Descrição da categoria é um campo obrigatório"
+    },
+    "roleName": {
+        "required": "Nome da role (função) é um campo obrigatório"
+    },
+    "roleDescription": {
+        "required": "Descrição da role (função) é um campo obrigatório"
     }
 }
 

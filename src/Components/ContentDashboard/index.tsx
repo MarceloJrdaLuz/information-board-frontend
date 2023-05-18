@@ -12,8 +12,10 @@ export default function ContentDashboard(props: IContentDashboard) {
             <div>
                 <HeaderDashboard />
             </div>
-            <div className="overflow-auto">
+            <div className="overflow-auto flex-1">
                 {props.children}
+            </div>
+            <div>
                 <FooterDashboard />
             </div>
         </section>

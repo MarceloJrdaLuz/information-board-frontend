@@ -1,4 +1,5 @@
 import ContentDashboard from "@/Components/ContentDashboard";
+import FormAddCategory from "@/Components/FormAddCategory";
 import Layout from "@/Components/Layout";
 import { getAPIClient } from "@/services/axios";
 import { GetServerSideProps } from "next";
@@ -8,7 +9,7 @@ export default function Categorias() {
     return (
         <Layout pageActive="categorias">
             <ContentDashboard>
-                <div>Categorias</div>
+                <FormAddCategory/>
             </ContentDashboard>
         </Layout>
     )
