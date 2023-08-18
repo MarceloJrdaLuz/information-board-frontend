@@ -65,7 +65,7 @@ export default function Eventos(props: CongregationTypes) {
 
     function renderizarBotoesEventos() {
         return (
-            <div className="flex justify-between w-full md:w-4/5">
+            <div className="flex justify-between w-full md:w-4/5 my-0 m-auto">
                 <ButtonHome onClick={() => { setItem('Assembleias'), setPdfShow(true), setRotate(90) }} texto='Assembleias' />
 
                 <ButtonHome onClick={() => { setItem('Congresso'), setPdfShow(true) }} texto='Congresso' />
@@ -78,9 +78,11 @@ export default function Eventos(props: CongregationTypes) {
         <>
             <HeadComponent title="Cartas" urlMiniatura="https://bituruna.netlify.app/images/cartas.jpg" />
             <LayoutPrincipal congregationName={props.name} circuit={props.circuit} textoHeader="Cartas" heightConteudo={'1/2'} header className="bg-cartas bg-left-bottom bg-cover lg:bg-right">
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
+                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
 
-                <ButtonHome texto={`Eventos Especiais`} onClick={() => { setVisivel(true), renderizarBotoesEventos(), setVisivelCartas(false) }} />
+                <div>
+                    <ButtonHome texto={`Eventos Especiais`} onClick={() => { setVisivel(true), renderizarBotoesEventos(), setVisivelCartas(false) }} />
+                </div>
 
                 {visivel ? renderizarBotoesEventos() : null}
 

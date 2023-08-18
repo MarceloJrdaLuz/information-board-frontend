@@ -65,7 +65,7 @@ export default function Designacoes(props: CongregationTypes) {
 
     function renderizarBotoes() {
         return tresMeses ? (
-            <div className="flex justify-between w-full md:w-4/5 ">
+            <div className="flex justify-between w-full md:w-4/5 my-0 m-auto">
                 <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes-1')}`) }} texto={`${DateConverter('mes-1')}`} />
 
                 <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes')}`) }} texto={`${DateConverter('mes')}`} />
@@ -73,7 +73,7 @@ export default function Designacoes(props: CongregationTypes) {
                 <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes+1')}`) }} texto={`${DateConverter('mes+1')}`} />
             </div>
         ) : (
-            <div className="flex justify-between w-full md:w-4/5 ">
+            <div className="flex justify-between w-full md:w-4/5 my-0 m-auto">
                 <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes')}`) }} texto={`${DateConverter('mes')}`} />
 
                 <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes+1')}`) }} texto={`${DateConverter('mes+1')}`} />
@@ -85,20 +85,23 @@ export default function Designacoes(props: CongregationTypes) {
         <>
             <HeadComponent title="Designações" urlMiniatura="https://luisgomes.netlify.app/images/designacoes.png" />
             <LayoutPrincipal congregationName={props.name} circuit={props.circuit} textoHeader="Designações Semanais" heightConteudo={'1/2'} header className='bg-designacoes bg-center bg-cover'>
-                <ButtonHome
-                    onClick={() => setVisivel(true)}
-                    texto='Vida e Ministério'
-                />
+                <div>
+                    <ButtonHome
+                        onClick={() => setVisivel(true)}
+                        texto='Vida e Ministério'
+                    />
+                    {visivel ? renderizarBotoes() : null}
+                    {!visivel ? <p className="font-bold  text-xl">Quarta-feira às 19:00 hrs</p> : null}
+                </div>
 
-                {visivel ? renderizarBotoes() : null}
-                {!visivel ? <p className="font-bold  text-xl">Quarta-feira às 19:00 hrs</p> : null}
-
-                <ButtonHome
-                    onClick={() => { setOpcao('Publica'), setPdfShow(true) }}
-                    texto='Reunião Pública'
-                />
-                {<p className="font-bold text-xl">Sábado às 17:00 hrs</p>}
-                <ButtonHome href='/' texto='Voltar' />
+                <div>
+                    <ButtonHome
+                        onClick={() => { setOpcao('Publica'), setPdfShow(true) }}
+                        texto='Reunião Pública'
+                    />
+                    {<p className="font-bold text-xl">Sábado às 17:00 hrs</p>}
+                </div>
+                <ButtonHome href={`/${props.number}`} texto='Voltar' />
             </LayoutPrincipal>
         </>
     ) : (

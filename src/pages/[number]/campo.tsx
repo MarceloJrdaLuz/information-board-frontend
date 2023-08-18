@@ -34,7 +34,6 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
 
     
     const { data: congregationData } = getCongregation
-    console.log(congregationData)
     return {
         // Passed to the page component as props
         props: { ...congregationData },
@@ -56,9 +55,13 @@ export default function Campo(props: CongregationTypes) {
         <>
             <HeadComponent title="Designações de Campo" urlMiniatura="https://luisgomes.netlify.app/images/campolight.png" />
             <LayoutPrincipal congregationName={props.name} circuit={props.circuit} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
-                <ButtonHome onClick={() => { setOptions('Campo'), setPdfShow(true) }} texto='Designações de Campo' />
-                <ButtonHome onClick={() => { setOptions('Carrinho'), setPdfShow(true) }} texto='Designações Testemunho Público' />
+                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
+                <div>
+                    <ButtonHome onClick={() => { setOptions('Campo'), setPdfShow(true) }} texto='Designações de Campo' />
+                </div>
+                <div>
+                    <ButtonHome onClick={() => { setOptions('Carrinho'), setPdfShow(true) }} texto='Designações Testemunho Público' />
+                </div>
                 <ButtonHome href={`/${props.number}`} texto='Voltar' />
             </LayoutPrincipal>
         </>

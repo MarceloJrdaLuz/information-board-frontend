@@ -40,8 +40,6 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
 
 export default function Limpeza (props: CongregationTypes){
 
-    console.log(props)
-
     const [pdfShow, setPdfShow] = useState(false)
 
     function renderizarPdf(opcao: string) {
@@ -55,8 +53,10 @@ export default function Limpeza (props: CongregationTypes){
         <HeadComponent title="Limpeza" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg"/>
         <LayoutPrincipal circuit={props.circuit} congregationName={props.name} heightConteudo={'1/2'} header className="bg-limpeza bg-left-bottom bg-cover lg:bg-right" textoHeader="Limpeza do Salão" >
                
-            <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
-            <ButtonHome onClick={() => {setPdfShow(true)}}texto='Designações de Limpeza'/>
+            <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
+            <div>
+                <ButtonHome onClick={() => {setPdfShow(true)}}texto='Designações de Limpeza'/>
+            </div>
             <ButtonHome href={`/${props.number}`} texto='Voltar'/>
         </LayoutPrincipal>
         </> 

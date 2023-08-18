@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import CardCongregation from "../CardCongregation";
 import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard";
 import FormAddCongregation from "../FormAddCongregation";
+import { PlusIcon } from "lucide-react";
 
 
 export default function ListCongregations() {
@@ -50,7 +51,7 @@ export default function ListCongregations() {
                                 image_url={congregation.image_url} />
                         ))}
                         <li className="flex place-self-center justify-center items-center w-60 h-56 m-3 ">
-                            <span onClick={() => { setModalNewCongregation(true), setShowCongregationCreated(false) }} className="border-2 border-primary-100 rounded-full p-5 hover:p-6 cursor-pointer">{iconeAdd('#83c5be', 5, 5)}</span>
+                            <span onClick={() => { setModalNewCongregation(true), setShowCongregationCreated(false) }} className="border-2 border-primary-100 rounded-full p-5 hover:p-6 cursor-pointer"><PlusIcon color='#83c5be'/> </span>
                         </li>
                 </ul>
             )}

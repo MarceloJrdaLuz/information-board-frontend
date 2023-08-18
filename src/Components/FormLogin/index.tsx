@@ -30,18 +30,6 @@ export default function FormLogin() {
     })
 
    function onSubmit(data: FormValues) {
-        // await api.post('/login', {
-        //     email: data.email,
-        //     password: data.senha
-        // }).then(res => {
-        //     const resposta =  {
-        //         user: res.data.user,
-        //         token: res.data.token
-        //     }
-        //    console.log(resposta)
-        // }).catch(res => {
-        //     console.log(res)
-        // })
         toast.promise(login(data.email, data.password), {
             pending: 'Autenticando...',
         })

@@ -1,86 +1,88 @@
-import Image from 'next/image'
-import congregationIcon from '../../../public/icons/congregation.png'
+import { createLucideIcon } from "lucide-react"
+import { ElementType } from "react"
 
-
-
-export const iconeAdd = (color: string = '#000', altura: number = 4, largura: number = 4) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={`h-${altura} w-${largura}`} fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth={2}>
+export const iconeAdd = (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
   </svg>
 )
 
-export const iconeDecrement = () => (
+export const iconeDecrement = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#302F3C" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
   </svg>
 )
 
 
-export const iconeOptions = () => (
+export const iconeOptions = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#FF6838" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
   </svg>
 )
 
-export const iconeHome = (color: string = 'currentColor') => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke={`${color}`} strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-  </svg>
+export const IconeHome = (
+  <div>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+  </div>
 )
 
-export const iconeSacola = (color: string = 'currentColor') => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke={`${color}`} strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-  </svg>
-)
-
-export const iconeCustomer = (color: string = 'currentColor') => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke={`${color}`} strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-)
-
-export const iconeLogout = (color: string = 'currentColor') => (
+export const iconeLogout = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
   </svg>
 )
 
-export const iconeHistory = (color: string = 'currentColor') => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke={`${color}`} strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
-  </svg>
-)
 
-export const iconeSetaBaixo = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+export const iconeSetaBaixo = (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
   </svg>
 )
 
-export const iconeFavoritar = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+export const iconeEdit = (color: string = 'currentColor') => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" stroke={color} fill={color}>
+    <title>
+      edit
+    </title>
+    <style type="text/css"></style>
+    <path d="M16.77 8l1.94-2a1 1 0 0 0 0-1.41l-3.34-3.3a1 1 0 0 0-1.41 0L12 3.23zm-5.81-3.71L1 14.25V19h4.75l9.96-9.96-4.75-4.75z" />
   </svg>
 )
 
-export const iconeVoltar = () => (
+export const iconeAddPessoa = (color: string = '#00000') => (
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+    width="20.000000pt" height="20.000000pt" viewBox="0 0 512.000000 512.000000"
+    preserveAspectRatio="xMidYMid meet">
+
+    <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+      fill={color} stroke="none">
+      <path d="M2082 4470 c-105 -15 -211 -49 -306 -97 -74 -38 -109 -65 -186 -143
+-104 -103 -159 -193 -198 -320 -31 -103 -33 -153 -13 -355 18 -187 18 -190 -1
+-258 -17 -60 -18 -77 -8 -135 17 -101 58 -230 95 -297 21 -37 40 -92 50 -145
+41 -211 83 -327 148 -412 64 -83 77 -118 83 -230 13 -213 -7 -309 -77 -360
+-14 -11 -147 -61 -295 -112 -325 -112 -465 -167 -650 -255 -217 -105 -334
+-192 -368 -273 -18 -42 -36 -219 -36 -350 l0 -88 1920 0 1920 0 0 93 c0 146
+-19 316 -40 357 -72 140 -398 306 -1035 526 -143 49 -264 97 -284 111 -57 44
+-65 76 -64 269 1 192 7 217 78 310 69 89 106 190 145 389 15 77 32 128 55 170
+39 71 69 159 91 269 16 76 16 85 -1 154 -17 68 -18 84 -4 240 18 219 17 283
+-10 373 -42 136 -95 224 -201 329 -78 79 -112 104 -188 144 -131 67 -252 96
+-422 101 -74 2 -163 0 -198 -5z"/>
+      <path d="M3870 3025 l0 -255 -255 0 -255 0 0 -210 0 -210 255 0 255 0 0 -255
+0 -255 210 0 210 0 0 255 0 255 255 0 255 0 0 210 0 210 -255 0 -255 0 0 255
+0 255 -210 0 -210 0 0 -255z"/>
+    </g>
+  </svg>
+)
+
+export const iconeVoltar = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
   </svg>
 )
 
-export const iconeAddProdutos = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
-  </svg>
-)
 
-export const iconeAddProducts = (color: string = 'currentColor') => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={`${color}`} className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
-  </svg>
-)
 
 export const iconeEyes = (color: string = 'currentColor') => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={`${color}`} className="w-6 h-6">
@@ -88,10 +90,6 @@ export const iconeEyes = (color: string = 'currentColor') => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 
-)
-
-export const imageBagEmpty = (
-  <svg className="EmptyBasket-asset" width="265" height="130" viewBox="0 0 265 130"><defs><path id="a" d="M20 13V0H0v13h20z"></path><path id="c" d="M36.952 67.053h36.952V.82H0v66.232h36.952z"></path></defs><g fill="none" fill-rule="evenodd"><path d="M42 81h5v-.5h-5v.5zm-2 12.5h9V82.51h-9V93.5zm4.5 4a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zM49 79h-9a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V81a2 2 0 0 0-2-2z" fill="#B98EC0"></path><g transform="translate(217 102)"><mask id="b" fill="#fff"><use xlinkHref="#a"></use></mask><path d="M17.766 5.03a.75.75 0 1 1-1.06-1.06.75.75 0 0 1 1.06 1.06m-1.75-1.75a.75.75 0 1 1-1.06-1.06.75.75 0 0 1 1.06 1.06m0 3.5a.75.75 0 1 1-1.06-1.06.75.75 0 0 1 1.06 1.06m-1.75-1.75a.75.75 0 1 1-1.06-1.06.75.75 0 0 1 1.06 1.06m-8.044.23h-1v1a.75.75 0 1 1-1.5 0v-1h-1a.75.75 0 1 1 0-1.5h1v-1a.75.75 0 0 1 1.5 0v1h1a.75.75 0 1 1 0 1.5M15.5 0h-11A4.5 4.5 0 0 0 0 4.5V9a4 4 0 1 0 8 0 1 1 0 0 1 1-1h2a1 1 0 0 1 1 1 4 4 0 1 0 8 0V4.5A4.5 4.5 0 0 0 15.5 0" fill="#C389AE" mask="url(#b)"></path></g><g fill="#ADCA9A"><path d="M206 42h11a2 2 0 0 0 2-2h-15a2 2 0 0 0 2 2m5.5-6a5.256 5.256 0 0 1-5.25-5.25 5.256 5.256 0 0 1 5.25-5.25 5.256 5.256 0 0 1 5.25 5.25A5.256 5.256 0 0 1 211.5 36m5.5-14h-11a2 2 0 0 0-2 2v15h15V24a2 2 0 0 0-2-2"></path><path d="M213.17 30.542c0-.894.672-1.623 1.537-1.729A3.744 3.744 0 0 0 211.5 27a3.75 3.75 0 1 0 3.416 5.291 1.75 1.75 0 0 1-1.747-1.75"></path></g><path d="M149.788 31h-37.549c-3.7 0-6.577 3.01-6.577 6.568h50.84c0-3.557-3.014-6.568-6.714-6.568" fill="#f63e02"></path><g transform="translate(94 41.263)"><mask id="d" fill="#fff"><use xlinkHref="#c"></use></mask><path d="M37.013 36.263c-11.1 0-20.144-9.031-20.144-19.979 0-1.231.96-2.19 2.193-2.19s2.192.959 2.192 2.19c0 8.621 6.99 15.463 15.622 15.463 8.634 0 15.623-6.979 15.623-15.463 0-1.231.959-2.19 2.192-2.19 1.234 0 2.193.959 2.193 2.19.274 11.084-8.77 19.98-19.87 19.98zM70.725 9.032c-.275-4.653-4.112-8.21-8.77-8.21H12.072c-4.66 0-8.497 3.557-8.77 8.21L.012 57.61c-.274 5.063 3.7 9.442 8.77 9.442h56.323c5.07 0 9.182-4.38 8.77-9.442l-3.15-48.58z" fill="#f63e02" mask="url(#d)"></path></g><circle stroke="#41BD41" cx="81.5" cy="78.5" r="4.5"></circle><circle stroke="#f63e02" cx="8" cy="58" r="2"></circle><circle stroke="#f63e02" cx="258" cy="90" r="2"></circle><circle stroke="#f63e02" cx="193" cy="55" r="3"></circle><path d="M90 6H74a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM74 18h16V8H74v10zm13.5 5h-11a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2z" fill="#A69EC8"></path><path d="m61.565 37.654-1.082 3.206h-3.5a.98.98 0 0 0-.935.655.927.927 0 0 0 .357 1.057l2.832 1.983-1.082 3.206a.927.927 0 0 0 .357 1.058 1.009 1.009 0 0 0 1.155 0l2.832-1.982 2.833 1.982a1.009 1.009 0 0 0 1.155 0 .927.927 0 0 0 .357-1.058l-1.082-3.206 2.833-1.982a.926.926 0 0 0 .357-1.058.98.98 0 0 0-.935-.654h-3.501l-1.082-3.207a.981.981 0 0 0-.935-.654.98.98 0 0 0-.934.654zm4 71-1.082 3.206h-3.5a.98.98 0 0 0-.935.655.927.927 0 0 0 .357 1.057l2.832 1.983-1.082 3.206a.927.927 0 0 0 .357 1.058 1.009 1.009 0 0 0 1.155 0l2.832-1.982 2.833 1.982a1.009 1.009 0 0 0 1.155 0 .927.927 0 0 0 .357-1.058l-1.082-3.206 2.833-1.982a.926.926 0 0 0 .357-1.058.98.98 0 0 0-.935-.654h-3.501l-1.082-3.207a.981.981 0 0 0-.935-.654.98.98 0 0 0-.934.654zm139-35-1.082 3.206h-3.5a.98.98 0 0 0-.935.655.927.927 0 0 0 .357 1.057l2.832 1.983-1.082 3.206a.927.927 0 0 0 .357 1.058 1.009 1.009 0 0 0 1.155 0l2.832-1.982 2.833 1.982a1.009 1.009 0 0 0 1.155 0 .927.927 0 0 0 .357-1.058l-1.082-3.206 2.833-1.982a.926.926 0 0 0 .357-1.058.98.98 0 0 0-.935-.654h-3.501l-1.082-3.207a.981.981 0 0 0-.935-.654.98.98 0 0 0-.934.654z" fill="#FCD320"></path></g></svg>
 )
 
 export const IconeSetaDireita = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-gray-200 hover:bg-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,33 +113,33 @@ export const IconeRotacao = <svg xmlns="http://www.w3.org/2000/svg" className="m
   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 </svg>
 
-export const IconHome = (size: string, hover?: boolean) => (
+// export const IconHome = (size: string, hover?: boolean) => (
+//   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+//     width={size + 'pt'} height={size + 'pt'} viewBox="0 0 64.000000 64.000000"
+//     preserveAspectRatio="xMidYMid meet" >
+
+//     <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
+//       fill={!hover ? "#fff" : "#000000"} stroke="none">
+//       <path d="M165 464 c-77 -69 -141 -129 -143 -133 -4 -11 66 -41 83 -35 12 5 15
+//  -14 17 -123 l3 -128 70 0 70 0 3 48 3 47 49 0 49 0 3 -47 3 -48 70 0 70 0 3
+//  128 c2 109 5 128 17 123 15 -5 85 22 85 34 0 11 -283 255 -299 257 -9 1 -79
+//  -54 -156 -123z m289 -16 c98 -87 123 -114 111 -121 -11 -6 -43 17 -126 90 -61
+//  54 -114 98 -119 98 -5 0 -58 -44 -119 -98 -83 -73 -115 -96 -126 -90 -12 7 13
+//  34 111 121 70 62 130 112 134 112 4 0 64 -50 134 -112z m46 -249 l0 -129 -50
+//  0 -50 0 0 34 c0 62 -5 66 -80 66 -75 0 -80 -4 -80 -66 l0 -34 -50 0 -50 0 0
+//  129 0 129 91 82 90 81 90 -82 89 -81 0 -129z"/>
+//     </g>
+//   </svg>
+// )
+
+
+export const IconAddCongregation = (
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    width={size + 'pt'} height={size + 'pt'} viewBox="0 0 64.000000 64.000000"
-    preserveAspectRatio="xMidYMid meet" >
-
-    <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
-      fill={!hover ? "#fff" : "#000000"} stroke="none">
-      <path d="M165 464 c-77 -69 -141 -129 -143 -133 -4 -11 66 -41 83 -35 12 5 15
- -14 17 -123 l3 -128 70 0 70 0 3 48 3 47 49 0 49 0 3 -47 3 -48 70 0 70 0 3
- 128 c2 109 5 128 17 123 15 -5 85 22 85 34 0 11 -283 255 -299 257 -9 1 -79
- -54 -156 -123z m289 -16 c98 -87 123 -114 111 -121 -11 -6 -43 17 -126 90 -61
- 54 -114 98 -119 98 -5 0 -58 -44 -119 -98 -83 -73 -115 -96 -126 -90 -12 7 13
- 34 111 121 70 62 130 112 134 112 4 0 64 -50 134 -112z m46 -249 l0 -129 -50
- 0 -50 0 0 34 c0 62 -5 66 -80 66 -75 0 -80 -4 -80 -66 l0 -34 -50 0 -50 0 0
- 129 0 129 91 82 90 81 90 -82 89 -81 0 -129z"/>
-    </g>
-  </svg>
-)
-
-
-export const IconAddCongregation = (size: string, hover: boolean) => (
-  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    width={size + 'pt'} height={size + 'pt'} viewBox="0 0 64.000000 64.000000"
+    width={'25 pt'} height={'25 pt'} viewBox="0 0 64.000000 64.000000"
     preserveAspectRatio="xMidYMid meet">
 
     <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
-      fill={!hover ? "#fff" : "#000000"} stroke="none">
+      fill="#000000" stroke="none">
       <path d="M70 610 c-28 -28 -27 -84 2 -104 31 -22 64 -20 88 4 41 41 12 120
 -45 120 -14 0 -34 -9 -45 -20z m84 -32 c14 -23 -3 -52 -33 -56 -42 -6 -67 38
 -39 66 17 17 58 11 72 -10z"/>
@@ -172,13 +170,13 @@ m216 -89 c55 -52 68 -115 36 -179 -54 -109 -213 -106 -263 4 -23 52 -23 71 1
   </svg>
 )
 
-export const IconPermission = (size: string, hover: boolean) => (
+export const IconPermission = (
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    width={size + 'pt'} height={size + 'pt'} viewBox="0 0 64.000000 64.000000"
+    width={'25 pt'} height={'25 pt'} viewBox="0 0 64.000000 64.000000"
     preserveAspectRatio="xMidYMid meet" >
 
     <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
-      fill={!hover ? "#fff" : "#000000"} stroke={!hover ? "#fff" : "#000000"} strokeWidth={"5px"}>
+      fill="#000000" stroke="#000000" strokeWidth={"5px"}>
       <path d="M165 606 c-32 -32 -40 -69 -25 -107 17 -40 46 -59 91 -59 74 0 119
 73 85 138 -20 38 -44 52 -91 52 -25 0 -43 -8 -60 -24z m124 -22 c28 -36 27
 -75 -4 -104 -35 -33 -81 -31 -112 4 -28 34 -29 65 -2 100 16 20 29 26 59 26
@@ -198,13 +196,13 @@ export const IconPermission = (size: string, hover: boolean) => (
     </g>
   </svg>
 )
-export const IconCategory = (size: string, hover: boolean) => (
+export const IconCategory = (
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    width={size + "pt"} height={size + "pt"} viewBox="0 0 50.000000 50.000000"
+    width={"25 pt"} height={"25 pt"} viewBox="0 0 50.000000 50.000000"
     preserveAspectRatio="xMidYMid meet">
 
     <g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)"
-      fill={!hover ? "#fff" : "#000000"} stroke="none">
+      fill="#000000" stroke="none">
       <path d="M7 494 c-4 -4 -7 -97 -7 -206 l0 -198 140 0 c87 0 140 4 140 10 0 6
 -50 10 -130 10 l-130 0 0 150 0 150 200 0 200 0 0 -95 c0 -58 4 -95 10 -95 7
 0 10 48 8 138 l-3 137 -211 3 c-115 1 -213 -1 -217 -4z m413 -39 l0 -25 -200
@@ -236,13 +234,13 @@ export const IconCategory = (size: string, hover: boolean) => (
   </svg>
 )
 
-export const IconCongregation = (size: string, hover: boolean) => (
+export const IconCongregation = (
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    width={size + "pt"} height={size + "pt"} viewBox="0 0 50.000000 50.000000"
+    width={"25 pt"} height={"25 pt"} viewBox="0 0 50.000000 50.000000"
     preserveAspectRatio="xMidYMid meet">
 
     <g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)"
-      fill={!hover ? "#fff" : "#000000"} stroke="none">
+      fill="#000000" stroke="none">
       <path d="M47 454 c-4 -4 -7 -76 -7 -161 l0 -153 100 0 c93 0 100 -1 100 -20 0
 -19 -7 -20 -100 -20 -60 0 -100 -4 -100 -10 0 -6 77 -10 210 -10 133 0 210 4
 210 10 0 6 -40 10 -100 10 -93 0 -100 1 -100 20 0 19 7 20 100 20 l101 0 -3
@@ -276,6 +274,42 @@ export const IconImage = (
 export const IconDelete = (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 cursor-pointer">
     <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+export const PregacaoIcon = (
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+    width="25.000000pt" height="25.000000pt" viewBox="0 0 25.000000 25.000000"
+    preserveAspectRatio="xMidYMid meet">
+
+    <g transform="translate(0.000000,25.000000) scale(0.100000,-0.100000)"
+      fill="#000000" stroke="none">
+    </g>
+  </svg>
+)
+
+export const IconPublisher = (
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+    width="25.000000pt" height="25.000000pt" viewBox="0 0 512.000000 512.000000"
+    preserveAspectRatio="xMidYMid meet">
+
+    <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+      fill="#000000" stroke="none">
+      <path d="M2082 4470 c-105 -15 -211 -49 -306 -97 -74 -38 -109 -65 -186 -143
+-104 -103 -159 -193 -198 -320 -31 -103 -33 -153 -13 -355 18 -187 18 -190 -1
+-258 -17 -60 -18 -77 -8 -135 17 -101 58 -230 95 -297 21 -37 40 -92 50 -145
+41 -211 83 -327 148 -412 64 -83 77 -118 83 -230 13 -213 -7 -309 -77 -360
+-14 -11 -147 -61 -295 -112 -325 -112 -465 -167 -650 -255 -217 -105 -334
+-192 -368 -273 -18 -42 -36 -219 -36 -350 l0 -88 1920 0 1920 0 0 93 c0 146
+-19 316 -40 357 -72 140 -398 306 -1035 526 -143 49 -264 97 -284 111 -57 44
+-65 76 -64 269 1 192 7 217 78 310 69 89 106 190 145 389 15 77 32 128 55 170
+39 71 69 159 91 269 16 76 16 85 -1 154 -17 68 -18 84 -4 240 18 219 17 283
+-10 373 -42 136 -95 224 -201 329 -78 79 -112 104 -188 144 -131 67 -252 96
+-422 101 -74 2 -163 0 -198 -5z"/>
+      <path d="M3870 3025 l0 -255 -255 0 -255 0 0 -210 0 -210 255 0 255 0 0 -255
+0 -255 210 0 210 0 0 255 0 255 255 0 255 0 0 210 0 210 -255 0 -255 0 0 255
+0 255 -210 0 -210 0 0 -255z"/>
+    </g>
   </svg>
 
 )

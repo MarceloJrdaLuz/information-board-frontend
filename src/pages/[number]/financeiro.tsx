@@ -53,9 +53,11 @@ export default function Financeiro(props: CongregationTypes) {
         <>
         <HeadComponent title="Financeiro" urlMiniatura="https://luisgomes.netlify.app/images/contas.jpg"/>
         <LayoutPrincipal congregationName={props.name}  circuit={props.circuit}  heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
-            <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5"></div>
+            <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
 
-            <ButtonHome onClick={()=>setPdfShow(true)} texto='Relatório das Contas' />
+            <div>
+                <ButtonHome onClick={()=>setPdfShow(true)} texto='Relatório das Contas' />
+            </div>
             <ButtonHome href={`/${props.number}`} texto='Voltar' />
         </LayoutPrincipal>
         </>

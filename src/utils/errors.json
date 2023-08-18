@@ -10,7 +10,7 @@
         "required": "Senha é um campo obrigatório",
         "matches": "A senha deve conter pelo menos 8 caracteres, pelo menos uma letra e um número"
     },
-    "confirmPassword" : {
+    "confirmPassword": {
         "required": "Repetir senha é um campo obrigatório",
         "oneOf": "As duas senhas não conferem!"
     },
@@ -20,22 +20,22 @@
     "billingNumber": {
         "required": "Numero da casa é um campo obrigatório"
     },
-    "city":{
+    "city": {
         "required": "Cidade é um campo obrigatório"
     },
-    "number":{
+    "number": {
         "required": "Número da congregação é um campo obrigatório"
     },
-    "circuit":{
+    "circuit": {
         "required": "Circuito é um campo obrigatório"
-    }, 
-    "name":{
+    },
+    "name": {
         "required": "Nome da congregação é um campo obrigatório"
     },
-    "userCode":{
+    "userCode": {
         "required": "Código do usuário é um campo obrigatório"
     },
-    "userId":{
+    "userId": {
         "required": "Id do usuário é um campo obrigatório"
     },
     "categoryName": {
@@ -49,6 +49,28 @@
     },
     "roleDescription": {
         "required": "Descrição da role (função) é um campo obrigatório"
+    },
+    "fullName": {
+        "required": "Nome completo é um campo obrigatório"
+    }, 
+    "hours": {
+        "required": "Horas é um campo obrigatório", 
+        "min": "Caso não tenha feito 1 hora completa, ativar a opcão 'Menos de uma hora'"
+    },
+    "publications": {
+        "required": "Horas é um campo obrigatório"
+    },
+    "videos": {
+        "required": "Horas é um campo obrigatório"
+    },
+    "revisits": {
+        "required": "Horas é um campo obrigatório"
+    },
+    "studies": {
+        "required": "Horas é um campo obrigatório"
+    },
+    "observations": {
+        "required": "Horas é um campo obrigatório"
     }
-}
 
+}

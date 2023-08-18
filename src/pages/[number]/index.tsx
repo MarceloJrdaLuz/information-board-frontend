@@ -15,17 +15,17 @@ export interface CongregationTypes {
 
 export default function Home(props: CongregationTypes) {
     return (
-        <div className=" flex flex-col bg-gray-200">
-            <HeadComponent title="Quadro de Anúncios" urlMiniatura="https://bituruna.netlify.app/images/miniatura.png" />
-            <LayoutPrincipal circuit={props.circuit} congregationName={props.name} textoHeader="Quadro de Anúncios" heightConteudo={'1/2'} header className="bg-home  bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <ButtonHome href={`${props.number}/relatorio`} texto="Relatório de Serviço de Campo" />
-                <ButtonHome href={`${props.number}/limpeza`} texto="Limpeza do Salão do Reino" />
-                <ButtonHome href={`${props.number}/designacoes`}texto="Designações das Reuniões" />
-                <ButtonHome href={`${props.number}/campo`} texto="Designações de Campo" />
-                <ButtonHome href={`${props.number}/financeiro`} texto="Relatório Financeiro" />
-                <ButtonHome href={`${props.number}/eventos`} texto="Eventos" />
-            </LayoutPrincipal>
-        </div>
+            <div className=" flex flex-col bg-gray-200">
+                <HeadComponent title="Quadro de Anúncios" urlMiniatura="https://bituruna.netlify.app/images/miniatura.png" />
+                <LayoutPrincipal circuit={props.circuit} congregationName={props.name} textoHeader="Quadro de Anúncios" heightConteudo={'screen'} header className="bg-home  bg-left-bottom bg-cover md:bg-center lg:bg-right ">
+                    <ButtonHome href={`${props.number}/relatorio`} texto="Relatório de Serviço de Campo" />
+                    <ButtonHome href={`${props.number}/limpeza`} texto="Limpeza do Salão do Reino" />
+                    <ButtonHome href={`${props.number}/designacoes`}texto="Designações das Reuniões" />
+                    <ButtonHome href={`${props.number}/campo`} texto="Designações de Campo" />
+                    <ButtonHome href={`${props.number}/financeiro`} texto="Relatório Financeiro" />
+                    <ButtonHome href={`${props.number}/eventos`} texto="Eventos" />
+                </LayoutPrincipal>
+            </div>
     )
 }
 

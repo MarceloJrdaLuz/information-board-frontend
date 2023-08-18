@@ -9,21 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.11",
+    "@headlessui/react": "^0.0.0-insiders.a317866",
     "@heroicons/react": "^2.0.16",
     "@hookform/resolvers": "^2.9.10",
+    "@material-tailwind/react": "^2.1.0",
     "@next/font": "13.1.5",
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "axios": "^1.2.3",
+    "convert-size": "^1.2.1",
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.5",
     "filesize": "^10.0.6",
+    "lucide-react": "^0.263.1",
+    "moment": "^2.29.4",
     "next": "13.1.5",
     "nookies": "^2.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.42.1",
     "react-toastify": "^9.1.1",
     "swr": "^2.1.0",
@@ -33,7 +38,10 @@
   },
   "devDependencies": {
     "@types/cookie": "^0.5.1",
+    "@types/moment": "^2.13.0",
+    "@types/uuid": "^9.0.2",
     "autoprefixer": "^10.4.13",
+    "daisyui": "^3.5.1",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.4"
   }
