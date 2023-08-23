@@ -1,6 +1,6 @@
-import { createContext, ReactNode } from "react";
-import { toast } from "react-toastify";
-import { api } from "@/services/api";
+import { createContext, ReactNode } from "react"
+import { toast } from "react-toastify"
+import { api } from "@/services/api"
 
 type PermissionAndRolesContextTypes = {
     createPermission: (name: string, description: string) => Promise<any>
@@ -69,7 +69,6 @@ export function PermissionAndRolesProvider(props: PermissionAndRolesContextProvi
             user_id,
             roles
         }).then(res => {
-            console.log(res)
             toast.success('Função atribuída ao usuário com sucesso!')
         }).catch(err => {
             console.log(err)

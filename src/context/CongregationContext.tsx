@@ -1,13 +1,14 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { api } from "@/services/api";
-import { AxiosError } from "axios";
-import { ICongregation } from "@/entities/types";
-import Router from "next/router";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { api } from "@/services/api"
+import { ICongregation } from "@/entities/types"
+import Router, { useRouter } from "next/router"
+import { AuthContext } from "./AuthContext"
+import { useFetch } from "@/hooks/useFetch"
 
 type CongregationContextTypes = {
     createCongregation: (name: string, number: string, circuit: string, city: string) => Promise<any>
-    updateCongregation:(body: ICongregation) => Promise<any>
+    updateCongregation: (body: ICongregation) => Promise<any>
     uploadedFile: File | null
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>
     congregationCreated: ICongregation | undefined
@@ -17,6 +18,7 @@ type CongregationContextTypes = {
     setModalNewCongregation: React.Dispatch<boolean>
     modalNewCongregation: boolean
     addDomain: (userCode: string, congregationNumber: string) => Promise<any>
+    congregation: ICongregation | undefined
 }
 
 type CongregationContextProviderProps = {
@@ -37,7 +39,23 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
     const [congregationCreated, setCongregationCreated] = useState<ICongregation>()
     const [showCongregationCreated, setShowCongregationCreated] = useState(false)
     const [modalNewCongregation, setModalNewCongregation] = useState(false)
+    const [congregation, setCongregation] = useState<ICongregation>()
 
+    const { user } = useContext(AuthContext)
+    const number = user?.congregation.number
+
+    const fetchConfig = number ? `/congregation/${number}` : ""
+    const { data, mutate } = useFetch<ICongregation>(fetchConfig)
+
+    useEffect(() => {
+        if (number) {
+            setCongregation(data)
+        }
+    }, [data, number])
+
+    useEffect(() => {
+        setCongregation(data)
+    }, [data, congregation])
 
     async function createCongregation(name: string, number: string, circuit: string, city: string) {
         const formData = new FormData()
@@ -68,10 +86,12 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
         })
     }
 
-    async function updateCongregation(body: ICongregation){
-        await api.put('/congregation', {
-           ...body
-        }).then(suc => {
+    async function updateCongregation(body: ICongregation) {
+
+        const congregation_id = body.id
+
+        await api.put(`/congregation/${congregation_id}`, body).then(suc => {
+            mutate()
             toast.success('Congregação atualizada com sucesso!')
             Router.push('/dashboard')
         }).catch(err => {
@@ -97,7 +117,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
         <CongregationContext.Provider value={{
             createCongregation, setUploadedFile, uploadedFile, setCongregationCreated,
             congregationCreated, showCongregationCreated, setShowCongregationCreated,
-            modalNewCongregation, setModalNewCongregation, addDomain, updateCongregation
+            modalNewCongregation, setModalNewCongregation, addDomain, updateCongregation, congregation
         }}>
             {props.children}
         </CongregationContext.Provider>

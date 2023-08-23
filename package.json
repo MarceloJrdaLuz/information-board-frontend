@@ -15,6 +15,7 @@
     "@material-tailwind/react": "^2.1.0",
     "@next/font": "13.1.5",
     "@types/node": "18.11.18",
+    "@types/nookies": "^2.0.3",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "axios": "^1.2.3",
@@ -30,6 +31,7 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.42.1",
+    "react-pdf": "^7.3.3",
     "react-toastify": "^9.1.1",
     "swr": "^2.1.0",
     "typescript": "4.9.4",
@@ -43,6 +45,7 @@
     "autoprefixer": "^10.4.13",
     "daisyui": "^3.5.1",
     "postcss": "^8.4.21",
+    "raw-loader": "^4.0.2",
     "tailwindcss": "^3.2.4"
   }
 }

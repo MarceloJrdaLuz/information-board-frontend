@@ -1,18 +1,14 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FileList from "@/Components/FileList";
-import FormAddPublisher from "@/Components/FormAddPublisher";
-import Layout from "@/Components/Layout";
-import PublisherList from "@/Components/PublishersList";
-import Upload from "@/Components/Upload";
-import { iconeAddPessoa } from "@/assets/icons";
-import { DocumentsContext } from "@/context/DocumentsContext";
-import { Categories, ICategory } from "@/entities/types";
-import { useFetch } from "@/hooks/useFetch";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import Router from "next/router";
-import { parseCookies } from "nookies";
-import { useContext, useEffect, useState } from "react";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FileList from "@/Components/FileList"
+import Layout from "@/Components/Layout"
+import Upload from "@/Components/Upload"
+import { DocumentsContext } from "@/context/DocumentsContext"
+import { Categories, ICategory } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
+import { useContext, useEffect, useState } from "react"
 
 export default function Contas() {
 
@@ -39,7 +35,7 @@ export default function Contas() {
                                 'application/pdf': []
                             }} />
                         </div>
-                    <FileList files={uploadedFiles} />
+                        <FileList files={uploadedFiles} />
                     </div>
                 </section>
             </ContentDashboard>

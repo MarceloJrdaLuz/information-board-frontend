@@ -1,5 +1,5 @@
-import FormResetPassword from "@/Components/FormResetPassword";
-import Image from "next/image";
+import FormResetPassword from "@/Components/FormResetPassword"
+import Image from "next/image"
 
 export default function ResetPassword() {
     return (

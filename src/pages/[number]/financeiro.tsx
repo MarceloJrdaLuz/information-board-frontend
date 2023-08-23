@@ -1,8 +1,12 @@
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import { api } from "@/services/api";
-import { useState } from "react";
+import ButtonHome from "@/Components/ButtonHome"
+import HeadComponent from "@/Components/HeadComponent"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { Categories, IDocument } from "@/entities/types"
+import { removeMimeType } from "@/functions/removeMimeType"
+import { api } from "@/services/api"
+import { useRouter } from "next/router"
+import { useContext, useEffect, useState } from "react"
 
 
 export interface CongregationTypes {
@@ -41,6 +45,22 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
 
 export default function Financeiro(props: CongregationTypes) {
 
+    const router = useRouter()
+    const { number } = router.query
+
+    const { setCongregationNumber, documents, filterDocuments } = useContext(PublicDocumentsContext)
+    const [documentsFilter, setDocumentsFilter] = useState<IDocument[]>()
+
+    if (number) {
+        setCongregationNumber(number as string)
+    }
+
+    useEffect(() => {
+        if(documents){
+            setDocumentsFilter(filterDocuments(Categories.financeiro))
+        }
+    }, [filterDocuments, documents])
+
     const [pdfShow, setPdfShow] = useState(false)
 
     function renderizarPdf(opcao: string) {
@@ -55,9 +75,15 @@ export default function Financeiro(props: CongregationTypes) {
         <LayoutPrincipal congregationName={props.name}  circuit={props.circuit}  heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
             <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
 
-            <div>
+            {/* <div>
                 <ButtonHome onClick={()=>setPdfShow(true)} texto='Relatório das Contas' />
-            </div>
+            </div> */}
+            {documentsFilter?.map(document => (
+                    <div key={document.id}>
+                        <ButtonHome onClick={() => {  }} texto={removeMimeType(document.fileName)} />
+                    </div>
+                ))
+                }
             <ButtonHome href={`/${props.number}`} texto='Voltar' />
         </LayoutPrincipal>
         </>

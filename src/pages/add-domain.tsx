@@ -1,12 +1,11 @@
-import { AuthContext } from "@/context/AuthContext";
-import { GetServerSideProps } from "next";
-import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthContext"
+import { GetServerSideProps } from "next"
+import { useContext,  useState } from "react"
 import { parseCookies } from 'nookies'
-import { getAPIClient } from "@/services/axios";
-import Layout from "@/Components/Layout";
-import ContentDashboard from "@/Components/ContentDashboard";
-import { api } from "@/services/api";
-import FormAddDomain from "@/Components/FormAddDomain";
+import { getAPIClient } from "@/services/axios"
+import Layout from "@/Components/Layout"
+import ContentDashboard from "@/Components/ContentDashboard"
+import FormAddDomain from "@/Components/FormAddDomain"
 
 export default function AddDomain() {
     const { user: getUser } = useContext(AuthContext)
@@ -19,7 +18,6 @@ export default function AddDomain() {
         const contain = rolesName?.includes(role)
         return contain
     }
-
 
     return (
         <Layout pageActive="add-domain">

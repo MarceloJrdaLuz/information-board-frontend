@@ -1,11 +1,11 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FormAddPermission from "@/Components/FormAddPermission";
-import FormAddRole from "@/Components/FormAddRole";
-import FormUserRoles from "@/Components/FormUserRoles";
-import Layout from "@/Components/Layout";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FormAddPermission from "@/Components/FormAddPermission"
+import FormAddRole from "@/Components/FormAddRole"
+import FormUserRoles from "@/Components/FormUserRoles"
+import Layout from "@/Components/Layout"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
 
 export default function Permissoes(){
     return (

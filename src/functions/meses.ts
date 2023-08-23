@@ -1,7 +1,7 @@
 import moment from 'moment'
 require('moment/locale/pt-br')
 
-export const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+export const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
 
 export default function DateConverter(opcao: string) {
@@ -9,11 +9,11 @@ export default function DateConverter(opcao: string) {
     // essa funcao recebe como parametro 3 opcoes que podem ser mes (mes atual), mes-1 (mes anterior) ou mes +1 (mes Seguinte)
     const mesCapturado = new Date().getMonth()
     switch (opcao) {
-        case 'mes': return meses[mesCapturado];
+        case 'mes': return meses[mesCapturado]
         case 'mes-1':
-            return mesCapturado === 0 ? meses[mesCapturado + 11] : meses[mesCapturado - 1];
+            return mesCapturado === 0 ? meses[mesCapturado + 11] : meses[mesCapturado - 1]
         case 'mes+1':
-            return mesCapturado === 11 ? meses[mesCapturado - 11] : meses[mesCapturado + 1];
+            return mesCapturado === 11 ? meses[mesCapturado - 11] : meses[mesCapturado + 1]
     }
 }
 
@@ -40,29 +40,29 @@ export function MesString(mes: number) {
 }
 
 export function obterUltimosMeses(): { anoCorrente: string[], anoAnterior: string[] } {
-    moment.locale('pt-br');
-    const dataAtual = moment();
-    const anoCorrente = dataAtual.month() >= 8 ? dataAtual.year() : dataAtual.year() - 1;
-    const setembroCorrente = moment(`09-01-${anoCorrente}`, 'MM-DD-YYYY');
-    const setembroAnterior = setembroCorrente.clone().subtract(1, 'year');
+    moment.locale('pt-br')
+    const dataAtual = moment()
+    const anoCorrente = dataAtual.month() >= 8 ? dataAtual.year() : dataAtual.year() - 1
+    const setembroCorrente = moment(`09-01-${anoCorrente}`, 'MM-DD-YYYY')
+    const setembroAnterior = setembroCorrente.clone().subtract(1, 'year')
 
-    const mesesAnoCorrente: string[] = [];
-    const mesesAnoAnterior: string[] = [];
+    const mesesAnoCorrente: string[] = []
+    const mesesAnoAnterior: string[] = []
 
-    let mesAtual = dataAtual.clone();
+    let mesAtual = dataAtual.clone()
     while (mesAtual.isAfter(setembroCorrente) || mesAtual.isSame(setembroCorrente, 'month')) {
-        mesesAnoCorrente.push(mesAtual.format('MMMM YYYY'));
-        mesAtual.subtract(1, 'month');
+        mesesAnoCorrente.push(mesAtual.format('MMMM YYYY'))
+        mesAtual.subtract(1, 'month')
     }
 
-    let mesAnterior = setembroCorrente.clone().subtract(1, 'month');
+    let mesAnterior = setembroCorrente.clone().subtract(1, 'month')
     while (mesAnterior.isAfter(setembroAnterior) || mesAnterior.isSame(setembroAnterior, 'month')) {
-        mesesAnoAnterior.push(mesAnterior.format('MMMM YYYY'));
-        mesAnterior.subtract(1, 'month');
+        mesesAnoAnterior.push(mesAnterior.format('MMMM YYYY'))
+        mesAnterior.subtract(1, 'month')
     }
 
     return {
         anoCorrente: mesesAnoCorrente,
         anoAnterior: mesesAnoAnterior
-    };
+    }
 }

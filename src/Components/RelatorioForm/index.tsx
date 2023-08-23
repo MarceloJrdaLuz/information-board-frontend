@@ -1,9 +1,5 @@
-import { IconeSeta, IconeWhats } from "@/assets/icons"
-import useValidar from "@/hooks/useValidar"
-import { api } from "@/services/api"
 import Link from "next/link"
-import { useContext, useEffect, useRef, useState } from "react"
-import ButtonHome from "../ButtonHome"
+import { useContext, useEffect, useState } from "react"
 import Input from "../Input"
 import FormStyle from "../FormStyle"
 import InputError from "../InputError"
@@ -15,12 +11,9 @@ import { useForm } from 'react-hook-form'
 import { meses } from "@/functions/meses"
 import Button from "../Button"
 import { useFetch } from "@/hooks/useFetch"
-import { IPublisher, IPublisherList } from "@/entities/types"
-import { useRouter } from "next/router"
+import {  IPublisherList } from "@/entities/types"
 import DropdownSearch from "../DropdownSearch"
 import { PublisherContext } from "@/context/PublisherContext"
-import CheckboxUnique from "../CheckBoxUnique"
-import { randomUUID } from "crypto"
 import CheckboxBoolean from "../CheckboxBoolean"
 import { ArrowLeftIcon } from "lucide-react"
 
@@ -29,7 +22,7 @@ interface IRelatorioFormProps {
 }
 
 export default function RelatorioForm(props: IRelatorioFormProps) {
-    const { data, mutate } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
+    const { data } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
     const { createReport } = useContext(PublisherContext)
 
     const [month, setMonth] = useState('')

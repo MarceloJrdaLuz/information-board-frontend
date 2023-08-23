@@ -1,5 +1,5 @@
-import { ICongregation } from "@/entities/types";
-import Image from "next/image";
+import { ICongregation } from "@/entities/types"
+import Image from "next/image"
 
 export default function CardCongregation(props: ICongregation){
     return(

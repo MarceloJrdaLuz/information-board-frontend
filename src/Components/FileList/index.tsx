@@ -1,21 +1,12 @@
-import { IDocument, IFile } from "@/entities/types";
-import { IFileListProps } from "./types";
-import { useContext, useEffect, useState } from "react";
+import { IFileListProps } from "./types"
+import { useContext,  useState } from "react"
 import { Link2Icon, Trash2Icon, CheckIcon, XIcon, AlertTriangleIcon, AlertCircleIcon } from 'lucide-react'
-import Link from "next/link";
-import { formatSize } from "@/functions/formatSize";
-import {filesize} from 'filesize'
-import { DocumentsContext } from "@/context/DocumentsContext";
-import { Progress } from '@material-tailwind/react'
+import Link from "next/link"
+import { DocumentsContext } from "@/context/DocumentsContext"
 
 export default function FileList({ files }: IFileListProps) {
 
     const [confirmDeleteItem, setConfirmDeleteItem] = useState<string | null>(null)
-
-    useEffect(() => {
-
-        console.log(files)
-    }, [files])
 
     const { deleteDocument, uploadedFiles } = useContext(DocumentsContext)
 

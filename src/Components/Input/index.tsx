@@ -1,5 +1,5 @@
-import { ComponentProps, InputHTMLAttributes } from "react";
-import Label from "../Label";
+import { ComponentProps } from "react"
+import Label from "../Label"
 
 interface InputProps extends ComponentProps<'input'> {
     invalid?: string

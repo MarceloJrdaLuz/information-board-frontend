@@ -1,6 +1,5 @@
-import { IconeHome } from "@/assets/icons";
-import NavBarOptionIcon from "./NavBarOptionIcon";
-import { NavBarOptionType } from "./types";
+import NavBarOptionIcon from "./NavBarOptionIcon"
+import { NavBarOptionType } from "./types"
 
 export default function NavBarOption(props: NavBarOptionType) {
 

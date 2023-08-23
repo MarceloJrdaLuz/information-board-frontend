@@ -1,16 +1,11 @@
-import { IconeSeta, IconeSetaEsquerda, iconeAdd, iconeSetaBaixo } from "@/assets/icons";
-import { CongregationContext } from "@/context/CongregationContext";
-import { ICongregation, IPublisher, IReports } from "@/entities/types";
-import { api } from "@/services/api";
-import { useContext, useEffect, useState } from "react";
-import CardCongregation from "../CardCongregation";
-import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard";
-import FormAddCongregation from "../FormAddCongregation"
-import { obterUltimosMeses } from "@/functions/meses";
-import ModalRelatorio from "../ModalRelatorio";
-import { useFetch } from "@/hooks/useFetch";
+import { IPublisher, IReports } from "@/entities/types"
+import { api } from "@/services/api"
+import { useCallback, useEffect, useState } from "react"
+import { obterUltimosMeses } from "@/functions/meses"
+import ModalRelatorio from "../ModalRelatorio"
+import { useFetch } from "@/hooks/useFetch"
 import { v4 } from 'uuid'
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react"
 
 export interface ListRelatoriosProps {
     congregationId: string
@@ -54,7 +49,7 @@ export default function ListRelatorios(props: ListRelatoriosProps) {
                     relatorio.publisher.id === publisher.id &&
                     relatorio.month.toLowerCase() === mesSelecionado &&
                     relatorio.year === anoSelecionado
-            );
+            )
             return !relatorioEnviado
         }) || []
         setRelatoriosFalta(relatoriosNaoEnviados)
@@ -76,18 +71,18 @@ export default function ListRelatorios(props: ListRelatoriosProps) {
         setAnoServicoAnterior(obterUltimosMeses().anoAnterior)
     }, [])
 
-    const getRelatorios = async () => {
+    const getRelatorios = useCallback(async () => {
         await api.get(`/reports/${props.congregationId}`).then(res => {
             const { data } = res
             setRelatorios([...data])
             setLoading(false)
         }).catch(err => console.log(err))
-    }
+    }, [props.congregationId])
 
     useEffect(() => {
         setLoading(true)
         getRelatorios()
-    }, [])
+    }, [getRelatorios])
 
     return (
         <section className="flex flex-col">
@@ -126,7 +121,7 @@ export default function ListRelatorios(props: ListRelatoriosProps) {
                     </>
                 ) : (
                     <>
-                        <section className="flex flex-col flex-wrap ">
+                        <section className="flex flex-col flex-wrap w-full">
                             <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${exibirMes.toLocaleUpperCase()}`}</h2>
                             <div className="flex flex-col mx-5">
                                 <span className="flex items-center justify-end  text-primary-200 font-bold">
@@ -157,7 +152,7 @@ export default function ListRelatorios(props: ListRelatoriosProps) {
                                         />)}
                                 </ul>
                             ) : (
-                                <div>Nenhum relatório registrado nesse mês</div>
+                                <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
                             )}
                         </section>
                     </>

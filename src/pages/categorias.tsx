@@ -1,9 +1,9 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FormAddCategory from "@/Components/FormAddCategory";
-import Layout from "@/Components/Layout";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FormAddCategory from "@/Components/FormAddCategory"
+import Layout from "@/Components/Layout"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
 
 export default function Categorias() {
     return (

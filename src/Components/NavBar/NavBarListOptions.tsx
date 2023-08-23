@@ -1,7 +1,5 @@
-import { IconeHome } from "@/assets/icons";
-import NavBarOptionIcon from "./NavBarOptionIcon";
-import { NavBarListOptionsType, NavBarOptionType } from "./types";
-import { useState } from "react";
+import NavBarOptionIcon from "./NavBarOptionIcon"
+import { NavBarListOptionsType } from "./types"
 import { ChevronDown } from 'lucide-react'
 
 export default function NavBarListOptions({ children, title, icon, showList, onClick }: NavBarListOptionsType) {

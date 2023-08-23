@@ -47,11 +47,26 @@ export interface ICongregation {
     city: string
     circuit: string
     image_url?: string
+    imageKey?: string
     dayMeetingLifeAndMinistary?: string,
     hourMeetingLifeAndMinistary?: string,
     dayMeetingPublic?: string,
     hourMeetingPublic?: string
 }
+
+export interface ICongregationUpdate {
+    name?: string
+    city?: string
+    circuit?: string
+    image_url?: string
+    imageKey?: string
+    dayMeetingLifeAndMinistary?: string,
+    hourMeetingLifeAndMinistary?: string,
+    dayMeetingPublic?: string,
+    hourMeetingPublic?: string
+}
+
+
 export interface IReports {
     id: string
     month: string
@@ -127,11 +142,11 @@ export enum Categories {
     limpeza = 'Limpeza',
     meioDeSemana = 'Reunião do meio de semana',
     fimDeSemana = 'Reunião do fim de semana',
-    campo = 'Pregação',
+    campo = 'Campo',
     financeiro = 'Financeiro',
     eventos = 'Eventos especiais',
     testemunhoPublico = 'Testemunho público',
-    servicoDeCampo = 'Serviço de campo'
+    saidasDeCampo = 'Saídas de campo'
 }
 
 export enum Privileges {

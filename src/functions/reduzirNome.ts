@@ -8,7 +8,7 @@ export function reduzirNome(fullName: string) {
 
         if(nomeMeio.length > 3){
             let inicial = nomeMeio.charAt(0) + "."
-            palavras[i] = inicial;
+            palavras[i] = inicial
         }
       }
     

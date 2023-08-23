@@ -1,13 +1,11 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FormAddPublisher from "@/Components/FormAddPublisher";
-import Layout from "@/Components/Layout";
-import PublisherList from "@/Components/PublishersList";
-import { iconeAddPessoa } from "@/assets/icons";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import Router from "next/router";
-import { parseCookies } from "nookies";
-import { useState } from "react";
+import ContentDashboard from "@/Components/ContentDashboard"
+import Layout from "@/Components/Layout"
+import PublisherList from "@/Components/PublishersList"
+import { iconeAddPessoa } from "@/assets/icons"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import Router from "next/router"
+import { parseCookies } from "nookies"
 
 export default function Publicadores() {
 

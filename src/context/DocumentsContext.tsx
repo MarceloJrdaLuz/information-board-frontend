@@ -1,20 +1,16 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { api } from "@/services/api";
-import { AxiosError } from "axios";
-import { ICongregation, IDocument, IFile } from "@/entities/types";
-import Router from "next/router";
-import { AuthContext } from "./AuthContext";
-import { useFetch } from "@/hooks/useFetch";
-import { v4 as uuidv4 } from "uuid";
-import { filesize } from "filesize";
-import { formatSize } from "@/functions/formatSize";
-
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { api } from "@/services/api"
+import { IDocument, IFile } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
+import { v4 as uuidv4 } from "uuid"
+import { filesize } from "filesize"
+import { CongregationContext } from "./CongregationContext"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
-    handleUpload(file: any): void;
-    filterCategory: (category: string) => IDocument[]
+    handleUpload(file: any): void
+    filterCategory: (category: string) => IFile[]
     deleteDocument: (document_id: string) => Promise<any>
     setDocumentCategoryId: React.Dispatch<string>
 }
@@ -27,18 +23,19 @@ export const DocumentsContext = createContext({} as DocumentsContextTypes)
 
 export function DocumentsProvider(props: DocumentsContextProviderProps) {
 
-    const { user } = useContext(AuthContext)
-    const congregationUser = user?.congregation
-    const congregation_id = congregationUser?.id as string
-    const { data, mutate } = useFetch<IDocument[]>(`/documents-congregation/${congregation_id}`)
+    const { congregation: congregationUser } = useContext(CongregationContext)
+    const congregation_id = congregationUser?.id
 
     const [documents, setDocuments] = useState<IDocument[] | undefined>([])
     const [documentCategoryId, setDocumentCategoryId] = useState("")
     const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
 
+    const fetchConfig = congregation_id ? `/documents-congregation/${congregation_id}` : ""
+    const { data, mutate } = useFetch<IDocument[]>(fetchConfig)
+
     useEffect(() => {
         if (data) {
-            const postFormatted: IFile[] = data.map((document) =>  {
+            const postFormatted: IFile[] = data.map((document) => {
                 return {
                     ...document,
                     id: document.id,
@@ -60,14 +57,15 @@ export function DocumentsProvider(props: DocumentsContextProviderProps) {
     const updateFile = useCallback((id: any, data: any) => {
         setUploadedFiles((state) =>
             state.map((file) => (file.id === id ? { ...file, ...data } : file))
-        );
-    }, []);
+        )
+    }, [])
 
     const processUpload = useCallback(
         (uploadedFile: IFile) => {
-            const data = new FormData();
+            const data = new FormData()
+
             if (uploadedFile.file) {
-                data.append("file", uploadedFile.file, uploadedFile.name);
+                data.append("file", uploadedFile.file, uploadedFile.name)
             }
 
             if (congregation_id) {
@@ -81,11 +79,11 @@ export function DocumentsProvider(props: DocumentsContextProviderProps) {
             api
                 .post("/new-document", data, {
                     onUploadProgress: (progressEvent) => {
-                        const loaded = progressEvent.loaded;
-                        const total = progressEvent.total;
+                        const loaded = progressEvent.loaded
+                        const total = progressEvent.total
                         if (total) {
                             const progress: number = Math.round((loaded * 100) / total)
-                            updateFile(uploadedFile.id, { progress });
+                            updateFile(uploadedFile.id, { progress })
                         }
                     },
                 })
@@ -103,13 +101,13 @@ export function DocumentsProvider(props: DocumentsContextProviderProps) {
                 .catch((err) => {
                     console.error(
                         `Houve um problema para fazer upload ${uploadedFile.name} no servidor`
-                    );
-                    console.log(err);
+                    )
+                    console.log(err)
 
                     updateFile(uploadedFile.id, {
                         error: true,
-                    });
-                });
+                    })
+                })
         },
         [updateFile, documentCategoryId, congregation_id, mutate]
     )
@@ -126,23 +124,21 @@ export function DocumentsProvider(props: DocumentsContextProviderProps) {
                 uploaded: false,
                 error: false,
                 url: "",
-            }));
+            }))
 
             // concat é mais performático que ...spread
             // https://www.malgol.com/how-to-merge-two-arrays-in-javascript/
             setUploadedFiles((state) => state.concat(newUploadedFiles))
             // Concatenar os novos arquivos carregados ao estado de documentos
-            newUploadedFiles.forEach(processUpload);
+            newUploadedFiles.forEach(processUpload)
 
         },
         [processUpload]
     )
 
-
-
     function filterCategory(category: string) {
-        if (documents) {
-            const documentsFiltered = documents.filter(document => document.category.name === category)
+        if (uploadedFiles) {
+            const documentsFiltered = uploadedFiles.filter(document => document.category?.name === category)
             return documentsFiltered
         }
         return []

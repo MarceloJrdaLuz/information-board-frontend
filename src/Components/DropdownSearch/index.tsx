@@ -25,11 +25,11 @@ export default function DropdownSearch(props: IDropdownSearch) {
     setSearchQuery(query)
 
     const filtered = props.options.filter(option => {
-      const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase());
-      const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase());
+      const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
+      const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
       const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
 
-      return fullNameMatch || nicknameMatch || congregationIdMatch;
+      return fullNameMatch || nicknameMatch || congregationIdMatch
     })
     setFilteredOptions(filtered)
   }

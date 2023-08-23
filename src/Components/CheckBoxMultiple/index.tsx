@@ -1,26 +1,26 @@
-import React from 'react';
+import React from 'react'
 
 interface ICheckboxMultiple {
-  options: string[];
-  label: string;
-  visibleLabel?: boolean;
-  checkedOptions?: string[]; // torna a propriedade opcional
-  handleCheckboxChange: (selectedOptions: string[]) => void;
+  options: string[]
+  label: string
+  visibleLabel?: boolean
+  checkedOptions?: string[] // torna a propriedade opcional
+  handleCheckboxChange: (selectedOptions: string[]) => void
 }
 
 export default function CheckboxMultiple(props: ICheckboxMultiple) {
   const handleCheckboxChange = (selectedOption: string) => {
-    const isChecked = props.checkedOptions?.includes(selectedOption) || false;
-    let updatedOptions: string[];
+    const isChecked = props.checkedOptions?.includes(selectedOption) || false
+    let updatedOptions: string[]
 
     if (isChecked) {
-      updatedOptions = props.checkedOptions?.filter((option) => option !== selectedOption) || [];
+      updatedOptions = props.checkedOptions?.filter((option) => option !== selectedOption) || []
     } else {
-      updatedOptions = [...(props.checkedOptions || []), selectedOption];
+      updatedOptions = [...(props.checkedOptions || []), selectedOption]
     }
 
-    props.handleCheckboxChange(updatedOptions);
-  };
+    props.handleCheckboxChange(updatedOptions)
+  }
 
   return (
     <div>
@@ -49,5 +49,5 @@ export default function CheckboxMultiple(props: ICheckboxMultiple) {
         ))}
       </ul>
     </div>
-  );
+  )
 }

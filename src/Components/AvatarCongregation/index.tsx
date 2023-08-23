@@ -1,31 +1,33 @@
-import { AuthContext } from "@/context/AuthContext";
-import Image from "next/image";
-import { useContext, useState } from "react";
-import Dropdown from "../Dropdown";
-import Router from "next/router";
+import Image from "next/image"
+import { useContext } from "react"
+import Dropdown from "../Dropdown"
+import Router from "next/router"
+import { CongregationContext } from "@/context/CongregationContext"
 
 export default function AvatarCongregation() {
-    const { user } = useContext(AuthContext)
-
-    const congregationUser = user?.congregation
-
-    
+    const { congregation: congregationUser } = useContext(CongregationContext)
 
     function handleClick(option: string) {
         switch (option) {
             case "Informações da congregação":
-                Router.push('informacoes-congregacao')
-                break;
+                const targetRoute = 'congregacao/informacoes'
+
+                // Check if the current route is the target route
+                if (Router.asPath !== `/${targetRoute}`) {
+                    Router.push(`/${targetRoute}`)
+                }
+                
+                break
 
             default:
-                break;
+                break
         }
     }
 
     return (
         <>
             <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 mr-2">
-                { congregationUser?.image_url  ? (
+                {congregationUser?.image_url ? (
                     <Image src={congregationUser?.image_url} fill sizes="33vw" alt="Foto da congregação"></Image>
                 ) : (
 

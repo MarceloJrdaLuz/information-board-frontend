@@ -1,13 +1,13 @@
-import FormStyle from "../FormStyle";
+import FormStyle from "../FormStyle"
 import * as yup from 'yup'
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext} from "react";
-import Input from "../Input";
-import InputError from "../InputError";
-import Button from "../Button";
-import { FormPermission, PermissionAndRolesContext } from "@/context/PermissionAndRolesContext";
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useContext} from "react"
+import Input from "../Input"
+import InputError from "../InputError"
+import Button from "../Button"
+import { FormPermission, PermissionAndRolesContext } from "@/context/PermissionAndRolesContext"
 
 export default function FormAddPermission() {
 

@@ -1,4 +1,4 @@
-import { IconImage } from "@/assets/icons";
+import { IconImage } from "@/assets/icons"
 
 export default function SkeletonCongregationCard() {
     return (

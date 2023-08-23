@@ -2,23 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-.outline input:focus-within ~ label,
-.outline input:not(:placeholder-shown) ~ label {
+.outline input:focus-within~label,
+.outline input:not(:placeholder-shown)~label {
   @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
-  color:#83c5be;
+  color: #83c5be;
   height: auto;
 
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.titulo:after{
+
+.titulo:after {
   content: ' ';
   width: 75%;
   height: 10px;
   display: block;
   background-color: #006d77;
   margin: 8px auto;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Classe para ocultar a barra de rolagem vertical */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0;
+}
+
+.hide-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.react-pdf__Page__canvas {
+  margin: 0 auto;
+  width: 100% !important;
+  height: 100% !important;
 }

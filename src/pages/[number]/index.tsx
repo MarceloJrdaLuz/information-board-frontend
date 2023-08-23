@@ -1,7 +1,7 @@
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import { api } from "@/services/api";
+import ButtonHome from "@/Components/ButtonHome"
+import HeadComponent from "@/Components/HeadComponent"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import { api } from "@/services/api"
 
 
 export interface CongregationTypes {

@@ -1,17 +1,17 @@
-import React from 'react';
+import React from 'react'
 
 interface ICheckbox {
   options: string[]
   label: string
   visibleLabel?: boolean
   checked?: string
-  handleCheckboxChange: (selectedOption: string) => void;
+  handleCheckboxChange: (selectedOption: string) => void
 }
 
 export default function CheckboxUnique(props: ICheckbox) {
   const handleCheckboxChange = (selectedOption: string) => {
-    props.handleCheckboxChange(selectedOption);
-  };
+    props.handleCheckboxChange(selectedOption)
+  }
 
   return (
     <div>
@@ -40,5 +40,5 @@ export default function CheckboxUnique(props: ICheckbox) {
         ))}
       </ul>
     </div>
-  );
+  )
 }

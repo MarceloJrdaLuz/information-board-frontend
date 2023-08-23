@@ -1,17 +1,14 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FileList from "@/Components/FileList";
-import FormAddPublisher from "@/Components/FormAddPublisher";
-import Layout from "@/Components/Layout";
-import PublisherList from "@/Components/PublishersList";
-import { iconeAddPessoa } from "@/assets/icons";
-import { DocumentsContext } from "@/context/DocumentsContext";
-import { Categories, ICategory } from "@/entities/types";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { useContext, useEffect, useState } from "react";
-import Upload from "@/Components/Upload";
-import { useFetch } from "@/hooks/useFetch";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FileList from "@/Components/FileList"
+import Layout from "@/Components/Layout"
+import { DocumentsContext } from "@/context/DocumentsContext"
+import { Categories, ICategory } from "@/entities/types"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
+import { useContext, useEffect, useState } from "react"
+import Upload from "@/Components/Upload"
+import { useFetch } from "@/hooks/useFetch"
 
 export default function FimDeSemana() {
 

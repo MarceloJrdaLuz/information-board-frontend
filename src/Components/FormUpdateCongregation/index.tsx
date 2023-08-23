@@ -10,22 +10,19 @@ import { useForm } from 'react-hook-form'
 import { useContext, useState } from 'react'
 import { EndweekDays, ICongregation, MidweekDays } from '@/entities/types'
 import { CongregationContext } from '@/context/CongregationContext'
-import CardCongregation from '../CardCongregation'
-import { AuthContext } from '@/context/AuthContext'
 import Dropdown from '../Dropdown'
-import { Router } from 'next/router'
+import Image from 'next/image'
 
 
 
 
 export default function FormUpdateCongregation() {
-    const { user } = useContext(AuthContext)
     const { updateCongregation } = useContext(CongregationContext)
-    const congregationUser = user?.congregation
+    const { congregation: congregationUser } = useContext(CongregationContext)
     const [meetingLifeAndMinistary, setMeetingLifeAndMinistary] = useState(congregationUser?.dayMeetingLifeAndMinistary)
     const [meetingPublic, setMeetingPublic] = useState(congregationUser?.dayMeetingPublic)
 
-    const { createCongregation, setUploadedFile, showCongregationCreated, setShowCongregationCreated, congregationCreated, setModalNewCongregation } = useContext(CongregationContext)
+    const { setUploadedFile, uploadedFile } = useContext(CongregationContext)
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -46,24 +43,26 @@ export default function FormUpdateCongregation() {
     })
 
     function onSubmit(data: ICongregation) {
-        const { dayMeetingLifeAndMinistary, hourMeetingLifeAndMinistary, dayMeetingPublic, hourMeetingPublic, name, city, circuit, image_url } = data
+        const {
+            dayMeetingLifeAndMinistary, hourMeetingLifeAndMinistary, dayMeetingPublic,
+            hourMeetingPublic, name, city, circuit
+        } = data
 
         const updateCongregationBody = {
-            congregation_id: congregationUser?.id,
+            id: congregationUser?.id,
             name,
             city,
             circuit,
             dayMeetingLifeAndMinistary,
             hourMeetingLifeAndMinistary,
             dayMeetingPublic,
-            hourMeetingPublic,
-            image_url
+            hourMeetingPublic
         }
 
-       toast.promise(updateCongregation(updateCongregationBody), {
-        pending: "Atualizando congregação"
-       })
-       reset()
+        toast.promise(updateCongregation(updateCongregationBody), {
+            pending: "Atualizando congregação"
+        })
+        reset()
     }
 
     function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -85,7 +84,7 @@ export default function FormUpdateCongregation() {
     return (
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-9/12 h-fit flex-col justify-center items-center`}>
+                <div className={`w-9/12 flex-col justify-center items-center `}>
                     <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>{`Atualizar congregação ${congregationUser?.name} (${congregationUser?.number})`}</div>
 
                     <Input type="text" placeholder="Nome da Congregação" registro={{
@@ -110,7 +109,7 @@ export default function FormUpdateCongregation() {
                     <Dropdown handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full />
 
                     <div className='my-2'>
-                        {meetingLifeAndMinistary && <span className='flex justify-center items-center w-fit  p-4 rounded-xl bg-primary-100'>{meetingLifeAndMinistary}</span>}
+                        {meetingLifeAndMinistary && <span className='flex justify-center items-center w-fit text-white p-4 rounded-xl bg-primary-100'>{meetingLifeAndMinistary}</span>}
                     </div>
 
                     <Input type="string" placeholder="Horário da reunião do meio de semana" registro={{
@@ -122,7 +121,7 @@ export default function FormUpdateCongregation() {
                     <Dropdown handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full />
 
                     <div className='my-2'>
-                        {meetingPublic && <span className='flex justify-center items-center w-fit  p-4 rounded-xl bg-primary-100'>{meetingPublic}</span>}
+                        {meetingPublic && <span className='flex justify-center items-center w-fit text-white  p-4 rounded-xl bg-primary-100'>{meetingPublic}</span>}
                     </div>
 
                     <Input type="string" placeholder="Horário da reunião do fim de semana" registro={{
@@ -131,6 +130,33 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.hourMeetingPublic?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingPublic?.type && <InputError type={errors.hourMeetingPublic.type} field='hourMeetingPublic' />}
 
+                    {congregationUser?.image_url && <div className='w-full mb-4'>
+                        <span>Foto Atual</span>
+                        <Image src={`${congregationUser?.image_url}`} alt="Foto atual da congregação" width={400} height={400} />
+                    </div>}
+
+                    {uploadedFile && (
+                        <div className="mt-4 mb-4">
+                            Nova foto
+                            {/* eslint-disable-next-line */}
+                            <img src={URL.createObjectURL(uploadedFile)} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                        </div>
+                    )}
+
+                    <input
+                        className="text-sm text-grey-500
+            file:mr-5 file:py-3 file:px-10
+            file:rounded-full file:border-0
+            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-black
+            file:bg-gradient-to-r file:bg-primary-200
+            hover:file:cursor-pointer hover:file:opacity-80"
+                        type="file"
+                        name="image"
+                        id="image-congregation"
+                        onChange={handleUpload}
+                    />
+
+
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
                         <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Atualizar congregação' type='submit' />
@@ -138,5 +164,5 @@ export default function FormUpdateCongregation() {
                 </div>
             </FormStyle>
         </>
-    ) 
+    )
 }

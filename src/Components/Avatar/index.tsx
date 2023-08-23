@@ -1,8 +1,8 @@
-import { AuthContext } from "@/context/AuthContext";
-import Image from "next/image";
-import { useContext, useState } from "react";
-import Dropdown from "../Dropdown";
-import { IAvatar } from "./types";
+import { AuthContext } from "@/context/AuthContext"
+import Image from "next/image"
+import { useContext, useState } from "react"
+import Dropdown from "../Dropdown"
+import { IAvatar } from "./types"
 
 export default function Avatar(props: IAvatar) {
     const { logout } = useContext(AuthContext)
@@ -12,10 +12,10 @@ export default function Avatar(props: IAvatar) {
         switch (option) {
             case "Sair":
                 logout()
-                break;
+                break
 
             default:
-                break;
+                break
         }
     }
 

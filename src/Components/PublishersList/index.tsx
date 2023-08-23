@@ -1,6 +1,5 @@
 import { AuthContext } from "@/context/AuthContext"
 import { IPublisher } from "@/entities/types"
-import { api } from "@/services/api"
 import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import avatarMale from '../../../public/images/avatar-male.png'
@@ -33,14 +32,13 @@ export default function PublisherList() {
         setSelectedPublishers(updatedSelectedPublishers)
     }
 
-
     useEffect(() => {
         setPublishers(data)
     }, [data])
 
     useEffect(() => {
-        mutate(); // Refetch dos dados utilizando a função mutate do useFetch sempre que muda a rota
-    }, [selectedPublishers, router.asPath, mutate]);
+        mutate() // Refetch dos dados utilizando a função mutate do useFetch sempre que muda a rota
+    }, [selectedPublishers, router.asPath, mutate])
 
 
     return (

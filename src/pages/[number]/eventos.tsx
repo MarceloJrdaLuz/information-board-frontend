@@ -1,8 +1,12 @@
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import { api } from "@/services/api";
-import { useState } from "react";
+import ButtonHome from "@/Components/ButtonHome"
+import HeadComponent from "@/Components/HeadComponent"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { Categories, IDocument } from "@/entities/types"
+import { removeMimeType } from "@/functions/removeMimeType"
+import { api } from "@/services/api"
+import { useRouter } from "next/router"
+import { useContext, useEffect, useState } from "react"
 
 
 export interface CongregationTypes {
@@ -28,7 +32,7 @@ export async function getStaticPaths() {
     }
 }
 
-export async function getStaticProps({ params }: {params: {number: string}}) {
+export async function getStaticProps({ params }: { params: { number: string } }) {
 
     const getCongregation = await api.get(`/congregation/${params.number}`)
 
@@ -41,11 +45,27 @@ export async function getStaticProps({ params }: {params: {number: string}}) {
 
 export default function Eventos(props: CongregationTypes) {
 
+    const router = useRouter()
+    const { number } = router.query
+
+    const { setCongregationNumber, documents, filterDocuments } = useContext(PublicDocumentsContext)
+    const [documentsFilter, setDocumentsFilter] = useState<IDocument[]>()
+
+    if (number) {
+        setCongregationNumber(number as string)
+    }
+
+    useEffect(() => {
+        if (documents) {
+            setDocumentsFilter(filterDocuments(Categories.eventos))
+        }
+    }, [filterDocuments, documents])
+
     const [pdfShow, setPdfShow] = useState(false)
 
     const [visivel, setVisivel] = useState(false) //
 
-    const [visivelCartas, setVisivelCartas] = useState(false) 
+    const [visivelCartas, setVisivelCartas] = useState(false)
 
     const [item, setItem] = useState<'' | 'Assembleias' | 'Congresso' | 'Visita'>('')
 
@@ -80,11 +100,17 @@ export default function Eventos(props: CongregationTypes) {
             <LayoutPrincipal congregationName={props.name} circuit={props.circuit} textoHeader="Cartas" heightConteudo={'1/2'} header className="bg-cartas bg-left-bottom bg-cover lg:bg-right">
                 <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
 
-                <div>
+                {/* <div>
                     <ButtonHome texto={`Eventos Especiais`} onClick={() => { setVisivel(true), renderizarBotoesEventos(), setVisivelCartas(false) }} />
                 </div>
 
-                {visivel ? renderizarBotoesEventos() : null}
+                {visivel ? renderizarBotoesEventos() : null} */}
+                {documentsFilter?.map(document => (
+                    <div key={document.id}>
+                        <ButtonHome onClick={() => {  }} texto={removeMimeType(document.fileName)} />
+                    </div>
+                ))
+                }
 
                 <ButtonHome href={`/${props.number}`} texto='Voltar' />
             </LayoutPrincipal>

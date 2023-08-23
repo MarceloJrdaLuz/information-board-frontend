@@ -1,5 +1,4 @@
 import { ElementType } from "react"
-
 interface NavBarOptionIconProps {
     icon: ElementType
 }

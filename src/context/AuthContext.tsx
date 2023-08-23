@@ -1,9 +1,9 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { ICongregation, ResponseAuth, RolesType } from "../entities/types";
+import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { ICongregation, ResponseAuth, RolesType } from "../entities/types"
 import Router from 'next/router'
 import { setCookie, parseCookies, destroyCookie } from 'nookies'
-import { api } from "@/services/api";
+import { api } from "@/services/api"
 
 type AuthContextTypes = {
     authenticated: boolean
@@ -37,7 +37,6 @@ export const AuthContext = createContext({} as AuthContextTypes)
 
 export function AuthProvider(props: AuthContextProviderProps) {
     const [user, setUser] = useState<User | null>(null)
-    const [admin, setAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
     const [erroCadastro, setErroCadastro] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -49,12 +48,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
             api.post('/recover-user-information').then(res => {
                 setUser(res.data)
             })
-        }
-        // const usuarioRecuperado = localStorage.getItem('user')
-        // if (usuarioRecuperado) {
-        //     setUser(JSON.parse(usuarioRecuperado))
-        // }
-        // setLoading(false)
+        }     
     }, [])
 
     async function login(email: string, password: string) {
@@ -135,7 +129,6 @@ export function AuthProvider(props: AuthContextProviderProps) {
             newPassword
         })
             .then(res => {
-                console.log(res)
                 toast.success('Senha atualizada com sucesso!')
                 Router.push('/login')
             })
@@ -146,13 +139,13 @@ export function AuthProvider(props: AuthContextProviderProps) {
                 switch (message) {
                     case "User not found":
                         toast.error('Email de redefinição de senha não encontrado!')
-                        break;
+                        break
                     case "Token invalid":
                         toast.error('Token inválido!')
-                        break;
+                        break
                     case "Token expired, generate a new one":
                         toast.error('Token expirado, gere um novo token!')
-                        break;
+                        break
                 }
                 Router.push('/forgot-password')
             })

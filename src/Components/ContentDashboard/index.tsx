@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import FooterDashboard from "../FooterDashboard";
-import HeaderDashboard from "../HeaderDashboard";
+import { ReactNode } from "react"
+import FooterDashboard from "../FooterDashboard"
+import HeaderDashboard from "../HeaderDashboard"
 interface IContentDashboard {
     children: ReactNode
 }

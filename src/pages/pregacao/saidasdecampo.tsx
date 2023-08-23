@@ -1,18 +1,14 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FileList from "@/Components/FileList";
-import FormAddPublisher from "@/Components/FormAddPublisher";
-import Layout from "@/Components/Layout";
-import PublisherList from "@/Components/PublishersList";
-import Upload from "@/Components/Upload";
-import { iconeAddPessoa } from "@/assets/icons";
-import { DocumentsContext } from "@/context/DocumentsContext";
-import { Categories, ICategory } from "@/entities/types";
-import { useFetch } from "@/hooks/useFetch";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import Router from "next/router";
-import { parseCookies } from "nookies";
-import { useContext, useEffect, useState } from "react";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FileList from "@/Components/FileList"
+import Layout from "@/Components/Layout"
+import Upload from "@/Components/Upload"
+import { DocumentsContext } from "@/context/DocumentsContext"
+import { Categories, ICategory } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
+import { useContext, useEffect, useState } from "react"
 
 export default function SaidasDeCampo() {
 
@@ -21,7 +17,7 @@ export default function SaidasDeCampo() {
     const { data: categories } = useFetch<ICategory[]>('/category')
 
     useEffect(() => {
-        const categoryFilter = categories?.filter(category => category.name === Categories.campo)
+        const categoryFilter = categories?.filter(category => category.name === Categories.saidasDeCampo)
         if (categoryFilter) {
             setCategory(categoryFilter[0])
         }

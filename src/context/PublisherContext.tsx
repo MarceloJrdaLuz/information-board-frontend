@@ -1,7 +1,6 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
-import { toast } from "react-toastify";
-import { api } from "@/services/api";
-import { Gender, Hope } from "@/entities/types";
+import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react"
+import { toast } from "react-toastify"
+import { api } from "@/services/api"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -29,8 +28,8 @@ type PublisherContextTypes = {
         month: string,
         year: string,
         publisher: {
-            fullName: string, 
-            nickName: string, 
+            fullName: string,
+            nickName: string,
             congregation_id: string
         },
         publications: number,
@@ -51,7 +50,7 @@ export const PublisherContext = createContext({} as PublisherContextTypes)
 
 export function PublisherProvider(props: PublisherContextProviderProps) {
 
-    const [genderCheckbox, setGenderCheckbox] = useState<string[]>([]);
+    const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
 
 
     async function createPublisher(
@@ -114,8 +113,8 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
         month: string,
         year: string,
         publisher: {
-            fullName: string, 
-            nickName: string, 
+            fullName: string,
+            nickName: string,
             congregation_id: string
         },
         publications: number,
@@ -134,7 +133,7 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             videos,
             hours,
             revisits,
-            studies, 
+            studies,
             observations
         }).then(res => {
             toast.success('Relatório enviado com sucesso!')

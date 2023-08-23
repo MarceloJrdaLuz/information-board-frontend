@@ -22,7 +22,7 @@ export interface IUpdatePublisher {
 
 type SubmitHandler = (data: FormValues) => void
 
-type CombinedValues = FieldValues & FormValues;
+type CombinedValues = FieldValues & FormValues
 
 
 
@@ -39,10 +39,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     useEffect(() => {
         if (data) {
-            setPublisherToUpdate(data);
-            setGenderCheckboxSelected(data.gender || ''); // Set the gender checkbox
-            setPrivilegesCheckboxSelected(data.privileges || []); // Set the privileges checkboxes
-            setHopeCheckboxSelected(data.hope || ''); // Set the hope checkbox
+            setPublisherToUpdate(data)
+            setGenderCheckboxSelected(data.gender || '') // Set the gender checkbox
+            setPrivilegesCheckboxSelected(data.privileges || []) // Set the privileges checkboxes
+            setHopeCheckboxSelected(data.hope || '') // Set the hope checkbox
         }
     }, [data])
 
@@ -57,7 +57,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const handleCheckboxPrivileges = (selectedItems: string[]) => {
         setPrivilegesCheckboxSelected(selectedItems)
-    };
+    }
 
     const optionsCheckboxGender = useState<string[]>([
         'Masculino',
@@ -92,7 +92,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             reset({
                 fullName: publisherToUpdate.fullName || '', // Set default values
                 nickname: publisherToUpdate.nickname || '', // Set default values
-            });
+            })
         }
     }, [publisherToUpdate, reset])
 
@@ -110,10 +110,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             {
                 pending: 'Atualizando publicador',
             }
-        );
-        reset();
-        Router.push('/publicadores');
-    };
+        )
+        reset()
+        Router.push('/publicadores')
+    }
 
 
     function onError(error: any) {

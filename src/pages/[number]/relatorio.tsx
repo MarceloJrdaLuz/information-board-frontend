@@ -1,12 +1,7 @@
-import { IconeSeta } from "@/assets/icons";
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import RelatorioForm from "@/Components/RelatorioForm";
-import { api } from "@/services/api";
-import Link from "next/link";
-import { useState } from "react";
-
+import HeadComponent from "@/Components/HeadComponent"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import RelatorioForm from "@/Components/RelatorioForm"
+import { api } from "@/services/api"
 
 export interface CongregationTypes {
     id: string

@@ -1,17 +1,17 @@
-import FormStyle from "../FormStyle";
+import FormStyle from "../FormStyle"
 import * as yup from 'yup'
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext, useEffect, useState } from "react";
-import Input from "../Input";
-import InputError from "../InputError";
-import Button from "../Button";
-import {  PermissionAndRolesContext } from "@/context/PermissionAndRolesContext";
-import { PermissionType } from "@/entities/types";
-import { api } from "@/services/api";
-import Dropdown from "../Dropdown";
-import { IconDelete } from "@/assets/icons";
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useContext, useEffect, useState } from "react"
+import Input from "../Input"
+import InputError from "../InputError"
+import Button from "../Button"
+import {  PermissionAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { PermissionType } from "@/entities/types"
+import { api } from "@/services/api"
+import Dropdown from "../Dropdown"
+import { IconDelete } from "@/assets/icons"
 
 export default function FormAddRole() {
 

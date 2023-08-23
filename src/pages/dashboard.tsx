@@ -1,10 +1,10 @@
-import { AuthContext } from "@/context/AuthContext";
-import { GetServerSideProps } from "next";
-import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthContext"
+import { GetServerSideProps } from "next"
+import { useContext, useState } from "react"
 import { parseCookies } from 'nookies'
-import { getAPIClient } from "@/services/axios";
-import Layout from "@/Components/Layout";
-import ContentDashboard from "@/Components/ContentDashboard";
+import { getAPIClient } from "@/services/axios"
+import Layout from "@/Components/Layout"
+import ContentDashboard from "@/Components/ContentDashboard"
 
 export default function Dashboard() {
     const { user: getUser } = useContext(AuthContext)

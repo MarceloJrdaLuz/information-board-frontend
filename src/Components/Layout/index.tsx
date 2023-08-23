@@ -1,20 +1,20 @@
-import Router, { useRouter } from "next/router";
-import { NavBar } from "../NavBar";
-import { LayoutProps } from "./types";
-import { useContext, useEffect, useState } from "react";
+import Router, { useRouter } from "next/router"
+import { NavBar } from "../NavBar"
+import { LayoutProps } from "./types"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
-import { HomeIcon, Users2Icon, ScrollTextIcon, UsersIcon, Key, ScreenShareIcon, SquareStackIcon, School2, User2Icon, CalendarIcon, CalendarDaysIcon, CalculatorIcon } from 'lucide-react'
-import { PregacaoIcon } from "@/assets/icons";
-import SvgIcon from "../SvgIcon";
-import SalonIcon from "../Icons/SalonIcon";
-import PregationIcon from "../Icons/PreachingIcon";
-import PreachingIcon from "../Icons/PreachingIcon";
-import PrechingHomeIcon from "../Icons/PreachingHomeIcon";
-import PublicPreachingIcon from "../Icons/PublicPreaching";
-import MeetingIcon from "../Icons/MeetingIcon";
-import ReportIcon from "../Icons/ReportIcon";
-import CleanIcon from "../Icons/CleanIcon";
-import SecurityIcon from "../Icons/SecurityIcon";
+import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon } from 'lucide-react'
+import SalonIcon from "../Icons/SalonIcon"
+import PreachingIcon from "../Icons/PreachingIcon"
+import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
+import PublicPreachingIcon from "../Icons/PublicPreachingIcon"
+import MeetingIcon from "../Icons/MeetingIcon"
+import ReportIcon from "../Icons/ReportIcon"
+import CleanIcon from "../Icons/CleanIcon"
+import SecurityIcon from "../Icons/SecurityIcon"
+import PublisherIcon from "../Icons/PublisherIcon"
+import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
+import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -27,8 +27,8 @@ export default function Layout(props: LayoutProps) {
 
     useEffect(() => {
         const path = router.pathname
-        const parts = path.split('/'); // Dividir a string usando a barra como separador
-        const middlePart = parts[1]; // Obter o elemento do meio (índice 1)   
+        const parts = path.split('/') // Dividir a string usando a barra como separador
+        const middlePart = parts[1] // Obter o elemento do meio (índice 1)   
         setShowSubMenu(prevState => [...prevState, middlePart])
     }, [router.pathname])
 
@@ -42,7 +42,6 @@ export default function Layout(props: LayoutProps) {
 
     return (
         <main className={`flex w-screen h-screen max-h-full`}>
-
             <NavBar.Root>
                 <NavBar.Logo />
                 <NavBar.Options
@@ -101,7 +100,7 @@ export default function Layout(props: LayoutProps) {
                     <NavBar.Options
                         title="Publicadores"
                         onClick={() => Router.push('/publicadores')}
-                        icon={Users2Icon}
+                        icon={PublisherIcon}
                         active={props.pageActive === 'publicadores'}
                     />
                 }
@@ -149,9 +148,9 @@ export default function Layout(props: LayoutProps) {
                         showList={showSubMenu.includes('reunioes')}
                         onClick={() => {
                             if (showSubMenu.includes('reunioes')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'reunioes'));
+                                setShowSubMenu(prevState => prevState.filter(item => item !== 'reunioes'))
                             } else {
-                                setShowSubMenu(prevState => [...prevState, 'reunioes']);
+                                setShowSubMenu(prevState => [...prevState, 'reunioes'])
                             }
                         }}
                         title="Reuniões" 
@@ -160,14 +159,14 @@ export default function Layout(props: LayoutProps) {
                         <NavBar.Options
                             title="Meio de semana"
                             onClick={() => Router.push(`/reunioes/meiodesemana`)}
-                            icon={MeetingIcon}
+                            icon={LifeAndMinistry}
                             active={props.pageActive === 'meiodesemana'}
                         />
 
                         <NavBar.Options
                             title="Fim de semana"
                             onClick={() => Router.push(`/reunioes/fimdesemana`)}
-                            icon={MeetingIcon}
+                            icon={PublicMeetingIcon}
                             active={props.pageActive === 'fimdesemana'}
                         />
                     </NavBar.ListOptions>
@@ -179,9 +178,9 @@ export default function Layout(props: LayoutProps) {
                         showList={showSubMenu.includes('pregacao')}
                         onClick={() => {
                             if (showSubMenu.includes('pregacao')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'pregacao'));
+                                setShowSubMenu(prevState => prevState.filter(item => item !== 'pregacao'))
                             } else {
-                                setShowSubMenu(prevState => [...prevState, 'pregacao']);
+                                setShowSubMenu(prevState => [...prevState, 'pregacao'])
                             }
                         }}
                         title="Pregação"

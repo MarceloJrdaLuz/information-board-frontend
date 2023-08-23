@@ -1,14 +1,14 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import FileList from "@/Components/FileList";
-import Layout from "@/Components/Layout";
-import Upload from "@/Components/Upload";
-import { DocumentsContext } from "@/context/DocumentsContext";
-import { Categories, ICategory } from "@/entities/types";
-import { useFetch } from "@/hooks/useFetch";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { useContext, useEffect, useState } from "react";
+import ContentDashboard from "@/Components/ContentDashboard"
+import FileList from "@/Components/FileList"
+import Layout from "@/Components/Layout"
+import Upload from "@/Components/Upload"
+import { DocumentsContext } from "@/context/DocumentsContext"
+import { Categories, ICategory } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
+import { useContext, useEffect, useState } from "react"
 
 export default function Limpeza() {
 
@@ -17,7 +17,7 @@ export default function Limpeza() {
     const { data: categories } = useFetch<ICategory[]>('/category')
 
     useEffect(() => {
-        const categoryFilter = categories?.filter(category => category.name === Categories.meioDeSemana)
+        const categoryFilter = categories?.filter(category => category.name === Categories.limpeza)
         if (categoryFilter) {
             setCategory(categoryFilter[0])
         }

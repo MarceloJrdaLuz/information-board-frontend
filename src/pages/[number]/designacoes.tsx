@@ -1,10 +1,10 @@
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import DateConverter, { tresMesesProgramacao } from "@/functions/meses";
-import usePdfShow from "@/hooks/usePdfShow";
-import { api } from "@/services/api";
-import { useState } from "react";
+import ButtonHome from "@/Components/ButtonHome"
+import HeadComponent from "@/Components/HeadComponent"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import DateConverter, { tresMesesProgramacao } from "@/functions/meses"
+import usePdfShow from "@/hooks/usePdfShow"
+import { api } from "@/services/api"
+import { useState } from "react"
 
 
 export interface CongregationTypes {

@@ -1,16 +1,16 @@
-import FormStyle from "../FormStyle";
+import FormStyle from "../FormStyle"
 import * as yup from 'yup'
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { yupResolver } from "@hookform/resolvers/yup";
-import Dropdown from "../Dropdown";
-import { useContext, useEffect, useState } from "react";
-import { api } from "@/services/api";
-import Input from "../Input";
-import InputError from "../InputError";
-import { ICongregation } from "@/entities/types";
-import Button from "../Button";
-import { CongregationContext } from "@/context/CongregationContext";
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { yupResolver } from "@hookform/resolvers/yup"
+import Dropdown from "../Dropdown"
+import { useContext, useEffect, useState } from "react"
+import { api } from "@/services/api"
+import Input from "../Input"
+import InputError from "../InputError"
+import { ICongregation } from "@/entities/types"
+import Button from "../Button"
+import { CongregationContext } from "@/context/CongregationContext"
 
 export default function FormAddDomain() {
 

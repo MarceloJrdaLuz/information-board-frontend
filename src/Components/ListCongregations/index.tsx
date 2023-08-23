@@ -1,12 +1,11 @@
-import { iconeAdd } from "@/assets/icons";
-import { CongregationContext } from "@/context/CongregationContext";
-import { ICongregation } from "@/entities/types";
-import { api } from "@/services/api";
-import { useContext, useEffect, useState } from "react";
-import CardCongregation from "../CardCongregation";
-import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard";
-import FormAddCongregation from "../FormAddCongregation";
-import { PlusIcon } from "lucide-react";
+import { CongregationContext } from "@/context/CongregationContext"
+import { ICongregation } from "@/entities/types"
+import { api } from "@/services/api"
+import { useContext, useEffect, useState } from "react"
+import CardCongregation from "../CardCongregation"
+import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
+import FormAddCongregation from "../FormAddCongregation"
+import { PlusIcon } from "lucide-react"
 
 
 export default function ListCongregations() {

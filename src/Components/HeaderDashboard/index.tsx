@@ -1,10 +1,7 @@
-import { AuthContext } from "@/context/AuthContext";
-import { useContext } from "react";
-import Avatar from "../Avatar";
-import { HeaderDashbordTypes } from "./types";
-import Dropdown from "../Dropdown";
-import { IconAddCongregation, IconCongregation } from "@/assets/icons";
-import AvatarCongregation from "../AvatarCongregation";
+import { AuthContext } from "@/context/AuthContext"
+import { useContext } from "react"
+import Avatar from "../Avatar"
+import AvatarCongregation from "../AvatarCongregation"
 
 
 export default function HeaderDashboard() {

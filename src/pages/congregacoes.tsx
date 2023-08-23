@@ -1,13 +1,13 @@
-import ContentDashboard from "@/Components/ContentDashboard";
-import Layout from "@/Components/Layout";
-import ListCongregations from "@/Components/ListCongregations";
-import { AuthContext } from "@/context/AuthContext";
-import { ICongregation } from "@/entities/types";
-import { api } from "@/services/api";
-import { getAPIClient } from "@/services/axios";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { useContext, useEffect, useState } from "react";
+import ContentDashboard from "@/Components/ContentDashboard"
+import Layout from "@/Components/Layout"
+import ListCongregations from "@/Components/ListCongregations"
+import { AuthContext } from "@/context/AuthContext"
+import { ICongregation } from "@/entities/types"
+import { api } from "@/services/api"
+import { getAPIClient } from "@/services/axios"
+import { GetServerSideProps } from "next"
+import { parseCookies } from "nookies"
+import { useContext, useEffect, useState } from "react"
 
 export default function Congregacoes() {
     const { user: getUser, roleContains } = useContext(AuthContext)

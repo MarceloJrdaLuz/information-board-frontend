@@ -18,6 +18,6 @@ export function getAPIClient(ctx?: any) {
         api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
     }
 
-    return api;
+    return api
 }
 
