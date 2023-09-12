@@ -16,11 +16,11 @@ interface ModalRelatorioProps {
 export default function ModalRelatorio(props: ModalRelatorioProps) {
 
     return (
-        <li className="flex flex-col w-80  border border-1 border-gray-700 m-2 p-2">
+        <li className="flex flex-col w-80 bg-white border border-1 border-gray-700 m-2 p-2">
             <span className="py-1 font-semibold w-full text-center">Relatório de Serviço de campo</span>
             <div className="flex ">
                 <span className="font-semibold px-3 ">Nome:</span>
-                <span className="border-b-2 border-dashed border-black w-full mr-3">{`${reduzirNome(props.publisher.fullName)} ${props.publisher.nickname ? `(${props.publisher.nickname})` : ""}`}</span>
+                <span className="overflow-hidden whitespace-nowrap text-ellipsis border-b-2 border-dashed border-black w-full mr-3">{`${reduzirNome(props.publisher.fullName)} ${props.publisher.nickname ? `(${props.publisher.nickname})` : ""}`}</span>
             </div>
             <div className="flex ">
                 <span className="font-semibold px-3">Mês:</span>

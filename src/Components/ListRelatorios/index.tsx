@@ -97,24 +97,24 @@ export default function ListRelatorios(props: ListRelatoriosProps) {
             <div className="flex justify-evenly items-baseline">
                 {!modalRelatoriosShow ? (
                     <>
-                        <ul className="flex flex-wrap justify-start w-5/12 items-center p-5">
-                            <span className="w-full py-5 text-xl text-fontColor-100">Ano de serviço atual</span>
+                        <ul className="flex flex-wrap justify-start w-6/12 items-center p-5">
+                            <span className="w-full py-5 font-semibold whitespace-nowrap text-xs lg:text-lg text-fontColor-100">Ano de serviço atual</span>
                             {anoServicoAtual?.map(mes =>
                                 <li onClick={() => {
                                     setExibirMes(mes)
                                     setModalRelatoriosShow(true)
-                                }} key={mes} className={`flex justify-between items-center w-full bg-white hover:bg-sky-100 cursor-pointer m-1 h-14 p-5 text-primary-200 font-semibold`}>
+                                }} key={mes} className={`flex justify-between items-center w-full bg-white hover:bg-sky-100 cursor-pointer m-1 h-14 p-5 text-primary-200 font-semibold whitespace-nowrap text-sm sm:text-base`}>
                                     {mes}
                                 </li>)
                             }
                         </ul>
-                        <ul className="flex flex-wrap justify-start w-5/12 items-center p-5">
-                            <span className="w-full py-5 text-xl text-fontColor-100">Ano de serviço anterior</span>
+                        <ul className="flex flex-wrap justify-start w-6/12 items-center p-5">
+                            <span className="w-full py-5 font-semibold text-xs whitespace-nowrap lg:text-lg text-fontColor-100">Ano de serviço anterior</span>
                             {anoServicoAnterior?.map(mes =>
                                 <li onClick={() => {
                                     setExibirMes(mes)
                                     setModalRelatoriosShow(true)
-                                }} key={mes} className={`flex justify-between items-center w-full bg-white hover:bg-sky-100 cursor-pointer m-1 h-14 p-5 text-primary-200 font-semibold`}>
+                                }} key={mes} className={`flex justify-between items-center w-full bg-white hover:bg-sky-100 cursor-pointer m-1 h-14 p-5 text-primary-200 font-semibold whitespace-nowrap text-sm sm:text-base`}>
                                     {mes}
                                 </li>)}
                         </ul>

@@ -1,6 +1,7 @@
 import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
 import { DocumentsProvider } from '@/context/DocumentsContext'
+import { NoticeProvider } from '@/context/NoticeContext'
 import { PermissionAndRolesProvider } from '@/context/PermissionAndRolesContext'
 import { PublicDocumentsProvider } from '@/context/PublicDocumentsContext'
 import { PublisherProvider } from '@/context/PublisherContext'
@@ -16,10 +17,12 @@ export default function App({ Component, pageProps }: AppProps) {
         <DocumentsProvider>
           <PublisherProvider>
             <PermissionAndRolesProvider>
-              <ToastContainer />
-              <PublicDocumentsProvider>
-                <Component {...pageProps} />
-              </PublicDocumentsProvider>
+              <NoticeProvider>
+                <ToastContainer />
+                <PublicDocumentsProvider>
+                  <Component {...pageProps} />
+                </PublicDocumentsProvider>
+              </NoticeProvider>
             </PermissionAndRolesProvider>
           </PublisherProvider>
         </DocumentsProvider>

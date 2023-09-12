@@ -29,7 +29,7 @@ export default function FormLogin() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
-   function onSubmit(data: FormValues) {
+    function onSubmit(data: FormValues) {
         toast.promise(login(data.email, data.password), {
             pending: 'Autenticando...',
         })
@@ -42,8 +42,8 @@ export default function FormLogin() {
     return (
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Login</div>
+                <div className={`w-full lg:w-11/12 h-fit flex-col justify-center items-center`}>
+                    <div className={`my-6 m-auto w-full  font-semibold text-2xl sm:text-3xl text-primary-200`}>Login</div>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
                             { required: "Campo obrigatório" })
@@ -54,12 +54,12 @@ export default function FormLogin() {
                     {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
                     <div>
                         <div>
-                            <Link href={'/forgot-password'} className='text-principais-primary hover:underline text-center text-sm sm:text-lg'>
+                            <Link href={'/forgot-password'} className='text-fontColor-100 hover:underline text-center text-sm sm:text-lg'>
                                 Esqueci minha senha
                             </Link>
                         </div>
                         <div>
-                            <Link href={'/cadastro'} className='text-principais-primary hover:underline text-center text-sm sm:text-lg'>
+                            <Link href={'/cadastro'} className='text-fontColor-100 hover:underline text-center text-sm sm:text-lg'>
                                 Criar nova conta
                             </Link>
                         </div>

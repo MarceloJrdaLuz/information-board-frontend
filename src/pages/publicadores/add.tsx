@@ -11,7 +11,7 @@ export default function AddPublicadores() {
         <Layout pageActive="publicadores">
             <ContentDashboard>
                 <section className="flex justify-center">
-                    <FormAddPublisher />
+                    <FormAddPublisher/>
                 </section>
             </ContentDashboard>
         </Layout>

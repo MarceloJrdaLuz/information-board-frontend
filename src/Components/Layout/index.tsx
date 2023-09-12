@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
-import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon } from 'lucide-react'
+import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon, MegaphoneIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -15,6 +15,8 @@ import SecurityIcon from "../Icons/SecurityIcon"
 import PublisherIcon from "../Icons/PublisherIcon"
 import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
+import { useAtom } from "jotai"
+import { toogleMenu } from "@/atoms/atom"
 
 export default function Layout(props: LayoutProps) {
 
@@ -24,6 +26,7 @@ export default function Layout(props: LayoutProps) {
     const [isHovering, setIsHovering] = useState(props.pageActive)
     const [user, setUser] = useState(getUser)
     const [showSubMenu, setShowSubMenu] = useState<string[]>([])
+    const [isMenuOpen, setIsMenuOpen] = useAtom(toogleMenu)
 
     useEffect(() => {
         const path = router.pathname
@@ -41,12 +44,15 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-        <main className={`flex w-screen h-screen max-h-full`}>
+        <main className={`flex w-screen h-screen max-h-full overflow-auto`}>
             <NavBar.Root>
                 <NavBar.Logo />
                 <NavBar.Options
                     title="Início"
-                    onClick={() => Router.push('/dashboard')}
+                    onClick={() => {
+                        setIsMenuOpen(!isMenuOpen)
+                        Router.push('/dashboard')
+                    }}
                     icon={HomeIcon}
                     active={props.pageActive === 'dashboard'}
                 />
@@ -54,7 +60,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdmin &&
                     <NavBar.Options
                         title="Usuários"
-                        onClick={() => Router.push('/usuarios')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/usuarios')
+                        }}
                         icon={UsersIcon}
                         active={props.pageActive === 'usuarios'}
                     />
@@ -63,7 +72,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdmin &&
                     <NavBar.Options
                         title="Permissões"
-                        onClick={() => Router.push('/permissoes')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/permissoes')
+                        }}
                         icon={SecurityIcon}
                         active={props.pageActive === 'permissoes'}
                     />
@@ -72,7 +84,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdmin &&
                     <NavBar.Options
                         title="Domínio"
-                        onClick={() => Router.push('/add-domain')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/add-domain')
+                        }}
                         icon={ScreenShareIcon}
                         active={props.pageActive === 'add-domain'}
                     />
@@ -81,7 +96,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdmin &&
                     <NavBar.Options
                         title="Categorias"
-                        onClick={() => Router.push('/categorias')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/categorias')
+                        }}
                         icon={SquareStackIcon}
                         active={props.pageActive === 'categorias'}
                     />
@@ -90,7 +108,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdmin &&
                     <NavBar.Options
                         title="Congregações"
-                        onClick={() => Router.push('/congregacoes')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/congregacoes')
+                        }}
                         icon={SalonIcon}
                         active={props.pageActive === 'congregacoes'}
                     />
@@ -99,7 +120,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Publicadores"
-                        onClick={() => Router.push('/publicadores')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/publicadores')
+                        }}
                         icon={PublisherIcon}
                         active={props.pageActive === 'publicadores'}
                     />
@@ -108,16 +132,34 @@ export default function Layout(props: LayoutProps) {
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Relatórios"
-                        onClick={() => Router.push(`/relatorios/${user?.congregation.id}`)}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push(`/relatorios/${user?.congregation.id}`)
+                        }}
                         icon={ReportIcon}
                         active={props.pageActive === 'relatorios'}
+                    />
+                }
+                
+                {isAdminCongregation &&
+                    <NavBar.Options
+                        title="Anúncios"
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/anuncios')
+                        }}
+                        icon={MegaphoneIcon}
+                        active={props.pageActive === 'anuncios'}
                     />
                 }
 
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Limpeza"
-                        onClick={() => Router.push('/limpeza')}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/limpeza')
+                        }}
                         icon={CleanIcon}
                         active={props.pageActive === 'limpeza'}
                     />
@@ -127,7 +169,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Contas"
-                        onClick={() => Router.push(`/contas`)}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/contas')
+                        }}
                         icon={CalculatorIcon}
                         active={props.pageActive === 'contas'}
                     />
@@ -136,7 +181,10 @@ export default function Layout(props: LayoutProps) {
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Eventos especiais"
-                        onClick={() => Router.push(`/eventosespeciais`)}
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/eventosespeciais')
+                        }}
                         icon={CalendarDaysIcon}
                         active={props.pageActive === 'eventosespeciais'}
                     />
@@ -158,14 +206,20 @@ export default function Layout(props: LayoutProps) {
                     >
                         <NavBar.Options
                             title="Meio de semana"
-                            onClick={() => Router.push(`/reunioes/meiodesemana`)}
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/reunioes/meiodesemana`)
+                            }}
                             icon={LifeAndMinistry}
                             active={props.pageActive === 'meiodesemana'}
                         />
 
                         <NavBar.Options
                             title="Fim de semana"
-                            onClick={() => Router.push(`/reunioes/fimdesemana`)}
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/reunioes/fimdesemana`)
+                            }}
                             icon={PublicMeetingIcon}
                             active={props.pageActive === 'fimdesemana'}
                         />
@@ -188,14 +242,20 @@ export default function Layout(props: LayoutProps) {
                     >
                         <NavBar.Options
                             title="Saídas de campo"
-                            onClick={() => Router.push(`/pregacao/saidasdecampo`)}
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/pregacao/saidasdecampo`)
+                            }}
                             icon={PrechingHomeIcon}
                             active={props.pageActive === 'saidasdecampo'}
                         />
 
                         <NavBar.Options
                             title="Testemunho público"
-                            onClick={() => Router.push(`/pregacao/testemunhopublico`)}
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/pregacao/testemunhopublico`)
+                            }}
                             icon={PublicPreachingIcon}
                             active={props.pageActive === 'testemunhopublico'}
                         />

@@ -1,6 +1,8 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react"
+import React, { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
+import { getCookie } from "cookies-next"
+import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -39,7 +41,7 @@ type PublisherContextTypes = {
         studies: number,
         observations: string
     ) => Promise<any>
-
+    createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => void
 }
 
 type PublisherContextProviderProps = {
@@ -135,19 +137,63 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             revisits,
             studies,
             observations
-        }).then(res => {
+        },).then(res => {
             toast.success('Relatório enviado com sucesso!')
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
             toast.error('Ocorreu um erro no servidor!')
         })
+
+    }
+
+    async function createConsentRecord(publisher: IPublisherConsent, deviceId?: string) {
+
+        console.log(deviceId)
+       
+        await api.post<ConsentRecordTypes>('/consentRecord', {
+            publisher: {
+                fullName: publisher.fullName,
+                nickname: publisher.nickname,
+                congregation_id: publisher.congregation_id,
+            },
+            deviceId
+        }).then(suc => {
+            const { data: { deviceId, publisher, consentDate } } = suc
+            const storage = localStorage.getItem('publisher')
+
+            let jsonSave = []
+
+            if (storage) {
+                const parse = JSON.parse(storage)
+
+                jsonSave = [
+                    ...parse,
+                    {
+                        ...publisher,
+                        deviceId,
+                        consentDate
+                    }
+                ]
+            } else {
+                jsonSave = [{
+                    ...publisher,
+                    deviceId,
+                    consentDate
+                }]
+            }
+
+            localStorage.setItem('publisher', JSON.stringify(jsonSave))
+            localStorage.setItem('deviceId', deviceId)
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
 
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord
         }}>
             {props.children}
         </PublisherContext.Provider>

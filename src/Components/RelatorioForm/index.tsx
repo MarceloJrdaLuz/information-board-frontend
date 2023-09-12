@@ -11,11 +11,13 @@ import { useForm } from 'react-hook-form'
 import { meses } from "@/functions/meses"
 import Button from "../Button"
 import { useFetch } from "@/hooks/useFetch"
-import {  IPublisherList } from "@/entities/types"
+import { IPublisherList } from "@/entities/types"
 import DropdownSearch from "../DropdownSearch"
 import { PublisherContext } from "@/context/PublisherContext"
 import CheckboxBoolean from "../CheckboxBoolean"
 import { ArrowLeftIcon } from "lucide-react"
+import { api } from "@/services/api"
+import ConsentMessage from "../ConsentMessage"
 
 interface IRelatorioFormProps {
     congregationNumber: string
@@ -23,14 +25,17 @@ interface IRelatorioFormProps {
 
 export default function RelatorioForm(props: IRelatorioFormProps) {
     const { data } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
-    const { createReport } = useContext(PublisherContext)
+    const { createReport, createConsentRecord } = useContext(PublisherContext)
 
     const [month, setMonth] = useState('')
     const [year, setYear] = useState('')
     const [optionsDrop, setOptionsDrop] = useState<IPublisherList[]>([])
-    const [publisherSelected, setPublisherSelected] = useState('')
     const [publisherToSend, setPublisherToSend] = useState<IPublisherList>()
     const [underAnHour, setUnderAnHour] = useState(false)
+    const [consentAcceptedShow, setConsentAcceptedShow] = useState(false)
+    const [consentRecords, setConsentRecords] = useState<IPublisherList[]>()
+    const [submittedData, setSubmittedData] = useState<FormValues>()
+    const [deviceId, setDeviceId] = useState<string | undefined>()
 
     useEffect(() => {
         if (data) {
@@ -39,15 +44,22 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
     }, [data])
 
     useEffect(() => {
+        const publisher = localStorage.getItem('publisher')
+
+        if (publisher) {
+            const parse: IPublisherList[] = JSON.parse(publisher)
+            setConsentRecords(parse)
+            setDeviceId(parse[0].deviceId)
+        }
+    }, [])
+
+    useEffect(() => {
         setMonth(meses[new Date().getMonth()])
         setYear(new Date().getFullYear().toString())
     }, [])
 
     const handleClick = (option: IPublisherList) => {
         setPublisherToSend(option)
-        setPublisherSelected(
-            `${option.nickname ? `${option.fullName} (${option.nickname})` : `${option.fullName}`}`
-        )
     }
 
     const esquemaValidacao = yup.object({
@@ -60,7 +72,7 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
         observations: yup.string()
     })
 
-    const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors } = useForm({
+    const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors, resetField } = useForm({
         defaultValues: {
             month: '',
             publications: '',
@@ -77,7 +89,23 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
         setValue('month', month)
     }, [month, setValue])
 
-    function onSubmit(data: FormValues) {
+    const handleConsentRecordsCreate = async () => {
+        setConsentAcceptedShow(false)
+        if (publisherToSend) {
+            const publisherConsent = {
+                fullName: publisherToSend.fullName,
+                nickname: publisherToSend.nickname,
+                congregation_id: publisherToSend.congregation_id
+            }
+            createConsentRecord(publisherConsent, deviceId)
+        }
+
+        if (submittedData) {
+            sendSubmit(submittedData)
+        }
+    }
+
+    function sendSubmit(data: FormValues) {
         if (publisherToSend !== undefined) {
             if (data.hours !== null && data.hours <= 0 && !underAnHour) {
                 setError('hours', {
@@ -105,8 +133,44 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
                     }
                 )
             }
+            resetField('publications')
+            resetField('videos')
+            resetField('hours')
+            resetField('revisits')
+            resetField('studies')
+            resetField('observations')
         } else {
             toast.error('Publicador não selecionado!')
+        }
+    }
+
+    async function onSubmit(data: FormValues) {
+        setSubmittedData(data)
+
+        const filterPublisherConsent = consentRecords?.filter(consentRecord =>
+            consentRecord.fullName === publisherToSend?.fullName &&
+            consentRecord.congregation_id === publisherToSend?.congregation_id &&
+            consentRecord.nickname === publisherToSend?.nickname
+        )
+
+        if (filterPublisherConsent?.length) {
+            const response = await api.post('/checkConsentRecords', {
+                fullName: filterPublisherConsent[0].fullName,
+                nickname: filterPublisherConsent[0].nickname,
+                deviceId: filterPublisherConsent[0].deviceId,
+                consentDate: filterPublisherConsent[0].consentDate,
+            })
+
+            if (response.status === 200) {
+                sendSubmit(data)
+                return
+            } else {
+                setConsentAcceptedShow(true)
+            }
+        }
+        if (publisherToSend?.fullName) {
+
+            setConsentAcceptedShow(true)
         }
     }
 
@@ -115,11 +179,11 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
     }
 
     return (
-        <section className="flex justify-center sm:p-2">
+        <section className="flex justify-center ">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-auto flex-col justify-center items-center`}>
                     <div className="flex items-center mb-6">
-                        <div className="absolute w-10 h-10">
+                        <div className=" w-10 h-10">
                             <Link href={`/${props.congregationNumber}`} passHref>
                                 <div className=" rounded-full bg-primary-200 p-2 hover:border hover:border-teste-100">
                                     <ArrowLeftIcon color="white" />
@@ -223,6 +287,16 @@ export default function RelatorioForm(props: IRelatorioFormProps) {
                     </div>
                 </div>
             </FormStyle>
+            {consentAcceptedShow &&
+                <ConsentMessage
+                    text="Essa é a primeira vez que você manda seu relatório
+                    nesse dispositivo, é necessário aceitar o termo de consentimento!"
+                    name={publisherToSend?.fullName}
+                    onAccepted={handleConsentRecordsCreate}
+                    onDecline={() => setConsentAcceptedShow(false)}
+                    congregatioNumber={props.congregationNumber}
+                />
+            }
         </section>
     )
 }

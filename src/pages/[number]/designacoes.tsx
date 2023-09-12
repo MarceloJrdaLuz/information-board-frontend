@@ -1,110 +1,177 @@
 import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
+import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon"
+import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
-import DateConverter, { tresMesesProgramacao } from "@/functions/meses"
-import usePdfShow from "@/hooks/usePdfShow"
+import PdfViewer from "@/Components/PdfViewer"
+import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { Categories, CongregationTypes, IDocument } from "@/entities/types"
+import DateConverter, { meses } from "@/functions/meses"
+import { removeMimeType } from "@/functions/removeMimeType"
+import { threeMonths } from "@/functions/threeMonths"
 import { api } from "@/services/api"
-import { useState } from "react"
+import { GetServerSideProps } from "next"
+import { useRouter } from "next/router"
+import { useContext, useEffect, useState } from "react"
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { number } = context.query
 
-export interface CongregationTypes {
-    id: string
-    name: string
-    number: string
-    city: string
-    circuit: string
-    imageUrl: string
-}
-
-export async function getStaticPaths() {
-    const getCongregations = await api.get('/congregations')
-
-    const congregations: CongregationTypes[] = getCongregations.data
-
-    const paths = congregations.map(cong => ({
-        params: { number: cong.number }
-    }))
-
-    return {
-        paths, fallback: false
-    }
-}
-
-export async function getStaticProps({ params }: {params: {number: string}}) {
-
-    const getCongregation = await api.get(`/congregation/${params.number}`)
+    const getCongregation = await api.get(`/congregation/${number}`)
 
     const { data: congregationData } = getCongregation
+
     return {
         // Passed to the page component as props
         props: { ...congregationData },
     }
 }
 
-export default function Designacoes(props: CongregationTypes) {
-    
-    const { pdfShow, setPdfShow } = usePdfShow()  //aqui define se o pdf vai ser renderizado ou se vai ser o layout
+export default function Designacoes({circuit: congregationCircuit, name: congregationName, number: congregationNumber, hourMeetingLifeAndMinistary, hourMeetingPublic, dayMeetingLifeAndMinistary, dayMeetingPublic}: CongregationTypes) {
 
-    const [opcao, setOpcao] = useState('') // aqui define o caminho que ele vai acessar para chegar no pdf ou da reuniao do meio de semana ou do fim de semana
+    const router = useRouter()
+    const { number } = router.query
+    const { setCongregationNumber, documents, filterDocuments } = useContext(PublicDocumentsContext)
 
-    const [visivel, setVisivel] = useState(false) // mostrar ou nao mostrar opções dos meses da programação
+    const [pdfShow, setPdfShow] = useState(false)
+    const [publicOptionsShow, setPublicOptionsShow] = useState(false)
+    const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
+    const [pdfUrl, setPdfUrl] = useState('')
+    const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
+    const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
+    const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
+    const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
 
-    let tresMeses = false
 
-    if (new Date().getDate() <= 6 && new Date().getDay() <= 4) {
-        tresMeses = tresMesesProgramacao()
+    if (number) {
+        setCongregationNumber(number as string)
     }
 
-    function renderizarPdf(opcao: string) {
-        return (
-            <span>A</span>
-            // <GeradorPdf nomeArquivo={opcao} setPdfShow={setPdfShow} />
-        )
+    useEffect(() => {
+        if (documents) {
+            setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana))
+            setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana))
+        }
+    }, [documents, filterDocuments])
+
+    useEffect(() => {
+
+        const others = documentsLifeAndMinistryFilter?.filter(document => {
+            return (
+                !meses.includes(removeMimeType(document.fileName))
+            )
+        })
+
+        setDocumentsOthersFilter(others)
+
+        let threeMonthsShow = false
+
+        if (new Date().getDate() <= 6 && new Date().getDay() <= 4) {
+            threeMonthsShow = threeMonths()
+        }
+
+        if (!threeMonthsShow) {
+            const filterTwoMonths = documentsLifeAndMinistryFilter?.filter(document => {
+                return (
+                    removeMimeType(document.fileName) === DateConverter('mes') ||
+                    removeMimeType(document.fileName) === DateConverter('mes+1')
+                )
+            })
+            if (filterTwoMonths) setDocumentsLifeAndMinistryFilterMonths(filterTwoMonths)
+        } else {
+            const filterThreeMonths = documentsLifeAndMinistryFilter?.filter(document => {
+                return (
+                    removeMimeType(document.fileName) === DateConverter('mes-1') ||
+                    removeMimeType(document.fileName) === DateConverter('mes') ||
+                    removeMimeType(document.fileName) === DateConverter('mes+1')
+                )
+            })
+            if (filterThreeMonths) setDocumentsLifeAndMinistryFilterMonths(filterThreeMonths)
+        }
+    }, [documentsLifeAndMinistryFilter])
+
+    function handleButtonClick(url: string) {
+        setPdfUrl(url)
+        setPdfShow(true)
     }
 
+    let sortedDocumentsMonths: IDocument[] = [];
+    if (documentsLifeAndMinistryFilterMonths) {
+        sortedDocumentsMonths = [...documentsLifeAndMinistryFilterMonths].sort((a, b) => {
+            // Remova espaços em branco antes de comparar os nomes de arquivo.
+            const fileNameA = a.fileName.trim();
+            const fileNameB = b.fileName.trim();
 
-    function renderizarBotoes() {
-        return tresMeses ? (
-            <div className="flex justify-between w-full md:w-4/5 my-0 m-auto">
-                <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes-1')}`) }} texto={`${DateConverter('mes-1')}`} />
-
-                <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes')}`) }} texto={`${DateConverter('mes')}`} />
-
-                <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes+1')}`) }} texto={`${DateConverter('mes+1')}`} />
-            </div>
-        ) : (
-            <div className="flex justify-between w-full md:w-4/5 my-0 m-auto">
-                <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes')}`) }} texto={`${DateConverter('mes')}`} />
-
-                <ButtonHome onClick={() => { setPdfShow(true), setOpcao(`${DateConverter('mes+1')}`) }} texto={`${DateConverter('mes+1')}`} />
-            </div>
-        )
+            // Use a função localeCompare para comparar os nomes de arquivo.
+            return fileNameA.localeCompare(fileNameB);
+        });
     }
 
     return !pdfShow ? (
         <>
             <HeadComponent title="Designações" urlMiniatura="https://luisgomes.netlify.app/images/designacoes.png" />
-            <LayoutPrincipal congregationName={props.name} circuit={props.circuit} textoHeader="Designações Semanais" heightConteudo={'1/2'} header className='bg-designacoes bg-center bg-cover'>
-                <div>
+            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} textoHeader="Designações Semanais" heightConteudo={'1/2'} header className='bg-designacoes bg-center bg-cover'>
+                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
+                    <div>
+                        <ButtonHome
+                            onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
+                            texto='Vida e Ministério'
+                            className="hover:bg-primary-100"
+                            icon={<LifeAndMinistryIcon />}
+                        />
+                        <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                            {lifeAndMinistryOptionsShow ? documentsLifeAndMinistryFilterMonths?.map(document => (
+                                <div className="flex-1 " key={document.id}>
+                                    <ButtonHome onClick={() => { handleButtonClick(document.url) }}
+                                        texto={removeMimeType(document.fileName)}
+                                        className="opacity-90"
+                                    />
+                                </div>
+                            )) : null}
+                        </div>
+                        <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                            {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
+                                <div className="flex-1 min-w-[120px]" key={document.id}>
+                                    <ButtonHome
+                                        onClick={() => { handleButtonClick(document.url) }}
+                                        texto={removeMimeType(document.fileName)}
+                                        className="opacity-90" />
+                                </div>
+                            ))}
+                        </div>
+                        {!lifeAndMinistryOptionsShow ? <p className="font-bold  text-xl text-fontColor-100">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary.split(":").slice(0, 2).join(":")}`}</p> : null}
+                    </div>
+                    <div>
+                        <ButtonHome
+                            onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
+                            texto='Reunião Pública'
+                            className="hover:bg-primary-100"
+                            icon={<PublicMeetingIcon />}
+                        />
+                        <div className="flex justify-between w-11/12 m-auto gap-1">
+                            {publicOptionsShow ? documentsPublicFilter?.map(document => (
+                                <div className="flex-1" key={document.id}>
+                                    <ButtonHome
+                                        onClick={() => { handleButtonClick(document.url) }}
+                                        texto={removeMimeType(document.fileName)}
+                                        className="opacity-90"
+                                    />
+                                </div>
+                            )) : null}
+                        </div>
+                        {!publicOptionsShow && <p className="font-bold text-xl text-fontColor-100">{`${dayMeetingPublic} ${hourMeetingPublic.split(":").slice(0, 2).join(":")}`}</p>}
+                    </div>
                     <ButtonHome
-                        onClick={() => setVisivel(true)}
-                        texto='Vida e Ministério'
+                        href={`/${congregationNumber}`}
+                        texto='Voltar'
+                        className="w-1/2 m-auto hover:bg-primary-100"
                     />
-                    {visivel ? renderizarBotoes() : null}
-                    {!visivel ? <p className="font-bold  text-xl">Quarta-feira às 19:00 hrs</p> : null}
                 </div>
-
-                <div>
-                    <ButtonHome
-                        onClick={() => { setOpcao('Publica'), setPdfShow(true) }}
-                        texto='Reunião Pública'
-                    />
-                    {<p className="font-bold text-xl">Sábado às 17:00 hrs</p>}
-                </div>
-                <ButtonHome href={`/${props.number}`} texto='Voltar' />
             </LayoutPrincipal>
         </>
     ) : (
-        renderizarPdf(opcao)
+        <>
+            <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+        </>
     )
 }

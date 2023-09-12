@@ -19,8 +19,8 @@ import Image from 'next/image'
 export default function FormUpdateCongregation() {
     const { updateCongregation } = useContext(CongregationContext)
     const { congregation: congregationUser } = useContext(CongregationContext)
-    const [meetingLifeAndMinistary, setMeetingLifeAndMinistary] = useState(congregationUser?.dayMeetingLifeAndMinistary)
-    const [meetingPublic, setMeetingPublic] = useState(congregationUser?.dayMeetingPublic)
+    const [dayMeetingLifeAndMinistary, setDayMeetingLifeAndMinistary] = useState(congregationUser?.dayMeetingLifeAndMinistary)
+    const [dayMeetingPublic, setDayMeetingPublic] = useState(congregationUser?.dayMeetingPublic)
 
     const { setUploadedFile, uploadedFile } = useContext(CongregationContext)
 
@@ -44,7 +44,7 @@ export default function FormUpdateCongregation() {
 
     function onSubmit(data: ICongregation) {
         const {
-            dayMeetingLifeAndMinistary, hourMeetingLifeAndMinistary, dayMeetingPublic,
+            dayMeetingLifeAndMinistary: dayMeetingLifeAndMinistaryUpdated, hourMeetingLifeAndMinistary, dayMeetingPublic: dayMeetingPublicUpdated,
             hourMeetingPublic, name, city, circuit
         } = data
 
@@ -53,10 +53,10 @@ export default function FormUpdateCongregation() {
             name,
             city,
             circuit,
-            dayMeetingLifeAndMinistary,
             hourMeetingLifeAndMinistary,
-            dayMeetingPublic,
-            hourMeetingPublic
+            hourMeetingPublic,
+            dayMeetingLifeAndMinistary: dayMeetingLifeAndMinistaryUpdated ?? dayMeetingLifeAndMinistary,
+            dayMeetingPublic: dayMeetingPublicUpdated ?? dayMeetingPublic,
         }
 
         toast.promise(updateCongregation(updateCongregationBody), {
@@ -70,11 +70,11 @@ export default function FormUpdateCongregation() {
     }
 
     function handleClickLifeAndMinistaryDropdown(option: string) {
-        setMeetingLifeAndMinistary(option)
+        setDayMeetingLifeAndMinistary(option)
     }
 
     function handleClickPublicDropdown(option: string) {
-        setMeetingPublic(option)
+        setDayMeetingPublic(option)
     }
 
     function onError(error: any) {
@@ -106,25 +106,25 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
-                    <Dropdown handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full />
+                    <Dropdown handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible/>
 
                     <div className='my-2'>
-                        {meetingLifeAndMinistary && <span className='flex justify-center items-center w-fit text-white p-4 rounded-xl bg-primary-100'>{meetingLifeAndMinistary}</span>}
+                        {dayMeetingLifeAndMinistary && <span className='flex justify-center items-center w-fit text-white p-4 rounded-xl bg-primary-100'>{dayMeetingLifeAndMinistary}</span>}
                     </div>
 
-                    <Input type="string" placeholder="Horário da reunião do meio de semana" registro={{
+                    <Input type="time" placeholder="Horário meio de semana" registro={{
                         ...register('hourMeetingLifeAndMinistary')
                     }}
                         invalid={errors?.hourMeetingLifeAndMinistary?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingLifeAndMinistary?.type && <InputError type={errors.hourMeetingLifeAndMinistary.type} field='hourMeetingLifeAndMinistary' />}
 
-                    <Dropdown handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full />
+                    <Dropdown handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible/>
 
                     <div className='my-2'>
-                        {meetingPublic && <span className='flex justify-center items-center w-fit text-white  p-4 rounded-xl bg-primary-100'>{meetingPublic}</span>}
+                        {dayMeetingPublic && <span className='flex justify-center items-center w-fit text-white  p-4 rounded-xl bg-primary-100'>{dayMeetingPublic}</span>}
                     </div>
 
-                    <Input type="string" placeholder="Horário da reunião do fim de semana" registro={{
+                    <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')
                     }}
                         invalid={errors?.hourMeetingPublic?.message ? 'invalido' : ''} />
@@ -155,8 +155,6 @@ export default function FormUpdateCongregation() {
                         id="image-congregation"
                         onChange={handleUpload}
                     />
-
-
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
                         <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Atualizar congregação' type='submit' />

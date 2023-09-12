@@ -42,7 +42,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
     const [congregation, setCongregation] = useState<ICongregation>()
 
     const { user } = useContext(AuthContext)
-    const number = user?.congregation.number
+    const number = user?.congregation?.number
 
     const fetchConfig = number ? `/congregation/${number}` : ""
     const { data, mutate } = useFetch<ICongregation>(fetchConfig)
@@ -93,11 +93,30 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
         await api.put(`/congregation/${congregation_id}`, body).then(suc => {
             mutate()
             toast.success('Congregação atualizada com sucesso!')
-            Router.push('/dashboard')
-        }).catch(err => {
+        }).catch(res => {
+            if(res.response.data.message === "Any changes found"){
+                return           
+            }
             toast.error("Houve algum problema ao atualizar a congregação!")
-            console.log(err)
+            console.log(res)
         })
+
+        const formData = new FormData()
+
+        if (uploadedFile) {
+
+            formData.set('image', uploadedFile)
+
+            await api.put(`/congregation/${congregation_id}/photo`, formData).then(suc => {
+                mutate()
+                toast.success('Foto da congregação atualizada com sucesso!')
+                setUploadedFile(null)
+                Router.push('/dashboard')
+            }).catch(err => {
+                toast.error("Houve algum problema ao atualizar a congregação!")
+                console.log(err)
+            })
+        }
     }
 
     async function addDomain(userCode: string, congregationNumber: string) {

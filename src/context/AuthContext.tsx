@@ -11,7 +11,7 @@ type AuthContextTypes = {
     login: (email: string, password: string) => Promise<any>
     roleContains: (role: string) => boolean | undefined
     logout: () => void
-    // // cadastro: (nome: string, email: string, senha: string)=> Promise<any>
+    signUp: (email: string, password: string) => Promise<any>,
     resetPassword: (email: string | undefined, token: string | undefined, newPassword: string) => Promise<any>
     forgotMyPassword: (email: string) => Promise<any>
     loading: boolean
@@ -48,7 +48,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
             api.post('/recover-user-information').then(res => {
                 setUser(res.data)
             })
-        }     
+        }
     }, [])
 
     async function login(email: string, password: string) {
@@ -95,32 +95,42 @@ export function AuthProvider(props: AuthContextProviderProps) {
         Router.push('/login')
     }
 
-    // async function cadastro(nome: string, email: string, senha: string){
-    //     await api.post<ResponseAuth>('auth/register', {
-    //         name: nome,
-    //         email,
-    //         password: senha,
-    //     }).then(res => {
-    //         const usuarioLogado = {
-    //             id: res.data.user._id,
-    //             email: res.data.user.email,
-    //             permissions: res.data.user.permissions,
-    //             token: res.data.token,
-    //         }
-    //         if(usuarioLogado.token){
-    //             toast.success('Cadastro efetuado com sucesso!')
-    //             setUser(usuarioLogado)
-    //             localStorage.setItem('user', JSON.stringify(usuarioLogado))
-    //             navigate('/dashboard')
-    //             setBtnDisabled(false)    
-    //         }
-    //     }).catch(res => {
-    //         if(res.response.data.error === 'User already exists'){
-    //             toast.error('Usuário já existe!')
-    //             setErroCadastro(true)
-    //         }
-    //     })
-    // }
+    async function signUp(email: string, password: string) {
+        await api.post<ResponseAuth>('user', {
+            email,
+            password
+        }).then(res => {
+            console.log(res.data)
+            const usuarioLogado = {
+                id: res.data.user.id,
+                email: res.data.user.email,
+                code: res.data.user.code,
+                congregation: res.data.user.congregation,
+                roles: res.data.user.roles,
+                token: res.data.token
+            }
+
+            if (usuarioLogado.token) {
+                toast.success('Cadastro efetuado com sucesso!')
+                const token = res.data.token
+
+                setCookie(undefined, 'quadro-token', token, {
+                    maxAge: 60 * 60 + 1, //1 hora
+                })
+
+                api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
+
+                setUser(usuarioLogado)
+
+                Router.push('/dashboard')
+            }
+        }).catch(res => {
+            if (res.response.data.message === 'E-mail already exists') {
+                Router.push('/login')
+                toast.error('E-mail já cadastrado! Caso não lembre da senha, clique em "Esqueci minha senha".')
+            }
+        })
+    }
 
     async function resetPassword(email: string | undefined, token: string | undefined, newPassword: string) {
         await api.post('/reset_password', {
@@ -134,8 +144,8 @@ export function AuthProvider(props: AuthContextProviderProps) {
             })
             .catch(res => {
 
-                const {response: {data: {message}}} = res
-                
+                const { response: { data: { message } } } = res
+
                 switch (message) {
                     case "User not found":
                         toast.error('Email de redefinição de senha não encontrado!')
@@ -174,7 +184,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, /*cadastro, */erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains
+            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains
         }}>
             {props.children}
         </AuthContext.Provider>

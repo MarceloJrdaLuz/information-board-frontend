@@ -4,13 +4,13 @@ import ListRelatorios from "@/Components/ListRelatorios"
 import { getAPIClient } from "@/services/axios"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
+import { parseCookies, setCookie } from "nookies"
+import { useEffect } from "react"
 
 export default function ListarRelatórios() {
 
     const router = useRouter()
     const { congregationId } = router.query
-
 
     return (
         <Layout pageActive="relatorios">

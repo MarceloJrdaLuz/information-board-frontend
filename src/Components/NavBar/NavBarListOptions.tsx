@@ -10,7 +10,7 @@ export default function NavBarListOptions({ children, title, icon, showList, onC
                 <span className="pr-3 flex justify-center items-center">
                     <NavBarOptionIcon icon={icon} />
                 </span>
-                <span className="text-sm">{title}</span>
+                <span className="text-xs lg:text-sm">{title}</span>
                 {showList && <span className="flex ml-auto"><ChevronDown /></span>}
             </div>
             {showList && (

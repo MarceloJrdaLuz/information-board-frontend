@@ -46,7 +46,6 @@ module.exports = withMT({
   variants: {
     fill: ['hover', 'focus'], // this line does the trick
   },
-  plugins: [require("daisyui")],
   colors: {
     button: {
       'hover': '#e62e00',

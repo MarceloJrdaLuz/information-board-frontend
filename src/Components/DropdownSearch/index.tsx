@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { IPublisherList } from '@/entities/types'
+import { iconeAddPessoa } from '@/assets/icons'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -19,19 +20,52 @@ export default function DropdownSearch(props: IDropdownSearch) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState(props.options)
   const [publisherSelected, setPublisherSelected] = useState('')
+  const [publisherRecover, setPublisherRecover] = useState<IPublisherList[]>()
+  const [addPublisher, setAddPublisher] = useState(false)
+
+  useEffect(()=> {
+    setFilteredOptions(props.options)
+  }, [addPublisher, props.options])
+
+  useEffect(() => {
+    const publisherData = localStorage.getItem('publisher')
+    
+    if (publisherData) {
+      const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
+      setFilteredOptions(parsedPublishers)
+      setPublisherRecover(parsedPublishers)
+    } else {
+      setFilteredOptions(props.options)
+    }
+  }, [props.options])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
     setSearchQuery(query)
 
-    const filtered = props.options.filter(option => {
-      const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-      const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
-      const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
-
-      return fullNameMatch || nicknameMatch || congregationIdMatch
-    })
-    setFilteredOptions(filtered)
+    if (localStorage.getItem('publisher') && !addPublisher) {
+      // Se houver dados no localStorage, filtrar com base neles
+      const publisherData = localStorage.getItem('publisher')
+      if (publisherData) {
+        const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
+        const filtered = parsedPublishers.filter(option => {
+          const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
+          const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
+          const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
+          return fullNameMatch || nicknameMatch || congregationIdMatch
+        })
+        setFilteredOptions(filtered)
+      }
+    } else {
+      // Caso contrário, filtrar com base no props.options
+      const filtered = props.options.filter(option => {
+        const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
+        const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
+        const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
+        return fullNameMatch || nicknameMatch || congregationIdMatch
+      })
+      setFilteredOptions(filtered)
+    }
   }
 
   return (
@@ -55,13 +89,13 @@ export default function DropdownSearch(props: IDropdownSearch) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute cursor-pointer left-0 z-10  w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto">
+        <Menu.Items className="absolute cursor-pointer left-0 z-10  w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto hide-scrollbar">
           <div className="py-1">
             <input
               type="text"
               value={searchQuery}
               onChange={handleInputChange}
-              className="block w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100"
+              className="block w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100 bg-gray-100 placeholder:text-gray-600"
               placeholder="Pesquisar..."
             />
             {filteredOptions.map((option, index) => (
@@ -74,7 +108,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
                         nickname: option.nickname,
                         congregation_id: option.congregation_id
                       }),
-                      setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
+                        setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
                     }}
                     className={classNames(
                       active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -87,7 +121,14 @@ export default function DropdownSearch(props: IDropdownSearch) {
               </Menu.Item>
             ))}
           </div>
+          {publisherRecover && (
+              <div className='flex justify-center items-center gap-2 p-1' onClick={() => {setAddPublisher(true)}}>
+                <span>{iconeAddPessoa("#178582")}</span>
+                <span>Adicionar mais um publicador</span>
+              </div>
+            )}
         </Menu.Items>
+        
       </Transition>
     </Menu>
   )

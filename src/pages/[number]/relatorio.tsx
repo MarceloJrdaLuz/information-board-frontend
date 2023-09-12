@@ -1,48 +1,29 @@
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import RelatorioForm from "@/Components/RelatorioForm"
+import { CongregationTypes } from "@/entities/types"
 import { api } from "@/services/api"
+import { GetServerSideProps } from 'next'
 
-export interface CongregationTypes {
-    id: string
-    name: string
-    number: string
-    city: string
-    circuit: string
-    imageUrl: string
-}
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { number } = context.query
 
-export async function getStaticPaths() {
-    const getCongregations = await api.get('/congregations')
-
-    const congregations: CongregationTypes[] = getCongregations.data
-
-    const paths = congregations.map(cong => ({
-        params: { number: cong.number }
-    }))
-
-    return {
-        paths, fallback: false
-    }
-}
-
-export async function getStaticProps({ params }: {params: {number: string}}) {
-
-    const getCongregation = await api.get(`/congregation/${params.number}`)
+    const getCongregation = await api.get(`/congregation/${number}`)
 
     const { data: congregationData } = getCongregation
+
     return {
         // Passed to the page component as props
         props: { ...congregationData },
     }
 }
 
-export default function Relatorio(props: CongregationTypes) {
+export default function Relatorio({circuit: congregationCircuit, name: congregationName, number: congregationNumber}: CongregationTypes) {
     return (
         <>
-            <HeadComponent title="Relatório" urlMiniatura="https://luisgomes.netlify.app/images/miniatura.png"/>
-            <LayoutPrincipal congregationName={props.name} circuit={props.circuit} bgFundo={'bg-teste-100'} heightConteudo="full">
-                <RelatorioForm congregationNumber={props.number}/>
+            <HeadComponent title="Relatório" urlMiniatura="https://luisgomes.netlify.app/images/miniatura.png" />
+            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} bgFundo={'bg-teste-100'} heightConteudo="full">
+                <RelatorioForm congregationNumber={congregationNumber} />
             </LayoutPrincipal>
         </>
     )

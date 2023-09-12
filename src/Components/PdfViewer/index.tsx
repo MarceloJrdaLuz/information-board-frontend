@@ -1,6 +1,5 @@
-'use-client'
 import { handleTouchSwipe } from '@/helpers/handleTouchSwipe';
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, Loader2Icon, Undo2Icon, XIcon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon,  Undo2Icon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Spiner from '../Spiner';
@@ -46,26 +45,23 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
         }
     };
 
-
-
-
     return (
 
-        <div className='flex flex-col justify-start items-center w-screen h-screen lg:p-5'>
-            <div>
+        <div className='flex flex-col justify-start items-center w-screen h-screen lg:p-5 overflow-auto bg-gray-900 '>
+            <div className='mb-4'>
                 {!isLoading && (
-                    <div className='flex justify-center items-center gap-4 m-4'>
-                        <Undo2Icon className='cursor-pointer' onClick={() => setPdfShow(false)}/>
-                        <ChevronLeftIcon className='cursor-pointer' onClick={() => { pageNumber > 1 ? setPageNumber(pageNumber - 1) : setPageNumber(lastPage!) }} />
+                    <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>
+                        <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)}/>
+                        <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={() => { pageNumber > 1 ? setPageNumber(pageNumber - 1) : setPageNumber(lastPage!) }} />
                         <span>
                             Página {pageNumber} / {numPages}
                         </span>
-                        <ChevronRightIcon className='cursor-pointer' onClick={() => { pageNumber < numPages! ? setPageNumber(pageNumber + 1) : setPageNumber(firstPage!) }} />
+                        <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={() => { pageNumber < numPages! ? setPageNumber(pageNumber + 1) : setPageNumber(firstPage!) }} />
                     </div>
                 )}
             </div>
             <div
-                className='w-full h-full lg:w-5/12'
+                className={`w-full h-full flex justify-center items-center lg:w-5/12 md:mt-12`}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
             >
@@ -81,7 +77,7 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
                         renderTextLayer={false}
                         renderAnnotationLayer={false}
                         scale={1.0}
-                    // width={window.innerWidth}
+                        height={600}
                     />
                 </Document>
             </div>

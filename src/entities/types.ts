@@ -95,6 +95,8 @@ export interface IPublisherList {
     fullName: string
     nickname: string
     congregation_id: string
+    consentDate?: string
+    deviceId?: string
 }
 
 export interface ICategory {
@@ -156,4 +158,39 @@ export enum Privileges {
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
     AUXILIARINDETERMINADO = 'Auxiliar Indeterminado'
+}
+
+export interface IPublisherConsent {
+    fullName: string,
+    nickname: string,
+    congregation_id: string
+}
+
+export interface ConsentRecordTypes  {
+    id: string
+    publisher: IPublisherConsent
+    deviceId: string
+    consentDate: string
+}
+
+export interface CongregationTypes {
+    id: string
+    name: string
+    number: string
+    city: string
+    circuit: string
+    imageUrl: string
+    dayMeetingLifeAndMinistary: string
+	hourMeetingLifeAndMinistary: string,
+	dayMeetingPublic: string
+	hourMeetingPublic: string
+}
+
+export interface INotice {
+    id: string
+    title: string
+    text: string
+    startDay?: number
+    endDay?: number
+    expired?: Date
 }

@@ -42,9 +42,9 @@ export default function PublisherList() {
 
 
     return (
-        <ul className="flex flex-wrap justify-center items-center w-full">
+        <ul className="flex flex-wrap justify-center items-center w-full ">
             {publishers?.map(publisher =>
-                <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-10/12  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
+                <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                     <div className="flex w-full justify-between items-center">
                         <div className="flex items-center p-6 ">
                             {publisher.gender === "Masculino" ?
@@ -60,7 +60,7 @@ export default function PublisherList() {
                         <div className="h-fit pl-10">
                             {publisher.privileges.map(privilege => <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>{privilege}</span>)}
                         </div>
-                        <div className="flex mt-2">
+                        <div className="flex flex-wrap sm:flex-nowrap mt-2 ">
                             <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>
                             <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
                             <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed?.toString() ?? "Não informado"}</p>

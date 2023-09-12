@@ -1,5 +1,5 @@
 import { IFileListProps } from "./types"
-import { useContext,  useState } from "react"
+import { useContext, useState } from "react"
 import { Link2Icon, Trash2Icon, CheckIcon, XIcon, AlertTriangleIcon, AlertCircleIcon } from 'lucide-react'
 import Link from "next/link"
 import { DocumentsContext } from "@/context/DocumentsContext"
@@ -12,10 +12,10 @@ export default function FileList({ files }: IFileListProps) {
 
     const renderConfirmMessage = (document_id: string) => {
         return (
-            <div className="flex gap-5 items-center p-4  rounded-md ">
-                <div className="flex flex-col items-center gap-1">
-                    <span className=" text-red-500 font-semibold">Tem certeza que deseja excluir?</span>
+            <div className="flex flex-wrap sm:flex-nowrap gap-5 items-center p-4  rounded-md ">
+                <div className="flex flex-col items-center justify-center gap-1">
                     <span className="text-red-500"><AlertTriangleIcon /></span>
+                    <span className=" text-red-500 font-semibold">Tem certeza que deseja excluir?</span>
                 </div>
 
                 <button
@@ -58,7 +58,7 @@ export default function FileList({ files }: IFileListProps) {
                                     </div>
                                 )}
 
-                                {file.error && <AlertCircleIcon className="text-red-500"/>}
+                                {file.error && <AlertCircleIcon className="text-red-500" />}
                                 <Link href={file.url} target="_blank">
                                     <span className="flex text-primary-200 hover:text-primary-100 text-center" >
                                         <Link2Icon />

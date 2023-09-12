@@ -6,7 +6,7 @@ interface ConteudoProps{
 }
 export default function Conteudo (props: ConteudoProps){
     return(
-        <div className={`conteudo text-center flex flex-col h-${props.hConteudo} ${props.bgFundo ? props.bgFundo : 'bg-gray-200' } p-3 justify-around `}>
+        <div className={`conteudo overflow-auto text-center flex flex-col h-${props.hConteudo} ${props.bgFundo ? props.bgFundo : 'bg-gray-200' } p-3 justify-around ${props.hConteudo === 'full' && 'min-h-screen'}`}>
             {props.children}
         </div>
     )
