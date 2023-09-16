@@ -3,6 +3,7 @@ import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditPermission from "@/Components/FormEditPermission"
 import FormEditPublisher from "@/Components/FormEditPublisher"
+import FormEditRole from "@/Components/FormEditRole"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
@@ -13,7 +14,7 @@ import { parseCookies } from "nookies"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditPermission() {
+export default function EditRoles() {
 
     const router = useRouter()
     const { id } = router.query
@@ -25,7 +26,7 @@ export default function EditPermission() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Permissões', link: '/permissoes' }];
+            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }];
             return updatedCrumbs;
         })
 
@@ -39,16 +40,16 @@ export default function EditPermission() {
     }, [setCrumbs])
 
     useEffect(() => {
-        setPageActive('Editar publicador')
+        setPageActive('Editar função')
     }, [setPageActive])
 
     return (
-        <Layout pageActive="permissoes">
+        <Layout pageActive="funcoes">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <FormProvider {...methods}>
                     <section className="flex justify-center">
-                        <FormEditPermission permission_id={`${id}`} />
+                        <FormEditRole role_id={`${id}`} />
                     </section>
                 </FormProvider>
             </ContentDashboard>

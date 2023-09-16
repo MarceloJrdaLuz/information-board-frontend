@@ -11,9 +11,8 @@ import InputError from "../InputError"
 import { ICongregation } from "@/entities/types"
 import Button from "../Button"
 import { CongregationContext } from "@/context/CongregationContext"
-import { IFormAddDomainProps } from "./types"
 
-export default function FormAddDomain({ congregationNumber }: IFormAddDomainProps) {
+export default function FormAddDomain() {
 
     const { addDomain } = useContext(CongregationContext)
     const [congregations, setCongregations] = useState<ICongregation[]>()
@@ -36,15 +35,8 @@ export default function FormAddDomain({ congregationNumber }: IFormAddDomainProp
     }
 
     useEffect(() => {
-        if (congregationNumber !== undefined) {
-            const filter = congregations?.filter(congregation => congregation.number === congregationNumber)
-            if (filter) {
-                setOptionsDrop([`${filter[0].name} (${filter[0].number})`])
-            }
-            return
-        }
         setOptionsDrop(congregations?.map(congregation => `${congregation.name} (${congregation.number})`))
-    }, [congregations, congregationNumber])
+    }, [congregations])
 
 
     useEffect(() => {

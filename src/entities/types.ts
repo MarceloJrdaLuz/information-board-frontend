@@ -12,7 +12,7 @@ export interface ResponseAuth {
 }
 
 export interface RolesType extends PermissionType {
-
+    permissions: PermissionType[]
 }
 
 export interface UserTypes {
@@ -199,4 +199,11 @@ export interface IPermission {
     id: string
     name: string
     description: string
+}
+
+export interface IRole {
+    id: string
+    name: string
+    description: string
+    permissions: IPermission[]
 }

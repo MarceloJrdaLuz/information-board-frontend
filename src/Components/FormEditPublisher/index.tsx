@@ -24,8 +24,6 @@ type SubmitHandler = (data: FormValues) => void
 
 type CombinedValues = FieldValues & FormValues
 
-
-
 export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const { updatePublisher } = useContext(PublisherContext)

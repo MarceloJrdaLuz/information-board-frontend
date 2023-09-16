@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
-import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon, MegaphoneIcon } from 'lucide-react'
+import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon, MegaphoneIcon, FunctionSquareIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -78,6 +78,18 @@ export default function Layout(props: LayoutProps) {
                         }}
                         icon={SecurityIcon}
                         active={props.pageActive === 'permissoes'}
+                    />
+                }
+
+                {isAdmin &&
+                    <NavBar.Options
+                        title="Funções"
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/funcoes')
+                        }}
+                        icon={FunctionSquareIcon}
+                        active={props.pageActive === 'funcoes'}
                     />
                 }
 
