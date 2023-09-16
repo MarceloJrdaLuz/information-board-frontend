@@ -113,20 +113,12 @@ export default function FormUserRoles() {
 
 
     return (
-        <section className="flex justify-center items-center h-full">
+        <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir função a um usuário</div>
 
-                    {/* <Input type="text" placeholder="Nome da role" registro={{
-                        ...register('userId',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.userId?.message ? 'invalido' : ''} />
-                    {errors?.userId?.type && <InputError type={errors.userId.type} field='userId' />} */}
-
-
-                    <Dropdown handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
+                    <Dropdown textVisible handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
                     <div className="my-4 flex flex-wrap">
                         {userSelected && <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={userSelected} >
                             {userSelected}
@@ -135,7 +127,7 @@ export default function FormUserRoles() {
                     </div>
 
                     <div>
-                        <Dropdown handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
+                        <Dropdown textVisible handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
                         <div className="mt-4 flex flex-wrap">
                             {rolesSelecteds && rolesSelecteds.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={permission} >
                                 {permission}
@@ -145,7 +137,7 @@ export default function FormUserRoles() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Criar permissão' type='submit' />
+                        <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Atribuir função' type='submit' />
                     </div>
                 </div>
             </FormStyle>

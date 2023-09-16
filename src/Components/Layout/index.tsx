@@ -81,7 +81,7 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdmin &&
+                {isAdmin || isAdminCongregation ?
                     <NavBar.Options
                         title="Domínio"
                         onClick={() => {
@@ -90,7 +90,7 @@ export default function Layout(props: LayoutProps) {
                         }}
                         icon={ScreenShareIcon}
                         active={props.pageActive === 'add-domain'}
-                    />
+                    /> : null
                 }
 
                 {isAdmin &&

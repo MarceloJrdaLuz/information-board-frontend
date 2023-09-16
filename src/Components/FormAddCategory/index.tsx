@@ -19,12 +19,9 @@ export default function FormAddCategory() {
 
     const { data, mutate } = useFetch<ICategory[]>('/category')
 
-
     useEffect(() => {
         setCategories(data)
     }, [data])
-
-
 
     const esquemaValidacao = yup.object({
         categoryName: yup.string().required(),
@@ -62,7 +59,7 @@ export default function FormAddCategory() {
     return (
         <section className="flex  justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
+                <div className={`w-full h-fit flex-col justify-center items-center mt-8`}>
                     <div className='p-2'>
                         <span className='text-primary-200'>Crie as categorias de documentos. Ex: Campo - Vai ter os arquivos relacionados a saidas de campo. Abaixo tem a lista das categorias já criadas</span>
                     </div>

@@ -1,22 +1,31 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddPublisher from "@/Components/FormAddPublisher"
+import FormAddCongregation from "@/Components/FormAddCongregation"
 import Layout from "@/Components/Layout"
+import ListCongregations from "@/Components/ListCongregations"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { AuthContext } from "@/context/AuthContext"
+import { ICongregation } from "@/entities/types"
+import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 
-export default function AddPublicadores() {
+export default function AddCongregacoes() {
+    const { user: getUser, roleContains } = useContext(AuthContext)
+
+    const isAdmin = roleContains('ADMIN')
+
+    const [congregations, setCongregations] = useState<ICongregation[]>()
+    const [loading, setLoading] = useState(true)
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/publicadores' }];
+            const updatedCrumbs = [...prevCrumbs, { label: 'Congregações', link: '/congregacoes' }];
             return updatedCrumbs;
         })
 
@@ -30,15 +39,15 @@ export default function AddPublicadores() {
     }, [setCrumbs])
 
     useEffect(() => {
-        setPageActive('Adicionar pessoa')
+        setPageActive('Nova congregação')
     }, [setPageActive])
 
     return (
-        <Layout pageActive="publicadores">
+        <Layout pageActive="congregacoes">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex justify-center">
-                    <FormAddPublisher />
+                <section className="flex m-10 justify-center items-center">
+                    <FormAddCongregation />
                 </section>
             </ContentDashboard>
         </Layout>

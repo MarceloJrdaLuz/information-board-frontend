@@ -11,13 +11,14 @@ import InputError from "../InputError"
 import { ICongregation } from "@/entities/types"
 import Button from "../Button"
 import { CongregationContext } from "@/context/CongregationContext"
+import { IFormAddDomainProps } from "./types"
 
-export default function FormAddDomain() {
+export default function FormAddDomain({ congregationNumber }: IFormAddDomainProps) {
 
     const { addDomain } = useContext(CongregationContext)
     const [congregations, setCongregations] = useState<ICongregation[]>()
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
-    const [consgregationSelect, setCongregationSelect] = useState('')
+    const [congregationSelect, setCongregationSelect] = useState('')
     const [congregationSelectNumber, setCongregationSelectNumber] = useState<string | undefined>('')
 
 
@@ -35,8 +36,15 @@ export default function FormAddDomain() {
     }
 
     useEffect(() => {
-        setOptionsDrop(congregations?.map(congregation => `${congregation.name} ${congregation.number}`))
-    }, [congregations])
+        if (congregationNumber !== undefined) {
+            const filter = congregations?.filter(congregation => congregation.number === congregationNumber)
+            if (filter) {
+                setOptionsDrop([`${filter[0].name} (${filter[0].number})`])
+            }
+            return
+        }
+        setOptionsDrop(congregations?.map(congregation => `${congregation.name} (${congregation.number})`))
+    }, [congregations, congregationNumber])
 
 
     useEffect(() => {
@@ -72,15 +80,13 @@ export default function FormAddDomain() {
         setCongregationSelectNumber(congregationNumber)
     }
 
-
-
     return (
         <section className="flex  justify-center items-center h-full">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir usuário ao domínio</div>
-                    <Dropdown handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Congregação" border/>
-                    <span className="ml-5">{consgregationSelect}</span>
+                    <Dropdown textVisible handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Selecionar congregação" border />
+                    <span className="ml-5 mt-2 flex">{congregationSelect}</span>
                     <Input type="text" placeholder="Código do usuário" registro={{
                         ...register('userCode',
                             { required: "Campo obrigatório" })

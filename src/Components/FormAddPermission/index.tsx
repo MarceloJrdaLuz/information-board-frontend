@@ -40,9 +40,9 @@ export default function FormAddPermission() {
 
    
     return (
-        <section className="flex justify-center items-center h-full">
+        <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
+            <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Criar Permissão</div>
                     
                     <Input type="text" placeholder="Nome da permissão" registro={{

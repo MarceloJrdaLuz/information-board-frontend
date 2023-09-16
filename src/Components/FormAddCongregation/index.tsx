@@ -11,6 +11,7 @@ import { useContext } from 'react'
 import { ICongregation } from '@/entities/types'
 import { CongregationContext } from '@/context/CongregationContext'
 import CardCongregation from '../CardCongregation'
+import Router from 'next/router'
 
 
 
@@ -18,7 +19,11 @@ import CardCongregation from '../CardCongregation'
 export default function FormAddCongregation() {
 
 
-    const { createCongregation, setUploadedFile, showCongregationCreated, setShowCongregationCreated, congregationCreated, setModalNewCongregation } = useContext(CongregationContext)
+    const {
+        createCongregation, setUploadedFile,
+        showCongregationCreated, setShowCongregationCreated,
+        congregationCreated, setModalNewCongregation
+    } = useContext(CongregationContext)
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -101,7 +106,7 @@ export default function FormAddCongregation() {
                 city={congregationCreated.city}
                 image_url={congregationCreated.image_url ?? ""}
             />}
-            <span className='text-primary-200 hover:underline cursor-pointer' onClick={() => setModalNewCongregation(false)}>Voltar a todas as congregações</span>
+            <span className='text-primary-200 hover:underline cursor-pointer' onClick={() => Router.push('/congregacoes')}>Voltar a todas as congregações</span>
         </section>
     )
 }

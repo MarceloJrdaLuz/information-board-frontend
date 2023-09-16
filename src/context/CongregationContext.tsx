@@ -74,6 +74,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
         ).then(res => {
             setCongregationCreated(res.data)
             setShowCongregationCreated(true)
+            setUploadedFile(null)
             toast.success('Congregação criada com sucesso!')
         }).catch(err => {
             console.log(err)
@@ -124,7 +125,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
             user_code: userCode,
             congregation_number: congregationNumber
         })
-            .then(res => toast.success(`${res.data.message}`))
+            .then(res => toast.success(`Usuário atribuído ao domínio!`))
             .catch(err => {
                 const { response: { data: { message } } } = err
                 if (message === "User code not exists") toast.error('Código de usuário não existe!')

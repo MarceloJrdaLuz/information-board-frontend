@@ -87,26 +87,26 @@ export default function FormAddRole() {
 
 
     return (
-        <section className="flex justify-center items-center h-full">
+        <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Criar Role</div>
+                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Criar Função</div>
 
-                    <Input type="text" placeholder="Nome da role" registro={{
+                    <Input type="text" placeholder="Nome da função" registro={{
                         ...register('roleName',
                             { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.roleName?.message ? 'invalido' : ''} />
                     {errors?.roleName?.type && <InputError type={errors.roleName.type} field='roleName' />}
 
-                    <Input type="text" placeholder="Descrição da role" registro={{
+                    <Input type="text" placeholder="Descrição da função" registro={{
                         ...register('roleDescription',
                             { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.roleDescription?.message ? 'invalido' : ''} />
                     {errors?.roleDescription?.type && <InputError type={errors.roleDescription.type} field='roleDescription' />}
 
-                    <Dropdown handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Permissões" border />
+                    <Dropdown textVisible handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Permissões" border />
                     <div className="mt-4 flex flex-wrap">
                         {permissionSelected && permissionSelected.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={permission} >
                             {permission}

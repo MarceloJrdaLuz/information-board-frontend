@@ -1,33 +1,46 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
+import FormAddPermission from "@/Components/FormAddPermission"
+import FormAddRole from "@/Components/FormAddRole"
+import FormUserRoles from "@/Components/FormUserRoles"
 import Layout from "@/Components/Layout"
-import ListRelatorios from "@/Components/ListMonths"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
-import { parseCookies, setCookie } from "nookies"
+import { parseCookies } from "nookies"
 import { useEffect } from "react"
 
-export default function ListarRelatorios() {
-
-    const router = useRouter()
-    const { congregationId } = router.query
-
+export default function AddPermissoes() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Relatórios')       
+        setCrumbs((prevCrumbs) => {
+            const updatedCrumbs = [...prevCrumbs, { label: 'Permissões', link: '/permissoes' }];
+            return updatedCrumbs;
+        })
+
+        const removeCrumb = () => {
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
+        };
+
+        return () => {
+            removeCrumb()
+        }
+    }, [setCrumbs])
+
+    useEffect(() => {
+        setPageActive('Criar permissão')
     }, [setPageActive])
 
     return (
-        <Layout pageActive="relatorios">
+        <Layout pageActive="permissoes">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <ListRelatorios congregationId={congregationId as string} />
+                <section className="flex justify-center">
+                    <FormAddPermission />
+                </section>
             </ContentDashboard>
         </Layout>
     )

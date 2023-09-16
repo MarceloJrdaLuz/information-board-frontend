@@ -166,7 +166,7 @@ export interface IPublisherConsent {
     congregation_id: string
 }
 
-export interface ConsentRecordTypes  {
+export interface ConsentRecordTypes {
     id: string
     publisher: IPublisherConsent
     deviceId: string
@@ -181,9 +181,9 @@ export interface CongregationTypes {
     circuit: string
     imageUrl: string
     dayMeetingLifeAndMinistary: string
-	hourMeetingLifeAndMinistary: string,
-	dayMeetingPublic: string
-	hourMeetingPublic: string
+    hourMeetingLifeAndMinistary: string,
+    dayMeetingPublic: string
+    hourMeetingPublic: string
 }
 
 export interface INotice {
@@ -193,4 +193,10 @@ export interface INotice {
     startDay?: number
     endDay?: number
     expired?: Date
+}
+
+export interface IPermission {
+    id: string
+    name: string
+    description: string
 }

@@ -9,12 +9,21 @@ import { parseCookies } from "nookies"
 import { useContext, useEffect, useState } from "react"
 import Upload from "@/Components/Upload"
 import { useFetch } from "@/hooks/useFetch"
+import { useAtom } from "jotai"
+import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import BreadCrumbs from "@/Components/BreadCrumbs"
 
 export default function FimDeSemana() {
 
     const [category, setCategory] = useState<ICategory>()
     const { uploadedFiles, setDocumentCategoryId } = useContext(DocumentsContext)
     const { data: categories } = useFetch<ICategory[]>('/category')
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [pageActive, setPageActive] = useAtom(pageActiveAtom)
+
+    useEffect(() => {
+        setPageActive('Fim de semana')
+    }, [setPageActive])
 
     useEffect(() => {
         const categoryFilter = categories?.filter(category => category.name === Categories.fimDeSemana)
@@ -28,6 +37,7 @@ export default function FimDeSemana() {
     return (
         <Layout pageActive="fimdesemana">
             <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive}/>
                 <section className="flex flex-wrap w-full h-full p-5">
                     <div className="w-full h-full">
                         <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
