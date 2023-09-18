@@ -1,6 +1,5 @@
 import FormLogin from "@/Components/FormLogin"
 import InformationBoardImage from "@/Components/InformationBoardImage"
-import Image from "next/image"
 
 export default function Login() {
     return (
@@ -16,3 +15,4 @@ export default function Login() {
         </main>
     )
 }
+

@@ -2,8 +2,9 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState
 import { toast } from "react-toastify"
 import { ICongregation, ResponseAuth, RolesType } from "../entities/types"
 import Router from 'next/router'
-import { setCookie, parseCookies, destroyCookie } from 'nookies'
+// import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from "@/services/api"
+import { deleteCookie, setCookie, getCookie } from "cookies-next"
 
 type AuthContextTypes = {
     authenticated: boolean
@@ -42,13 +43,15 @@ export function AuthProvider(props: AuthContextProviderProps) {
     const [btnDisabled, setBtnDisabled] = useState(false)
 
     useEffect(() => {
-        const { 'quadro-token': token } = parseCookies()
+        const token = getCookie('quadro-token')
 
         if (token) {
             api.post('/recover-user-information').then(res => {
                 setUser(res.data)
             })
         }
+
+        
     }, [])
 
     async function login(email: string, password: string) {
@@ -66,8 +69,16 @@ export function AuthProvider(props: AuthContextProviderProps) {
 
             const token = res.data.token
 
-            setCookie(undefined, 'quadro-token', token, {
-                maxAge: 60 * 60 + 1, //1 hora
+            const userRoles = res.data.user.roles.map(role => (
+                role.name
+            ))
+
+            setCookie('quadro-token', token, {
+                maxAge: 60 * 60 + 8, //1 hora
+            })
+
+            setCookie('user-roles', JSON.stringify(userRoles), {
+                maxAge: 60 * 60 + 8, //1 hora
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
@@ -89,18 +100,23 @@ export function AuthProvider(props: AuthContextProviderProps) {
         })
     }
 
-    function logout() {
+    async function logout() {
+        deleteCookie('quadro-token', {
+            path: "/"
+        })
+        deleteCookie('user-roles', {
+            path: "/"
+        })
+
         setUser(null)
-        destroyCookie(undefined, 'quadro-token')
         Router.push('/login')
     }
 
     async function signUp(email: string, password: string) {
-        await api.post<ResponseAuth>('user', {
+        await api.post<ResponseAuth>('/user', {
             email,
             password
         }).then(res => {
-            console.log(res.data)
             const usuarioLogado = {
                 id: res.data.user.id,
                 email: res.data.user.email,
@@ -114,8 +130,8 @@ export function AuthProvider(props: AuthContextProviderProps) {
                 toast.success('Cadastro efetuado com sucesso!')
                 const token = res.data.token
 
-                setCookie(undefined, 'quadro-token', token, {
-                    maxAge: 60 * 60 + 1, //1 hora
+                setCookie('quadro-token', token, {
+                    maxAge: 60 * 60 + 8, //1 hora
                 })
 
                 api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`

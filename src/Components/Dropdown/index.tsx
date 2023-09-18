@@ -5,9 +5,6 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
-
-
-
 interface IDropdown {
   title: string | undefined
   options: string[] 
@@ -38,7 +35,7 @@ export default function Dropdown(props: IDropdown) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
+        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
           <div className="py-1">
             {props.options.map((option, index) => (
               <Menu.Item key={index}>

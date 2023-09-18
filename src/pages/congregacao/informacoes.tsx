@@ -48,6 +48,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('ADMIN')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false
+            }
+        }
+    }
+
     return {
         props: {}
     }

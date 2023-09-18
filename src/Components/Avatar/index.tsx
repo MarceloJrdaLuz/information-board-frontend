@@ -1,12 +1,11 @@
 import { AuthContext } from "@/context/AuthContext"
 import Image from "next/image"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import Dropdown from "../Dropdown"
 import { IAvatar } from "./types"
 
 export default function Avatar(props: IAvatar) {
     const { logout } = useContext(AuthContext)
-    const [modalShow, setModalShow] = useState(false)
 
     function handleClick(option: string) {
         switch (option) {

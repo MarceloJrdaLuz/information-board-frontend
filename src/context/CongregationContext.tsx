@@ -45,7 +45,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
     const number = user?.congregation?.number
 
     const fetchConfig = number ? `/congregation/${number}` : ""
-    const { data, mutate } = useFetch<ICongregation>(fetchConfig)
+    const { data, mutate } = useFetch(fetchConfig)
 
     useEffect(() => {
         if (number) {

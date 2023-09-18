@@ -57,11 +57,23 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-
+    
     if (!token) {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+    
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
                 permanent: false
             }
         }

@@ -8,7 +8,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies, setCookie } from "nookies"
+import { parseCookies } from "nookies"
 import { useEffect } from "react"
 
 export default function ListarRelatorios() {
@@ -42,6 +42,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
                 permanent: false
             }
         }

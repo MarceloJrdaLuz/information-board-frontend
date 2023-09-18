@@ -14,7 +14,7 @@ import { useAtom } from "jotai"
 import { ChevronDownIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies, setCookie } from "nookies"
+import { parseCookies } from "nookies"
 import { useCallback, useContext, useEffect, useState } from "react"
 import { v4 } from "uuid"
 
@@ -158,6 +158,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
                 permanent: false
             }
         }

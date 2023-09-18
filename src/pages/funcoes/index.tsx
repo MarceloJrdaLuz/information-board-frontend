@@ -21,7 +21,6 @@ export default function Funcoes() {
 
     useEffect(() => {
         setRoles(getRoles)
-        console.log(roles)
     }, [getRoles, roles])
 
     useEffect(() => {
@@ -39,8 +38,7 @@ export default function Funcoes() {
                             onClick={() => {
                                 Router.push('/funcoes/add')
                             }}>Criar função</span></button>
-                        {/* <ListRoles/> */}
-                        {roles && (
+                        {roles &&  (
                             <ListItems items={roles} label="Funções" path="funcoes" />
                         )}
                     </div>
@@ -54,11 +52,23 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
 
     if (!token) {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if(!userRolesParse.includes('ADMIN')){
+        return {
+            redirect: {
+                destination: '/dashboard', 
                 permanent: false
             }
         }

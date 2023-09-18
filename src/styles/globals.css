@@ -44,6 +44,18 @@ input::-webkit-inner-spin-button {
   background-color: transparent;
 }
 
+.thin-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background-color: rgb(117 117 117);
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #006d77;
+}
+
 .react-pdf__Page__canvas {
   margin: 0 auto;
   width: 100% !important;

@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "@/context/AuthContext"
-import { HomeIcon,  UsersIcon, ScreenShareIcon, SquareStackIcon,  CalendarDaysIcon, CalculatorIcon, MegaphoneIcon, FunctionSquareIcon } from 'lucide-react'
+import { HomeIcon, UsersIcon, ScreenShareIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, MegaphoneIcon, FunctionSquareIcon, ListChecksIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -17,6 +17,8 @@ import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
 import { useAtom } from "jotai"
 import { toogleMenu } from "@/atoms/atom"
+import GroupOverseersIcon from "../Icons/GroupOverseersIcon"
+import GroupIcon from "../Icons/GroupIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -46,8 +48,8 @@ export default function Layout(props: LayoutProps) {
     return (
         <main className={`flex w-screen h-screen max-h-full overflow-auto`}>
             <NavBar.Root>
-                <NavBar.Logo />
-                <NavBar.Options
+                {/* <NavBar.Logo /> */}
+                {/* <NavBar.Options
                     title="Início"
                     onClick={() => {
                         setIsMenuOpen(!isMenuOpen)
@@ -55,7 +57,7 @@ export default function Layout(props: LayoutProps) {
                     }}
                     icon={HomeIcon}
                     active={props.pageActive === 'dashboard'}
-                />
+                /> */}
 
                 {isAdmin &&
                     <NavBar.Options
@@ -83,30 +85,6 @@ export default function Layout(props: LayoutProps) {
 
                 {isAdmin &&
                     <NavBar.Options
-                        title="Funções"
-                        onClick={() => {
-                            setIsMenuOpen(!isMenuOpen)
-                            Router.push('/funcoes')
-                        }}
-                        icon={FunctionSquareIcon}
-                        active={props.pageActive === 'funcoes'}
-                    />
-                }
-
-                {isAdmin || isAdminCongregation ?
-                    <NavBar.Options
-                        title="Domínio"
-                        onClick={() => {
-                            setIsMenuOpen(!isMenuOpen)
-                            Router.push('/add-domain')
-                        }}
-                        icon={ScreenShareIcon}
-                        active={props.pageActive === 'add-domain'}
-                    /> : null
-                }
-
-                {isAdmin &&
-                    <NavBar.Options
                         title="Categorias"
                         onClick={() => {
                             setIsMenuOpen(!isMenuOpen)
@@ -129,30 +107,6 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdminCongregation &&
-                    <NavBar.Options
-                        title="Publicadores"
-                        onClick={() => {
-                            setIsMenuOpen(!isMenuOpen)
-                            Router.push('/publicadores')
-                        }}
-                        icon={PublisherIcon}
-                        active={props.pageActive === 'publicadores'}
-                    />
-                }
-
-                {isAdminCongregation &&
-                    <NavBar.Options
-                        title="Relatórios"
-                        onClick={() => {
-                            setIsMenuOpen(!isMenuOpen)
-                            Router.push(`/relatorios/${user?.congregation.id}`)
-                        }}
-                        icon={ReportIcon}
-                        active={props.pageActive === 'relatorios'}
-                    />
-                }
-                
                 {isAdminCongregation &&
                     <NavBar.Options
                         title="Anúncios"
@@ -213,7 +167,7 @@ export default function Layout(props: LayoutProps) {
                                 setShowSubMenu(prevState => [...prevState, 'reunioes'])
                             }
                         }}
-                        title="Reuniões" 
+                        title="Reuniões"
                         icon={MeetingIcon}
                     >
                         <NavBar.Options
@@ -271,6 +225,111 @@ export default function Layout(props: LayoutProps) {
                             icon={PublicPreachingIcon}
                             active={props.pageActive === 'testemunhopublico'}
                         />
+                    </NavBar.ListOptions>
+                }
+
+                {isAdminCongregation &&
+                    <NavBar.ListOptions
+                        key={"submenuRelatorios"}
+                        showList={showSubMenu.includes('relatorios')}
+                        onClick={() => {
+                            if (showSubMenu.includes('relatorios')) {
+                                setShowSubMenu(prevState => prevState.filter(item => item !== 'relatorios'))
+                            } else {
+                                setShowSubMenu(prevState => [...prevState, 'relatorios'])
+                            }
+                        }}
+                        title="Relatórios"
+                        icon={ListChecksIcon}
+                    >
+                        {isAdminCongregation &&
+                            <NavBar.Options
+                                title="Publicadores"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/publicadores')
+                                }}
+                                icon={PublisherIcon}
+                                active={props.pageActive === 'publicadores'}
+                            />
+                        }
+
+                        {isAdminCongregation &&
+                            <NavBar.Options
+                                title="Grupos de Campo"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/grupos')
+                                }}
+                                icon={GroupIcon}
+                                active={props.pageActive === 'grupos'}
+                            />
+                        }
+
+                        {isAdminCongregation &&
+                            <NavBar.Options
+                                title="Relatórios"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push(`/relatorios/${user?.congregation.id}`)
+                                }}
+                                icon={ReportIcon}
+                                active={props.pageActive === 'relatorios'}
+                            />
+                        }
+                    </NavBar.ListOptions>
+                }
+
+                {isAdminCongregation &&
+                    <NavBar.ListOptions
+                        key={"submenuAdministracao"}
+                        showList={showSubMenu.includes('administracao')}
+                        onClick={() => {
+                            if (showSubMenu.includes('administracao')) {
+                                setShowSubMenu(prevState => prevState.filter(item => item !== 'administracao'))
+                            } else {
+                                setShowSubMenu(prevState => [...prevState, 'administracao'])
+                            }
+                        }}
+                        title="Administração"
+                        icon={SecurityIcon}
+                    >
+
+                        {isAdmin &&
+                            <NavBar.Options
+                                title="Funções"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/funcoes')
+                                }}
+                                icon={FunctionSquareIcon}
+                                active={props.pageActive === 'funcoes'}
+                            />
+                        }
+
+                        {isAdminCongregation &&
+                            <NavBar.Options
+                                title="Funções"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/funcoes/atribuir')
+                                }}
+                                icon={FunctionSquareIcon}
+                                active={props.pageActive === '/funcoes/atribuir'}
+                            />
+                        }
+
+                        {isAdmin || isAdminCongregation ?
+                            <NavBar.Options
+                                title="Domínio"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/add-domain')
+                                }}
+                                icon={ScreenShareIcon}
+                                active={props.pageActive === 'add-domain'}
+                            /> : null
+                        }
                     </NavBar.ListOptions>
                 }
 

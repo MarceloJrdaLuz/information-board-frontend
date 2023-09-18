@@ -36,7 +36,7 @@ export default function AddDomain() {
         <Layout pageActive="add-domain">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <FormAddDomain congregationNumber={isAdminCongregation ? congregationNumber : undefined} />
+                <FormAddDomain />
             </ContentDashboard>
         </Layout>
     )

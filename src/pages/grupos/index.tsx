@@ -1,57 +1,47 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditPermission from "@/Components/FormEditPermission"
-import FormEditPublisher from "@/Components/FormEditPublisher"
-import FormEditRole from "@/Components/FormEditRole"
+import GroupIcon from "@/Components/Icons/GroupIcon"
+import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import Layout from "@/Components/Layout"
+import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { IRole } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
+import { FunctionSquareIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
+import Router from "next/router"
 import { parseCookies } from "nookies"
-import { useEffect } from "react"
-import { FormProvider, useForm } from 'react-hook-form'
+import { useEffect, useState } from "react"
 
-export default function EditRoles() {
-
-    const router = useRouter()
-    const { id } = router.query
-
-    const methods = useForm()
-
+export default function Grupos() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
+    const { data: getRoles } = useFetch<IRole[]>('/roles')
+    const [roles, setRoles] = useState<IRole[]>()
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }];
-            return updatedCrumbs;
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
+        setRoles(getRoles)
+    }, [getRoles, roles])
 
     useEffect(() => {
-        setPageActive('Editar função')
+        setPageActive('Grupos')
     }, [setPageActive])
 
     return (
-        <Layout pageActive="funcoes">
+        <Layout pageActive="grupos">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <FormProvider {...methods}>
-                    <section className="flex justify-center">
-                        <FormEditRole role_id={`${id}`} />
-                    </section>
-                </FormProvider>
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
+                        <button className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3 my-5 text-primary-200"><GroupIcon /><span className="text-primary-200 font-semibold pl-1"
+                            onClick={() => {
+                                Router.push('/grupos/add')
+                            }}>Criar grupo</span></button>
+                    </div>
+                </section>
             </ContentDashboard>
         </Layout>
     )
@@ -74,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if(!userRolesParse.includes('ADMIN')){
+    if(!userRolesParse.includes('ADMIN_CONGREGATION')){
         return {
             redirect: {
                 destination: '/dashboard', 
