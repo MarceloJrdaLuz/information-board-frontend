@@ -3,9 +3,11 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import Layout from "@/Components/Layout"
+import ListGroups from "@/Components/ListGroups"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { IRole } from "@/entities/types"
+import { AuthContext } from "@/context/AuthContext"
+import { IGroup, IRole } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
@@ -13,17 +15,22 @@ import { FunctionSquareIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Router from "next/router"
 import { parseCookies } from "nookies"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 export default function Grupos() {
+    const { user } = useContext(AuthContext)
+    const congregationUser = user?.congregation
+
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    const { data: getRoles } = useFetch<IRole[]>('/roles')
-    const [roles, setRoles] = useState<IRole[]>()
+    const [groups, setGroups] = useState<IGroup[]>()
+
+    const fetchConfig = congregationUser ? `/groups/${congregationUser.id}` : ""
+    const { data: getGroups } = useFetch<IGroup[]>(fetchConfig)
 
     useEffect(() => {
-        setRoles(getRoles)
-    }, [getRoles, roles])
+        setGroups(getGroups)
+    }, [getGroups, groups])
 
     useEffect(() => {
         setPageActive('Grupos')
@@ -40,6 +47,7 @@ export default function Grupos() {
                             onClick={() => {
                                 Router.push('/grupos/add')
                             }}>Criar grupo</span></button>
+                           {groups &&  <ListGroups items={groups} path="" label="grupo"/> }
                     </div>
                 </section>
             </ContentDashboard>

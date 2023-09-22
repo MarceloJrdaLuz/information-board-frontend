@@ -67,6 +67,20 @@ export interface ICongregationUpdate {
 }
 
 
+
+export interface IGroup {
+    id: string
+    name: string
+    number: string
+    groupOverseers: IGroupOverseers
+    
+}
+export interface IGroupOverseers extends IPublisher  { 
+   
+}
+
+
+
 export interface IReports {
     id: string
     month: string
@@ -89,6 +103,7 @@ export interface IPublisher {
     gender: Gender
     dateImmersed?: Date
     congregation: ICongregation
+    group: IGroup
 }
 
 export interface IPublisherList {

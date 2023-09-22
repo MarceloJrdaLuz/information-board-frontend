@@ -1,5 +1,3 @@
-import { IPermission } from "@/entities/types"
-import { ReactNode } from "react"
 
 interface IItem {
     id: string

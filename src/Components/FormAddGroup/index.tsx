@@ -14,6 +14,7 @@ import { useFetch } from '@/hooks/useFetch'
 import { AuthContext } from '@/context/AuthContext'
 import Dropdown from '../Dropdown'
 import { IBodyCreateGroup } from './types'
+import DropdownObject from '../DropdownObjects'
 
 export interface IGroup {
     id: string
@@ -28,14 +29,13 @@ export default function FormAddGroup() {
     const [availableNumbers, setAvailableNumbers] = useState<string[]>([]);
     const [selectedNumber, setSelectedNumber] = useState<string>()
     const [publishers, setPublishers] = useState<IPublisher[]>()
-    const [selectedPublisher, setSelectedPublisher] = useState<IPublisher>()
-    const [groupOverseersSelected, setGroupOverseersSelected] = useState('')
-    const [groupOverseersSelectedId, setGroupOverseersSelectedId] = useState('')
+    const [selectedItem, setSelectedItem] = useState<IPublisher | null>(null)
 
     const fetchConfig = congregationUser ? `/groups/${congregationUser.id}` : ""
     const { data } = useFetch<IGroup[]>(fetchConfig)
 
-    const { data: publishersData, mutate } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationUser?.id}`)
+    const fetchPublisherDataConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
+    const { data: publishersData, mutate } = useFetch<IPublisher[]>(fetchPublisherDataConfig)
 
 
     useEffect(() => {
@@ -61,24 +61,35 @@ export default function FormAddGroup() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
-    async function createGroup({ }: IBodyCreateGroup) {
-        // await api.post('category', { name: data.categoryName, description: data.categoryDescription }).then(res => {
-        //     toast.success("Categoria cadastrada com sucesso!")
-        //     reset()
-        //     mutate()
-        // }).catch(err => {
-        //     const { response: { data: { message } } } = err
-        //     if(message === "Category already exists") {
-        //         toast.error('Essa cateogoria já foi criada')
-        //     }
-        //     if(message === "Description already exists") {
-        //         toast.error('Essa descrição já está sendo usada')
-        //     }
-        // })
+    async function createGroup(name: string, number: string, publisher_id: string, congregation_id: string) {
+        await api.post('group', {
+            name,
+            number,
+            publisher_id,
+            congregation_id
+        }).then(res => {
+            toast.success("Grupo criado com sucesso!")
+            reset()
+            setSelectedNumber('')
+            setSelectedItem(null)
+            mutate()
+        }).catch(err => {
+            const { response: { data: { message } } } = err
+            if (message === 'The publisher is already a group overseer for another group') {
+                toast.error('Publicador já é dirigente de outro grupo!')
+            } else {
+                console.log(message)
+                toast.error('Ocorreu um erro no servidor!')
+            }
+        })
     }
 
     function onSubmit(data: { groupName: string }) {
-
+        if (selectedNumber && selectedItem && congregationUser?.id) {
+            toast.promise(createGroup(data.groupName, selectedNumber, selectedItem?.id, congregationUser.id), {
+                pending: 'Criando grupo...',
+            })
+        }
     }
 
     function handleClick(number: string) {
@@ -103,14 +114,23 @@ export default function FormAddGroup() {
                         invalid={errors?.groupName?.message ? 'invalido' : ''} />
                     {errors?.groupName?.type && <InputError type={errors.groupName.type} field='groupName' />}
 
-                    {selectedNumber ? (
-                        <div className='flex w-full justify-between items-center'>
-                            <span >{`Número do grupo ${selectedNumber}`}</span>
-                            <span className='underline cursor-pointer' onClick={() => setSelectedNumber(undefined)}>Alterar número</span>
-                        </div>
-                    ) : (
-                        <Dropdown textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
-                    )}
+                    <Dropdown selectedItem={selectedNumber} textAlign='left' full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
+
+                    <div className='mt-2'>
+                        {publishers && (
+                            <DropdownObject<IPublisher>
+                                title="Dirigente do grupo"
+                                items={publishers}
+                                selectedItem={selectedItem}
+                                handleChange={setSelectedItem}
+                                labelKey="fullName"
+                                border
+                                full
+                                textAlign='left'
+                            />
+                        )}
+                    </div>
+
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
                         <Button color='bg-primary-200 hover:opacity-90 text-secondary-100 hover:text-black' hoverColor='bg-button-hover' title='Criar grupo' type='submit' />
                     </div>

@@ -7,11 +7,13 @@ function classNames(...classes: any) {
 }
 interface IDropdown {
   title: string | undefined
-  options: string[] 
+  options: string[]
+  selectedItem?: string | null; // Use o tipo genérico T para o item selecionado
   handleClick: (option: string) => void
   border?: boolean
   full?: boolean
   position?: 'right' | 'left'
+  textAlign?: 'right' | 'left' | 'center'
   textVisible?: boolean
 }
 
@@ -20,8 +22,10 @@ export default function Dropdown(props: IDropdown) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button className={`inline-flex w-full justify-center rounded-md  bg-transparent border px-3 md:px-4 py-2 text-sm font-medium text-gray-700  hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${props.border ? "border border-blue-gray-200": "border-none"} `}>
-          <span className={`${!props.textVisible && 'hidden'} sm:flex`}>{props.title}</span>
+        <Menu.Button className={`inline-flex w-full  justify-${props.textAlign ? `${props.textAlign}` : `center`} rounded-md  bg-transparent border px-3 md:px-4 py-2 text-sm font-medium text-gray-700  hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${props.border ? "border border-blue-gray-200" : "border-none"} `}>
+          <span className={`${!props.textVisible && 'hidden'} sm:flex`}>
+            {props.selectedItem ? props.selectedItem : props.title}
+          </span>
           <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5" aria-hidden="true" />
         </Menu.Button>
       </div>
@@ -51,7 +55,7 @@ export default function Dropdown(props: IDropdown) {
                   </span>
                 )}
               </Menu.Item>)
-              )}
+            )}
           </div>
         </Menu.Items>
       </Transition>

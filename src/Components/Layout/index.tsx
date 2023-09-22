@@ -28,7 +28,7 @@ export default function Layout(props: LayoutProps) {
     const [isHovering, setIsHovering] = useState(props.pageActive)
     const [user, setUser] = useState(getUser)
     const [showSubMenu, setShowSubMenu] = useState<string[]>([])
-    const [isMenuOpen, setIsMenuOpen] = useAtom(toogleMenu)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     useEffect(() => {
         const path = router.pathname

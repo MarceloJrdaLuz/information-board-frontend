@@ -6,22 +6,23 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
-interface IDropdown {
+interface IDropdown<T> {
   title: string | undefined;
-  items: any[]; // Deixaremos o tipo genérico para o TypeScript inferir automaticamente
-  selectedItem: any | null; // Deixaremos o tipo genérico para o TypeScript inferir automaticamente
-  handleChange: (item: any | null) => void; // Deixaremos o tipo genérico para o TypeScript inferir automaticamente
+  items: T[]; // Use o tipo genérico T para os itens
+  selectedItem: T | null; // Use o tipo genérico T para o item selecionado
+  handleChange: (item: T | null) => void;
   border?: boolean;
   full?: boolean;
   position?: 'right' | 'left';
   textVisible?: boolean;
-  labelKey?: string; // Agora, aceitaremos uma string como labelKey
+  textAlign?: 'right' | 'left' | 'center'
+  labelKey?: keyof T; // Chave para determinar a propriedade a ser usada como rótulo
 }
 
-export default function Dropdown(props: IDropdown) {
+export default function DropdownObject<T>(props: IDropdown<T>) {
   const { items, selectedItem } = props;
 
-  const getLabel = (item: any): string => {
+  const getLabel = (item: T): string => {
     if (props.labelKey && item[props.labelKey]) {
       return String(item[props.labelKey]);
     }
@@ -31,7 +32,7 @@ export default function Dropdown(props: IDropdown) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button className={`inline-flex w-full justify-center rounded-md  bg-transparent border px-3 md:px-4 py-2 text-sm font-medium text-gray-700  hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${props.border ? "border border-blue-gray-200" : "border-none"}`}>
+        <Menu.Button className={`inline-flex w-full justify-${props.textAlign ? `${props.textAlign}` : `center` } rounded-md  bg-transparent border px-3 md:px-4 py-2 font-medium text-gray-700  hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${props.border ? "border border-blue-gray-200" : "border-none"}`}>
           <span className={`${!props.textVisible && 'hidden'} sm:flex`}>
             {selectedItem ? getLabel(selectedItem) : props.title}
           </span>
@@ -48,7 +49,7 @@ export default function Dropdown(props: IDropdown) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}>
+        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}>
           <div className="py-1">
             {items.map((item, index) => (
               <Menu.Item key={index}>
