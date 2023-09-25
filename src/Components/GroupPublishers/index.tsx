@@ -1,5 +1,5 @@
 // PublisherItem.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { useAtom } from 'jotai';
 import { selectedPublishersAtom } from '@/atoms/atom';
 import { IPublisher } from '@/entities/types';

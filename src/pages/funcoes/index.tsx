@@ -33,7 +33,7 @@ export default function Funcoes() {
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-2xl text-primary-200 font-semibold">Funções</h1>
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
                         <button className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3 my-5 text-primary-200"><FunctionSquareIcon /><span className="text-primary-200 font-semibold pl-1"
                             onClick={() => {
                                 Router.push('/funcoes/add')

@@ -34,7 +34,7 @@ export default function AtribuirFuncoes() {
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-2xl text-primary-200 font-semibold">Atribuir Funções</h1>
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Atribuir Funções</h1>
                         <FormUserRoles />
                     </div>
                 </section>

@@ -16,8 +16,11 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     }, [])
 
     const checkScreenWidth = useCallback(() => {
-        if (window.innerWidth >= 720) setIsDesktop(true)
-    }, [setIsDesktop])
+        if (window.innerWidth >= 720) {
+            setIsDesktop(true)
+            setMenuOpen(true)
+        }
+    }, [setIsDesktop, setMenuOpen])
 
 
     useEffect(() => {

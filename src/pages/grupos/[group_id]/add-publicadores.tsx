@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
+import ButtonVariants from "@/Components/ButtonVariants"
 import ContentDashboard from "@/Components/ContentDashboard"
 import GroupPublishers from "@/Components/GroupPublishers"
 import Layout from "@/Components/Layout"
@@ -36,6 +37,8 @@ export default function AddPublicadoresGrupo() {
     const [listPublishersOthersGroupsShow, setListPublishersOthersGroupsShow] = useState(true)
     const [listGroupPublishersShow, setListGroupPublishersShow] = useState(true)
 
+    const [dataSuccess, setDataSuccess] = useState(false)
+
     const fetchConfigPublishers = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
     const { data: getPublishers, mutate } = useFetch<IPublisher[]>(fetchConfigPublishers)
 
@@ -44,8 +47,12 @@ export default function AddPublicadoresGrupo() {
             publishers_ids: selectedPublishers
         }).then(res => {
             toast.success("Publicadores adicionados ao grupo com sucesso!")
-            setSelectedPublishers([])
-            setGroupPublisherListOption('disabled')
+            setDataSuccess(true)
+            setTimeout(() => {
+                setSelectedPublishers([])
+                setGroupPublisherListOption('disabled')
+                setDataSuccess(false)
+            }, 3000)
             mutate()
         }).catch(err => {
             toast.error('Ocorreu um erro no servidor!')
@@ -119,23 +126,33 @@ export default function AddPublicadoresGrupo() {
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <div className="flex justify-between w-full">
-                    {group_number && <h1 className="p-4 text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
+                    {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
-                    <div className="flex flex-col">
-                        <span onClick={() => {
-                            setGroupPublisherListOption('add-publishers')
-                            setSelectedPublishers([])
-                        }} className={`text-primary-200 p-4 text-lg font-semibold cursor-pointer`}>{'Adicionar publicadores'}</span>
-                        <span onClick={() => {
-                            setGroupPublisherListOption('remove-publishers')
-                            setSelectedPublishers([])
-                        }} className={`text-red-600 p-4 text-lg font-semibold cursor-pointer`}>{'Remover publicadores'}</span>
+                    <div className="flex flex-col p-2 gap-1">
+                        <ButtonVariants
+                            className={`${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
+                            size="sm"
+                            onClick={() => {
+                                setGroupPublisherListOption('add-publishers')
+                                setSelectedPublishers([])
+                            }}
+                        >Adicionar Publicadores</ButtonVariants>
+
+                        <ButtonVariants
+                            className={`${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
+                            size='sm'
+                            remove
+                            onClick={() => {
+                                setGroupPublisherListOption('remove-publishers')
+                                setSelectedPublishers([])
+                            }} >Remover publicadores</ButtonVariants>
                     </div>
                 </div>
                 <div className={`flex flex-col px-4 flex-wrap`}>
-                    <div className="flex flex-col lg:flex-row lg:justify-around gap-4">
-                        {groupPublisherListOption !== 'invisible' && groupPublisherListOption !== 'add-publishers' && (
-                            <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-auto'} h-96`}>
+                {(groupPublisherListOption === 'add-publishers' || groupPublisherListOption === 'remove-publishers')  && <span className="py-4 text-primary-200 font-semibold">Selecione os publicadores</span>}
+                    <div className={`flex flex-col gap-4 ${groupPublisherListOption !== 'disabled' && 'lg:flex-row lg:justify-around'}`}>
+                        {groupPublisherListOption !== 'add-publishers' && (
+                            <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-full'} h-[300px]`}>
                                 <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
                                     <span>Publicadores atuais do grupo</span>
                                     <span
@@ -154,7 +171,7 @@ export default function AddPublicadoresGrupo() {
                             </div>
                         )}
                         {publishersOthersGroup && publishersOthersGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
-                            <div className="flex flex-col h-96">
+                            <div className="flex flex-col h-[300px]">
                                 <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
                                     <span>Publicadores de outros grupos</span>
                                     <span
@@ -173,7 +190,7 @@ export default function AddPublicadoresGrupo() {
                             </div>
                         )}
                         {publishersWithoutGroup && publishersWithoutGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
-                            <div className="flex flex-col h-96">
+                            <div className="flex flex-col h-[300px]">
                                 <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
                                     <span>Publicadores sem grupo</span>
                                     <span
@@ -190,11 +207,12 @@ export default function AddPublicadoresGrupo() {
                             </div>
                         )}
                     </div>
-
                     {groupPublisherListOption !== 'disabled' &&
-                        <div className={`flex justify-center items-center m-auto w-fit h-12 mt-[10%]`}>
-                            <Button onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup} color={`${groupPublisherListOption === 'remove-publishers' ? 'bg-red-400' : 'bg-primary-200'} hover:opacity-90 text-secondary-100 hover:text-black`} hoverColor='bg-button-hover' title={`${groupPublisherListOption === 'remove-publishers' ? 'Remover do grupo' : 'Adicionar ao grupo'}`} />
-                        </div>}
+                        <div className={`flex justify-center w-full mt-2`}>
+                            <ButtonVariants disabled={selectedPublishers.length === 0 && true} success={dataSuccess} remove={groupPublisherListOption === 'remove-publishers' && selectedPublishers.length > 0 && true} onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup}>{groupPublisherListOption === 'add-publishers' ? 'Adicionar' : 'Remover'}</ButtonVariants>
+                        </div>
+                    }
+
                 </div>
             </ContentDashboard>
         </Layout>

@@ -9,9 +9,5 @@ export const crumbsAtom = atom<IBreadCrumbs[]>([
 
 export const pageActiveAtom = atom('')
 
-export const removePublisherOption = atom(true)
-export const groupPublishersListDisabled = atom(true)
 export const selectedPublishersAtom = atom<string[]>([])
-
-
-export const groupPublisherList = atom<'add-publishers' | 'remove-publishers' | 'disabled' | 'invisible'>('disabled');
+export const groupPublisherList = atom<'add-publishers' | 'remove-publishers' | 'disabled' | 'invisible'>('disabled')
