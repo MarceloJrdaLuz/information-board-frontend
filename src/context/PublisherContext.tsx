@@ -1,4 +1,4 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react"
+import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { getCookie } from "cookies-next"
@@ -6,6 +6,7 @@ import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
 import Router from "next/router"
 import { useAtom } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -51,16 +52,12 @@ type PublisherContextProviderProps = {
     children: ReactNode
 }
 
-export const PublisherContext = createContext({} as PublisherContextTypes)
+const PublisherContext = createContext({} as PublisherContextTypes)
 
-export function PublisherProvider(props: PublisherContextProviderProps) {
+function PublisherProvider(props: PublisherContextProviderProps) {
 
     const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
-    const [, setDisabled] = useAtom(buttonDisabled)
-    const [, setResetFormValue] = useAtom(resetForm)
-    const [, setSuccessFormSendValue] = useAtom(successFormSend)
-    const [, setErrorFormSendValue] = useAtom(errorFormSend)
-
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     async function createPublisher(
         fullName: string,
@@ -82,26 +79,12 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             dateImmersed
         }).then(res => {
             toast.success('Publicador criado com sucesso!')
-            setSuccessFormSendValue(true)
-            setDisabled(true)
-            setResetFormValue(true)
-            setTimeout(() => {
-                setSuccessFormSendValue(false)
-                setResetFormValue(false)
-                setDisabled(false)
-                Router.push('/publicadores')
-            }, 6000)
-            setErrorFormSendValue(false)
+            handleSubmitSuccess()
         }).catch(err => {
+            handleSubmitError()
             const { response: { data: { message } } } = err
             if (message === 'A nickname is required to differentiate the publisher') {
                 toast.error('Outro publicador com o mesmo nome na congregação. Forneça um apelido para diferenciar!')
-                setErrorFormSendValue(true)
-                setDisabled(true)
-                setTimeout(() => {
-                    setErrorFormSendValue(false)
-                    setDisabled(false)
-                }, 6000)
             } else {
                 console.log(err)
                 toast.error('Ocorreu um erro no servidor!')
@@ -131,8 +114,10 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             dateImmersed
         }).then(res => {
             toast.success('Publicador atualizado com sucesso!')
+            handleSubmitSuccess()
         }).catch(err => {
             console.log(err)
+            handleSubmitError()
             const { response: { data: { message } } } = err
             toast.error('Ocorreu um erro no servidor!')
         })
@@ -165,9 +150,11 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             studies,
             observations
         },).then(res => {
+            handleSubmitSuccess()
             toast.success('Relatório enviado com sucesso!')
         }).catch(err => {
             console.log(err)
+            handleSubmitError()
             const { response: { data: { message } } } = err
             toast.error('Ocorreu um erro no servidor!')
         })
@@ -212,11 +199,13 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
 
             localStorage.setItem('publisher', JSON.stringify(jsonSave))
             localStorage.setItem('deviceId', deviceId)
+            handleSubmitSuccess()
         }).catch(err => {
+            handleSubmitError()
             console.log(err)
+            toast.error('Ocorreu um erro no servidor!')
         })
     }
-
 
     return (
         <PublisherContext.Provider value={{
@@ -226,3 +215,15 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
         </PublisherContext.Provider>
     )
 }
+
+function usePublisherContext(): PublisherContextTypes {
+    const context = useContext(PublisherContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { PublisherProvider, usePublisherContext, };

@@ -1,5 +1,5 @@
-import { NoticeContext } from '@/context/NoticeContext'
-import React, { useContext, useState } from 'react'
+import { useNoticesContext } from '@/context/NoticeContext'
+import React, { useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css' // Estilos padrão do DatePicker
 import { registerLocale } from 'react-datepicker'
@@ -9,7 +9,7 @@ registerLocale('pt-BR', ptBR)
 
 export default function Calendar() {
 
-    const { setExpiredNotice } = useContext(NoticeContext)
+    const { setExpiredNotice } = useNoticesContext()
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
     const handleDateChange = (date: Date) => {

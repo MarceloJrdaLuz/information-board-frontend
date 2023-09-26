@@ -3,8 +3,8 @@ import * as yup from 'yup'
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useContext, useEffect, useState } from "react"
-import { NoticeContext } from "@/context/NoticeContext"
+import { useEffect, useState } from "react"
+import { useNoticesContext } from "@/context/NoticeContext"
 import { FormValues, IFormNoticeProps } from "./types"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import InputError from "@/Components/InputError"
@@ -14,7 +14,7 @@ import Button from "@/Components/Button"
 
 export default function FormNotice({ congregationNumber }: IFormNoticeProps) {
 
-    const { createNotice, setCongregationNumber } = useContext(NoticeContext)
+    const { createNotice, setCongregationNumber } = useNoticesContext()
     const [recurrentNotice, setRecurrentNotice] = useState(false)
 
     useEffect(() => {

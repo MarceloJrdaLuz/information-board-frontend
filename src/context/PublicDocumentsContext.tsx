@@ -1,6 +1,6 @@
 import { ICongregation, IDocument } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
-import { createContext, ReactNode, useEffect, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 
 type PublicDocumentsContextTypes = {
@@ -13,9 +13,9 @@ type PublicDocumentsContextProviderProps = {
     children: ReactNode
 }
 
-export const PublicDocumentsContext = createContext({} as PublicDocumentsContextTypes)
+const PublicDocumentsContext = createContext({} as PublicDocumentsContextTypes)
 
-export function PublicDocumentsProvider(props: PublicDocumentsContextProviderProps) {
+function PublicDocumentsProvider(props: PublicDocumentsContextProviderProps) {
 
     const [congregationNumber, setCongregationNumber] = useState('')
     const [congregationId, setCongregationId] = useState<string | undefined>('')
@@ -37,14 +37,13 @@ export function PublicDocumentsProvider(props: PublicDocumentsContextProviderPro
         setDocuments(documentsData)
     }, [documentsData, documents])
 
-    function filterDocuments(category: string){
+    function filterDocuments(category: string) {
         if (documents) {
             const documentsFiltered = documents.filter(document => document.category.name === category)
             return documentsFiltered
         }
         return []
     }
-
 
     return (
         <PublicDocumentsContext.Provider value={{
@@ -54,3 +53,15 @@ export function PublicDocumentsProvider(props: PublicDocumentsContextProviderPro
         </PublicDocumentsContext.Provider>
     )
 }
+
+function usePublicDocumentsContext(): PublicDocumentsContextTypes {
+    const context = useContext(PublicDocumentsContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { PublicDocumentsProvider, usePublicDocumentsContext, };

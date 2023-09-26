@@ -1,23 +1,19 @@
 import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import CleanIcon from "@/Components/Icons/CleanIcon"
-import MeetingIcon from "@/Components/Icons/MeetingIcon"
 import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
-import PreachingIcon from "@/Components/Icons/PreachingIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
 import ReportIcon from "@/Components/Icons/ReportIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import NoticesModal from "@/Components/NoticesModal"
-import { CongregationContext } from "@/context/CongregationContext"
-import { NoticeContext } from "@/context/NoticeContext"
-import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { useNoticesContext } from "@/context/NoticeContext"
 import { CongregationTypes, ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { CalculatorIcon, CalendarDaysIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -35,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Home({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
     const router = useRouter()
     const { number } = router.query
-    const { setCongregationNumber } = useContext(NoticeContext)
+    const { setCongregationNumber } = useNoticesContext()
 
     const [notices, setNotices] = useState<INotice[]>()
     const [congregationId, setCongregationId] = useState<string | undefined>('')
@@ -69,7 +65,7 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
             setCongregationNumber(number as string)
         }
     }, [data, number, setCongregationNumber])
-    
+
 
     return (
         <div className=" flex flex-col bg-gray-200">

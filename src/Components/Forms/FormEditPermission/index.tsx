@@ -5,9 +5,9 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm, FieldValues } from 'react-hook-form'
-import { useContext, useEffect, useState } from 'react'
-import { IPermission, IPublisher } from '@/entities/types'
-import { PublisherContext } from '@/context/PublisherContext'
+import { useEffect, useState } from 'react'
+import { IPermission } from '@/entities/types'
+import { usePublisherContext } from '@/context/PublisherContext'
 import { useFetch } from '@/hooks/useFetch'
 import Router from 'next/router'
 import { api } from '@/services/api'
@@ -27,7 +27,7 @@ type CombinedValues = FieldValues & FormValues
 
 export default function FormEditPermission({ permission_id }: IUpdatePermission) {
 
-    const { updatePublisher } = useContext(PublisherContext)
+    const { updatePublisher } = usePublisherContext()
     const [permissionToUpdate, setPermissionToUpdate] = useState<IPermission>()
 
     const { data } = useFetch(`/permission/${permission_id}`)

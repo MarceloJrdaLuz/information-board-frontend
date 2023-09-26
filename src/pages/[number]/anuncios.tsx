@@ -3,8 +3,7 @@ import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import Notices from "@/Components/Notices"
 import PdfViewer from "@/Components/PdfViewer"
-import { NoticeContext } from "@/context/NoticeContext"
-import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { useNoticesContext } from "@/context/NoticeContext"
 import { Categories, CongregationTypes, ICongregation, IDocument, INotice } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { useFetch } from "@/hooks/useFetch"
@@ -30,7 +29,7 @@ export default function NoticesPage({ circuit: congregationCircuit, name: congre
     const router = useRouter()
     const { number } = router.query
 
-    const { setCongregationNumber } = useContext(NoticeContext)
+    const { setCongregationNumber } = useNoticesContext()
     const [notices, setNotices] = useState<INotice[]>()
     const [congregationId, setCongregationId] = useState<string | undefined>('')
 

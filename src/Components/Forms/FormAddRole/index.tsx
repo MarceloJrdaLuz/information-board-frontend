@@ -3,8 +3,8 @@ import * as yup from 'yup'
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useContext, useEffect, useState } from "react"
-import {  PermissionAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { useEffect, useState } from "react"
+import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { PermissionType } from "@/entities/types"
 import { api } from "@/services/api"
 import { IconDelete } from "@/assets/icons"
@@ -15,7 +15,7 @@ import Button from "@/Components/Button"
 
 export default function FormAddRole() {
 
-    const { createRole } = useContext(PermissionAndRolesContext)
+    const { createRole } = usePermissionsAndRolesContext()
     const [permissions, setPermissions] = useState<PermissionType[]>([])
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [permissionSelected, setPermissionsSelected] = useState<string[]>([])
@@ -42,7 +42,7 @@ export default function FormAddRole() {
 
                 const optionsPermissionFilter = optionsPermissions.filter(optionPermission => !permissionSelected.includes(optionPermission.name))
                 setPermissions(optionsPermissionFilter)
-    
+
             }).catch(err => console.log(err))
         }
         getPermissions()
@@ -62,9 +62,9 @@ export default function FormAddRole() {
     })
 
     function onSubmit(data: { name: string, description: string }) {
-        toast.promise(createRole( data.name, data.description, permissionSelectedsIds), {
+        toast.promise(createRole(data.name, data.description, permissionSelectedsIds), {
             pending: "Criando nova permissão"
-        })  
+        })
         reset()
         setPermissionsSelected([])
     }

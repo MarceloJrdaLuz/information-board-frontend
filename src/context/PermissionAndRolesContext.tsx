@@ -1,8 +1,9 @@
-import { createContext, ReactNode } from "react"
+import { createContext, ReactNode, useContext } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { useAtom } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type PermissionAndRolesContextTypes = {
     createPermission: (name: string, description: string) => Promise<any>
@@ -30,16 +31,11 @@ export type FormUserRoles = {
     roles: string[]
 }
 
-export const PermissionAndRolesContext = createContext({} as PermissionAndRolesContextTypes)
+const PermissionAndRolesContext = createContext({} as PermissionAndRolesContextTypes)
 
-export function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProps) {
+function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProps) {
 
-    const [, setDisabled] = useAtom(buttonDisabled)
-    const [, setResetFormValue] = useAtom(resetForm)
-    const [, setSuccessFormSendValue] = useAtom(successFormSend)
-    const [, setErrorFormSendValue] = useAtom(errorFormSend)
-
-
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     async function createPermission(name: string, description: string) {
 
@@ -48,25 +44,16 @@ export function PermissionAndRolesProvider(props: PermissionAndRolesContextProvi
             description
         }).then(res => {
             toast.success('Permissão criada com sucesso!')
-            setResetFormValue(true)
-            setSuccessFormSendValue(true)
-            setDisabled(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setSuccessFormSendValue(false)
-                setDisabled(false)
-            }, 6000)
-            setErrorFormSendValue(false)
+            handleSubmitSuccess()
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            setDisabled(true)
-            setErrorFormSendValue(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setDisabled(false)
-            }, 6000)
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError()
+            if (message === 'Permission already exists') {
+                toast.error('Permissão já existe no banco de dados!')
+            } else {
+                console.log(err)
+                toast.error('Ocorreu um erro no servidor!')
+            }
         })
     }
 
@@ -77,24 +64,11 @@ export function PermissionAndRolesProvider(props: PermissionAndRolesContextProvi
             permissions
         }).then(res => {
             toast.success('Função criada com sucesso!')
-            setResetFormValue(true)
-            setSuccessFormSendValue(true)
-            setDisabled(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setSuccessFormSendValue(false)
-                setDisabled(false)
-            }, 6000)
-            setErrorFormSendValue(false)
+            handleSubmitSuccess()
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            setDisabled(true)
-            setErrorFormSendValue(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setDisabled(false)
-            }, 6000)
+            handleSubmitError()
             if (message === 'Role already exists') {
                 toast.error('Essa função já existe!')
             } else {
@@ -108,24 +82,11 @@ export function PermissionAndRolesProvider(props: PermissionAndRolesContextProvi
             roles
         }).then(res => {
             toast.success('Função atribuída ao usuário com sucesso!')
-            setResetFormValue(true)
-            setSuccessFormSendValue(true)
-            setDisabled(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setSuccessFormSendValue(false)
-                setDisabled(false)
-            }, 6000)
-            setErrorFormSendValue(false)
+            handleSubmitSuccess()
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            setDisabled(true)
-            setErrorFormSendValue(true)
-            setTimeout(() => {
-                setResetFormValue(false)
-                setDisabled(false)
-            }, 6000)
+            handleSubmitError()
             toast.error('Ocorreu um erro no servidor')
         })
     }
@@ -138,3 +99,15 @@ export function PermissionAndRolesProvider(props: PermissionAndRolesContextProvi
         </PermissionAndRolesContext.Provider>
     )
 }
+
+function usePermissionsAndRolesContext(): PermissionAndRolesContextTypes {
+    const context = useContext(PermissionAndRolesContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { PermissionAndRolesProvider, usePermissionsAndRolesContext, };

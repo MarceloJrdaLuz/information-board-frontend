@@ -6,6 +6,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { v4 as uuidv4 } from "uuid"
 import { filesize } from "filesize"
 import { CongregationContext } from "./CongregationContext"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
@@ -19,14 +20,13 @@ type DocumentsContextProviderProps = {
     children: ReactNode
 }
 
-export const DocumentsContext = createContext({} as DocumentsContextTypes)
+const DocumentsContext = createContext({} as DocumentsContextTypes)
 
-export function DocumentsProvider(props: DocumentsContextProviderProps) {
+function DocumentsProvider(props: DocumentsContextProviderProps) {
 
     const { congregation: congregationUser } = useContext(CongregationContext)
     const congregation_id = congregationUser?.id
 
-    const [documents, setDocuments] = useState<IDocument[] | undefined>([])
     const [documentCategoryId, setDocumentCategoryId] = useState("")
     const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
 
@@ -162,3 +162,15 @@ export function DocumentsProvider(props: DocumentsContextProviderProps) {
         </DocumentsContext.Provider>
     )
 }
+
+function useDocumentsContext(): DocumentsContextTypes {
+    const context = useContext(DocumentsContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { DocumentsProvider, useDocumentsContext, };

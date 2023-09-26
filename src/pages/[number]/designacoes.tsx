@@ -4,7 +4,7 @@ import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
-import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { Categories, CongregationTypes, IDocument } from "@/entities/types"
 import DateConverter, { meses } from "@/functions/meses"
 import { removeMimeType } from "@/functions/removeMimeType"
@@ -12,7 +12,7 @@ import { threeMonths } from "@/functions/threeMonths"
 import { api } from "@/services/api"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -31,7 +31,7 @@ export default function Designacoes({circuit: congregationCircuit, name: congreg
 
     const router = useRouter()
     const { number } = router.query
-    const { setCongregationNumber, documents, filterDocuments } = useContext(PublicDocumentsContext)
+    const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
     const [pdfShow, setPdfShow] = useState(false)
     const [publicOptionsShow, setPublicOptionsShow] = useState(false)

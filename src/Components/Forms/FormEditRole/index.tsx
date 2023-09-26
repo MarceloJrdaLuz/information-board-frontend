@@ -5,9 +5,8 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm, FieldValues } from 'react-hook-form'
-import { useContext, useEffect, useState } from 'react'
-import { IRole, IPublisher, PermissionType, RolesType } from '@/entities/types'
-import { PublisherContext } from '@/context/PublisherContext'
+import { useEffect, useState } from 'react'
+import { PermissionType, RolesType } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
 import Router from 'next/router'
 import { api } from '@/services/api'
@@ -53,7 +52,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
 
                 const optionsPermissionFilter = optionsPermissions.filter(optionPermission => !permissionSelected.includes(optionPermission.name))
                 setPermissions(optionsPermissionFilter)
-    
+
             }).catch(err => console.log(err))
         }
         getPermissions()
@@ -66,7 +65,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
     useEffect(() => {
         if (data) {
             setRoleToUpdate(data)
-            if(data.permissions.length  > 0){
+            if (data.permissions.length > 0) {
                 const actualPermissions = data.permissions.map(permission => (
                     permission.name
                 ))
@@ -110,7 +109,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
     async function updateRole(role_id: string, name?: string, description?: string, permissions?: string[]) {
         await api.put(`/role/${role_id}`, {
             name,
-            description, 
+            description,
             permissions
         }).then(res => {
             toast.success('Permissão atualizado com sucesso!')
@@ -126,7 +125,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
             updateRole(
                 role_id,
                 data.name,
-                data.description, 
+                data.description,
                 permissionSelectedsIds
             ),
             {

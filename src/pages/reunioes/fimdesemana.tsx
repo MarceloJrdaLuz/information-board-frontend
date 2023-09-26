@@ -1,12 +1,12 @@
 import ContentDashboard from "@/Components/ContentDashboard"
 import FileList from "@/Components/FileList"
 import Layout from "@/Components/Layout"
-import { DocumentsContext } from "@/context/DocumentsContext"
+import { useDocumentsContext } from "@/context/DocumentsContext"
 import { Categories, ICategory } from "@/entities/types"
 import { getAPIClient } from "@/services/axios"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Upload from "@/Components/Upload"
 import { useFetch } from "@/hooks/useFetch"
 import { useAtom } from "jotai"
@@ -16,7 +16,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 export default function FimDeSemana() {
 
     const [category, setCategory] = useState<ICategory>()
-    const { uploadedFiles, setDocumentCategoryId } = useContext(DocumentsContext)
+    const { uploadedFiles, setDocumentCategoryId } = useDocumentsContext()
     const { data: categories } = useFetch<ICategory[]>('/category')
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)

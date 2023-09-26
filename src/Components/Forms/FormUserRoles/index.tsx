@@ -1,8 +1,8 @@
 import FormStyle from "../FormStyle"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { useContext, useEffect, useState } from "react"
-import { PermissionAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { useEffect, useState } from "react"
+import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { RolesType, UserTypes } from "@/entities/types"
 import { api } from "@/services/api"
 import Dropdown from "@/Components/Dropdown"
@@ -13,7 +13,7 @@ import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/ato
 
 export default function FormUserRoles() {
 
-    const { userRoles } = useContext(PermissionAndRolesContext)
+    const { userRoles } = usePermissionsAndRolesContext()
     const [roles, setRoles] = useState<RolesType[]>([])
     const [users, setUsers] = useState<{ id: string, email: string }[]>([])
     const [userSelected, setUserSelected] = useState('')
@@ -24,7 +24,6 @@ export default function FormUserRoles() {
     const [rolesSelecteds, setRolesSelected] = useState<string[]>([])
     const [rolesSelectedsIds, setRolesSelectedsIds] = useState([''])
 
-    const [resetFormValue, setResetFormValue] = useAtom(resetForm)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)

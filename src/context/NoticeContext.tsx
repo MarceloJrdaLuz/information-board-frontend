@@ -4,8 +4,9 @@ import { api } from "@/services/api"
 import { CongregationContext } from "./CongregationContext"
 import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
+import { useSubmitContext } from "./SubmitFormContext"
 
-type NoticeContextTypes = {
+type NoticesContextTypes = {
     createNotice: (
         title: string,
         text: string,
@@ -20,9 +21,9 @@ type NoticeContextProviderProps = {
     children: ReactNode
 }
 
-export const NoticeContext = createContext({} as NoticeContextTypes)
+const NoticesContext = createContext({} as NoticesContextTypes)
 
-export function NoticeProvider(props: NoticeContextProviderProps) {
+function NoticesProvider(props: NoticeContextProviderProps) {
 
     const [expiredNotice, setExpiredNotice] = useState<Date>()
 
@@ -31,6 +32,8 @@ export function NoticeProvider(props: NoticeContextProviderProps) {
 
     const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
     const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
+
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     useEffect(() => {
         if (congregationNumber) {
@@ -54,18 +57,32 @@ export function NoticeProvider(props: NoticeContextProviderProps) {
             expired: expiredNotice ?? null
         }).then(res => {
             toast.success('Anúncio criado com sucesso!')
+            handleSubmitSuccess()
         }).catch(err => {
             console.log(err)
+            handleSubmitError()
             const { response: { data: { message } } } = err
             toast.error('Ocorreu um erro no servidor!')
         })
     }
 
     return (
-        <NoticeContext.Provider value={{
+        <NoticesContext.Provider value={{
             createNotice, setExpiredNotice, setCongregationNumber
         }}>
             {props.children}
-        </NoticeContext.Provider>
+        </NoticesContext.Provider>
     )
 }
+
+function useNoticesContext(): NoticesContextTypes {
+    const context = useContext(NoticesContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { NoticesProvider, useNoticesContext };

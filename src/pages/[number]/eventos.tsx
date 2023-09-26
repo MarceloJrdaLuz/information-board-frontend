@@ -2,13 +2,13 @@ import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
-import { PublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { Categories, CongregationTypes, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { api } from "@/services/api"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -23,11 +23,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 }
 
-export default function Eventos({circuit: congregationCircuit, name: congregationName, number: congregationNumber}: CongregationTypes) {
+export default function Eventos({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
 
     const router = useRouter()
     const { number } = router.query
-    const { setCongregationNumber, documents, filterDocuments } = useContext(PublicDocumentsContext)
+    const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
     const [pdfShow, setPdfShow] = useState(false)
     const [pdfUrl, setPdfUrl] = useState('')
@@ -56,10 +56,10 @@ export default function Eventos({circuit: congregationCircuit, name: congregatio
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
                     {documentsFilter?.map(document => (
                         <div key={document.id}>
-                            <ButtonHome 
-                            onClick={() => { handleButtonClick(document.url) }} 
-                            texto={removeMimeType(document.fileName)} 
-                            className="opacity-90"
+                            <ButtonHome
+                                onClick={() => { handleButtonClick(document.url) }}
+                                texto={removeMimeType(document.fileName)}
+                                className="opacity-90"
                             />
                         </div>
                     ))}

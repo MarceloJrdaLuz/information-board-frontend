@@ -7,7 +7,7 @@ import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
 import { useContext, useState } from 'react'
 import { AuthContext } from '@/context/AuthContext'
-import { PublisherContext } from '@/context/PublisherContext'
+import { usePublisherContext } from '@/context/PublisherContext'
 import Router from 'next/router'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
@@ -20,15 +20,14 @@ import { buttonDisabled, errorFormSend, resetForm, successFormSend } from '@/ato
 
 export default function FormAddPublisher() {
 
-    const { createPublisher } = useContext(PublisherContext)
+    const { createPublisher } = usePublisherContext()
     const { user } = useContext(AuthContext)
     const congregationUser = user?.congregation
-    
-    
+
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
-    
+
     const [resetFormValue, setResetFormValue] = useAtom(resetForm)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)

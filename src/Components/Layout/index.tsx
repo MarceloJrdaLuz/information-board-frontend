@@ -278,7 +278,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {isAdminCongregation &&
+                {isAdminCongregation || isAdmin &&
                     <NavBar.ListOptions
                         key={"submenuAdministracao"}
                         showList={showSubMenu.includes('administracao')}

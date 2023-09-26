@@ -4,7 +4,6 @@ import { api } from "@/services/api"
 import { useContext, useEffect, useState } from "react"
 import CardCongregation from "../CardCongregation"
 import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
-import FormAddCongregation from "../FormAddCongregation"
 import { PlusIcon } from "lucide-react"
 import Router from "next/router"
 

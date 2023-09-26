@@ -5,9 +5,9 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm, FieldValues } from 'react-hook-form'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IPublisher } from '@/entities/types'
-import { PublisherContext } from '@/context/PublisherContext'
+import { usePublisherContext } from '@/context/PublisherContext'
 import { useFetch } from '@/hooks/useFetch'
 import Router from 'next/router'
 import CheckboxMultiple from '@/Components/CheckBoxMultiple'
@@ -26,7 +26,7 @@ type CombinedValues = FieldValues & FormValues
 
 export default function FormEditPublisher(props: IUpdatePublisher) {
 
-    const { updatePublisher } = useContext(PublisherContext)
+    const { updatePublisher } = usePublisherContext()
     const [publisherToUpdate, setPublisherToUpdate] = useState<IPublisher>()
 
     const { data } = useFetch(`/publisher/${props.id}`)

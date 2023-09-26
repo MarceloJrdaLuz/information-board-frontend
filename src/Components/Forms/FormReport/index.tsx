@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useContext, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 import Input from "../../Input"
 import FormStyle from "../FormStyle"
 import InputError from "../../InputError"
@@ -12,7 +12,7 @@ import { meses } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
 import { IPublisherList } from "@/entities/types"
 import DropdownSearch from "../../DropdownSearch"
-import { PublisherContext } from "@/context/PublisherContext"
+import { usePublisherContext } from "@/context/PublisherContext"
 import CheckboxBoolean from "../../CheckboxBoolean"
 import { ArrowLeftIcon } from "lucide-react"
 import { api } from "@/services/api"
@@ -25,8 +25,7 @@ interface IRelatorioFormProps {
 
 export default function FormReport(props: IRelatorioFormProps) {
     const { data } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
-    const { createReport, createConsentRecord } = useContext(PublisherContext)
-
+    const { createReport, createConsentRecord } = usePublisherContext()
     const [month, setMonth] = useState('')
     const [year, setYear] = useState('')
     const [optionsDrop, setOptionsDrop] = useState<IPublisherList[]>([])

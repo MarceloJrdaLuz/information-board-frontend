@@ -3,17 +3,22 @@ import * as yup from 'yup'
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useContext} from "react"
-import { FormPermission, PermissionAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { useContext, useEffect } from "react"
+import { FormPermission, usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
 import Button from "@/Components/Button"
+import { useAtomValue } from "jotai"
+import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 
 export default function FormAddPermission() {
 
-    const { createPermission } = useContext(PermissionAndRolesContext)
-    
-    
+    const { createPermission } = usePermissionsAndRolesContext()
+    const resetFormValue = useAtomValue(resetForm)
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
+
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
         description: yup.string().required()
@@ -26,11 +31,14 @@ export default function FormAddPermission() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
+    useEffect(() => {
+        if (resetFormValue) reset()
+    }, [resetFormValue, reset])
+
     function onSubmit(data: FormPermission) {
         toast.promise(createPermission(data.name, data.description), {
             pending: "Criando nova permissão"
-        })  
-        reset()
+        })
     }
 
 
@@ -38,13 +46,13 @@ export default function FormAddPermission() {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
-   
+
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-            <div className={`w-full h-fit flex-col justify-center items-center`}>
+                <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Criar Permissão</div>
-                    
+
                     <Input type="text" placeholder="Nome da permissão" registro={{
                         ...register('name',
                             { required: "Campo obrigatório" })
@@ -59,7 +67,7 @@ export default function FormAddPermission() {
                         invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button type='submit' >Criar Permissão</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit' >Criar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

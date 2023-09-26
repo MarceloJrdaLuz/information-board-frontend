@@ -2,13 +2,13 @@ import { IFileListProps } from "./types"
 import { useContext, useState } from "react"
 import { Link2Icon, Trash2Icon, CheckIcon, XIcon, AlertTriangleIcon, AlertCircleIcon } from 'lucide-react'
 import Link from "next/link"
-import { DocumentsContext } from "@/context/DocumentsContext"
+import { useDocumentsContext } from "@/context/DocumentsContext"
 
 export default function FileList({ files }: IFileListProps) {
 
     const [confirmDeleteItem, setConfirmDeleteItem] = useState<string | null>(null)
 
-    const { deleteDocument, uploadedFiles } = useContext(DocumentsContext)
+    const { deleteDocument, uploadedFiles } = useDocumentsContext()
 
     const renderConfirmMessage = (document_id: string) => {
         return (
