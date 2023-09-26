@@ -1,4 +1,4 @@
-import FormLogin from "@/Components/FormLogin"
+import FormLogin from "@/Components/Forms/FormLogin"
 import InformationBoardImage from "@/Components/InformationBoardImage"
 
 export default function Login() {

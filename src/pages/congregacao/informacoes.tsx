@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormUpdateCongregation from "@/Components/FormUpdateCongregation"
+import FormUpdateCongregation from "@/Components/Forms/FormUpdateCongregation"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { AuthContext } from "@/context/AuthContext"

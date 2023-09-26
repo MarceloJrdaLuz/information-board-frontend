@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditPublisher from "@/Components/FormEditPublisher"
+import FormEditPublisher from "@/Components/Forms/FormEditPublisher"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"

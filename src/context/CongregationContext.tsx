@@ -129,6 +129,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
             .catch(err => {
                 const { response: { data: { message } } } = err
                 if (message === "User code not exists") toast.error('Código de usuário não existe!')
+                if (message === "Congregation not exists") toast.error('Congregação não existe!') 
                 else console.log(err)
             })
     }

@@ -1,6 +1,5 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
-import ButtonVariants from "@/Components/ButtonVariants"
 import ContentDashboard from "@/Components/ContentDashboard"
 import GroupPublishers from "@/Components/GroupPublishers"
 import Layout from "@/Components/Layout"
@@ -129,23 +128,23 @@ export default function AddPublicadoresGrupo() {
                     {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
                     <div className="flex flex-col p-2 gap-1">
-                        <ButtonVariants
+                        <Button
                             className={`${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
                             size="sm"
                             onClick={() => {
                                 setGroupPublisherListOption('add-publishers')
                                 setSelectedPublishers([])
                             }}
-                        >Adicionar Publicadores</ButtonVariants>
+                        >Adicionar Publicadores</Button>
 
-                        <ButtonVariants
+                        <Button
                             className={`${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
                             size='sm'
                             remove
                             onClick={() => {
                                 setGroupPublisherListOption('remove-publishers')
                                 setSelectedPublishers([])
-                            }} >Remover publicadores</ButtonVariants>
+                            }} >Remover publicadores</Button>
                     </div>
                 </div>
                 <div className={`flex flex-col px-4 flex-wrap`}>
@@ -209,7 +208,7 @@ export default function AddPublicadoresGrupo() {
                     </div>
                     {groupPublisherListOption !== 'disabled' &&
                         <div className={`flex justify-center w-full mt-2`}>
-                            <ButtonVariants disabled={selectedPublishers.length === 0 && true} success={dataSuccess} remove={groupPublisherListOption === 'remove-publishers' && selectedPublishers.length > 0 && true} onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup}>{groupPublisherListOption === 'add-publishers' ? 'Adicionar' : 'Remover'}</ButtonVariants>
+                            <Button disabled={selectedPublishers.length === 0 && true} success={dataSuccess} remove={groupPublisherListOption === 'remove-publishers' && selectedPublishers.length > 0 && true} onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup}>{groupPublisherListOption === 'add-publishers' ? 'Adicionar' : 'Remover'}</Button>
                         </div>
                     }
 

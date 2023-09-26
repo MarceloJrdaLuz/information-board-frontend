@@ -3,6 +3,9 @@ import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { getCookie } from "cookies-next"
 import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
+import Router from "next/router"
+import { useAtom } from "jotai"
+import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -53,6 +56,10 @@ export const PublisherContext = createContext({} as PublisherContextTypes)
 export function PublisherProvider(props: PublisherContextProviderProps) {
 
     const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
+    const [, setDisabled] = useAtom(buttonDisabled)
+    const [, setResetFormValue] = useAtom(resetForm)
+    const [, setSuccessFormSendValue] = useAtom(successFormSend)
+    const [, setErrorFormSendValue] = useAtom(errorFormSend)
 
 
     async function createPublisher(
@@ -75,10 +82,30 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
             dateImmersed
         }).then(res => {
             toast.success('Publicador criado com sucesso!')
+            setSuccessFormSendValue(true)
+            setDisabled(true)
+            setResetFormValue(true)
+            setTimeout(() => {
+                setSuccessFormSendValue(false)
+                setResetFormValue(false)
+                setDisabled(false)
+                Router.push('/publicadores')
+            }, 6000)
+            setErrorFormSendValue(false)
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            if (message === 'A nickname is required to differentiate the publisher') {
+                toast.error('Outro publicador com o mesmo nome na congregação. Forneça um apelido para diferenciar!')
+                setErrorFormSendValue(true)
+                setDisabled(true)
+                setTimeout(() => {
+                    setErrorFormSendValue(false)
+                    setDisabled(false)
+                }, 6000)
+            } else {
+                console.log(err)
+                toast.error('Ocorreu um erro no servidor!')
+            }
         })
     }
 
@@ -150,7 +177,7 @@ export function PublisherProvider(props: PublisherContextProviderProps) {
     async function createConsentRecord(publisher: IPublisherConsent, deviceId?: string) {
 
         console.log(deviceId)
-       
+
         await api.post<ConsentRecordTypes>('/consentRecord', {
             publisher: {
                 fullName: publisher.fullName,

@@ -1,4 +1,4 @@
-import FormForgotPassword from "@/Components/FormForgotPassword"
+import FormForgotPassword from "@/Components/Forms/FormForgotPassword"
 import Image from "next/image"
 
 export default function ForgotPassword() {

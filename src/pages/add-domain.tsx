@@ -5,10 +5,10 @@ import { parseCookies } from 'nookies'
 import { getAPIClient } from "@/services/axios"
 import Layout from "@/Components/Layout"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddDomain from "@/Components/FormAddDomain"
 import { useAtom } from "jotai"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import FormAddDomain from "@/Components/Forms/FormAddDomain"
 
 export default function AddDomain() {
     const { user: getUser, roleContains } = useContext(AuthContext)

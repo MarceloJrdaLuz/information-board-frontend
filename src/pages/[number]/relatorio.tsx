@@ -1,6 +1,6 @@
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
-import RelatorioForm from "@/Components/RelatorioForm"
+import FormReport from "@/Components/Forms/FormReport"
 import { CongregationTypes } from "@/entities/types"
 import { api } from "@/services/api"
 import { GetServerSideProps } from 'next'
@@ -23,7 +23,7 @@ export default function Relatorio({circuit: congregationCircuit, name: congregat
         <>
             <HeadComponent title="Relatório" urlMiniatura="https://luisgomes.netlify.app/images/miniatura.png" />
             <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} bgFundo={'bg-teste-100'} heightConteudo="full">
-                <RelatorioForm congregationNumber={congregationNumber} />
+                <FormReport congregationNumber={congregationNumber} />
             </LayoutPrincipal>
         </>
     )

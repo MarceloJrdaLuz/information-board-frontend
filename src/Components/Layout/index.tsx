@@ -15,10 +15,8 @@ import SecurityIcon from "../Icons/SecurityIcon"
 import PublisherIcon from "../Icons/PublisherIcon"
 import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
-import { useAtom } from "jotai"
-import { toogleMenu } from "@/atoms/atom"
-import GroupOverseersIcon from "../Icons/GroupOverseersIcon"
 import GroupIcon from "../Icons/GroupIcon"
+import PuzzleIcon from "../Icons/PuzzleIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -230,17 +228,17 @@ export default function Layout(props: LayoutProps) {
 
                 {isAdminCongregation &&
                     <NavBar.ListOptions
-                        key={"submenuRelatorios"}
-                        showList={showSubMenu.includes('relatorios')}
+                        key={"submenuCongregação"}
+                        showList={showSubMenu.includes('congregação')}
                         onClick={() => {
-                            if (showSubMenu.includes('relatorios')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'relatorios'))
+                            if (showSubMenu.includes('congregação')) {
+                                setShowSubMenu(prevState => prevState.filter(item => item !== 'congregação'))
                             } else {
-                                setShowSubMenu(prevState => [...prevState, 'relatorios'])
+                                setShowSubMenu(prevState => [...prevState, 'congregação'])
                             }
                         }}
-                        title="Relatórios"
-                        icon={ListChecksIcon}
+                        title="Congregação"
+                        icon={SalonIcon}
                     >
                         {isAdminCongregation &&
                             <NavBar.Options
@@ -326,7 +324,7 @@ export default function Layout(props: LayoutProps) {
                                     setIsMenuOpen(!isMenuOpen)
                                     Router.push('/add-domain')
                                 }}
-                                icon={ScreenShareIcon}
+                                icon={PuzzleIcon}
                                 active={props.pageActive === 'add-domain'}
                             /> : null
                         }

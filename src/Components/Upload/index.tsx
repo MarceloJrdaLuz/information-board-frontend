@@ -32,7 +32,7 @@ function Upload({acceptFiles}: IUploadProps) {
 
     if (isDragReject) {
       return (
-        <div className="w-full h-full flex justify-center items-center text-red-500">
+        <div className="w-full h-full flex justify-center items-center text-red-400">
           Tipo de arquivo não suportado!
         </div>
       )

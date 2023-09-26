@@ -5,7 +5,7 @@ import { IListItemsProps } from "./types";
 
 function ListGroups({ items, label, path }: IListItemsProps) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center">
+    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {items?.map(item => (
         <li
           className={`flex flex-col justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}

@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddCategory from "@/Components/FormAddCategory"
+import FormAddCategory from "@/Components/Forms/FormAddCategory"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
@@ -12,7 +12,7 @@ import { useEffect } from "react"
 export default function Categorias() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    
+
     useEffect(() => {
         setPageActive('Criar categoria')
     }, [setPageActive])

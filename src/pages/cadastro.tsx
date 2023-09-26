@@ -1,4 +1,4 @@
-import FormRegister from "@/Components/FormRegister"
+import FormRegister from "@/Components/Forms/FormRegister"
 import InformationBoardImage from "@/Components/InformationBoardImage"
 
 export default function Cadastro() {
