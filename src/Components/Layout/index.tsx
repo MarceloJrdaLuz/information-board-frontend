@@ -17,6 +17,7 @@ import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
 import GroupIcon from "../Icons/GroupIcon"
 import PuzzleIcon from "../Icons/PuzzleIcon"
+import NoticesIcon from "../Icons/NoticesIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -112,7 +113,7 @@ export default function Layout(props: LayoutProps) {
                             setIsMenuOpen(!isMenuOpen)
                             Router.push('/anuncios')
                         }}
-                        icon={MegaphoneIcon}
+                        icon={NoticesIcon}
                         active={props.pageActive === 'anuncios'}
                     />
                 }

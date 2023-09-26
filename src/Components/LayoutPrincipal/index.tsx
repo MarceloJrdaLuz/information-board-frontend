@@ -1,9 +1,11 @@
+import { ReactNode } from "react"
 import Conteudo from "../Conteudo"
 import Footer from "../Footer"
 import Header from "../Header"
 
 interface LayoutPrincipalProps {
-    children?: any
+    children?: ReactNode
+    image?: ReactNode
     className?: string
     header?: boolean
     heightConteudo?: string
@@ -18,7 +20,10 @@ export default function LayoutPrincipal(props: LayoutPrincipalProps) {
 
     return (
         <div className={`layout relative shadow shadow-gray-600 bg-gray-200 h-screen w-screen flex flex-col md:m-auto lg:shadow-none`}>
-            {!props.header ? null : <Header className={props.className} texto={props.textoHeader}></Header>}
+            {!props.header ? null :
+                <Header className={props.className} texto={props.textoHeader}>
+                    {props.image}
+                </Header>}
             <Conteudo bgFundo={props.bgFundo} hConteudo={props.heightConteudo}>
                 {props.children}
             </Conteudo>

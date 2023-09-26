@@ -5,6 +5,8 @@ import Router from 'next/router'
 // import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from "@/services/api"
 import { deleteCookie, setCookie, getCookie } from "cookies-next"
+import { useSetAtom } from "jotai"
+import { domainUrl } from "@/atoms/atom"
 
 type AuthContextTypes = {
     authenticated: boolean
@@ -41,6 +43,13 @@ export function AuthProvider(props: AuthContextProviderProps) {
     const [loading, setLoading] = useState(true)
     const [erroCadastro, setErroCadastro] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
+
+    const setDomainAtom = useSetAtom(domainUrl)
+
+    useEffect(() => {
+        const dominio = window.location.origin
+        setDomainAtom(dominio)
+      }, [setDomainAtom])
 
     useEffect(() => {
         const token = getCookie('quadro-token')

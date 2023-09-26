@@ -4,15 +4,20 @@ import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
+import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { Categories, CongregationTypes, IDocument } from "@/entities/types"
 import DateConverter, { meses } from "@/functions/meses"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { threeMonths } from "@/functions/threeMonths"
 import { api } from "@/services/api"
+import { useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import iconDesignacoes from '../../../public/images/designacoes-gray.png'
+import Image from "next/image"
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -27,10 +32,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 }
 
-export default function Designacoes({circuit: congregationCircuit, name: congregationName, number: congregationNumber, hourMeetingLifeAndMinistary, hourMeetingPublic, dayMeetingLifeAndMinistary, dayMeetingPublic}: CongregationTypes) {
+export default function Designacoes({ circuit: congregationCircuit, name: congregationName, number: congregationNumber, hourMeetingLifeAndMinistary, hourMeetingPublic, dayMeetingLifeAndMinistary, dayMeetingPublic }: CongregationTypes) {
 
     const router = useRouter()
     const { number } = router.query
+    const domain = useAtomValue(domainUrl)
+
+
     const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
     const [pdfShow, setPdfShow] = useState(false)
@@ -109,8 +117,10 @@ export default function Designacoes({circuit: congregationCircuit, name: congreg
 
     return !pdfShow ? (
         <>
-            <HeadComponent title="Designações" urlMiniatura="https://luisgomes.netlify.app/images/designacoes.png" />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} textoHeader="Designações Semanais" heightConteudo={'1/2'} header className='bg-designacoes bg-center bg-cover'>
+            <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
+            <LayoutPrincipal image={
+                <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
+            } congregationName={congregationName} circuit={congregationCircuit} textoHeader="Designações Semanais" heightConteudo={'1/2'} header className='bg-designacoes bg-center bg-cover'>
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
                     <div>
                         <ButtonHome

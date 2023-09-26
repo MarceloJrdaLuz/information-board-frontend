@@ -4,6 +4,8 @@ import FormReport from "@/Components/Forms/FormReport"
 import { CongregationTypes } from "@/entities/types"
 import { api } from "@/services/api"
 import { GetServerSideProps } from 'next'
+import { useAtomValue } from "jotai"
+import { domainUrl } from "@/atoms/atom"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -19,9 +21,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 export default function Relatorio({circuit: congregationCircuit, name: congregationName, number: congregationNumber}: CongregationTypes) {
+    const domain = useAtomValue(domainUrl)
+
     return (
         <>
-            <HeadComponent title="Relatório" urlMiniatura="https://luisgomes.netlify.app/images/miniatura.png" />
+            <HeadComponent title="Relatório" urlMiniatura={`${domain}/images/relatorio.png`} />
             <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} bgFundo={'bg-teste-100'} heightConteudo="full">
                 <FormReport congregationNumber={congregationNumber} />
             </LayoutPrincipal>
