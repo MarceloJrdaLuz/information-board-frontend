@@ -9,6 +9,7 @@ type PermissionAndRolesContextTypes = {
     createPermission: (name: string, description: string) => Promise<any>
     createRole: (name: string, description: string, permissions: string[]) => Promise<any>
     userRoles: (user_id: string, roles: string[]) => Promise<any>
+    deletePermission: (permission_id: string) => Promise<any>
 }
 
 type PermissionAndRolesContextProviderProps = {
@@ -76,6 +77,7 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
             }
         })
     }
+
     async function userRoles(user_id: string, roles: string[]) {
         api.put('/user/roles', {
             user_id,
@@ -91,9 +93,21 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
         })
     }
 
+    async function deletePermission(permission_id: string) {
+        api.delete(`/permission/${permission_id}`).then(res => {
+            toast.success('Permissão excluída com sucesso!')
+            handleSubmitSuccess()
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError()
+            toast.error('Ocorreu um erro no servidor')
+        })
+    }
+
     return (
         <PermissionAndRolesContext.Provider value={{
-            createPermission, createRole, userRoles
+            createPermission, createRole, userRoles, deletePermission
         }}>
             {props.children}
         </PermissionAndRolesContext.Provider>

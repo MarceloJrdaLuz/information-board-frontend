@@ -133,7 +133,7 @@ export default function FormAddGroup() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button type='submit' >Criar Grupo</Button>
+                        <Button disabled={(!selectedNumber || !selectedItem) && true} type='submit' >Criar Grupo</Button>
                     </div>
                 </div>
             </FormStyle>

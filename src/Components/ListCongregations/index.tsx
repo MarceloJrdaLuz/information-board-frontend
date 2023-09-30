@@ -1,7 +1,7 @@
-import { CongregationContext } from "@/context/CongregationContext"
+import { useCongregationContext } from "@/context/CongregationContext"
 import { ICongregation } from "@/entities/types"
 import { api } from "@/services/api"
-import { useContext, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 import CardCongregation from "../CardCongregation"
 import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
 import { PlusIcon } from "lucide-react"
@@ -25,7 +25,7 @@ export default function ListCongregations() {
         getCongregations()
     }, [])
 
-    const { setShowCongregationCreated } = useContext(CongregationContext)
+    const { setShowCongregationCreated } = useCongregationContext()
 
     let skeletonCongregations = Array(6).fill(0)
 

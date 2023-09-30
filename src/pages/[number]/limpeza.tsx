@@ -9,10 +9,12 @@ import { removeMimeType } from "@/functions/removeMimeType"
 import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconClean from '../../../public/images/limpeza-gray.png'
 import Image from "next/image"
+import Button from "@/Components/Button"
+import { ChevronsLeftIcon } from "lucide-react"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -38,9 +40,11 @@ export default function Limpeza({ circuit: congregationCircuit, name: congregati
     const [pdfUrl, setPdfUrl] = useState('')
     const [documentsFilter, setDocumentsFilter] = useState<IDocument[]>()
 
-    if (number) {
-        setCongregationNumber(number as string)
-    }
+    useEffect(() => {
+        if (number) {
+            setCongregationNumber(number as string)
+        }
+    }, [number, setCongregationNumber])
 
     useEffect(() => {
         if (documents) {
@@ -59,25 +63,19 @@ export default function Limpeza({ circuit: congregationCircuit, name: congregati
             <LayoutPrincipal image={
                 <Image src={iconClean} alt="Icone de produtos de limpeza" fill />
             } congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className=" bg-left-bottom bg-cover lg:bg-right" textoHeader="Limpeza do Salão" >
-
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
-                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
+                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
                     {documentsFilter?.map(document => (
-                        <div key={document.id}>
-                            <ButtonHome
-                                onClick={() => { handleButtonClick(document.url) }}
-                                texto={removeMimeType(document.fileName)}
-                                className="opacity-90"
-                            />
-                        </div>
+                        <Button className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                            {removeMimeType(document.fileName)}
+                        </Button>
                     ))
                     }
                 </div>
-                <ButtonHome
-                    href={`/${congregationNumber}`}
-                    texto='Voltar'
-                    className="w-1/2 hover:bg-primary-100"
-                />
+                <Button
+                    onClick={() => Router.push(`/${congregationNumber}`)}
+                    className="w-1/2 mx-auto"
+                ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal>
         </>
     ) : (

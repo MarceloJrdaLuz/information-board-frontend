@@ -45,6 +45,7 @@ type SubmitFormContextProviderProps = {
             setSuccessFormSendValue(false)
             setErrorFormSendValue(false)
             setDisabled(false)
+            setResetFormValue(false)
         }, 6000)
     }
 

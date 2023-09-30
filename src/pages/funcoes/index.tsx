@@ -1,4 +1,5 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
@@ -34,12 +35,16 @@ export default function Funcoes() {
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
-                        <button className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3 my-5 text-primary-200"><FunctionSquareIcon /><span className="text-primary-200 font-semibold pl-1"
+                        <Button
                             onClick={() => {
                                 Router.push('/funcoes/add')
-                            }}>Criar função</span></button>
+                            }}
+                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                            <FunctionSquareIcon />
+                            <span className="text-primary-200 font-semibold">Criar função</span>
+                        </Button>
                         {roles &&  (
-                            <ListItems items={roles} label="Funções" path="funcoes" />
+                            <ListItems onDelete={()=> {}} items={roles} label="Funções" path="funcoes" />
                         )}
                     </div>
                 </section>

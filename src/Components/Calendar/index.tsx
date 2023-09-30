@@ -7,15 +7,13 @@ import ptBR from 'date-fns/locale/pt-BR' // Importe a localização para o portu
 
 registerLocale('pt-BR', ptBR)
 
-export default function Calendar() {
+interface CalendarProps {
+    handleDateChange: (date: Date) => void
+    selectedDate: Date | null
+}
 
-    const { setExpiredNotice } = useNoticesContext()
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+export default function Calendar({ handleDateChange, selectedDate }: CalendarProps) {
 
-    const handleDateChange = (date: Date) => {
-        setSelectedDate(date)
-        setExpiredNotice(date)
-    }
 
     return (
         <div>

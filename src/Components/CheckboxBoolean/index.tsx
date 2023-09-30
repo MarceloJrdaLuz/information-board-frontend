@@ -1,18 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ICheckbox {
-  label: string;
-  checked?: boolean;
-  handleCheckboxChange: (checked: boolean) => void;
+  label: string
+  checked?: boolean
+  handleCheckboxChange: (checked: boolean) => void
 }
 
 export default function CheckboxBoolean(props: ICheckbox) {
-  const [checked, setChecked] = useState(props.checked || false);
+  const [checked, setChecked] = useState(props.checked || false)
+
+  useEffect(()=> {
+    if (props.checked !== undefined) {
+      setChecked(props.checked)
+    }
+  }, [props.checked])
 
   const handleCheckboxChange = (checked: boolean) => {
-    setChecked(checked);
-    props.handleCheckboxChange(checked);
-  };
+    setChecked(checked)
+    props.handleCheckboxChange(checked)
+  }
 
   return (
     <div className='flex justify-end items-center'>
@@ -26,5 +32,5 @@ export default function CheckboxBoolean(props: ICheckbox) {
       />
       <span>{props.label}</span>
     </div>
-  );
+  )
 }

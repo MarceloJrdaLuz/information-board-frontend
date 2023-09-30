@@ -1,14 +1,22 @@
+import Button from "@/Components/Button"
 import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
+import PreachingIcon from "@/Components/Icons/PreachingIcon"
+import PublicPreachingIcon from "@/Components/Icons/PublicPreachingIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
+import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { Categories, CongregationTypes, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { api } from "@/services/api"
+import { useAtomValue } from "jotai"
+import { ChevronsLeftIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import iconPreaching from '../../../public/images/campo-gray.png'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -26,6 +34,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Campo({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
     const router = useRouter()
     const { number } = router.query
+    const domain = useAtomValue(domainUrl);
+
     const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
     const [pdfShow, setPdfShow] = useState(false)
@@ -36,9 +46,11 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
     const [documentsFieldServiceFilter, setDocumentsFieldServiceFilter] = useState<IDocument[]>()
     const [documentsPublicServiceFilter, setDocumentsPublicServiceFilter] = useState<IDocument[]>()
 
-    if (number) {
-        setCongregationNumber(number as string)
-    }
+    useEffect(() => {
+        if (number) {
+            setCongregationNumber(number as string)
+        }
+    }, [number, setCongregationNumber])
 
     useEffect(() => {
         if (documents) {
@@ -54,51 +66,53 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
 
     return !pdfShow ? (
         <>
-            <HeadComponent title="Designações de Campo" urlMiniatura="https://luisgomes.netlify.app/images/campolight.png" />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
-                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
+            <HeadComponent title="Designações de Campo" urlMiniatura={`${domain}/images/campo.png`} />
+            <LayoutPrincipal
+                image={
+                    <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
+                }
+                congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
+                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                     <div>
-                        <ButtonHome
+                        <Button
                             onClick={() => { setFieldServiceOptionsShow(!fieldServiceOptionsShow) }}
-                            texto='Saídas de campo'
-                            className="hover:bg-primary-100"
-                        />
-                        <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                            className="w-full"
+                        ><PreachingIcon /> Saídas de Campo</Button>
+                        <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                             {fieldServiceOptionsShow ? documentsFieldServiceFilter?.map(document => (
-                                <div className="flex-1 min-w-[120px]" key={document.id}>
-                                    <ButtonHome
+                                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                    <Button
+                                        className="w-full"
                                         onClick={() => { handleButtonClick(document.url) }}
-                                        texto={removeMimeType(document.fileName)}
-                                        className="opacity-90" />
+                                    >
+                                        {removeMimeType(document.fileName)}
+                                    </Button>
                                 </div>
                             )) : null}
                         </div>
 
                         <div>
-                            <ButtonHome
+                            <Button
                                 onClick={() => { setLPublicServiceOptionsShow(!publicServiceOptionsShow) }}
-                                texto='Testemunho Público'
-                                className="hover:bg-primary-100"
-                            />
-                            <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                                className="w-full"
+                            ><PublicPreachingIcon />Testemunho Público</Button>
+                            <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                                 {publicServiceOptionsShow ? documentsPublicServiceFilter?.map(document => (
-                                    <div className="flex-1 min-w-[120px]" key={document.id}>
-                                        <ButtonHome
+                                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                        <Button
+                                            className="w-full"
                                             onClick={() => { handleButtonClick(document.url) }}
-                                            texto={removeMimeType(document.fileName)}
-                                            className="opacity-90"
-                                        />
+                                        >{removeMimeType(document.fileName)}</Button>
                                     </div>
                                 )) : null}
                             </div>
                         </div>
                     </div>
-                    <ButtonHome
-                        href={`/${congregationNumber}`}
-                        texto='Voltar'
-                        className="w-1/2 hover:bg-primary-100"
-                    />
+                    <Button
+                        onClick={() => router.push(`/${congregationNumber}`)}
+                        className="w-1/2 mx-auto"
+                    ><ChevronsLeftIcon />Voltar</Button>
                 </div>
             </LayoutPrincipal>
         </>

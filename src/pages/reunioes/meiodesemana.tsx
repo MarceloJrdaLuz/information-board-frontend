@@ -17,7 +17,7 @@ export default function MeioDeSemana() {
 
     const [category, setCategory] = useState<ICategory>()
     const { uploadedFiles, setDocumentCategoryId } = useDocumentsContext()
-    const { data: categories } = useFetch<ICategory[]>('/category')
+    const { data: categories } = useFetch<ICategory[]>('/categories')
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 

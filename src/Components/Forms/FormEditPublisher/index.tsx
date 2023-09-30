@@ -75,6 +75,14 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         'Auxiliar Indeterminado'
     ])
 
+    const getPrivilegeOptions = () => {
+        if (genderCheckboxSelected === 'Feminino') {
+            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado'];
+        } else {
+            return optionsCheckboxPrivileges[0]; // Use default options for other genders
+        }
+    }
+
     const esquemaValidacao = yup.object({
         fullName: yup.string().required(),
         nickname: yup.string()
@@ -132,11 +140,11 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                    <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={optionsCheckboxPrivileges[0]} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
-
                     <CheckboxUnique checked={genderCheckboxSelected} label="Genero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
 
                     <CheckboxUnique checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
+                    
+                    <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button type='submit' >Atualizar publicador</Button>

@@ -2,6 +2,8 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import GroupPublishers from "@/Components/GroupPublishers"
+import GroupIcon from "@/Components/Icons/GroupIcon"
+import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom } from "@/atoms/atom"
 import { AuthContext } from "@/context/AuthContext"
@@ -12,7 +14,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
@@ -99,7 +101,10 @@ export default function AddPublicadoresGrupo() {
             setGroupPublishers(filterPublishersGroup)
 
         }
-    }, [group_id, getPublishers, setGroupPublishers])
+        return () => {
+            setGroupPublisherListOption('disabled')
+        }
+    }, [group_id, getPublishers, setGroupPublishers, setGroupPublisherListOption])
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
@@ -127,7 +132,16 @@ export default function AddPublicadoresGrupo() {
                 <div className="flex justify-between w-full">
                     {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
-                    <div className="flex flex-col p-2 gap-1">
+                    <div className="flex p-2 gap-1 flex-wrap">
+                        <Button
+                            onClick={() => Router.push({
+                                pathname: `/grupos/${group_id}/mudar-dirigente`,
+                                query: { group_number: `${group_number}` }
+                            })}
+                        >
+                            <GroupOverseersIcon />
+                            Mudar dirigente
+                        </Button>
                         <Button
                             className={`${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
                             size="sm"
@@ -135,7 +149,10 @@ export default function AddPublicadoresGrupo() {
                                 setGroupPublisherListOption('add-publishers')
                                 setSelectedPublishers([])
                             }}
-                        >Adicionar Publicadores</Button>
+                        >
+                            <GroupIcon />
+                            Adicionar Publicadores
+                        </Button>
 
                         <Button
                             className={`${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
@@ -148,7 +165,7 @@ export default function AddPublicadoresGrupo() {
                     </div>
                 </div>
                 <div className={`flex flex-col px-4 flex-wrap`}>
-                {(groupPublisherListOption === 'add-publishers' || groupPublisherListOption === 'remove-publishers')  && <span className="py-4 text-primary-200 font-semibold">Selecione os publicadores</span>}
+                    {(groupPublisherListOption === 'add-publishers' || groupPublisherListOption === 'remove-publishers') && <span className="py-4 text-primary-200 font-semibold">Selecione os publicadores</span>}
                     <div className={`flex flex-col gap-4 ${groupPublisherListOption !== 'disabled' && 'lg:flex-row lg:justify-around'}`}>
                         {groupPublisherListOption !== 'add-publishers' && (
                             <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-full'} h-[300px]`}>
@@ -164,8 +181,16 @@ export default function AddPublicadoresGrupo() {
                                         }
                                     </span>
                                 </div>
-                                {listGroupPublishersShow && groupPublishers && groupPublishers.length > 0 &&
+                                {listGroupPublishersShow && groupPublishers && groupPublishers.length > 0 ? (
                                     <GroupPublishers key="publishersGroup" publishers={groupPublishers} group_id={group_id as string} />
+                                ) : (
+                                    <div
+                                        className={`my-1 w-full list-none  bg-white p-4`}
+                                    >
+                                        Esse grupo está vazio no momento!
+                                    </div>
+                                )
+
                                 }
                             </div>
                         )}

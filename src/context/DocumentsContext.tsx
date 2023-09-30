@@ -5,8 +5,7 @@ import { IDocument, IFile } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { v4 as uuidv4 } from "uuid"
 import { filesize } from "filesize"
-import { CongregationContext } from "./CongregationContext"
-import { useSubmitContext } from "./SubmitFormContext"
+import { useCongregationContext } from "./CongregationContext"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
@@ -24,7 +23,7 @@ const DocumentsContext = createContext({} as DocumentsContextTypes)
 
 function DocumentsProvider(props: DocumentsContextProviderProps) {
 
-    const { congregation: congregationUser } = useContext(CongregationContext)
+    const { congregation: congregationUser } = useCongregationContext()
     const congregation_id = congregationUser?.id
 
     const [documentCategoryId, setDocumentCategoryId] = useState("")

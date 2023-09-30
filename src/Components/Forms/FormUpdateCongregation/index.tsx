@@ -4,25 +4,19 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { EndweekDays, ICongregation, MidweekDays } from '@/entities/types'
-import { CongregationContext } from '@/context/CongregationContext'
+import { useCongregationContext } from '@/context/CongregationContext'
 import Image from 'next/image'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
 import Dropdown from '@/Components/Dropdown'
 
-
-
-
 export default function FormUpdateCongregation() {
-    const { updateCongregation } = useContext(CongregationContext)
-    const { congregation: congregationUser } = useContext(CongregationContext)
+    const { congregation: congregationUser, updateCongregation, setUploadedFile, uploadedFile } = useCongregationContext()
     const [dayMeetingLifeAndMinistary, setDayMeetingLifeAndMinistary] = useState(congregationUser?.dayMeetingLifeAndMinistary)
     const [dayMeetingPublic, setDayMeetingPublic] = useState(congregationUser?.dayMeetingPublic)
-
-    const { setUploadedFile, uploadedFile } = useContext(CongregationContext)
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -106,11 +100,7 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
-                    <Dropdown handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible/>
-
-                    <div className='my-2'>
-                        {dayMeetingLifeAndMinistary && <span className='flex justify-center items-center w-fit text-white p-4 rounded-xl bg-primary-100'>{dayMeetingLifeAndMinistary}</span>}
-                    </div>
+                    <Dropdown textAlign='left' selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
 
                     <Input type="time" placeholder="Horário meio de semana" registro={{
                         ...register('hourMeetingLifeAndMinistary')
@@ -118,12 +108,9 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.hourMeetingLifeAndMinistary?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingLifeAndMinistary?.type && <InputError type={errors.hourMeetingLifeAndMinistary.type} field='hourMeetingLifeAndMinistary' />}
 
-                    <Dropdown handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible/>
+                    <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 
-                    <div className='my-2'>
-                        {dayMeetingPublic && <span className='flex justify-center items-center w-fit text-white  p-4 rounded-xl bg-primary-100'>{dayMeetingPublic}</span>}
-                    </div>
-
+                    
                     <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')
                     }}

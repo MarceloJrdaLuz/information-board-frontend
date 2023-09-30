@@ -4,9 +4,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext } from 'react'
 import { ICongregation } from '@/entities/types'
-import { CongregationContext } from '@/context/CongregationContext'
+import { useCongregationContext } from '@/context/CongregationContext'
 import Router from 'next/router'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
@@ -23,7 +22,7 @@ export default function FormAddCongregation() {
         createCongregation, setUploadedFile,
         showCongregationCreated, setShowCongregationCreated,
         congregationCreated, setModalNewCongregation
-    } = useContext(CongregationContext)
+    } = useCongregationContext()
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),

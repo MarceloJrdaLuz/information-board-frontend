@@ -3,6 +3,7 @@ import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Layout from "@/Components/Layout"
 import ListRelatorios from "@/Components/ListMonths"
+import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { AuthContext } from "@/context/AuthContext"
@@ -112,16 +113,8 @@ export default function RelatorioMes() {
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-col mx-5">
-                            <span className="flex items-center justify-end  text-primary-200 font-bold">
-                                <span className={` ${relatoriosFaltaShow && 'rotate-180'} mr-1  cursor-pointer `} onClick={() => setRelatoriosFaltaShow(!relatoriosFaltaShow)}><ChevronDownIcon color="#178582" /></span>
-                                {`Relatórios em falta:`}
-                                <span className="text-primary-200 font-semibold pl-2">{relatoriosNaoEnviadosCount}</span>
-                            </span>
-                            <div className="w-10/12 my-4 self-center flex flex-wrap justify-between">
-                                {relatoriosFalta?.map(relatorio =>
-                                    <span key={v4()} className={`${!relatoriosFaltaShow && "hidden"} w-1/3 text-primary-200 font-semibold`}>{relatorio.fullName}
-                                    </span>)}
-                            </div>
+                            <MissingReportsModal missingReportsNumber={relatoriosNaoEnviadosCount} missingReports={relatoriosFalta}/>
+                            
                         </div>
                         {relatoriosFiltrados?.length > 1 ? (
                             <ul className="flex flex-wrap justify-evenly">

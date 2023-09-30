@@ -8,8 +8,10 @@ import ListGroups from "@/Components/ListGroups"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { AuthContext } from "@/context/AuthContext"
+import { useCongregationContext } from "@/context/CongregationContext"
 import { IGroup, IRole } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
+import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { FunctionSquareIcon } from "lucide-react"
@@ -17,17 +19,18 @@ import { GetServerSideProps } from "next"
 import Router from "next/router"
 import { parseCookies } from "nookies"
 import { useContext, useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 export default function Grupos() {
-    const { user } = useContext(AuthContext)
-    const congregationUser = user?.congregation
+    const { congregation } = useCongregationContext()
+    const congregation_id = congregation?.id
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
 
-    const fetchConfig = congregationUser ? `/groups/${congregationUser.id}` : ""
-    const { data: getGroups } = useFetch<IGroup[]>(fetchConfig)
+    const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
+    const { data: getGroups, mutate } = useFetch<IGroup[]>(fetchConfig)
 
     useEffect(() => {
         setGroups(getGroups)
@@ -36,6 +39,23 @@ export default function Grupos() {
     useEffect(() => {
         setPageActive('Grupos')
     }, [setPageActive])
+
+    async function deleteGroup(group_id: string) {
+        await api.delete(`group/${group_id}`).then(res => {
+            toast.success("Grupo excluido com sucesso!")
+            mutate()
+        }).catch(err => {
+            const { response: { data: { message } } } = err
+            console.log(message)
+            toast.error('Ocorreu um erro no servidor!')
+        })
+    }
+
+    function handleDelete(group_id: string) {
+        toast.promise(deleteGroup(group_id), {
+            pending: 'Excluindo grupo...',
+        })
+    }
 
     return (
         <Layout pageActive="grupos">
@@ -50,9 +70,9 @@ export default function Grupos() {
                             }}
                             className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
                             <GroupIcon />
-                            <span className="text-primary-200 font-semibold pl-1">Criar grupo</span>
+                            <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
-                        {groups && <ListGroups items={groups} path="" label="grupo" />}
+                        {groups && <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />}
                     </div>
                 </section>
             </ContentDashboard>

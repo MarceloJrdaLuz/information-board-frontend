@@ -8,7 +8,7 @@ export const errorFormSend = atom(false)
 export const buttonDisabled = atom(false)
 
 export const crumbsAtom = atom<IBreadCrumbs[]>([
-    {label: 'Início', link: '/dashboard'}
+    { label: 'Início', link: '/dashboard' }
 ])
 
 export const pageActiveAtom = atom('')
@@ -17,3 +17,5 @@ export const selectedPublishersAtom = atom<string[]>([])
 export const groupPublisherList = atom<'add-publishers' | 'remove-publishers' | 'disabled' | 'invisible'>('disabled')
 
 export const domainUrl = atom('')
+
+export const buttonStyledEdit = "flex items-center border rounded-none border-gray-300 bg-white hover:bg-sky-100 p-3 text-primary-200 font-semibold"

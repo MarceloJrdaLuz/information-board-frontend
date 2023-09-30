@@ -11,22 +11,23 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
-export default function Contas() {
+export default function EventosEspeciais() {
 
     const [category, setCategory] = useState<ICategory>()
     const { uploadedFiles, setDocumentCategoryId } = useDocumentsContext()
-    const { data: categories } = useFetch<ICategory[]>('/category')
+    const { data: categories } = useFetch<ICategory[]>('/categories')
+
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Financeiro')
+        setPageActive('Eventos especiais')
     }, [setPageActive])
 
     useEffect(() => {
-        const categoryFilter = categories?.filter(category => category.name === Categories.financeiro)
+        const categoryFilter = categories?.filter(category => category.name === Categories.eventos)
         if (categoryFilter) {
             setCategory(categoryFilter[0])
         }
@@ -35,9 +36,9 @@ export default function Contas() {
     }, [categories, setDocumentCategoryId, category])
 
     return (
-        <Layout pageActive="contas">
+        <Layout pageActive="eventosespeciais">
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive}/>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5">
                     <div className="w-full h-full">
                         <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
@@ -57,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    
+
     if (!token) {
         return {
             redirect: {
@@ -66,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
             }
         }
     }
-    
+
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 

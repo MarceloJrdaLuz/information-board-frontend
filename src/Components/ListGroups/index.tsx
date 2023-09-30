@@ -1,9 +1,12 @@
 import React from "react";
 import Router from "next/router";
-import { iconeEdit } from "@/assets/icons";
 import { IListItemsProps } from "./types";
+import Button from "../Button";
+import EditIcon from "../Icons/EditIcon";
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal";
+import { Trash } from "lucide-react";
 
-function ListGroups({ items, label, path }: IListItemsProps) {
+function ListGroups({ items, label, path, onDelete }: IListItemsProps) {
   return (
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {items?.map(item => (
@@ -22,22 +25,35 @@ function ListGroups({ items, label, path }: IListItemsProps) {
             </div>
           </div>
           <div className="flex w-full justify-between items-center p-6 text-primary-200 font-semibold">
-              <div>
-                <span>Dirigente:</span>
-                <span className="font-normal ml-5">{item.groupOverseers.fullName}</span>
-              </div>
-              <div className="flex pl-10 max-h-10">
-                <button
+            <div>
+              <span>Dirigente:</span>
+              <span className="font-normal ml-5">{item.groupOverseers?.fullName ?? "Sem dirigente"}</span>
+            </div>
+            <div className="flex pl-10 max-h-10">
+              <div className="gap-1 flex">
+                <Button
                   onClick={() => Router.push({
-                    pathname: `/grupos/${item.id}/add-publicadores`, 
-                    query: {group_number: `${item.number}`}
+                    pathname: `/grupos/${item.id}/add-publicadores`,
+                    query: { group_number: `${item.number}` }
                   })}
-                  className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3"
+                  outline
                 >
-                  {iconeEdit('#178582')} <span className="text-primary-200 font-semibold pl-1">Editar</span>
-                </button>
+                  <EditIcon />
+                  Editar
+                </Button>
+                <ConfirmDeleteModal
+                  onDelete={() => onDelete(`${item.id}`)}
+                  button={<Button
+                    outline
+                    className="text-red-400"
+                  >
+                    <Trash />
+                    Excluir
+                  </Button>}
+                />
               </div>
             </div>
+          </div>
         </li>
       ))}
     </ul>

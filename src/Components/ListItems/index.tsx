@@ -1,11 +1,15 @@
-import React from "react";
-import Router from "next/router";
-import { iconeEdit } from "@/assets/icons";
-import { IListItemsProps } from "./types";
+import React from "react"
+import Router from "next/router"
+import { IListItemsProps } from "./types"
+import Button from "../Button"
+import { EditIcon, Trash } from "lucide-react"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import { useAtomValue } from "jotai"
+import { buttonDisabled } from "@/atoms/atom"
 
-function ListItems({ items, label, path }: IListItemsProps) {
+function ListItems({ items, label, path, onDelete }: IListItemsProps) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center">
+    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {items?.map(item => (
         <li
           className={`flex flex-col justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
@@ -21,18 +25,32 @@ function ListItems({ items, label, path }: IListItemsProps) {
               <span>{item.description}</span>
             </div>
             <div className="flex pl-10 max-h-10">
-              <button
-                onClick={() => Router.push(`/${path}/edit/${item.id}`)}
-                className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3"
-              >
-                {iconeEdit('#178582')} <span className="text-primary-200 font-semibold pl-1">Editar</span>
-              </button>
+              <div className="gap-1 flex">
+                <Button
+                  onClick={() => Router.push(`/${path}/edit/${item.id}`)}
+                  outline
+                >
+                  <EditIcon />
+                  Editar
+                </Button>
+                <ConfirmDeleteModal
+                  onDelete={() => onDelete(`${item.id}`)}
+                  button={
+                    <Button
+                      outline
+                      className="text-red-400"
+                    >
+                      <Trash />
+                      Excluir
+                    </Button>}
+                />
+              </div>
             </div>
           </div>
         </li>
       ))}
     </ul>
-  );
+  )
 }
 
-export default ListItems;
+export default ListItems

@@ -11,11 +11,18 @@ import InputError from "@/Components/InputError"
 import Input from "@/Components/Input"
 import Calendar from "@/Components/Calendar"
 import Button from "@/Components/Button"
+import ModalHelp from "@/Components/ModalHelp"
+import { HelpCircle } from "lucide-react"
 
-export default function FormNotice({ congregationNumber }: IFormNoticeProps) {
+export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
+    const { setExpiredNotice } = useNoticesContext()
     const { createNotice, setCongregationNumber } = useNoticesContext()
+
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
     const [recurrentNotice, setRecurrentNotice] = useState(false)
+    const [modalHelpShow, setModalHelpShow] = useState(false)
 
     useEffect(() => {
         setCongregationNumber(congregationNumber)
@@ -46,15 +53,33 @@ export default function FormNotice({ congregationNumber }: IFormNoticeProps) {
         setRecurrentNotice(false)
     }
 
-
     function onError(error: any) {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
+
+    const handleDateChange = (date: Date) => {
+        setExpiredNotice(date)
+        setSelectedDate(date)
+    }
+
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
+            {modalHelpShow &&
+                <ModalHelp
+                    onClick={() => setModalHelpShow(false)}
+                    title="Como criar um anúncio"
+                    text={
+                        `
+    Ao criar o anúncio é necessário colocar um título, e uma descrição com o conteúdo do anúncio. Se você deseja que o anúncio apareça todos os meses em uma determinada época, abaixo vemos a opção "Anúncio recorrente". Selecionanda essa opção aparece dois campos para que você digite o dia inicial de cada mês que o anúncio deve aparecer, e também a data final. 
+    Por exemplo: se você quer que todo mês do dia 01 até o dia 10 fique aparecendo um anúncio sobre o relatório, escolha a opção "Anúncio recorrente" e depois digite no "Dia inicial o número 1", e no "Dia final" o número 10. A opção abaixo "Data de expiração" você deve usar para diz o último dia que você quer que o anúncio apareça para os irmãos. Ele vai ficar disponível até à 23:59 do dia selecionado. 
+    É importante também lembrar que se você não colocar uma data de expiração o anúncio vai ficar sempre sendo exibido. 
+                        `} />}
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
+                    <div className="flex justify-end ">
+                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                    </div>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Novo anúncio</div>
 
                     <Input type="text" placeholder="Título" registro={{
@@ -64,7 +89,7 @@ export default function FormNotice({ congregationNumber }: IFormNoticeProps) {
                         invalid={errors?.title?.message ? 'invalido' : ''} />
                     {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
 
-                    <Input type="text" placeholder="Texto" registro={{
+                    <Input type="text" placeholder="Conteúdo" registro={{
                         ...register('text',
                             { required: "Campo obrigatório" })
                     }}
@@ -97,7 +122,7 @@ export default function FormNotice({ congregationNumber }: IFormNoticeProps) {
                         </>
                     )}
 
-                    <Calendar />
+                    <Calendar selectedDate={selectedDate} handleDateChange={(date) => handleDateChange(date)} />
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
                         <Button type='submit'>Criar Anúncio</Button>

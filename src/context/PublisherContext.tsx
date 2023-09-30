@@ -45,7 +45,8 @@ type PublisherContextTypes = {
         studies: number,
         observations: string
     ) => Promise<any>
-    createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => void
+    createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => Promise<any>
+    deletePublisher: (publisher_id: string) => Promise<any>
 }
 
 type PublisherContextProviderProps = {
@@ -163,8 +164,6 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     async function createConsentRecord(publisher: IPublisherConsent, deviceId?: string) {
 
-        console.log(deviceId)
-
         await api.post<ConsentRecordTypes>('/consentRecord', {
             publisher: {
                 fullName: publisher.fullName,
@@ -207,9 +206,21 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
+    async function deletePublisher(publisher_id: string) {
+        api.delete(`/publisher/${publisher_id}`).then(res => {
+            toast.success('Publicador excluido com sucesso!')
+            handleSubmitSuccess()
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError()
+            toast.error('Ocorreu um erro no servidor')
+        })
+    }
+
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher
         }}>
             {props.children}
         </PublisherContext.Provider>

@@ -4,21 +4,25 @@ import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import avatarMale from '../../../public/images/avatar-male.png'
 import avatarFemale from '../../../public/images/avatar-female.png'
-import { iconeEdit } from "@/assets/icons"
 import Router, { useRouter } from "next/router"
 import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, Trash } from "lucide-react"
+import Button from "../Button"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import EditIcon from "../Icons/EditIcon"
+import { usePublisherContext } from "@/context/PublisherContext"
+import { toast } from "react-toastify"
 
 export default function PublisherList() {
     const { user } = useContext(AuthContext)
+    const { deletePublisher } = usePublisherContext()
     const congregationUser = user?.congregation
 
     const router = useRouter()
-
-    const { data, mutate } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationUser?.id}`)
+    const fetchConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ""
+    const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
-    const [loading, setLoading] = useState(true)
     const [selectedPublishers, setSelectedPublishers] = useState<Set<string>>(new Set())
 
 
@@ -40,6 +44,21 @@ export default function PublisherList() {
         mutate() // Refetch dos dados utilizando a função mutate do useFetch sempre que muda a rota
     }, [selectedPublishers, router.asPath, mutate])
 
+    async function onDelete(publisher_id: string) {
+      
+       await  toast.promise(deletePublisher(publisher_id), {
+            pending: "Excluindo publicador..."
+        }).then(()=> {
+            mutate()
+            const updatedSelectedPublishers = new Set(selectedPublishers);
+            if (updatedSelectedPublishers.has(publisher_id)) {
+                updatedSelectedPublishers.delete(publisher_id);
+            }
+            
+            setSelectedPublishers(updatedSelectedPublishers)
+        })
+
+    }
 
     return (
         <ul className="flex flex-wrap justify-center items-center w-full mt-5">
@@ -66,7 +85,26 @@ export default function PublisherList() {
                             <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed?.toString() ?? "Não informado"}</p>
                         </div>
                         <div className="flex pl-10">
-                            <button onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)} className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3 my-5">{iconeEdit('#178582')} <span className="text-primary-200 font-semibold pl-1">Editar</span></button>
+                            <div className="gap-1 flex">
+                                <Button
+                                    onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
+                                    outline
+                                >
+                                    <EditIcon />
+                                    Editar
+                                </Button>
+                                <ConfirmDeleteModal
+                                    onDelete={() => onDelete(`${publisher.id}`)}
+                                    button={<Button
+                                        outline
+                                        className="text-red-400"
+                                    >
+                                        <Trash />
+                                        Excluir
+                                    </Button>}
+                                />
+                            </div>
+
                         </div>
                     </div>
                 </li>

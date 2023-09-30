@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form'
 import { useContext, useState } from 'react'
 import { AuthContext } from '@/context/AuthContext'
 import { usePublisherContext } from '@/context/PublisherContext'
-import Router from 'next/router'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import CheckboxMultiple from '@/Components/CheckBoxMultiple'
@@ -28,7 +27,6 @@ export default function FormAddPublisher() {
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
 
-    const [resetFormValue, setResetFormValue] = useAtom(resetForm)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
@@ -57,11 +55,18 @@ export default function FormAddPublisher() {
     const optionsCheckboxPrivileges = useState([
         'Ancião',
         'Servo Ministerial',
-        'Pioneiro Auxiliar',
         'Pioneiro Regular',
         'Pioneiro Especial',
         'Auxiliar Indeterminado'
     ])
+
+    const getPrivilegeOptions = () => {
+        if (genderCheckboxSelected === 'Feminino') {
+            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado'];
+        } else {
+            return optionsCheckboxPrivileges[0]; // Use default options for other genders
+        }
+    }
 
     const esquemaValidacao = yup.object({
         fullName: yup.string().required(),
@@ -85,8 +90,10 @@ export default function FormAddPublisher() {
             data.nickname,), {
             pending: 'Criando novo publicador',
         })
-        if (resetFormValue) reset()
-        setResetFormValue(false)
+        reset()
+        setGenderCheckboxSelected('')
+        setPrivilegesCheckboxSelected([])
+        setHopeCheckboxSelected('')
     }
 
     function onError(error: any) {
@@ -107,11 +114,11 @@ export default function FormAddPublisher() {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                    <CheckboxMultiple label='Privilégios' visibleLabel options={optionsCheckboxPrivileges[0]} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
-
                     <CheckboxUnique label="Genero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} checked={genderCheckboxSelected} />
 
                     <CheckboxUnique label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} checked={hopeCheckboxSelected} />
+
+                    <CheckboxMultiple label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>

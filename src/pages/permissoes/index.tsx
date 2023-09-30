@@ -1,9 +1,11 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
 import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { IPermission } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
@@ -12,12 +14,15 @@ import { GetServerSideProps } from "next"
 import Router from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 export default function Permissoes() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
+
     const { data: getPermissions, mutate } = useFetch<IPermission[]>('/permission')
     const [permissions, setPermissions] = useState<IPermission[]>()
+    const { deletePermission } = usePermissionsAndRolesContext()
 
     useEffect(() => {
         setPermissions(getPermissions)
@@ -27,6 +32,13 @@ export default function Permissoes() {
         setPageActive('Permissões')
     }, [setPageActive])
 
+    function handleDelete(item_id: string) {
+         toast.promise(deletePermission(item_id), {
+            pending: "Excluindo permissão..."
+        })
+        mutate()
+    }
+
     return (
         <Layout pageActive="permissoes">
             <ContentDashboard>
@@ -34,14 +46,17 @@ export default function Permissoes() {
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Permissões</h1>
-                        <button className="flex items-center border border-gray-300 bg-white hover:bg-sky-100 p-3 my-5 text-primary-200"><SecurityIcon /><span className="text-primary-200 font-semibold pl-1"
+                        <Button
                             onClick={() => {
                                 Router.push('/permissoes/add')
-                            }}>Criar permissão</span></button>
-                        {/* <ListPermissions /> */}
+                            }}
+                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                            <SecurityIcon />
+                            <span className="text-primary-200 font-semibold">Criar permissão</span>
+                        </Button>
                         {permissions && (
-                            <ListItems items={permissions} label="Permissão"  path="permissoes"/>
-                        ) }
+                            <ListItems onDelete={(item_id) => handleDelete(item_id)} items={permissions} label="Permissão" path="permissoes" />
+                        )}
                     </div>
                 </section>
             </ContentDashboard>

@@ -1,8 +1,10 @@
 import { IFileListProps } from "./types"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { Link2Icon, Trash2Icon, CheckIcon, XIcon, AlertTriangleIcon, AlertCircleIcon } from 'lucide-react'
 import Link from "next/link"
 import { useDocumentsContext } from "@/context/DocumentsContext"
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
+import 'react-circular-progressbar/dist/styles.css';
 
 export default function FileList({ files }: IFileListProps) {
 
@@ -52,8 +54,17 @@ export default function FileList({ files }: IFileListProps) {
                             <div className="flex justify-center items-center gap-5">
                                 {!file.uploaded && !file.error && (
                                     <div className="flex justify-center items-center">
-                                        <div className="radial-progress text-success-100" style={{ "--value": file.progress, "--size": "3rem", "--thickness": "3px" } as React.CSSProperties}>
-                                            <span className="text-xs">{`${file.progress}%`}</span>
+                                        <div className="flex justify-center items-center">
+                                            {file.progress && file.progress < 100 ? (
+                                                <div className="w-10 h-10">
+                                                    <CircularProgressbar styles={buildStyles({
+                                                        pathColor: `rgb(23 133 130)`,
+                                                        textColor: 'rgb(23 133 130)',
+                                                    })} text={`${file.progress}%`} value={file.progress!} />
+                                                </div>
+                                            ) : (
+                                                <CheckIcon className="text-white p-1.5 bg-success-100 rounded-full" />
+                                            )}
                                         </div>
                                     </div>
                                 )}

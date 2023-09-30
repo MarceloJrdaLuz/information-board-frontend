@@ -1,11 +1,10 @@
 import Image from "next/image"
-import { useContext } from "react"
 import Dropdown from "../Dropdown"
 import Router from "next/router"
-import { CongregationContext } from "@/context/CongregationContext"
+import { useCongregationContext } from "@/context/CongregationContext"
 
 export default function AvatarCongregation() {
-    const { congregation: congregationUser } = useContext(CongregationContext)
+    const { congregation: congregationUser } = useCongregationContext()
 
     function handleClick(option: string) {
         switch (option) {

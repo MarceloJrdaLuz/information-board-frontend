@@ -14,6 +14,8 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconeFinanceiro from '../../../public/images/financeiro-gray.png'
+import Button from "@/Components/Button"
+import { ChevronsLeftIcon } from "lucide-react"
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -41,9 +43,11 @@ export default function Financeiro({ circuit: congregationCircuit, name: congreg
     const [pdfUrl, setPdfUrl] = useState('')
     const [documentsFilter, setDocumentsFilter] = useState<IDocument[]>()
 
-    if (number) {
-        setCongregationNumber(number as string)
-    }
+    useEffect(() => {
+        if (number) {
+            setCongregationNumber(number as string)
+        }
+    }, [number, setCongregationNumber])
 
     useEffect(() => {
         if (documents) {
@@ -62,25 +66,22 @@ export default function Financeiro({ circuit: congregationCircuit, name: congreg
             <LayoutPrincipal image={
                 <Image src={iconeFinanceiro} alt="Icone uma calculadora e contas" fill />
             } congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-4/5 my-0 m-auto"></div>
-                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
+                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
                     {documentsFilter?.map(document => (
-                        <div key={document.id}>
-                            <ButtonHome
-                                onClick={() => { handleButtonClick(document.url) }}
-                                texto={removeMimeType(document.fileName)}
-                                className="opacity-90"
-                            />
-                        </div>
+                        <Button
+                            key={document.id}
+                            onClick={() => { handleButtonClick(document.url) }}
+                            className="w-full"
+                        >{removeMimeType(document.fileName)}</Button>
                     ))
                     }
                 </div>
-                <ButtonHome
-                    href={`/${congregationNumber}`}
-                    texto='Voltar'
-                    className="w-1/2 hover:bg-primary-100"
-                />
-            </LayoutPrincipal>
+                <Button
+                    onClick={() => router.push(`/${congregationNumber}`)}
+                    className="w-1/2 mx-auto"
+                ><ChevronsLeftIcon />Voltar</Button>
+            </LayoutPrincipal >
         </>
     ) : (
         <>

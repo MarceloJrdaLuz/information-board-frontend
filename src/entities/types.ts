@@ -115,7 +115,7 @@ export interface IPublisherList {
 }
 
 export interface ICategory {
-    id?: string
+    id: string
     name: string
     description: string
 }
@@ -151,6 +151,7 @@ export enum MidweekDays {
 }
 
 export enum EndweekDays {
+    SEXTA = "Sexta-feira",
     SABADO = "Sábado",
     DOMINGO = "Domingo",
 }

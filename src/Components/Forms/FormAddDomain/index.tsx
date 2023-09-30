@@ -3,10 +3,10 @@ import * as yup from 'yup'
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { api } from "@/services/api"
 import { ICongregation } from "@/entities/types"
-import { CongregationContext } from "@/context/CongregationContext"
+import { useCongregationContext } from "@/context/CongregationContext"
 import Dropdown from "@/Components/Dropdown"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
@@ -14,7 +14,7 @@ import Button from "@/Components/Button"
 
 export default function FormAddDomain() {
 
-    const { addDomain } = useContext(CongregationContext)
+    const { addDomain } = useCongregationContext()
     const [congregations, setCongregations] = useState<ICongregation[]>()
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [congregationSelect, setCongregationSelect] = useState('')

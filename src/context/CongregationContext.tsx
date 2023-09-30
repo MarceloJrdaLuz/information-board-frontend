@@ -32,9 +32,9 @@ export type FormCongregation = {
     city: string,
 }
 
-export const CongregationContext = createContext({} as CongregationContextTypes)
+const CongregationContext = createContext({} as CongregationContextTypes)
 
-export function CongregationProvider(props: CongregationContextProviderProps) {
+function CongregationProvider(props: CongregationContextProviderProps) {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
     const [congregationCreated, setCongregationCreated] = useState<ICongregation>()
     const [showCongregationCreated, setShowCongregationCreated] = useState(false)
@@ -95,8 +95,8 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
             mutate()
             toast.success('Congregação atualizada com sucesso!')
         }).catch(res => {
-            if(res.response.data.message === "Any changes found"){
-                return           
+            if (res.response.data.message === "Any changes found") {
+                return
             }
             toast.error("Houve algum problema ao atualizar a congregação!")
             console.log(res)
@@ -129,7 +129,7 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
             .catch(err => {
                 const { response: { data: { message } } } = err
                 if (message === "User code not exists") toast.error('Código de usuário não existe!')
-                if (message === "Congregation not exists") toast.error('Congregação não existe!') 
+                if (message === "Congregation not exists") toast.error('Congregação não existe!')
                 else console.log(err)
             })
     }
@@ -144,3 +144,15 @@ export function CongregationProvider(props: CongregationContextProviderProps) {
         </CongregationContext.Provider>
     )
 }
+
+function useCongregationContext(): CongregationContextTypes {
+    const context = useContext(CongregationContext);
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider");
+    }
+
+    return context;
+}
+
+export { CongregationProvider, useCongregationContext };

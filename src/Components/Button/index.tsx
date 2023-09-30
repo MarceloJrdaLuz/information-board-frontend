@@ -4,12 +4,15 @@ import { ButtonHTMLAttributes } from "react"
 import { tv, VariantProps } from 'tailwind-variants'
 
 const button = tv({
-    base: 'flex justify-center transition-all duration-500 bg-primary-200 active:shadow-none shadow-lg  items-center rounded-lg hover:opacity-95 border border-current text-white justify-self-center ',
+    base: 'flex justify-center items-center transition-all gap-2 duration-500 bg-primary-200 active:shadow-none shadow-xl  rounded-lg hover:opacity-90 border border-current text-white justify-self-center max-h-[40px] ',
     variants: {
         size: {
             default: 'px-10 py-2',
             lg: 'p-10',
             sm: 'px-4 py-2 text-sm'
+        },
+        outline: {
+            true: "border-gray-300 hover:border-current rounded-none bg-white hover:bg-sky-100 p-3 text-primary-200 font-semibold"
         },
         disabled: {
             true: 'bg-gray-500 hover:opacity-100 cursor-not-allowed'
@@ -28,16 +31,17 @@ const button = tv({
         size: 'default',
         success: false,
         remove: false,
-        error: false
+        error: false, 
+        outline: false
     }
 })
 
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof button>
 
-export default function Button({ disabled, size, success, remove, className, error, ...props }: ButtonProps) {
+export default function Button({ disabled, size, success, remove, className, error, outline, ...props }: ButtonProps) {
     return (
-        <button disabled={disabled} className={button({ disabled, size, success, className, remove, error })} {...props}>
+        <button disabled={disabled} className={button({ disabled, size, success, className, remove, error, outline })} {...props}>
             {error ? (
                 <span className="flex gap-2"><CheckCircle2Icon />Não enviado</span>
             ) : success ? (

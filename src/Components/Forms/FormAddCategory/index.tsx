@@ -17,7 +17,7 @@ export default function FormAddCategory() {
 
     const [categories, setCategories] = useState<ICategory[]>()
 
-    const { data, mutate } = useFetch<ICategory[]>('/category')
+    const { data, mutate } = useFetch<ICategory[]>('/categories')
 
     useEffect(() => {
         setCategories(data)

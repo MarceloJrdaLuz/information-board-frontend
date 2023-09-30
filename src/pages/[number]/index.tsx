@@ -15,9 +15,10 @@ import { useAtomValue } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Image from "next/image"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
+import Button from "@/Components/Button"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -87,12 +88,24 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
             )} congregationName={congregationName} circuit={congregationCircuit} textoHeader="Quadro de Anúncios" heightConteudo={'screen'} header className="bg-home  bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <ButtonHome href={`${congregationNumber}/relatorio`} texto="Relatório de Serviço de Campo" icon={<ReportIcon />} />
-                <ButtonHome href={`${congregationNumber}/limpeza`} texto="Limpeza do Salão do Reino" icon={<CleanIcon />} />
-                <ButtonHome href={`${congregationNumber}/designacoes`} texto="Designações das Reuniões" icon={<PublicMeetingIcon />} />
-                <ButtonHome href={`${congregationNumber}/campo`} texto="Designações de Campo" icon={<PrechingHomeIcon />} />
-                <ButtonHome href={`${congregationNumber}/financeiro`} texto="Relatório Financeiro" icon={<CalculatorIcon />} />
-                <ButtonHome href={`${congregationNumber}/eventos`} texto="Eventos" icon={<CalendarDaysIcon />} />
+                <Button onClick={() => Router.push(`${congregationNumber}/relatorio`)}>
+                    <ReportIcon />Relatório de Serviço de campo
+                </Button>
+                <Button onClick={() => Router.push(`${congregationNumber}/limpeza`)}>
+                    <CleanIcon />Limpeza do Salão do Reino
+                </Button>
+                <Button onClick={() => Router.push(`${congregationNumber}/designacoes`)}>
+                    <PublicMeetingIcon />Designações das Reuniões
+                </Button>
+                <Button onClick={() => Router.push(`${congregationNumber}/campo`)}>
+                    <PrechingHomeIcon />Designações de Campo
+                </Button>
+                <Button onClick={() => Router.push(`${congregationNumber}/financeiro`)}>
+                    <CalculatorIcon />Relatório Financeiro
+                </Button>
+                <Button onClick={() => Router.push(`${congregationNumber}/eventos`)}>
+                    <CalendarDaysIcon />Eventos especiais
+                </Button>
             </LayoutPrincipal>
         </div>
     )
