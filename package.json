@@ -27,7 +27,7 @@
     "filesize": "^10.0.6",
     "jotai": "^2.4.2",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.284.0",
+    "lucide-react": "^0.263.2-beta.0",
     "moment": "^2.29.4",
     "next": "13.1.5",
     "nookies": "^2.5.2",
