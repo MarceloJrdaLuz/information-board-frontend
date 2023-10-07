@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/{{member}}',
+      skipDefaultConversion: true,
+      preventFullImport: true,
+    },
+  },
   images: {
     domains: ['firebasestorage.googleapis.com'],
   },
