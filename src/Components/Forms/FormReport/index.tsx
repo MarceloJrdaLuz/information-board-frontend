@@ -37,6 +37,8 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [consentRecords, setConsentRecords] = useState<IPublisherList[]>()
     const [submittedData, setSubmittedData] = useState<FormValues>()
     const [deviceId, setDeviceId] = useState<string | undefined>()
+    const date = new Date().getDate()
+    const monthNow = new Date().getMonth()
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -59,9 +61,9 @@ export default function FormReport(props: IRelatorioFormProps) {
     }, [])
 
     useEffect(() => {
-        setMonth(meses[new Date().getMonth()])
+        setMonth(meses[date >= 1 && date <= 25 ? monthNow - 1 : monthNow])
         setYear(new Date().getFullYear().toString())
-    }, [])
+    }, [date, monthNow])
 
     const handleClick = (option: IPublisherList | undefined) => {
         setPublisherToSend(option)

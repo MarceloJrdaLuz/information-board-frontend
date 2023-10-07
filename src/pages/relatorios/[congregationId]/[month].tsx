@@ -87,6 +87,10 @@ export default function RelatorioMes() {
     }, [getRelatorios])
 
     useEffect(() => {
+        console.log(relatorios)
+    }, [relatorios])
+
+    useEffect(() => {
         setCrumbs((prevCrumbs) => {
             const updatedCrumbs = [...prevCrumbs, { label: 'Todos os meses', link: `/relatorios/${congregationId}` }]
             return updatedCrumbs
