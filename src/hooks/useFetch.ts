@@ -1,8 +1,8 @@
 import { api } from "@/services/api"
 import useSWR from "swr"
 
-export function useFetch<Data = unknown, Error = any>(url: string) {
-    const { data, error, mutate } = useSWR<Data, Error>(url !== '' ? url : null, async url => {
+export function useFetch<Data = any, Error = any>(url: string) {
+    const { data, error, mutate } = useSWR<Data, Error>(url !== '' ? url : null, async (url: string) => {
         const response = await api.get(url)
 
         return response.data
