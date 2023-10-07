@@ -35,10 +35,12 @@ export default function FileList({ files }: IFileListProps) {
                                     <div className="flex justify-center items-center">
                                         {file.progress && file.progress < 100 ? (
                                             <div className="w-10 h-10">
-                                                <CircularProgressbar styles={buildStyles({
-                                                    pathColor: `rgb(23 133 130)`,
-                                                    textColor: 'rgb(23 133 130)',
-                                                })} text={`${file.progress}%`} value={file.progress!} />
+                                                <>
+                                                    <CircularProgressbar styles={buildStyles({
+                                                        pathColor: `rgb(23 133 130)`,
+                                                        textColor: 'rgb(23 133 130)',
+                                                    })} text={`${file.progress}%`} value={file.progress!} />
+                                                </>
                                             </div>
                                         ) : (
                                             <CheckIcon className="text-white p-1.5 bg-success-100 rounded-full" />
