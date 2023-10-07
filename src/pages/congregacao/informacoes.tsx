@@ -3,15 +3,15 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import FormUpdateCongregation from "@/Components/Forms/FormUpdateCongregation"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect } from "react"
+import {  useEffect } from "react"
 
 export default function InformacoesCongregacoes() {
-    const { user: getUser, roleContains } = useContext(AuthContext)
+    const { user: getUser, roleContains } = useAuthContext()
 
     const isAdmincongregation = roleContains('ADMIN_CONGREGATION')
 

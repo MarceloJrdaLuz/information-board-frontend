@@ -14,20 +14,20 @@ export default function NoticesModal(props: INoticesModalProps) {
     }, [setNotices, props.notices])
 
     return (
-        <div className=" bg-gray-500 w-full p-3 flex ">
+        <div className={`bg-gray-700  w-full h-0 ${props.notices && 'h-14 p-3'}  flex overflow-hidden text-white transition-all duration-500 `}>
             {notices && notices.length > 1
                 ?
                 <div className="flex w-full justify-between items-center">
                     <div className="flex justify-center items-center gap-1">
-                        <h2>
-                            <span className="font-semibold mr-1">{notices[0]?.title}:</span>
-                            <span className="font-normal">{notices[0]?.text}</span>
+                        <h2 className="w-56 sm:w-96 overflow-hidden whitespace-nowrap text-ellipsis">
+                            <span className="font-semibold mr-1 text-sm sm:text-base ">{notices[0]?.title}:</span>
+                            <span className={`font-normal text-xs sm:text-sm`}>{notices[0]?.text}</span>
                         </h2>
                     </div>
                     <div>
                         <span className="flex justify-center items-center text-sm p-2">
-                            <span className="whitespace-nowrap">{`1 de ${notices?.length}`}</span>
-                            <ChevronRightIcon onClick={() => router.push(`/${props.congregationNumber}/anuncios`)} className="w-8 h-8 text-gray-900 " />
+                            <span className="whitespace-nowrap text-xs ">{`1 de ${notices?.length}`}</span>
+                            <ChevronRightIcon onClick={() => router.push(`/${props.congregationNumber}/anuncios`)} className="w-5 h-5 text-white " />
                         </span>
                     </div>
                 </div>
@@ -35,7 +35,6 @@ export default function NoticesModal(props: INoticesModalProps) {
                 notices?.map(notice => (
                     <span key={notice.id}>{notice.title}</span>
                 ))}
-            {/* {<span>{notices?.length}</span>} */}
         </div>
     )
 }

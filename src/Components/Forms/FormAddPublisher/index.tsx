@@ -5,22 +5,22 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext, useState } from 'react'
-import { AuthContext } from '@/context/AuthContext'
+import {  useState } from 'react'
+import { useAuthContext } from '@/context/AuthContext'
 import { usePublisherContext } from '@/context/PublisherContext'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import CheckboxMultiple from '@/Components/CheckBoxMultiple'
 import CheckboxUnique from '@/Components/CheckBoxUnique'
 import Button from '@/Components/Button'
-import { useAtom, useAtomValue } from 'jotai'
-import { buttonDisabled, errorFormSend, resetForm, successFormSend } from '@/atoms/atom'
+import {  useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend,  successFormSend } from '@/atoms/atom'
 
 
 export default function FormAddPublisher() {
 
     const { createPublisher } = usePublisherContext()
-    const { user } = useContext(AuthContext)
+    const { user } = useAuthContext()
     const congregationUser = user?.congregation
 
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')

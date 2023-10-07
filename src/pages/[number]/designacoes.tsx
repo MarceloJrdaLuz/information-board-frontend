@@ -19,15 +19,16 @@ import HeadComponent from "@/Components/HeadComponent";
 import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon";
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon";
 import { domainUrl } from "@/atoms/atom";
+import NotFoundDocument from "@/Components/NotFoundDocument";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query;
-    const getCongregation = await api.get(`/congregation/${number}`);
-    const { data: congregationData } = getCongregation;
+  const { number } = context.query;
+  const getCongregation = await api.get(`/congregation/${number}`);
+  const { data: congregationData } = getCongregation;
 
-    return {
-        props: { ...congregationData },
-    };
+  return {
+    props: { ...congregationData },
+  };
 };
 
 export default function Designacoes({
@@ -54,10 +55,10 @@ export default function Designacoes({
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>();
   const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>();
 
-  useEffect(()=> {
-      if (number) {
-        setCongregationNumber(number as string);
-      }
+  useEffect(() => {
+    if (number) {
+      setCongregationNumber(number as string);
+    }
   }, [number, setCongregationNumber])
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export default function Designacoes({
       setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana));
     }
 
-    
+
   }, [documents, filterDocuments]);
 
   useEffect(() => {
@@ -153,14 +154,14 @@ export default function Designacoes({
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
             ><LifeAndMinistryIcon />Vida e Ministério</Button>
             {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-              {lifeAndMinistryOptionsShow ? documentsLifeAndMinistryFilterMonths?.map(document => (
+              {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 ? documentsLifeAndMinistryFilterMonths?.map(document => (
                 <div className="flex-1 " key={document.id}>
                   <Button
                     className="w-full"
                     onClick={() => { handleButtonClick(document.url) }}
                   >{removeMimeType(document.fileName)}</Button>
                 </div>
-              )) : null}
+              )) : <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
             </div>}
             {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
               {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
@@ -178,16 +179,16 @@ export default function Designacoes({
               onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
               className="w-full"
             ><PublicMeetingIcon />Reunião Pública
-                        </Button>
+            </Button>
             {publicOptionsShow && <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-              {publicOptionsShow ? documentsPublicFilter?.map(document => (
+              {publicOptionsShow && documentsPublicFilter && documentsPublicFilter.length > 0 ? documentsPublicFilter?.map(document => (
                 <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
                   <Button
                     onClick={() => { handleButtonClick(document.url) }}
                     className="w-full"
                   >{removeMimeType(document.fileName)}</Button>
                 </div>
-              )) : null}
+              )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
             </div>}
             {!publicOptionsShow ? <p className="font-bold text-xl my-2 text-fontColor-100">{`${dayMeetingPublic} ${hourMeetingPublic.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
@@ -199,8 +200,8 @@ export default function Designacoes({
       </LayoutPrincipal>
     </>
   ) : (
-      <>
-        <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
-      </>
-    )
+    <>
+      <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+    </>
+  )
 }

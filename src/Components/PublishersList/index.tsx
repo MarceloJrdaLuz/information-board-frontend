@@ -1,6 +1,6 @@
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { IPublisher } from "@/entities/types"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import avatarMale from '../../../public/images/avatar-male.png'
 import avatarFemale from '../../../public/images/avatar-female.png'
@@ -14,7 +14,7 @@ import { usePublisherContext } from "@/context/PublisherContext"
 import { toast } from "react-toastify"
 
 export default function PublisherList() {
-    const { user } = useContext(AuthContext)
+    const { user } = useAuthContext()
     const { deletePublisher } = usePublisherContext()
     const congregationUser = user?.congregation
 

@@ -24,13 +24,13 @@ export default function EditPublishers() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Anúncios', link: '/anuncios' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Anúncios', link: '/anuncios' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

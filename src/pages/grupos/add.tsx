@@ -2,34 +2,26 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddGroup from "@/Components/Forms/FormAddGroup"
 import Layout from "@/Components/Layout"
-import ListCongregations from "@/Components/ListCongregations"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
-import { ICongregation } from "@/entities/types"
-import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import {  useEffect } from "react"
 
 export default function AddGrupo() {
-    const { user: getUser, roleContains } = useContext(AuthContext)
-
-    const [congregations, setCongregations] = useState<ICongregation[]>()
-    const [loading, setLoading] = useState(true)
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/grupos' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/grupos' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

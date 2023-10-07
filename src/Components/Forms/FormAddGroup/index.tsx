@@ -4,17 +4,20 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '@/services/api'
-import { ICategory, IPublisher } from '@/entities/types'
+import { IPublisher } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
-import { AuthContext } from '@/context/AuthContext'
-import { IBodyCreateGroup } from './types'
+import { useAuthContext } from '@/context/AuthContext'
 import DropdownObject from '@/Components/DropdownObjects'
 import Dropdown from '@/Components/Dropdown'
 import InputError from '@/Components/InputError'
 import Input from '@/Components/Input'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { useSubmitContext } from '@/context/SubmitFormContext'
+import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 
 export interface IGroup {
     id: string
@@ -23,8 +26,10 @@ export interface IGroup {
 }
 
 export default function FormAddGroup() {
-    const { user } = useContext(AuthContext)
+    const { user } = useAuthContext()
     const congregationUser = user?.congregation
+
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [availableNumbers, setAvailableNumbers] = useState<string[]>([]);
     const [selectedNumber, setSelectedNumber] = useState<string>()
@@ -37,6 +42,9 @@ export default function FormAddGroup() {
     const fetchPublisherDataConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
     const { data: publishersData, mutate } = useFetch<IPublisher[]>(fetchPublisherDataConfig)
 
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         if (data) {
@@ -68,7 +76,7 @@ export default function FormAddGroup() {
             publisher_id,
             congregation_id
         }).then(res => {
-            toast.success("Grupo criado com sucesso!")
+            handleSubmitSuccess(messageSuccessSubmit.groupCreate)
             reset()
             setSelectedNumber('')
             setSelectedItem(null)
@@ -76,10 +84,10 @@ export default function FormAddGroup() {
         }).catch(err => {
             const { response: { data: { message } } } = err
             if (message === 'The publisher is already a group overseer for another group') {
-                toast.error('Publicador já é dirigente de outro grupo!')
+                handleSubmitError(messageErrorsSubmit.publisherAlreadyOverseer)
             } else {
                 console.log(message)
-                toast.error('Ocorreu um erro no servidor!')
+                handleSubmitError(messageErrorsSubmit.default)
             }
         })
     }
@@ -133,7 +141,7 @@ export default function FormAddGroup() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button disabled={(!selectedNumber || !selectedItem) && true} type='submit' >Criar Grupo</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={(!selectedNumber || !selectedItem || disabled)} type='submit' >Criar Grupo</Button>
                     </div>
                 </div>
             </FormStyle>

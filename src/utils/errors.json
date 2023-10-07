@@ -57,6 +57,14 @@
     "title": {
         "required": "Título é um campo obrigatório"
     }, 
+    "startDay": {
+        "required": "Dia inicial é um campo obrigatório no anúncio corrente", 
+        "typeError": "Dia inicial é um campo obrigatório no anúncio corrente"
+    },
+    "endDay": {
+        "required": "Último dia é um campo obrigatório no anúncio corrente", 
+        "typeError": "Último dia é um campo obrigatório no anúncio corrente"
+    }, 
     "text": {
         "required": "Texto é um campo obrigatório"
     }

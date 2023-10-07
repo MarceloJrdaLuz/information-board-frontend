@@ -11,6 +11,8 @@ import Dropdown from "@/Components/Dropdown"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
 import Button from "@/Components/Button"
+import { useAtomValue } from "jotai"
+import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 
 export default function FormAddDomain() {
 
@@ -19,8 +21,10 @@ export default function FormAddDomain() {
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [congregationSelect, setCongregationSelect] = useState('')
     const [congregationSelectNumber, setCongregationSelectNumber] = useState<string | undefined>('')
-    const [dataSuccess, setDataSuccess] = useState(false)
 
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     const getCongregations = async () => {
         await api.get<ICongregation[]>('/congregations').then(res => {
@@ -58,11 +62,6 @@ export default function FormAddDomain() {
     function onSubmit(data: { userCode: string }) {
         toast.promise(addDomain(data.userCode, congregationSelectNumber ?? ""), {
             pending: "Adicionando usuário a congregação"
-        }).then(suc => {
-            setDataSuccess(true)
-            setTimeout(() => {
-                setDataSuccess(false)
-            }, 6000)
         })
         reset()
         setCongregationSelect('')
@@ -93,7 +92,7 @@ export default function FormAddDomain() {
                         invalid={errors?.userCode?.message ? 'invalido' : ''} />
                     {errors?.userCode?.type && <InputError type={errors.userCode.type} field='userCode' />}
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button success={dataSuccess} disabled={congregationSelect === ''} type='submit'>Atribuir à domínio</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={(congregationSelect === '' || disabled)} type='submit'>Atribuir à domínio</Button>
                     </div>
                 </div>
             </FormStyle>

@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
-import { INotice } from "@/entities/types";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useRouter } from "next/router";
 import { INoticesProps } from "./types";
-import ButtonHome from "../ButtonHome";
+import Button from "../Button";
+import { useRouter } from "next/router";
+import { ChevronsLeftIcon } from "lucide-react";
 
 export default function Notices({ notices, congregationNumber }: INoticesProps) {
+
     const router = useRouter()
 
     return (
@@ -21,7 +20,10 @@ export default function Notices({ notices, congregationNumber }: INoticesProps) 
                     <span>Nenhum anúncio</span>
                 </>
             )}
-            <ButtonHome texto="Voltar" href={`/${congregationNumber}`} className="mt-10" />
+             <Button
+                    onClick={() => router.push(`/${congregationNumber}`)}
+                    className="w-1/2 mx-auto mt-4 "
+                ><ChevronsLeftIcon />Voltar</Button>
         </div>
     )
 }

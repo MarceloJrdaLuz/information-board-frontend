@@ -23,7 +23,7 @@ export default function Notices() {
 
     const congregation_id = congregation?.id
 
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [crumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const fetchConfig = congregation_id ? `/notices/${congregation_id}` : ""
@@ -32,13 +32,13 @@ export default function Notices() {
     const [notices, setNotices] = useState<INotice[]>()
 
     useEffect(() => {
-        setNotices(getNotices)
+        if (getNotices)
+            setNotices(getNotices)
     }, [getNotices, notices])
 
     useEffect(() => {
         setPageActive('Anúncios')
     }, [setPageActive])
-
 
     return (
         <Layout pageActive="anuncios">
@@ -57,8 +57,8 @@ export default function Notices() {
                         </Button>
                         {notices && (
                             <ListNotices onDelete={(notice_id) => {
-                                deleteNotice(notice_id),
-                                    mutate()
+                                mutate()
+                                deleteNotice(notice_id)
                             }} notices={notices} />
                         )}
                     </div>

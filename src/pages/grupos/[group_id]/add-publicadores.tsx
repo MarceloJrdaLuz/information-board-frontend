@@ -6,26 +6,29 @@ import GroupIcon from "@/Components/Icons/GroupIcon"
 import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
+import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IPublisher } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Router, { useRouter } from "next/router"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
 export default function AddPublicadoresGrupo() {
     const { group_id, group_number } = useRouter().query
-    const { user, roleContains } = useContext(AuthContext)
+    const { user } = useAuthContext()
     const congregationUser = user?.congregation
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [selectedPublishers, setSelectedPublishers] = useAtom(selectedPublishersAtom)
     const [groupPublisherListOption, setGroupPublisherListOption] = useAtom(groupPublisherList)
@@ -47,16 +50,10 @@ export default function AddPublicadoresGrupo() {
         await api.post(`/group/${group_id}/add-publishers`, {
             publishers_ids: selectedPublishers
         }).then(res => {
-            toast.success("Publicadores adicionados ao grupo com sucesso!")
-            setDataSuccess(true)
-            setTimeout(() => {
-                setSelectedPublishers([])
-                setGroupPublisherListOption('disabled')
-                setDataSuccess(false)
-            }, 3000)
             mutate()
+            handleSubmitSuccess(messageSuccessSubmit.publisherAddGroup)
         }).catch(err => {
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -66,12 +63,10 @@ export default function AddPublicadoresGrupo() {
                 publishers_ids: selectedPublishers
             }
         }).then(res => {
-            toast.success("Publicadores removidos do grupo com sucesso!")
-            setSelectedPublishers([])
-            setGroupPublisherListOption('disabled')
             mutate()
+            handleSubmitSuccess(messageSuccessSubmit.publisherRemoveGroup)
         }).catch(err => {
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -108,13 +103,13 @@ export default function AddPublicadoresGrupo() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/grupos' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/grupos' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

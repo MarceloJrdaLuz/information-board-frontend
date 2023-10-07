@@ -1,4 +1,3 @@
-import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
@@ -15,6 +14,7 @@ import iconEvents from '../../../public/images/eventos-gray.png'
 import Image from "next/image"
 import Button from "@/Components/Button"
 import { ChevronsLeftIcon } from "lucide-react"
+import NotFoundDocument from "@/Components/NotFoundDocument"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -60,19 +60,20 @@ export default function Eventos({ circuit: congregationCircuit, name: congregati
 
     return !pdfShow ? (
         <>
-            <HeadComponent title="Cartas" urlMiniatura={`${domain}/images/eventos.png`} />
+            <HeadComponent title="Eventos" urlMiniatura={`${domain}/images/eventos.png`} />
             <LayoutPrincipal image={
                 <Image src={iconEvents} alt="Icone de um calendário" fill />
             } congregationName={congregationName} circuit={congregationCircuit} textoHeader="Eventos" heightConteudo={'1/2'} header className="bg-cartas bg-left-bottom bg-cover lg:bg-right">
                 <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
-                    {documentsFilter?.map(document => ( 
-                        <Button
-                            key={document.id}
-                            onClick={() => { handleButtonClick(document.url) }}
-                            className="w-full"
-                        >{removeMimeType(document.fileName)}</Button>
-                    ))}
+                {documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
+                        <Button className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                            {removeMimeType(document.fileName)}
+                        </Button>
+                    )) : (
+                        <NotFoundDocument message="Nenhum evento especial encontrado!"/>
+                    )
+                    }
                 </div>
                 <Button
                     onClick={() => router.push(`/${congregationNumber}`)}

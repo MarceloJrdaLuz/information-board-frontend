@@ -35,12 +35,12 @@ export default function PoliticaPrivacidade({ circuit: congregationCircuit, name
                     Ao utilizar nosso site, você concorda expressamente
                     com a coleta e o armazenamento dos seguintes dados pessoais: <br /><br />
 
-                    1. Nome <br />
+                    1. Nome completo. <br />
                     2. Dados como horas, publicações e etc... <br />
-                    3. Demais informações que constam no registro físico. <br /><br />
+                    3. Demais informações que constam no registro de publicador físico. <br /><br />
                     4. No caso de ter o cadastro no site, você concederá também o acesso ao seu e-mail.
 
-                    Alguns dados como nome, e um código criado para seu dispositivo serão armazenados em seu dispositivo localmente, usando o mecanismo de armazenamento local conhecido como &quot;localstorage&quot;, a fim de melhorar sua experiência de uso do site. Essas informações não serão compartilhadas com terceiros e serão usadas apenas para fins internos do site. <br /><br />
+                    Alguns dados como nome, e um código criado para seu dispositivo serão armazenados em seu dispositivo localmente, usando o mecanismo de armazenamento local conhecido como &quot;localstorage&quot;, a fim de melhorar sua experiência de uso do site. Essas informações não serão compartilhadas com terceiros e serão usadas apenas para fins internos do site e são protegidos de uso indevido. <br /><br />
 
                     Você pode retirar seu consentimento a qualquer momento, excluindo os dados armazenados em localstorage por meio das configurações do seu navegador. <br /><br />
 

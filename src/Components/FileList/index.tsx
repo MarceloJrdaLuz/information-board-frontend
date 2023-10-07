@@ -1,38 +1,18 @@
 import { IFileListProps } from "./types"
 import { useState } from "react"
-import { Link2Icon, Trash2Icon, CheckIcon, XIcon, AlertTriangleIcon, AlertCircleIcon } from 'lucide-react'
+import { Link2Icon, Trash2Icon, CheckIcon, AlertCircleIcon } from 'lucide-react'
 import Link from "next/link"
 import { useDocumentsContext } from "@/context/DocumentsContext"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import 'react-circular-progressbar/dist/styles.css';
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 
 export default function FileList({ files }: IFileListProps) {
 
-    const [confirmDeleteItem, setConfirmDeleteItem] = useState<string | null>(null)
+    const [, setConfirmDeleteItem] = useState<string | null>(null)
 
-    const { deleteDocument, uploadedFiles } = useDocumentsContext()
+    const { deleteDocument } = useDocumentsContext()
 
-    const renderConfirmMessage = (document_id: string) => {
-        return (
-            <div className="flex flex-wrap sm:flex-nowrap gap-5 items-center p-4  rounded-md ">
-                <div className="flex flex-col items-center justify-center gap-1">
-                    <span className="text-red-400"><AlertTriangleIcon /></span>
-                    <span className=" text-red-400 font-semibold">Tem certeza que deseja excluir?</span>
-                </div>
-
-                <button
-                    className="w-fit h-fit  text-success-100 hover:text-white bg-transparent
-                                border-2 hover:bg-success-100 rounded-full border-success-100 "
-                    onClick={() => handleDelete(document_id)}
-                >
-                    <CheckIcon />
-                </button>
-                <button className="w-fit h-fit  rounded-full border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white" onClick={() => setConfirmDeleteItem(null)}>
-                    <XIcon />
-                </button>
-            </div>
-        )
-    }
 
     const handleDelete = (document_id: string) => {
         deleteDocument(document_id)
@@ -47,42 +27,38 @@ export default function FileList({ files }: IFileListProps) {
                         <span className="font-bold text-black" >{file.name}</span>
                         <span className="text-xs text-gray-500 " >{file.readableSize}</span>
                     </div>
-                    {confirmDeleteItem === file.id ? (
-                        renderConfirmMessage(file.id)
-                    ) : (
-                        <>
-                            <div className="flex justify-center items-center gap-5">
-                                {!file.uploaded && !file.error && (
-                                    <div className="flex justify-center items-center">
-                                        <div className="flex justify-center items-center">
-                                            {file.progress && file.progress < 100 ? (
-                                                <div className="w-10 h-10">
-                                                    <CircularProgressbar styles={buildStyles({
-                                                        pathColor: `rgb(23 133 130)`,
-                                                        textColor: 'rgb(23 133 130)',
-                                                    })} text={`${file.progress}%`} value={file.progress!} />
-                                                </div>
-                                            ) : (
-                                                <CheckIcon className="text-white p-1.5 bg-success-100 rounded-full" />
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
 
-                                {file.error && <AlertCircleIcon className="text-red-400" />}
-                                <Link href={file.url} target="_blank">
-                                    <span className="flex text-primary-200 hover:text-primary-100 text-center" >
-                                        <Link2Icon />
-                                    </span>
-                                </Link>
-                                <button
-                                    onClick={() => setConfirmDeleteItem(file.id)}
-                                    className="text-primary-200 hover:text-red-600" >
-                                    <Trash2Icon />
-                                </button>
-                            </div>
-                        </>
-                    )}
+                    <>
+                        <div className="flex justify-center items-center gap-5">
+                            {!file.uploaded && !file.error && (
+                                <div className="flex justify-center items-center">
+                                    <div className="flex justify-center items-center">
+                                        {file.progress && file.progress < 100 ? (
+                                            <div className="w-10 h-10">
+                                                <CircularProgressbar styles={buildStyles({
+                                                    pathColor: `rgb(23 133 130)`,
+                                                    textColor: 'rgb(23 133 130)',
+                                                })} text={`${file.progress}%`} value={file.progress!} />
+                                            </div>
+                                        ) : (
+                                            <CheckIcon className="text-white p-1.5 bg-success-100 rounded-full" />
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {file.error && <AlertCircleIcon className="text-red-400" />}
+                            <Link href={file.url} target="_blank">
+                                <span className="flex text-primary-200 hover:text-primary-100 text-center" >
+                                    <Link2Icon />
+                                </span>
+                            </Link>
+                            <ConfirmDeleteModal
+                                onDelete={() => handleDelete(file.id)}
+                                button={<Trash2Icon className="text-primary-200 hover:text-red-400" />}
+                            />
+                        </div>
+                    </>
                 </li>
             ))}
         </ul>

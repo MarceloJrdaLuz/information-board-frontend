@@ -4,33 +4,36 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { useForm, FieldValues } from 'react-hook-form'
+import { useForm} from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { PermissionType, RolesType } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
-import Router from 'next/router'
 import { api } from '@/services/api'
 import { IconDelete } from '@/assets/icons'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Dropdown from '@/Components/Dropdown'
 import Button from '@/Components/Button'
+import { usePermissionsAndRolesContext } from '@/context/PermissionAndRolesContext'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 
 export interface IUpdateRole {
     role_id: string
 }
 
-type SubmitHandler = (data: FormValues) => void
-
-type CombinedValues = FieldValues & FormValues
-
 export default function FormEditRole({ role_id }: IUpdateRole) {
 
+    const {updateRole} = usePermissionsAndRolesContext()
     const [roleToUpdate, setRoleToUpdate] = useState<RolesType>()
     const [permissions, setPermissions] = useState<PermissionType[]>([])
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [permissionSelected, setPermissionsSelected] = useState<string[]>([])
     const [permissionSelectedsIds, setPermissionSelectedsIds] = useState([''])
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         setOptionsDrop(permissions?.map(permission => `${permission.name}`))
@@ -106,19 +109,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
     }
 
 
-    async function updateRole(role_id: string, name?: string, description?: string, permissions?: string[]) {
-        await api.put(`/role/${role_id}`, {
-            name,
-            description,
-            permissions
-        }).then(res => {
-            toast.success('Permissão atualizado com sucesso!')
-        }).catch(err => {
-            console.log(err)
-            const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
-        })
-    }
+    
 
     const onSubmit = (data: FormValues) => {
         toast.promise(
@@ -131,10 +122,8 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
             {
                 pending: 'Atualizando permissão'
             })
-
         reset()
         setPermissionsSelected([])
-        Router.push('/funcoes')
     }
 
 
@@ -167,7 +156,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button type='submit'>Atualizar Permissão</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

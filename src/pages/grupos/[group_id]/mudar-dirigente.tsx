@@ -1,28 +1,25 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
-import Dropdown from "@/Components/Dropdown"
 import DropdownObject from "@/Components/DropdownObjects"
-import GroupPublishers from "@/Components/GroupPublishers"
 import Layout from "@/Components/Layout"
-import { buttonDisabled, crumbsAtom, errorFormSend, groupPublisherList, pageActiveAtom, selectedPublishersAtom, successFormSend } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
+import { buttonDisabled, crumbsAtom, errorFormSend,  pageActiveAtom,  successFormSend } from "@/atoms/atom"
+import { useAuthContext } from "@/context/AuthContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IPublisher } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
+import { messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useAtomValue } from "jotai"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import {  useEffect, useState } from "react"
 
 export default function MudarDirigente() {
     const { group_id, group_number } = useRouter().query
-    const { user, roleContains } = useContext(AuthContext)
+    const { user } = useAuthContext()
     const congregationUser = user?.congregation
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
@@ -43,13 +40,11 @@ export default function MudarDirigente() {
         await api.put(`/group/${group_id}/change-groupOverseer`, {
             publisher_id: selectedPublisher?.id
         }).then(res => {
-            toast.success("Dirigente do grupo atualizado com sucesso!")
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.groupOverseerUpdate)
             setSelectedPublisher(null)
             mutate()
         }).catch(err => {
-            toast.error('Ocorreu um erro no servidor!')
-            handleSubmitError()
+            handleSubmitError(messageSuccessSubmit.groupOverseerUpdate)
         })
     }
 
@@ -65,12 +60,12 @@ export default function MudarDirigente() {
             const updatedCrumbs = [...prevCrumbs,
             { label: 'Editar grupo', link: `/grupos/${group_id}/add-publicadores?group_number=${group_number}` },
             ]
-            return updatedCrumbs;
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

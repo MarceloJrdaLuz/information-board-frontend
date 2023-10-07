@@ -1,9 +1,9 @@
 import Router, { useRouter } from "next/router"
 import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
-import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "@/context/AuthContext"
-import { HomeIcon, UsersIcon, ScreenShareIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, MegaphoneIcon, FunctionSquareIcon, ListChecksIcon } from 'lucide-react'
+import { useEffect, useState } from "react"
+import { useAuthContext } from "@/context/AuthContext"
+import {  UsersIcon,  SquareStackIcon, CalendarDaysIcon, CalculatorIcon,  FunctionSquareIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -23,7 +23,7 @@ export default function Layout(props: LayoutProps) {
 
     const router = useRouter()
 
-    const { user: getUser, roleContains } = useContext(AuthContext)
+    const { user: getUser, roleContains } = useAuthContext()
     const [isHovering, setIsHovering] = useState(props.pageActive)
     const [user, setUser] = useState(getUser)
     const [showSubMenu, setShowSubMenu] = useState<string[]>([])
@@ -306,7 +306,7 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {isAdminCongregation &&
+                        {isAdmin || isAdminCongregation &&
                             <NavBar.Options
                                 title="Funções"
                                 onClick={() => {

@@ -3,8 +3,10 @@ import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { ICongregation } from "@/entities/types"
 import Router, { useRouter } from "next/router"
-import { AuthContext } from "./AuthContext"
+import { useAuthContext } from "./AuthContext"
 import { useFetch } from "@/hooks/useFetch"
+import { useSubmitContext } from "./SubmitFormContext"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type CongregationContextTypes = {
     createCongregation: (name: string, number: string, circuit: string, city: string) => Promise<any>
@@ -41,7 +43,9 @@ function CongregationProvider(props: CongregationContextProviderProps) {
     const [modalNewCongregation, setModalNewCongregation] = useState(false)
     const [congregation, setCongregation] = useState<ICongregation>()
 
-    const { user } = useContext(AuthContext)
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+
+    const { user } = useAuthContext()
     const number = user?.congregation?.number
 
     const fetchConfig = number ? `/congregation/${number}` : ""
@@ -75,14 +79,14 @@ function CongregationProvider(props: CongregationContextProviderProps) {
             setCongregationCreated(res.data)
             setShowCongregationCreated(true)
             setUploadedFile(null)
-            toast.success('Congregação criada com sucesso!')
+            handleSubmitSuccess(messageSuccessSubmit.congregationCreate)
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
             if (message === 'Congregation already exists') {
-                toast.error('Congregação já existe')
+                handleSubmitError(messageErrorsSubmit.congregationAlreadyExists)
             } else {
-                toast.error('Ocorreu um erro no servidor!')
+                handleSubmitError(messageErrorsSubmit.default)
             }
         })
     }
@@ -93,13 +97,13 @@ function CongregationProvider(props: CongregationContextProviderProps) {
 
         await api.put(`/congregation/${congregation_id}`, body).then(suc => {
             mutate()
-            toast.success('Congregação atualizada com sucesso!')
+            handleSubmitSuccess(messageSuccessSubmit.congregationUpdate)
         }).catch(res => {
             if (res.response.data.message === "Any changes found") {
                 return
             }
-            toast.error("Houve algum problema ao atualizar a congregação!")
             console.log(res)
+            handleSubmitError(messageErrorsSubmit.default)
         })
 
         const formData = new FormData()
@@ -110,12 +114,11 @@ function CongregationProvider(props: CongregationContextProviderProps) {
 
             await api.put(`/congregation/${congregation_id}/photo`, formData).then(suc => {
                 mutate()
-                toast.success('Foto da congregação atualizada com sucesso!')
                 setUploadedFile(null)
-                Router.push('/dashboard')
+                handleSubmitSuccess(messageSuccessSubmit.congregationPhotoUpdate, '/dashboard')
             }).catch(err => {
-                toast.error("Houve algum problema ao atualizar a congregação!")
                 console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
             })
         }
     }
@@ -125,12 +128,22 @@ function CongregationProvider(props: CongregationContextProviderProps) {
             user_code: userCode,
             congregation_number: congregationNumber
         })
-            .then(res => toast.success(`Usuário atribuído ao domínio!`))
+            .then(res => {
+                handleSubmitSuccess(messageSuccessSubmit.userAddDomain)
+            })
             .catch(err => {
                 const { response: { data: { message } } } = err
-                if (message === "User code not exists") toast.error('Código de usuário não existe!')
-                if (message === "Congregation not exists") toast.error('Congregação não existe!')
-                else console.log(err)
+                if (message === "User code not exists") {
+                    handleSubmitError(messageErrorsSubmit.userCodeNotFound)
+                    return
+                }
+                if (message === "Congregation not exists") {
+                    handleSubmitError(messageErrorsSubmit.congregationNotFound)
+                }
+                else {
+                    console.log(err)
+                    handleSubmitError(messageErrorsSubmit.default)
+                }
             })
     }
 

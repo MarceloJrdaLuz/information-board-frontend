@@ -12,11 +12,17 @@ import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
 import Dropdown from '@/Components/Dropdown'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 
 export default function FormUpdateCongregation() {
     const { congregation: congregationUser, updateCongregation, setUploadedFile, uploadedFile } = useCongregationContext()
     const [dayMeetingLifeAndMinistary, setDayMeetingLifeAndMinistary] = useState(congregationUser?.dayMeetingLifeAndMinistary)
     const [dayMeetingPublic, setDayMeetingPublic] = useState(congregationUser?.dayMeetingPublic)
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -144,7 +150,7 @@ export default function FormUpdateCongregation() {
                     />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button type='submit'>Atualizar Congregação</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>

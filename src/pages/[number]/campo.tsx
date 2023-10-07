@@ -17,6 +17,7 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
+import NotFoundDocument from "@/Components/NotFoundDocument"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -89,7 +90,7 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                                         {removeMimeType(document.fileName)}
                                     </Button>
                                 </div>
-                            )) : null}
+                            )) : <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!"/>}
                         </div>
 
                         <div>
@@ -105,7 +106,7 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                                             onClick={() => { handleButtonClick(document.url) }}
                                         >{removeMimeType(document.fileName)}</Button>
                                     </div>
-                                )) : null}
+                                )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!"/>}
                             </div>
                         </div>
                     </div>

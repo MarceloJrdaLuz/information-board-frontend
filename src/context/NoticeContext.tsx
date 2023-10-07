@@ -1,10 +1,10 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { useSubmitContext } from "./SubmitFormContext"
 import { KeyedMutator } from "swr"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type NoticesContextTypes = {
     createNotice: (
@@ -25,7 +25,6 @@ type NoticesContextTypes = {
     ) => Promise<any>
     setExpiredNotice: React.Dispatch<Date>
     setCongregationNumber: React.Dispatch<string>
-    mutate: KeyedMutator<ICongregation>
 }
 
 type NoticeContextProviderProps = {
@@ -40,20 +39,18 @@ function NoticesProvider(props: NoticeContextProviderProps) {
 
     const [congregationNumber, setCongregationNumber] = useState('')
     const [congregationId, setCongregationId] = useState<string | undefined>('')
-
-    
+  
     const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
     const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
     
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-
+    
     useEffect(() => {
         if (congregationNumber) {
             setCongregationId(congregation?.id)
         }
     }, [congregation, congregationNumber])
-
-
+        
     async function createNotice(
         title: string,
         text: string,
@@ -68,13 +65,11 @@ function NoticesProvider(props: NoticeContextProviderProps) {
             endDay: endDay ?? null,
             expired: expiredNotice ?? null
         }).then(res => {
-            toast.success('Anúncio criado com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.noticeCreate)
         }).catch(err => {
             console.log(err)
-            handleSubmitError()
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -93,13 +88,11 @@ function NoticesProvider(props: NoticeContextProviderProps) {
             endDay: endDay ?? null,
             expired: expiredNotice ?? null
         }).then(res => {
-            toast.success('Anúncio atualizado com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.noticeUpdate, '/anuncios')
         }).catch(err => {
             console.log(err)
-            handleSubmitError()
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -108,13 +101,11 @@ function NoticesProvider(props: NoticeContextProviderProps) {
     ) {
 
         await api.delete(`/notice/${notice_id}`).then(res => {
-            toast.success('Anúncio excluído com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.noticeDelete)
         }).catch(err => {
             console.log(err)
-            handleSubmitError()
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -122,7 +113,7 @@ function NoticesProvider(props: NoticeContextProviderProps) {
 
     return (
         <NoticesContext.Provider value={{
-            createNotice, setExpiredNotice, setCongregationNumber, updateNotice, deleteNotice, mutate
+            createNotice, setExpiredNotice, setCongregationNumber, updateNotice, deleteNotice
         }}>
             {props.children}
         </NoticesContext.Provider>

@@ -7,6 +7,7 @@ import Router from "next/router"
 import { useAtom } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 import { useSubmitContext } from "./SubmitFormContext"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -79,16 +80,14 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             gender,
             dateImmersed
         }).then(res => {
-            toast.success('Publicador criado com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
-            handleSubmitError()
             const { response: { data: { message } } } = err
             if (message === 'A nickname is required to differentiate the publisher') {
-                toast.error('Outro publicador com o mesmo nome na congregação. Forneça um apelido para diferenciar!')
+                handleSubmitError(messageErrorsSubmit.publisherNameAlreadyExists)
             } else {
                 console.log(err)
-                toast.error('Ocorreu um erro no servidor!')
+                toast.error(messageErrorsSubmit.default)
             }
         })
     }
@@ -114,13 +113,11 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             nickname,
             dateImmersed
         }).then(res => {
-            toast.success('Publicador atualizado com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate,'/publicadores')
         }).catch(err => {
             console.log(err)
-            handleSubmitError()
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -151,13 +148,11 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             studies,
             observations
         },).then(res => {
-            handleSubmitSuccess()
-            toast.success('Relatório enviado com sucesso!')
+            handleSubmitSuccess(messageSuccessSubmit.reportSend)
         }).catch(err => {
             console.log(err)
-            handleSubmitError()
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
 
     }
@@ -198,23 +193,20 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
             localStorage.setItem('publisher', JSON.stringify(jsonSave))
             localStorage.setItem('deviceId', deviceId)
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.consentCreate)
         }).catch(err => {
-            handleSubmitError()
             console.log(err)
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
     async function deletePublisher(publisher_id: string) {
         api.delete(`/publisher/${publisher_id}`).then(res => {
-            toast.success('Publicador excluido com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.publisherDelete)
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError()
-            toast.error('Ocorreu um erro no servidor')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 

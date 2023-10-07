@@ -5,16 +5,21 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext } from 'react'
-import { AuthContext } from '@/context/AuthContext'
+import { useAuthContext } from '@/context/AuthContext'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 
 
 export default function FormForgotPassword() {
 
-    const { forgotMyPassword } = useContext(AuthContext)
+    const { forgotMyPassword } = useAuthContext()
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     const esquemaValidacao = yup.object({
         email: yup.string().email().required(),
@@ -40,7 +45,7 @@ export default function FormForgotPassword() {
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-blue-500`}>Digite o seu e-mail</div>
+                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-primary-200`}>Digite o seu e-mail</div>
                     <p>Insira o e-mail que você deseja resetar a senha!</p>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
@@ -49,11 +54,8 @@ export default function FormForgotPassword() {
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        {/* <div className={`flex justify-center items-center`}>
-                        <input className='mr-1' type='checkbox' title='Mantenha-me conectado'></input>
-                        <span className={`ml-2 text-sm sm:text-lg sm:ml-0`}>Mantenha-me conectado</span>
-                    </div> */}
-                        <Button type='submit'>Entrar</Button>
+                       
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
                     </div>
                 </div>
             </FormStyle>

@@ -1,4 +1,3 @@
-import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
@@ -6,7 +5,6 @@ import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { Categories, CongregationTypes, ICongregation, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
-import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
@@ -16,6 +14,7 @@ import { useEffect, useState } from "react"
 import iconeFinanceiro from '../../../public/images/financeiro-gray.png'
 import Button from "@/Components/Button"
 import { ChevronsLeftIcon } from "lucide-react"
+import NotFoundDocument from "@/Components/NotFoundDocument"
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -68,13 +67,13 @@ export default function Financeiro({ circuit: congregationCircuit, name: congreg
             } congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
                 <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
-                    {documentsFilter?.map(document => (
-                        <Button
-                            key={document.id}
-                            onClick={() => { handleButtonClick(document.url) }}
-                            className="w-full"
-                        >{removeMimeType(document.fileName)}</Button>
-                    ))
+                {documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
+                        <Button className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                            {removeMimeType(document.fileName)}
+                        </Button>
+                    )) : (
+                        <NotFoundDocument message="Relatório das contas não localizado!"/>
+                    )
                     }
                 </div>
                 <Button

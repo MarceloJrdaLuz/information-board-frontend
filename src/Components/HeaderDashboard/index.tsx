@@ -1,12 +1,11 @@
-import { AuthContext } from "@/context/AuthContext"
-import { useContext } from "react"
+import { useAuthContext } from "@/context/AuthContext"
 import Avatar from "../Avatar"
 import AvatarCongregation from "../AvatarCongregation"
 import ButtonHamburguer from "../ButtonHamburguer"
 
 
 export default function HeaderDashboard() {
-    const { user } = useContext(AuthContext)
+    const { user } = useAuthContext()
 
     const congregationUser = user?.congregation
 

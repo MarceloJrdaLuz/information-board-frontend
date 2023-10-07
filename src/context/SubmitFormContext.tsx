@@ -1,24 +1,21 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import { api } from "@/services/api"
-import { getCookie } from "cookies-next"
-import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
-import Router from "next/router"
+import React, { createContext, ReactNode, useContext, useState } from "react"
 import { useAtom } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import Router from "next/router"
+import { toast } from "react-toastify"
 
 type SubmitFormContextTypes = {
-    handleSubmitError: () => void
-    handleSubmitSuccess: () => void
+    handleSubmitError: (messageError: string, redirectTo?: string) => Promise<any>
+    handleSubmitSuccess: (messageSuccess: string, redirectTo?: string) => Promise<any>
 }
 
 type SubmitFormContextProviderProps = {
     children: ReactNode
 }
 
- const SubmitFormContext = createContext({} as SubmitFormContextTypes)
+const SubmitFormContext = createContext({} as SubmitFormContextTypes)
 
- function SubmitFormProvider(props: SubmitFormContextProviderProps) {
+function SubmitFormProvider(props: SubmitFormContextProviderProps) {
 
     const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
     const [, setDisabled] = useAtom(buttonDisabled)
@@ -27,17 +24,20 @@ type SubmitFormContextProviderProps = {
     const [, setErrorFormSendValue] = useAtom(errorFormSend)
 
 
-    const handleSubmitError = () => {
+    const handleSubmitError = async (messageError: string, redirectTo?: string) => {
+        toast.error(messageError)
         setDisabled(true)
         setErrorFormSendValue(true)
         setResetFormValue(false)
         setTimeout(() => {
             setDisabled(false)
             setErrorFormSendValue(false)
+            redirectTo && Router.push(redirectTo)
         }, 6000)
     }
 
-    const handleSubmitSuccess = async () => {
+    const handleSubmitSuccess = async ( messageSuccess: string, redirectTo?: string) => {
+        toast.success(messageSuccess)
         setSuccessFormSendValue(true)
         setDisabled(true)
         setResetFormValue(true)
@@ -46,6 +46,7 @@ type SubmitFormContextProviderProps = {
             setErrorFormSendValue(false)
             setDisabled(false)
             setResetFormValue(false)
+            redirectTo && Router.push(redirectTo)
         }, 6000)
     }
 

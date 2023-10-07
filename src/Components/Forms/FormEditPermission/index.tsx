@@ -7,34 +7,29 @@ import FormStyle from '../FormStyle'
 import { useForm, FieldValues } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { IPermission } from '@/entities/types'
-import { usePublisherContext } from '@/context/PublisherContext'
 import { useFetch } from '@/hooks/useFetch'
-import Router from 'next/router'
-import { api } from '@/services/api'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { usePermissionsAndRolesContext } from '@/context/PermissionAndRolesContext'
 
 export interface IUpdatePermission {
     permission_id: string
 }
 
-type SubmitHandler = (data: FormValues) => void
-
-type CombinedValues = FieldValues & FormValues
-
-
-
 export default function FormEditPermission({ permission_id }: IUpdatePermission) {
 
-    const { updatePublisher } = usePublisherContext()
+    const {updatePermission} = usePermissionsAndRolesContext()
     const [permissionToUpdate, setPermissionToUpdate] = useState<IPermission>()
 
     const { data } = useFetch(`/permission/${permission_id}`)
 
-    const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
-    const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
-    const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
+
 
     useEffect(() => {
         if (data) {
@@ -61,19 +56,6 @@ export default function FormEditPermission({ permission_id }: IUpdatePermission)
         }
     }, [permissionToUpdate, reset])
 
-    async function updatePermission(permission_id: string, name?: string, description?: string) {
-        await api.put(`/permission/${permission_id}`, {
-            name,
-            description
-        }).then(res => {
-            toast.success('Permissão atualizado com sucesso!')
-        }).catch(err => {
-            console.log(err)
-            const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
-        })
-    }
-
     const onSubmit = (data: FormValues) => {
         toast.promise(
             updatePermission(
@@ -84,9 +66,6 @@ export default function FormEditPermission({ permission_id }: IUpdatePermission)
             {
                 pending: 'Atualizando permissão'
             })
-
-        reset()
-        Router.push('/permissoes')
     }
 
 
@@ -111,7 +90,7 @@ export default function FormEditPermission({ permission_id }: IUpdatePermission)
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button type='submit'>Atualizar Permissão</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Atualizar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

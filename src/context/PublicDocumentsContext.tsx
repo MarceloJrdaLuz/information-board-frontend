@@ -55,13 +55,13 @@ function PublicDocumentsProvider(props: PublicDocumentsContextProviderProps) {
 }
 
 function usePublicDocumentsContext(): PublicDocumentsContextTypes {
-    const context = useContext(PublicDocumentsContext);
+    const context = useContext(PublicDocumentsContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { PublicDocumentsProvider, usePublicDocumentsContext, };
+export { PublicDocumentsProvider, usePublicDocumentsContext, }

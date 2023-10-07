@@ -3,16 +3,16 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddRole from "@/Components/Forms/FormAddRole"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { ICongregation } from "@/entities/types"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function AddFuncao() {
-    const { user: getUser, roleContains } = useContext(AuthContext)
+    const { roleContains } = useAuthContext()
 
     const isAdmin = roleContains('ADMIN')
 
@@ -23,13 +23,13 @@ export default function AddFuncao() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()
@@ -45,7 +45,7 @@ export default function AddFuncao() {
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex m-10 justify-center items-center">
-                    <FormAddRole/>
+                    <FormAddRole />
                 </section>
             </ContentDashboard>
         </Layout>
@@ -69,10 +69,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if(!userRolesParse.includes('ADMIN')){
+    if (!userRolesParse.includes('ADMIN')) {
         return {
             redirect: {
-                destination: '/dashboard', 
+                destination: '/dashboard',
                 permanent: false
             }
         }

@@ -6,16 +6,25 @@ import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import { useContext } from 'react'
-import { AuthContext } from '@/context/AuthContext'
+import { useAuthContext } from '@/context/AuthContext'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { useState } from 'react'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 
 export default function FormLogin() {
 
-    const { login } = useContext(AuthContext)
+    const { login } = useAuthContext()
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
+
+    const [passwordVisible, setPasswordVisible] = useState(false)
 
     const esquemaValidacao = yup.object({
         email: yup.string().email().required(),
@@ -50,7 +59,14 @@ export default function FormLogin() {
                     }}
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
-                    <Input type="password" placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} />
+
+                    <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} >
+                    {passwordVisible ? (
+                            <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        ) : (
+                            <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        )}
+                    </Input>
                     {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
                     <div>
                         <div>
@@ -65,7 +81,7 @@ export default function FormLogin() {
                         </div>
                     </div>
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button type='submit'>Entrar</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
                     </div>
                 </div>
             </FormStyle>

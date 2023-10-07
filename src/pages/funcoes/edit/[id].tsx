@@ -24,13 +24,13 @@ export default function EditRoles() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

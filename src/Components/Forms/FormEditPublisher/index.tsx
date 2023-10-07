@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { useForm, FieldValues } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { IPublisher } from '@/entities/types'
 import { usePublisherContext } from '@/context/PublisherContext'
@@ -15,14 +15,12 @@ import CheckboxUnique from '@/Components/CheckBoxUnique'
 import InputError from '@/Components/InputError'
 import Input from '@/Components/Input'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 
 export interface IUpdatePublisher {
     id: string
 }
-
-type SubmitHandler = (data: FormValues) => void
-
-type CombinedValues = FieldValues & FormValues
 
 export default function FormEditPublisher(props: IUpdatePublisher) {
 
@@ -34,6 +32,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         if (data) {
@@ -118,7 +120,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             }
         )
         reset()
-        Router.push('/publicadores')
     }
 
 
@@ -147,7 +148,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button type='submit' >Atualizar publicador</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Atualizar publicador</Button>
                     </div>
                 </div>
             </FormStyle>

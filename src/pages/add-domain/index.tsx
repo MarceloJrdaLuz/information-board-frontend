@@ -1,6 +1,6 @@
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { GetServerSideProps } from "next"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { parseCookies } from 'nookies'
 import { getAPIClient } from "@/services/axios"
 import Layout from "@/Components/Layout"
@@ -11,7 +11,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import FormAddDomain from "@/Components/Forms/FormAddDomain"
 
 export default function AddDomain() {
-    const { user: getUser, roleContains } = useContext(AuthContext)
+    const { user: getUser, roleContains } = useAuthContext()
 
     const [user, setUser] = useState(getUser)
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)

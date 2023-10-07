@@ -1,12 +1,14 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react"
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { ICongregation, ResponseAuth, RolesType } from "../entities/types"
 import Router from 'next/router'
-// import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from "@/services/api"
 import { deleteCookie, setCookie, getCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import { domainUrl } from "@/atoms/atom"
+import { copyFile } from "fs"
+import { useSubmitContext } from "./SubmitFormContext"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type AuthContextTypes = {
     authenticated: boolean
@@ -36,9 +38,11 @@ type User = {
     roles: RolesType[]
 }
 
-export const AuthContext = createContext({} as AuthContextTypes)
+const AuthContext = createContext({} as AuthContextTypes)
 
-export function AuthProvider(props: AuthContextProviderProps) {
+function AuthProvider(props: AuthContextProviderProps) {
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const [erroCadastro, setErroCadastro] = useState(false)
@@ -49,7 +53,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
     useEffect(() => {
         const dominio = window.location.origin
         setDomainAtom(dominio)
-      }, [setDomainAtom])
+    }, [setDomainAtom])
 
     useEffect(() => {
         const token = getCookie('quadro-token')
@@ -60,7 +64,7 @@ export function AuthProvider(props: AuthContextProviderProps) {
             })
         }
 
-        
+
     }, [])
 
     async function login(email: string, password: string) {
@@ -98,14 +102,12 @@ export function AuthProvider(props: AuthContextProviderProps) {
 
         }).catch(res => {
             const { response: { data: { message } } } = res
-
             if (message === 'Senha inválida') {
-                toast.error('Senha não confere!')
+                handleSubmitError(messageErrorsSubmit.passwordNotEqual)
             }
             if (message === 'E-mail não cadastrado') {
-                toast.error('Usuário inválido!')
+                handleSubmitError(messageErrorsSubmit.emailInvalid)
             }
-            setBtnDisabled(false)
         })
     }
 
@@ -136,7 +138,6 @@ export function AuthProvider(props: AuthContextProviderProps) {
             }
 
             if (usuarioLogado.token) {
-                toast.success('Cadastro efetuado com sucesso!')
                 const token = res.data.token
 
                 setCookie('quadro-token', token, {
@@ -147,12 +148,11 @@ export function AuthProvider(props: AuthContextProviderProps) {
 
                 setUser(usuarioLogado)
 
-                Router.push('/dashboard')
+                handleSubmitSuccess(messageSuccessSubmit.registerCreate, '/dashboard')
             }
         }).catch(res => {
             if (res.response.data.message === 'E-mail already exists') {
-                Router.push('/login')
-                toast.error('E-mail já cadastrado! Caso não lembre da senha, clique em "Esqueci minha senha".')
+                handleSubmitSuccess(messageErrorsSubmit.emailAlreadyExists, "/login")
             }
         })
     }
@@ -164,25 +164,22 @@ export function AuthProvider(props: AuthContextProviderProps) {
             newPassword
         })
             .then(res => {
-                toast.success('Senha atualizada com sucesso!')
-                Router.push('/login')
+                handleSubmitSuccess(messageSuccessSubmit.passwordUpdate, "/login")
             })
             .catch(res => {
-
                 const { response: { data: { message } } } = res
 
                 switch (message) {
                     case "User not found":
-                        toast.error('Email de redefinição de senha não encontrado!')
+                        handleSubmitError(messageErrorsSubmit.emailNotFound, '/forgot-password')
                         break
                     case "Token invalid":
-                        toast.error('Token inválido!')
+                        handleSubmitError(messageErrorsSubmit.invalidToken, '/forgot-password')
                         break
                     case "Token expired, generate a new one":
-                        toast.error('Token expirado, gere um novo token!')
+                        handleSubmitError(messageErrorsSubmit.tokenExpired, '/forgot-password')
                         break
                 }
-                Router.push('/forgot-password')
             })
     }
 
@@ -191,13 +188,14 @@ export function AuthProvider(props: AuthContextProviderProps) {
             email
         })
             .then(res => {
-                setBtnDisabled(false)
-                toast.success('E-mail enviado com sucesso!')
-                Router.push('/login')
+                handleSubmitSuccess(messageSuccessSubmit.emailSend, '/login')
             }).catch(res => {
-                setBtnDisabled(false)
-                toast.error('Usuário ainda não cadastrado! Se desejar faça seu cadastro.')
-                Router.push('/cadastro')
+                const { response: { data: { error } } } = res
+                if (error === `User wasn't found`) handleSubmitError(messageErrorsSubmit.userNotRegistered, '/cadastro')
+                if (error === 'Cannot send forgot password email') handleSubmitError(messageErrorsSubmit.emailNotSend)
+                else {
+                    handleSubmitError(messageErrorsSubmit.default)
+                }
             })
     }
 
@@ -215,3 +213,15 @@ export function AuthProvider(props: AuthContextProviderProps) {
         </AuthContext.Provider>
     )
 }
+
+function useAuthContext(): AuthContextTypes {
+    const context = useContext(AuthContext)
+
+    if (!context) {
+        throw new Error("useFiles must be used within FileProvider")
+    }
+
+    return context
+}
+
+export { AuthProvider, useAuthContext }

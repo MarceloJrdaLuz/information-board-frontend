@@ -1,6 +1,6 @@
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { GetServerSideProps } from "next"
-import { useContext, useEffect, useState } from "react"
+import {  useEffect, useState } from "react"
 import { parseCookies } from 'nookies'
 import { getAPIClient } from "@/services/axios"
 import Layout from "@/Components/Layout"
@@ -9,7 +9,7 @@ import { useAtom } from "jotai"
 import { crumbsAtom } from "@/atoms/atom"
 
 export default function Dashboard() {
-    const { user: getUser } = useContext(AuthContext)
+    const { user: getUser } = useAuthContext()
 
     const [user, setUser] = useState(getUser)
     const [, setCrumbs] = useAtom(crumbsAtom)

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Input from "../../Input"
 import FormStyle from "../FormStyle"
 import InputError from "../../InputError"
@@ -18,6 +18,8 @@ import { ArrowLeftIcon } from "lucide-react"
 import { api } from "@/services/api"
 import ConsentMessage from "../../ConsentMessage"
 import Button from "@/Components/Button"
+import { useAtomValue } from "jotai"
+import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 
 interface IRelatorioFormProps {
     congregationNumber: string
@@ -36,8 +38,9 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [submittedData, setSubmittedData] = useState<FormValues>()
     const [deviceId, setDeviceId] = useState<string | undefined>()
 
-    const [dataSuccess, setDataSuccess] = useState(false)
-
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         if (data) {
@@ -135,10 +138,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                     }
                 )
             }
-            setDataSuccess(true)
-            setTimeout(() => {
-                setDataSuccess(false)
-            }, 6000)
             resetField('publications')
             resetField('videos')
             resetField('hours')
@@ -285,6 +284,8 @@ export default function FormReport(props: IRelatorioFormProps) {
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
                         <Button
+                            disabled={disabled}
+                            error={dataError}
                             success={dataSuccess}
                             type='submit'
                         >Enviar</Button>

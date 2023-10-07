@@ -6,6 +6,8 @@ import { useFetch } from "@/hooks/useFetch"
 import { v4 as uuidv4 } from "uuid"
 import { filesize } from "filesize"
 import { useCongregationContext } from "./CongregationContext"
+import { useSubmitContext } from "./SubmitFormContext"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
@@ -25,6 +27,7 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
 
     const { congregation: congregationUser } = useCongregationContext()
     const congregation_id = congregationUser?.id
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [documentCategoryId, setDocumentCategoryId] = useState("")
     const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
@@ -146,10 +149,10 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
     async function deleteDocument(document_id: string) {
         await api.delete(`/document/${document_id}`).then(res => {
             mutate()
-            toast.success('Documento exluído com sucesso!')
+            handleSubmitSuccess(messageSuccessSubmit.documentCreate)
         }).catch(err => {
-            toast.error('Ocorreu algum erro ao excluir o arquivo')
             console.log(err)
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 

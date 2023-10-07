@@ -12,6 +12,8 @@ import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
 import Dropdown from "@/Components/Dropdown"
 import Button from "@/Components/Button"
+import { useAtomValue } from "jotai"
+import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 
 export default function FormAddRole() {
 
@@ -20,6 +22,10 @@ export default function FormAddRole() {
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [permissionSelected, setPermissionsSelected] = useState<string[]>([])
     const [permissionSelectedsIds, setPermissionSelectedsIds] = useState([''])
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         setOptionsDrop(permissions?.map(permission => `${permission.name}`))
@@ -115,7 +121,7 @@ export default function FormAddRole() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button type='submit' >Criar Permissão</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit' >Criar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

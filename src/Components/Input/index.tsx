@@ -1,10 +1,11 @@
-import { ComponentProps } from "react"
+import { ComponentProps, ReactNode } from "react"
 import Label from "../Label"
 
 interface InputProps extends ComponentProps<'input'> {
     invalid?: string
     registro?: any
     mes?: number | null
+    children?: ReactNode
 }
 
 export default function Input(props: InputProps) {
@@ -25,6 +26,7 @@ export default function Input(props: InputProps) {
                 {...props.registro}
             />
             <Label invalido={props.invalid === 'invalido' ?? true } text={props.placeholder} readonly={props.readOnly}/>
+            {props.children}
         </div>
     )
 }   

@@ -4,28 +4,22 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { useForm, FieldValues, useWatch } from 'react-hook-form'
+import { useForm,  useWatch } from 'react-hook-form'
 import { useEffect, useRef, useState } from 'react'
 import { ICategory } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
-import Router from 'next/router'
 import { api } from '@/services/api'
-import { IconDelete } from '@/assets/icons'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import Dropdown from '@/Components/Dropdown'
 import Button from '@/Components/Button'
-import { useAtom, useAtomValue } from 'jotai'
+import {  useAtom, useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import { useSubmitContext } from '@/context/SubmitFormContext'
+import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 
 export interface IUpdateCategory {
     category_id: string
 }
-
-type SubmitHandler = (data: FormValues) => void
-
-type CombinedValues = FieldValues & FormValues
 
 export default function FormEditCategory({ category_id }: IUpdateCategory) {
     const { data } = useFetch<ICategory>(`/category/${category_id}`)
@@ -35,7 +29,7 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
-    const disabled = useAtomValue(buttonDisabled)
+    const [disabled, setDisabled] = useAtom(buttonDisabled)
 
 
     const formMethods = useForm<FormValues>({
@@ -91,23 +85,18 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
         if (initialFormValues.current) {
             const isFormChanged = JSON.stringify(watchedFormValues) !== JSON.stringify(initialFormValues.current)
         }
-    }, [watchedFormValues, initialFormValues]);
+    }, [watchedFormValues, initialFormValues, setDisabled]);
 
     async function updateCategory(category_id: string, name?: string, description?: string) {
         await api.put(`/category/${category_id}`, {
             name,
             description
         }).then(res => {
-            toast.success('Permissão atualizado com sucesso!')
-            handleSubmitSuccess()
-            setTimeout(() => {
-                Router.push('/categorias')
-            }, 6000)
+            handleSubmitSuccess(messageSuccessSubmit.permissionCreate, '/categorias')
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            toast.error('Ocorreu um erro no servidor!')
-            handleSubmitError()
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 

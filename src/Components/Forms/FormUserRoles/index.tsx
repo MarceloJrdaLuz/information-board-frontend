@@ -8,7 +8,7 @@ import { api } from "@/services/api"
 import Dropdown from "@/Components/Dropdown"
 import { IconDelete } from "@/assets/icons"
 import Button from "@/Components/Button"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 
 export default function FormUserRoles() {
@@ -60,7 +60,6 @@ export default function FormUserRoles() {
         }
         getUsers()
     }, [userSelected])
-
 
     useEffect(() => {
         const getRoles = async () => {

@@ -5,26 +5,39 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useContext } from 'react'
-import { AuthContext } from '@/context/AuthContext'
+import { useAuthContext } from '@/context/AuthContext'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { passwordValidate } from '@/utils/validatePassword'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { useState } from 'react'
 
 
 export default function FormRegister() {
 
-    const { signUp } = useContext(AuthContext)
+    const { signUp } = useAuthContext()
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
+
+    const [passwordVisible, setPasswordVisible] = useState(false)
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
 
     const esquemaValidacao = yup.object({
         email: yup.string().email().required(),
-        password: yup.string().required()//.matches(validacaoSenha)
+        password: yup.string().required().matches(passwordValidate),
+        confirmPassword: yup.string().required().oneOf([yup.ref('password'), null])
     })
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             email: '',
-            password: ''
+            password: '',
+            confirmPassword: ''
         }, resolver: yupResolver(esquemaValidacao)
     })
 
@@ -49,10 +62,27 @@ export default function FormRegister() {
                     }}
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
-                    <Input type="password" placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} />
+
+                    <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} >
+                        {passwordVisible ? (
+                            <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        ) : (
+                            <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        )}
+                    </Input>
+
                     {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
+
+                    <Input type={confirmPasswordVisible ? "text" : "password"} placeholder="Confirmar senha" registro={{ ...register('confirmPassword', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''}>
+                        {confirmPasswordVisible ? (
+                            <EyeOffIcon onClick={() => setConfirmPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        ) : (
+                            <EyeIcon onClick={() => setConfirmPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                        )}
+                    </Input>
+                    {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button type='submit' >Criar conta</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Criar conta</Button>
                     </div>
                 </div>
             </FormStyle>

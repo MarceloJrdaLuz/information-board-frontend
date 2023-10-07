@@ -2,19 +2,17 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddCongregation from "@/Components/Forms/FormAddCongregation"
 import Layout from "@/Components/Layout"
-import ListCongregations from "@/Components/ListCongregations"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
+import { useAuthContext } from "@/context/AuthContext"
 import { ICongregation } from "@/entities/types"
-import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function AddCongregacoes() {
-    const { user: getUser, roleContains } = useContext(AuthContext)
+    const { user: getUser, roleContains } = useAuthContext()
 
     const isAdmin = roleContains('ADMIN')
 
@@ -25,13 +23,13 @@ export default function AddCongregacoes() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Congregações', link: '/congregacoes' }];
-            return updatedCrumbs;
+            const updatedCrumbs = [...prevCrumbs, { label: 'Congregações', link: '/congregacoes' }]
+            return updatedCrumbs
         })
 
         const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1));
-        };
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
 
         return () => {
             removeCrumb()

@@ -11,18 +11,22 @@ import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import Button from '@/Components/Button'
 import CardCongregation from '@/Components/CardCongregation'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 
 
 
 
 export default function FormAddCongregation() {
-
-
     const {
         createCongregation, setUploadedFile,
         showCongregationCreated, setShowCongregationCreated,
         congregationCreated, setModalNewCongregation
     } = useCongregationContext()
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -92,7 +96,7 @@ export default function FormAddCongregation() {
             hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button type='submit' >Criar Congregação</Button>
+                        <Button disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>

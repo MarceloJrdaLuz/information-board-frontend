@@ -13,6 +13,8 @@ import Calendar from "@/Components/Calendar"
 import Button from "@/Components/Button"
 import ModalHelp from "@/Components/ModalHelp"
 import { HelpCircle } from "lucide-react"
+import { useAtomValue } from "jotai"
+import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 
 export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
@@ -23,6 +25,10 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
 
     const [recurrentNotice, setRecurrentNotice] = useState(false)
     const [modalHelpShow, setModalHelpShow] = useState(false)
+
+    const dataSuccess = useAtomValue(successFormSend)
+    const dataError = useAtomValue(errorFormSend)
+    const disabled = useAtomValue(buttonDisabled)
 
     useEffect(() => {
         setCongregationNumber(congregationNumber)
@@ -35,7 +41,8 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
         endDay: yup.number()
     })
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
         defaultValues: {
             title: "",
             text: "",
@@ -51,12 +58,23 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
         })
         reset()
         setRecurrentNotice(false)
+        setSelectedDate(null)
     }
 
     function onError(error: any) {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
+    const handleRecurrentNoticeChange = (isChecked: boolean) => {
+        setRecurrentNotice(isChecked);
+        // Limpe os valores e erros dos campos startDay e endDay quando o checkbox for desmarcado.
+        if (!isChecked) {
+          setValue('startDay', undefined);
+          setValue('endDay', undefined);
+          errors.startDay = undefined;
+          errors.endDay = undefined;
+        }
+      }
 
     const handleDateChange = (date: Date) => {
         setExpiredNotice(date)
@@ -99,9 +117,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                     <CheckboxBoolean
                         checked={recurrentNotice}
                         label="Anúncio recorrente"
-                        handleCheckboxChange={(isChecked) => {
-                            setRecurrentNotice(!recurrentNotice)
-                        }}
+                        handleCheckboxChange={(isChecked) => handleRecurrentNoticeChange(isChecked)}
                     />
 
                     {recurrentNotice && (
@@ -125,7 +141,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                     <Calendar selectedDate={selectedDate} handleDateChange={(date) => handleDateChange(date)} />
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button type='submit'>Criar Anúncio</Button>
+                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Criar Anúncio</Button>
                     </div>
                 </div>
             </FormStyle>

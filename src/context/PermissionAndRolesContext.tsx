@@ -1,15 +1,16 @@
 import { createContext, ReactNode, useContext } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
-import { useAtom } from "jotai"
-import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 import { useSubmitContext } from "./SubmitFormContext"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type PermissionAndRolesContextTypes = {
     createPermission: (name: string, description: string) => Promise<any>
     createRole: (name: string, description: string, permissions: string[]) => Promise<any>
     userRoles: (user_id: string, roles: string[]) => Promise<any>
     deletePermission: (permission_id: string) => Promise<any>
+    updatePermission: (permission_id: string, name?: string, description?: string) => Promise<any>
+    updateRole: (role_id: string, name?: string, description?: string, permissions?: string[]) => Promise<any>
 }
 
 type PermissionAndRolesContextProviderProps = {
@@ -44,17 +45,38 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
             name,
             description
         }).then(res => {
-            toast.success('Permissão criada com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.permissionCreate)
         }).catch(err => {
             const { response: { data: { message } } } = err
-            handleSubmitError()
             if (message === 'Permission already exists') {
-                toast.error('Permissão já existe no banco de dados!')
+                handleSubmitError(messageErrorsSubmit.permissionAlreadyExists)
             } else {
                 console.log(err)
-                toast.error('Ocorreu um erro no servidor!')
+                handleSubmitError(messageErrorsSubmit.default)
             }
+        })
+    }
+
+    async function updatePermission(permission_id: string, name?: string, description?: string) {
+        await api.put(`/permission/${permission_id}`, {
+            name,
+            description
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.permissionUpdate, '/permissoes')
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError(messageErrorsSubmit.default)
+        })
+    }
+
+    async function deletePermission(permission_id: string) {
+        api.delete(`/permission/${permission_id}`).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.permissionDelete)
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -64,17 +86,29 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
             description,
             permissions
         }).then(res => {
-            toast.success('Função criada com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.roleCreate)
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError()
             if (message === 'Role already exists') {
-                toast.error('Essa função já existe!')
+                handleSubmitError(messageErrorsSubmit.roleAlreadyExists)
             } else {
-                toast.error('Ocorreu um erro no servidor')
+                toast.error(messageErrorsSubmit.default)
             }
+        })
+    }
+
+    async function updateRole(role_id: string, name?: string, description?: string, permissions?: string[]) {
+        await api.put(`/role/${role_id}`, {
+            name,
+            description,
+            permissions
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.roleUpdate)
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
@@ -83,31 +117,18 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
             user_id,
             roles
         }).then(res => {
-            toast.success('Função atribuída ao usuário com sucesso!')
-            handleSubmitSuccess()
+            handleSubmitSuccess(messageSuccessSubmit.roleAddUser)
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError()
-            toast.error('Ocorreu um erro no servidor')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
-    async function deletePermission(permission_id: string) {
-        api.delete(`/permission/${permission_id}`).then(res => {
-            toast.success('Permissão excluída com sucesso!')
-            handleSubmitSuccess()
-        }).catch(err => {
-            console.log(err)
-            const { response: { data: { message } } } = err
-            handleSubmitError()
-            toast.error('Ocorreu um erro no servidor')
-        })
-    }
 
     return (
         <PermissionAndRolesContext.Provider value={{
-            createPermission, createRole, userRoles, deletePermission
+            createPermission, createRole, userRoles, deletePermission, updatePermission, updateRole
         }}>
             {props.children}
         </PermissionAndRolesContext.Provider>

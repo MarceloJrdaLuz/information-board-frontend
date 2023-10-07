@@ -2,28 +2,27 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import GroupIcon from "@/Components/Icons/GroupIcon"
-import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import Layout from "@/Components/Layout"
 import ListGroups from "@/Components/ListGroups"
-import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { AuthContext } from "@/context/AuthContext"
 import { useCongregationContext } from "@/context/CongregationContext"
+import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IGroup, IRole } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
-import { FunctionSquareIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Router from "next/router"
 import { parseCookies } from "nookies"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
 export default function Grupos() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
@@ -42,12 +41,12 @@ export default function Grupos() {
 
     async function deleteGroup(group_id: string) {
         await api.delete(`group/${group_id}`).then(res => {
-            toast.success("Grupo excluido com sucesso!")
             mutate()
+            handleSubmitSuccess(messageSuccessSubmit.groupDelete)
         }).catch(err => {
             const { response: { data: { message } } } = err
             console.log(message)
-            toast.error('Ocorreu um erro no servidor!')
+            handleSubmitError(messageErrorsSubmit.default)
         })
     }
 
