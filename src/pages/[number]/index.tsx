@@ -79,7 +79,7 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
 
     return (
         <div className=" flex flex-col bg-gray-200">
-            <NoticesModal notices={notices} congregationNumber={congregationNumber} />
+            {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={congregationNumber} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal image={(
                 urlImage ? (

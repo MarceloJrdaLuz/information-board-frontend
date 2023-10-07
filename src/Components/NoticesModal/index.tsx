@@ -14,7 +14,7 @@ export default function NoticesModal(props: INoticesModalProps) {
     }, [setNotices, props.notices])
 
     return (
-        <div className={`bg-gray-700  w-full h-0 ${props.notices && 'h-14 p-3'}  flex overflow-hidden text-white transition-all duration-500 `}>
+        <div className={`bg-gray-700  w-full h-0 ${props.notices && 'h-12 p-3'}  flex overflow-hidden text-white transition-all duration-500 `}>
             {notices && notices.length > 1
                 ?
                 <div className="flex w-full justify-between items-center">
