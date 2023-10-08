@@ -58,7 +58,7 @@ export default function Limpeza({ circuit: congregationCircuit, name: congregati
     }
 
     return !pdfShow ? (
-        <>
+        <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Limpeza" urlMiniatura={`${domain}/images/limpeza-green.png`} />
             <LayoutPrincipal image={
                 <Image src={iconClean} alt="Icone de produtos de limpeza" fill />
@@ -79,7 +79,7 @@ export default function Limpeza({ circuit: congregationCircuit, name: congregati
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal>
-        </>
+        </div>
     ) : (
         <>
             <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />

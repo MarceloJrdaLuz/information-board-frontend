@@ -19,7 +19,7 @@ interface LayoutPrincipalProps {
 export default function LayoutPrincipal(props: LayoutPrincipalProps) {
 
     return (
-        <div className={`layout relative shadow shadow-gray-600 bg-gray-200 h-screen w-screen flex flex-col md:m-auto lg:shadow-none`}>
+        <div className={`layout relative shadow shadow-gray-600 bg-gray-200 h-full w-full flex flex-col md:m-auto lg:shadow-none`}>
             {!props.header ? null :
                 <Header className={props.className} texto={props.textoHeader}>
                     {props.image}

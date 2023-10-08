@@ -27,7 +27,7 @@ export default function PoliticaPrivacidade({ circuit: congregationCircuit, name
 
 
     return (
-        <>
+        <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Política de Privacidade" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-gray-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
                 <h1 className="mb-5 font-bold text-gray-900 text-2xl">Política sobre coleta e armazenamento de dados</h1>
@@ -47,7 +47,7 @@ export default function PoliticaPrivacidade({ circuit: congregationCircuit, name
                     Ao continuar a utilizar nosso site, você concorda com esta coleta e armazenamento de dados pessoais de acordo com os termos desta mensagem de consentimento. <br /><br />
                 </span>
             </LayoutPrincipal>
-        </>
+        </div>
     )
 }
 

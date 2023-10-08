@@ -60,7 +60,7 @@ export default function Financeiro({ circuit: congregationCircuit, name: congreg
     }
 
     return !pdfShow ? (
-        <>
+        <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Financeiro" urlMiniatura={`${domain}/images/financeiro.png`} />
             <LayoutPrincipal image={
                 <Image src={iconeFinanceiro} alt="Icone uma calculadora e contas" fill />
@@ -81,7 +81,7 @@ export default function Financeiro({ circuit: congregationCircuit, name: congreg
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal >
-        </>
+        </div>
     ) : (
         <>
             <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />

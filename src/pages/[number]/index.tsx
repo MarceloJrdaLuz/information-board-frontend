@@ -78,7 +78,7 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
 
 
     return (
-        <div className=" flex flex-col bg-gray-200">
+        <div className=" flex flex-col h-screen w-screen bg-gray-200">
             {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={congregationNumber} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal image={(
@@ -87,7 +87,7 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
                 ) : (
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
-            )} congregationName={congregationName} circuit={congregationCircuit} textoHeader="Quadro de Anúncios" heightConteudo={'screen'} header className="bg-home  bg-left-bottom bg-cover md:bg-center lg:bg-right ">
+            )} congregationName={congregationName} circuit={congregationCircuit} textoHeader="Quadro de Anúncios" heightConteudo={'1/2'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
                 <Button onClick={() => Router.push(`${congregationNumber}/relatorio`)}>
                     <ReportIcon />Relatório de Serviço de campo
                 </Button>

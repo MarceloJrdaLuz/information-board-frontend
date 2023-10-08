@@ -134,7 +134,7 @@ export default function Designacoes({
   }
 
   return !pdfShow ? (
-    <>
+    <div className=" flex flex-col h-screen w-screen bg-gray-200">
       <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
       <LayoutPrincipal
         image={
@@ -172,7 +172,7 @@ export default function Designacoes({
                 </div>
               ))}
             </div>}
-            {!lifeAndMinistryOptionsShow ? <p className="font-bold my-2  text-xl text-fontColor-100">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!lifeAndMinistryOptionsShow ? <p className="font-bold my-2  text-xl text-gray-900">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <div>
             <Button
@@ -190,7 +190,7 @@ export default function Designacoes({
                 </div>
               )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
             </div>}
-            {!publicOptionsShow ? <p className="font-bold text-xl my-2 text-fontColor-100">{`${dayMeetingPublic} ${hourMeetingPublic.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!publicOptionsShow ? <p className="font-bold text-xl my-2 text-gray-900">{`${dayMeetingPublic} ${hourMeetingPublic.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <Button
             onClick={() => router.push(`/${congregationNumber}`)}
@@ -198,7 +198,7 @@ export default function Designacoes({
           ><ChevronsLeftIcon />Voltar</Button>
         </div>
       </LayoutPrincipal>
-    </>
+    </div>
   ) : (
     <>
       <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />

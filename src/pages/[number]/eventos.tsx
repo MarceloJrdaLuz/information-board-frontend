@@ -59,7 +59,7 @@ export default function Eventos({ circuit: congregationCircuit, name: congregati
     }
 
     return !pdfShow ? (
-        <>
+        <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Eventos" urlMiniatura={`${domain}/images/eventos.png`} />
             <LayoutPrincipal image={
                 <Image src={iconEvents} alt="Icone de um calendário" fill />
@@ -80,7 +80,7 @@ export default function Eventos({ circuit: congregationCircuit, name: congregati
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal>
-        </>
+        </div>
     ) : (
         <>
             <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />

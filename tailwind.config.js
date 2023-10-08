@@ -6,21 +6,14 @@ module.exports = withMT({
     "./src/Components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'xs': '370px'
+    },
     extend: {
       brightness: {
         30: '.30',
       },
-      height: {
-        0.5: '0.10rem'
-      },
-      colors: {
-        cyan: {
-          950: '#093e49'
-        },
-        fontColor: {
-          100: '#374151',
-          200: '#178582'
-        },
+      colors: { 
         primary: {
           100: '#83c5be',
           200: '#178582',
@@ -37,20 +30,5 @@ module.exports = withMT({
   },
   variants: {
     fill: ['hover', 'focus'], // this line does the trick
-  },
-  colors: {
-    button: {
-      'hover': '#e62e00',
-      'disabled': '#ccc',
-      'default': '#90caf9',
-      'primary': '#f63e02',
-    },
-    modals: {
-      'primary': '#302F3C',
-    },
-    principais: {
-      'primary': '#ccc',
-      'secondary': '#FAFAFA'
-    }
   }
 })
