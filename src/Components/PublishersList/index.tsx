@@ -81,9 +81,9 @@ export default function PublisherList() {
                             {publisher.privileges.map(privilege => <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>{privilege}</span>)}
                         </div>
                         <div className="flex flex-wrap sm:flex-nowrap mt-2 ">
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>
+                            {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
                             <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {moment(publisher.dateImmersed).format('DD-MM-YYYY') ?? "Não informado"}</p>
+                            <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') ?? "Não informado"}</p>
                         </div>
                         <div className="flex pl-10">
                             <div className="gap-1 flex">

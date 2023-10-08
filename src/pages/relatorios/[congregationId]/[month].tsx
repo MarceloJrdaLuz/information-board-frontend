@@ -25,18 +25,15 @@ export default function RelatorioMes() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
-
-    const [relatorios, setRelatorios] = useState<IReports[]>()
-    const [relatoriosFiltrados, setRelatoriosFiltrados] = useState<IReports[]>([])
+    const [reports, setReports] = useState<IReports[]>()
+    const [reportsFiltered, setReportsFiltered] = useState<IReports[]>([])
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
 
+    const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
 
-    const [relatoriosFalta, setRelatoriosFalta] = useState<IPublisher[] | undefined>()
-    const [relatoriosFaltaShow, setRelatoriosFaltaShow] = useState(false)
-
-    const [anoSelecionado, setAnoSelecionado] = useState('')
-    const [mesSelecionado, setMesSelecionado] = useState('')
+    const [yearSelected, setYearSelected] = useState('')
+    const [monthSelected, setMonthSelected] = useState('')
 
     const monthParam = month as string
 
@@ -47,38 +44,38 @@ export default function RelatorioMes() {
     useEffect(() => {
         setPageActive(monthParam)
         let dividirPalavra = monthParam.split(" ")
-        setMesSelecionado(dividirPalavra[0])
-        setAnoSelecionado(dividirPalavra[1])
+        setMonthSelected(dividirPalavra[0])
+        setYearSelected(dividirPalavra[1])
     }, [monthParam, setPageActive])
 
     useEffect(() => {
         const relatoriosNaoEnviados: IPublisher[] = publishers?.filter((publisher) => {
-            const relatorioEnviado = relatoriosFiltrados?.some(
+            const relatorioEnviado = reportsFiltered?.some(
                 (relatorio) =>
                     relatorio.publisher.id === publisher.id &&
-                    relatorio.month.toLowerCase() === mesSelecionado &&
-                    relatorio.year === anoSelecionado
+                    relatorio.month.toLowerCase() === monthSelected &&
+                    relatorio.year === yearSelected
             )
             return !relatorioEnviado
         }) || []
-        setRelatoriosFalta(relatoriosNaoEnviados)
-    }, [mesSelecionado, anoSelecionado, publishers, relatoriosFiltrados])
+        setMissingReports(relatoriosNaoEnviados)
+    }, [monthSelected, yearSelected, publishers, reportsFiltered])
 
-    const relatoriosNaoEnviadosCount = relatoriosFalta?.length || 0
+    const relatoriosNaoEnviadosCount = missingReports?.length || 0
 
     useEffect(() => {
-        const relatoriosFiltrados = relatorios?.filter(relatorio => {
-            return relatorio.month.toLocaleLowerCase() === mesSelecionado && relatorio.year === anoSelecionado
+        const reportsFiltered = reports?.filter(relatorio => {
+            return relatorio.month.toLocaleLowerCase() === monthSelected && relatorio.year === yearSelected
         })
-        if (relatoriosFiltrados) {
-            setRelatoriosFiltrados(relatoriosFiltrados)
+        if (reportsFiltered) {
+            setReportsFiltered(reportsFiltered)
         }
-    }, [mesSelecionado, anoSelecionado, setRelatoriosFiltrados, relatorios])
+    }, [monthSelected, yearSelected, setReportsFiltered, reports])
 
     const getRelatorios = useCallback(async () => {
         await api.get(`/reports/${congregationId}`).then(res => {
             const { data } = res
-            setRelatorios([...data])
+            setReports([...data])
         }).catch(err => console.log(err))
     }, [congregationId])
 
@@ -87,8 +84,8 @@ export default function RelatorioMes() {
     }, [getRelatorios])
 
     useEffect(() => {
-        console.log(relatorios)
-    }, [relatorios])
+        console.log(reports)
+    }, [reports])
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
@@ -103,7 +100,7 @@ export default function RelatorioMes() {
         return () => {
             removeCrumb()
         }
-    }, [setCrumbs, setPageActive, mesSelecionado, congregationId])
+    }, [setCrumbs, setPageActive, monthSelected, congregationId])
 
     return (
         <Layout pageActive="relatorios">
@@ -113,12 +110,12 @@ export default function RelatorioMes() {
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-col mx-5">
-                            <MissingReportsModal missingReportsNumber={relatoriosNaoEnviadosCount} missingReports={relatoriosFalta}/>
+                            <MissingReportsModal missingReportsNumber={relatoriosNaoEnviadosCount} missingReports={missingReports}/>
                             
                         </div>
-                        {relatoriosFiltrados?.length > 1 ? (
+                        {reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly">
-                                {relatoriosFiltrados?.map(report =>
+                                {reportsFiltered?.map(report =>
                                     <ModalRelatorio
                                         key={v4()}
                                         publisher={report.publisher}
