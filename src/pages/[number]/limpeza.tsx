@@ -40,6 +40,8 @@ export default function Limpeza({ circuit: congregationCircuit, name: congregati
     const [pdfUrl, setPdfUrl] = useState('')
     const [documentsFilter, setDocumentsFilter] = useState<IDocument[]>()
 
+    console.log(`${domain}/images/limpeza-green.png`)
+
     useEffect(() => {
         if (number) {
             setCongregationNumber(number as string)
