@@ -5,7 +5,7 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import {  useState } from 'react'
+import { useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 import { usePublisherContext } from '@/context/PublisherContext'
 import Input from '@/Components/Input'
@@ -13,8 +13,9 @@ import InputError from '@/Components/InputError'
 import CheckboxMultiple from '@/Components/CheckBoxMultiple'
 import CheckboxUnique from '@/Components/CheckBoxUnique'
 import Button from '@/Components/Button'
-import {  useAtomValue } from 'jotai'
-import { buttonDisabled, errorFormSend,  successFormSend } from '@/atoms/atom'
+import { useAtomValue } from 'jotai'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import Calendar from '@/Components/Calendar'
 
 
 export default function FormAddPublisher() {
@@ -26,6 +27,7 @@ export default function FormAddPublisher() {
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
+    const [dateImmersed, setDateImmersed] = useState<Date | null>(null)
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -42,6 +44,10 @@ export default function FormAddPublisher() {
     const handleCheckboxPrivileges = (selectedItems: string[]) => {
         setPrivilegesCheckboxSelected(selectedItems)
     };
+
+    const handleDateChange = (date: Date) => {
+        setDateImmersed(date)
+    }
 
     const optionsCheckboxGender = useState<string[]>([
         'Masculino',
@@ -87,7 +93,9 @@ export default function FormAddPublisher() {
             genderCheckboxSelected,
             hopeCheckboxSelected,
             privilegesCheckboxSelected,
-            data.nickname,), {
+            data.nickname,
+            dateImmersed ?? undefined
+        ), {
             pending: 'Criando novo publicador',
         })
         reset()
@@ -114,11 +122,13 @@ export default function FormAddPublisher() {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                    <CheckboxUnique label="Genero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} checked={genderCheckboxSelected} />
+                    <CheckboxUnique visibleLabel label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} checked={genderCheckboxSelected} />
 
-                    <CheckboxUnique label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} checked={hopeCheckboxSelected} />
+                    <CheckboxUnique visibleLabel label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} checked={hopeCheckboxSelected} />
 
                     <CheckboxMultiple label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
+
+                    <Calendar label="Data do batismo:" handleDateChange={handleDateChange} selectedDate={dateImmersed} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>

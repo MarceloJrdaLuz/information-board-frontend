@@ -80,7 +80,23 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                             className="w-full"
                         ><PreachingIcon /> Saídas de Campo</Button>
                         <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                            {!fieldServiceOptionsShow ? documentsFieldServiceFilter?.map(document => (
+                            {fieldServiceOptionsShow && (
+                                documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
+                                    documentsFieldServiceFilter?.map(document => (
+                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                            <Button
+                                                className="w-full"
+                                                onClick={() => { handleButtonClick(document.url) }}
+                                            >
+                                                {removeMimeType(document.fileName)}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
+                                )
+                            )}
+                            {/* {!fieldServiceOptionsShow ? documentsFieldServiceFilter?.map(document => (
                                 <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
                                     <Button
                                         className="w-full"
@@ -89,7 +105,7 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                                         {removeMimeType(document.fileName)}
                                     </Button>
                                 </div>
-                            )) : <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />}
+                            )) : <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />} */}
                         </div>
 
                         <div>
@@ -98,14 +114,16 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                                 className="w-full"
                             ><PublicPreachingIcon />Testemunho Público</Button>
                             <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                                {!publicServiceOptionsShow ? documentsPublicServiceFilter?.map(document => (
-                                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                        <Button
-                                            className="w-full"
-                                            onClick={() => { handleButtonClick(document.url) }}
-                                        >{removeMimeType(document.fileName)}</Button>
-                                    </div>
-                                )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />}
+                                {publicServiceOptionsShow && (
+                                    documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
+                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                            <Button
+                                                className="w-full"
+                                                onClick={() => { handleButtonClick(document.url) }}
+                                            >{removeMimeType(document.fileName)}</Button>
+                                        </div>
+                                    )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                )}
                             </div>
                         </div>
                     </div>

@@ -10,14 +10,16 @@ registerLocale('pt-BR', ptBR)
 interface CalendarProps {
     handleDateChange: (date: Date) => void
     selectedDate: Date | null
+    minDate?: Date | null
+    label: string
 }
 
-export default function Calendar({ handleDateChange, selectedDate }: CalendarProps) {
+export default function Calendar({ handleDateChange, selectedDate, minDate, label }: CalendarProps) {
 
 
     return (
         <div>
-            <h1>Data de expiração:</h1>
+            <h1 className='font-bold my-2 text-gray-900'>{label}</h1>
             <div>
                 <DatePicker
                     locale="pt-BR"
@@ -26,7 +28,7 @@ export default function Calendar({ handleDateChange, selectedDate }: CalendarPro
                     selected={selectedDate}
                     onChange={handleDateChange}
                     dateFormat="dd/MM/yyyy" // Formato da data
-                    minDate={new Date()} // Defina uma data mínima (ou outra data de sua escolha)
+                    minDate={minDate} // Defina uma data mínima (ou outra data de sua escolha)
                 // Você pode adicionar outras props para personalizar o comportamento do DatePicker
                 />
             </div>

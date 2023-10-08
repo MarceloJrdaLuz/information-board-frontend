@@ -17,6 +17,7 @@ import Input from '@/Components/Input'
 import Button from '@/Components/Button'
 import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import Calendar from '@/Components/Calendar'
 
 export interface IUpdatePublisher {
     id: string
@@ -32,6 +33,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
+    const [dateImmersed, setDateImmersed] = useState<Date | null>(null)
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -57,6 +59,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const handleCheckboxPrivileges = (selectedItems: string[]) => {
         setPrivilegesCheckboxSelected(selectedItems)
+    }
+
+    const handleDateChange = (date: Date) => {
+        setDateImmersed(date)
     }
 
     const optionsCheckboxGender = useState<string[]>([
@@ -113,7 +119,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 genderCheckboxSelected,
                 hopeCheckboxSelected,
                 privilegesCheckboxSelected,
-                data.nickname
+                data.nickname,
+                dateImmersed ?? undefined
             ),
             {
                 pending: 'Atualizando publicador',
@@ -141,11 +148,15 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                    <CheckboxUnique checked={genderCheckboxSelected} label="Genero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
+                    <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
 
-                    <CheckboxUnique checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
+                    <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
                     
                     <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
+
+                    <div className='mt-2'>
+                        <Calendar label="Data do batismo:" handleDateChange={handleDateChange} selectedDate={dateImmersed}/>
+                    </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Atualizar publicador</Button>
