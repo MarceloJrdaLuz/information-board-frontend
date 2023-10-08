@@ -103,7 +103,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         dateImmersed?: Date
     ) {
 
-        await api.put('/publisher', {
+        await api.put(`/publisher/${id}`, {
             id,
             fullName,
             congregation_id,
