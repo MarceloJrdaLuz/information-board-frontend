@@ -23,6 +23,8 @@
     "cookies-next": "^3.0.0",
     "date-fns": "^2.30.0",
     "eslint": "8.32.0",
+    "autoprefixer": "^10.4.13",
+    "daisyui": "^3.5.1",
     "eslint-config-next": "13.1.5",
     "filesize": "^10.0.6",
     "jotai": "^2.4.2",
