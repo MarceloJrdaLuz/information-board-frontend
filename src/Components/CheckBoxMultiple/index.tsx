@@ -27,7 +27,7 @@ export default function CheckboxMultiple(props: ICheckboxMultiple) {
       <h3 className="my-2 font-semibold text-gray-900 ">{props.visibleLabel && props.label}</h3>
       <ul className="items-center justify-between flex-wrap text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex">
         {props.options.map((option) => (
-          <li key={option} className=" w-1/2 border-b border-gray-200 sm:border-b-0 sm:border-r">
+          <li key={option} className="w-full sm:w-1/2 border-b border-gray-200  sm:border-r">
             <div className="flex items-center pl-3">
               <input
                 id={`${props.label}-${option}`}

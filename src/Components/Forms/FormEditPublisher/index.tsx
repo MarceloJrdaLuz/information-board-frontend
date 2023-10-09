@@ -18,6 +18,7 @@ import Button from '@/Components/Button'
 import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Calendar from '@/Components/Calendar'
+import moment from 'moment'
 
 export interface IUpdatePublisher {
     id: string
@@ -28,7 +29,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const { updatePublisher } = usePublisherContext()
     const [publisherToUpdate, setPublisherToUpdate] = useState<IPublisher>()
 
-    const { data } = useFetch(`/publisher/${props.id}`)
+    const { data } = useFetch<IPublisher>(`/publisher/${props.id}`)
 
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
@@ -46,7 +47,17 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             setPublisherToUpdate(data)
             setGenderCheckboxSelected(data.gender || '') // Set the gender checkbox
             setPrivilegesCheckboxSelected(data.privileges || []) // Set the privileges checkboxes
-            setHopeCheckboxSelected(data.hope || '') // Set the hope checkbox
+            setHopeCheckboxSelected(data.hope || '')
+            if (data.birthDate) {
+                const initialDateStr = data.birthDate;
+                const initialDate = new Date(initialDateStr)
+                setBirthDate(initialDate)
+            }
+            if (data.dateImmersed) {
+                const initialDateStr = data.dateImmersed;
+                const initialDate = new Date(initialDateStr)
+                setImmersedDate(initialDate)
+            }
         }
     }, [data])
 
@@ -68,6 +79,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     }
 
     const handleImmersedDateChange = (date: Date) => {
+        console.log(date)
         setImmersedDate(date)
     }
 

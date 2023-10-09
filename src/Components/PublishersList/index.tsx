@@ -46,16 +46,16 @@ export default function PublisherList() {
     }, [selectedPublishers, router.asPath, mutate])
 
     async function onDelete(publisher_id: string) {
-      
-       await  toast.promise(deletePublisher(publisher_id), {
+
+        await toast.promise(deletePublisher(publisher_id), {
             pending: "Excluindo publicador..."
-        }).then(()=> {
+        }).then(() => {
             mutate()
             const updatedSelectedPublishers = new Set(selectedPublishers);
             if (updatedSelectedPublishers.has(publisher_id)) {
                 updatedSelectedPublishers.delete(publisher_id);
             }
-            
+
             setSelectedPublishers(updatedSelectedPublishers)
         })
 
@@ -83,8 +83,8 @@ export default function PublisherList() {
                         <div className="flex flex-wrap sm:flex-nowrap mt-2 ">
                             {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
                             <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') ?? "Não informado"}</p>
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') ?? "Não informado"}</p>
+                            <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                            <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
                         </div>
                         <div className="flex pl-10">
                             <div className="gap-1 flex">
