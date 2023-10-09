@@ -4,6 +4,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { IRole } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
@@ -13,12 +14,14 @@ import { GetServerSideProps } from "next"
 import Router from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 export default function Funcoes() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    const { data: getRoles } = useFetch<IRole[]>('/roles')
+    const { data: getRoles, mutate } = useFetch<IRole[]>('/roles')
     const [roles, setRoles] = useState<IRole[]>()
+    const { deleteRole } = usePermissionsAndRolesContext()
 
     useEffect(() => {
         setRoles(getRoles)
@@ -27,6 +30,13 @@ export default function Funcoes() {
     useEffect(() => {
         setPageActive('Funções')
     }, [setPageActive])
+
+    function handleDelete(item_id: string) {
+        toast.promise(deleteRole(item_id), {
+            pending: "Excluindo permissão..."
+        })
+        mutate()
+    }
 
     return (
         <Layout pageActive="funcoes">
@@ -43,8 +53,8 @@ export default function Funcoes() {
                             <FunctionSquareIcon />
                             <span className="text-primary-200 font-semibold">Criar função</span>
                         </Button>
-                        {roles &&  (
-                            <ListItems onDelete={()=> {}} items={roles} label="Funções" path="funcoes" />
+                        {roles && (
+                            <ListItems onDelete={(item_id) => { handleDelete(item_id) }} items={roles} label="Funções" path="funcoes" />
                         )}
                     </div>
                 </section>
@@ -70,10 +80,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if(!userRolesParse.includes('ADMIN')){
+    if (!userRolesParse.includes('ADMIN')) {
         return {
             redirect: {
-                destination: '/dashboard', 
+                destination: '/dashboard',
                 permanent: false
             }
         }

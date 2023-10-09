@@ -11,6 +11,7 @@ type PermissionAndRolesContextTypes = {
     deletePermission: (permission_id: string) => Promise<any>
     updatePermission: (permission_id: string, name?: string, description?: string) => Promise<any>
     updateRole: (role_id: string, name?: string, description?: string, permissions?: string[]) => Promise<any>
+    deleteRole: (role_id: string) => Promise<any>
 }
 
 type PermissionAndRolesContextProviderProps = {
@@ -133,10 +134,24 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
         })
     }
 
+    async function deleteRole(role_id: string) {
+        api.delete(`/role/${role_id}`).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.roleDelete)
+        }).catch(err => {
+            const { response: { data: { message } } } = err
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
+        })
+    }
+
 
     return (
         <PermissionAndRolesContext.Provider value={{
-            createPermission, createRole, userRoles, deletePermission, updatePermission, updateRole
+            createPermission, createRole, userRoles, deletePermission, updatePermission, updateRole, deleteRole
         }}>
             {props.children}
         </PermissionAndRolesContext.Provider>

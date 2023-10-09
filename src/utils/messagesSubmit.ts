@@ -43,6 +43,7 @@ export const messageSuccessSubmit = {
     categoryUpdate: "Categoria atualizada com sucesso!",
     roleCreate: "Função criada com sucesso!",
     roleUpdate: "Função atualizada com sucesso!",
+    roleDelete: "Função excluída com sucesso!",
     permissionCreate: "Permissão criada com sucesso!",
     permissionUpdate: "Permissão atualizada com sucesso!",
     permissionDelete: "Permissão excluída com sucesso!",
