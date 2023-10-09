@@ -14,14 +14,14 @@ type NoticesContextTypes = {
         endDay?: number
     ) => Promise<any>
     updateNotice: (
-        notice_id: string, 
+        notice_id: string,
         title: string,
         text: string,
         startDay?: number,
         endDay?: number
     ) => Promise<any>
     deleteNotice: (
-        notice_id: string, 
+        notice_id: string,
     ) => Promise<any>
     setExpiredNotice: React.Dispatch<Date>
     setCongregationNumber: React.Dispatch<string>
@@ -39,18 +39,18 @@ function NoticesProvider(props: NoticeContextProviderProps) {
 
     const [congregationNumber, setCongregationNumber] = useState('')
     const [congregationId, setCongregationId] = useState<string | undefined>('')
-  
+
     const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
     const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
-    
+
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-    
+
     useEffect(() => {
         if (congregationNumber) {
             setCongregationId(congregation?.id)
         }
     }, [congregation, congregationNumber])
-        
+
     async function createNotice(
         title: string,
         text: string,
@@ -90,9 +90,13 @@ function NoticesProvider(props: NoticeContextProviderProps) {
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.noticeUpdate, '/anuncios')
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 
@@ -103,9 +107,13 @@ function NoticesProvider(props: NoticeContextProviderProps) {
         await api.delete(`/notice/${notice_id}`).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.noticeDelete)
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 

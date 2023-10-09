@@ -10,7 +10,7 @@ import { IPublisher } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
-import { messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
@@ -44,7 +44,13 @@ export default function MudarDirigente() {
             setSelectedPublisher(null)
             mutate()
         }).catch(err => {
-            handleSubmitError(messageSuccessSubmit.groupOverseerUpdate)
+            const { response: { data: { message } } } = err
+            if(message === '"Unauthorized"'){
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            }else{
+                console.log(message)
+                handleSubmitError(messageSuccessSubmit.groupOverseerUpdate)
+            }
         })
     }
 

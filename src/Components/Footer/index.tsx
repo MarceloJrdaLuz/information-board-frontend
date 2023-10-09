@@ -13,10 +13,10 @@ export default function Footer(props: FooterProps) {
             flex flex-col items-center justify-center bg-primary-200 py-5
             text-sm sm:text-base md:text-lg
             `}>
-            <div className="flex justify-around w-full">
-                <span className="text-white "><strong>{props.ano} | {props.nomeCongregacao}</strong></span>
+            <div className="flex justify-center w-full relative">
+                <span className="text-white justify-items-end mr-2"><strong>{props.ano} | {props.nomeCongregacao}</strong></span>
                 <Link href={'/login'}>
-                    <span className="flex items-end">
+                    <span className="flex items-end absolute">
                         <InformationBoardIcon />
                         <span className="ml-1 text-white text-xs">Login</span>
                     </span>

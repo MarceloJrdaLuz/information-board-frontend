@@ -66,7 +66,13 @@ export default function AddPublicadoresGrupo() {
             mutate()
             handleSubmitSuccess(messageSuccessSubmit.publisherRemoveGroup)
         }).catch(err => {
-            handleSubmitError(messageErrorsSubmit.default)
+            const { response: { data: { message } } } = err
+            if(message === '"Unauthorized"'){
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            }else{
+                console.log(message)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 

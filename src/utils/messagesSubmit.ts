@@ -16,7 +16,8 @@ export const messageErrorsSubmit = {
     congregationNotFound: "Congregação não existe!",
     userCodeNotFound: "Código de usuário não existe!",
     emailNotSend: "Houve um erro ao enviar o e-mail!",
-    publisherAlreadyOverseer: "Publicador já é dirigente de outro grupo!"
+    publisherAlreadyOverseer: "Publicador já é dirigente de outro grupo!",
+    unauthorized: "Você não tem permissão para executar essa ação!"
 }
 
 export const messageSuccessSubmit = {

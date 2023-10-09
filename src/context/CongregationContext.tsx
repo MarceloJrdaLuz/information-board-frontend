@@ -117,8 +117,13 @@ function CongregationProvider(props: CongregationContextProviderProps) {
                 setUploadedFile(null)
                 handleSubmitSuccess(messageSuccessSubmit.congregationPhotoUpdate, '/dashboard')
             }).catch(err => {
-                console.log(err)
-                handleSubmitError(messageErrorsSubmit.default)
+                const { response: { data: { message } } } = err
+                if (message === '"Unauthorized"') {
+                    handleSubmitError(messageErrorsSubmit.unauthorized)
+                } else {
+                    console.log(err)
+                    handleSubmitError(messageErrorsSubmit.default)
+                }
             })
         }
     }

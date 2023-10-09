@@ -113,11 +113,15 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             nickname,
             dateImmersed
         }).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate,'/publicadores')
+            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/publicadores')
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 
@@ -204,9 +208,13 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         api.delete(`/publisher/${publisher_id}`).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherDelete)
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 

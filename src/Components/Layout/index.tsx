@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useEffect, useState } from "react"
 import { useAuthContext } from "@/context/AuthContext"
-import {  UsersIcon,  SquareStackIcon, CalendarDaysIcon, CalculatorIcon,  FunctionSquareIcon } from 'lucide-react'
+import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -106,7 +106,7 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('NOTICES_MANAGER')) &&
                     <NavBar.Options
                         title="Anúncios"
                         onClick={() => {
@@ -118,7 +118,7 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.Options
                         title="Limpeza"
                         onClick={() => {
@@ -131,7 +131,7 @@ export default function Layout(props: LayoutProps) {
                 }
 
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.Options
                         title="Contas"
                         onClick={() => {
@@ -143,7 +143,7 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.Options
                         title="Eventos especiais"
                         onClick={() => {
@@ -155,7 +155,7 @@ export default function Layout(props: LayoutProps) {
                     />
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuReunioes"}
                         showList={showSubMenu.includes('reunioes')}
@@ -191,7 +191,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuPregacao"}
                         showList={showSubMenu.includes('pregacao')}
@@ -227,7 +227,14 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {isAdminCongregation &&
+                {(isAdminCongregation ||
+                    roleContains('PUBLISHERS_MANAGER') ||
+                    roleContains('PUBLISHERS_VIEWER') ||
+                    roleContains('GROUPS_VIEWER') ||
+                    roleContains('GROUPS_MANAGER') ||
+                    roleContains('PUBLISHERS_VIEWER') ||
+                    roleContains('REPORTS_VIEWER') ||
+                    roleContains('REPORTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuCongregação"}
                         showList={showSubMenu.includes('congregação')}
@@ -241,7 +248,9 @@ export default function Layout(props: LayoutProps) {
                         title="Congregação"
                         icon={SalonIcon}
                     >
-                        {isAdminCongregation &&
+                        {(isAdminCongregation ||
+                            roleContains('PUBLISHERS_MANAGER') ||
+                            roleContains('PUBLISHERS_VIEWER')) &&
                             <NavBar.Options
                                 title="Publicadores"
                                 onClick={() => {
@@ -253,7 +262,9 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {isAdminCongregation &&
+                        {(isAdminCongregation ||
+                            roleContains('GROUPS_MANAGER') ||
+                            roleContains('GROUPS_VIEWER')) &&
                             <NavBar.Options
                                 title="Grupos de Campo"
                                 onClick={() => {
@@ -265,7 +276,10 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {isAdminCongregation &&
+                        {(isAdminCongregation ||
+                            roleContains('REPORTS_MANAGER') ||
+                            roleContains('REPORTS_VIEWER')
+                        ) &&
                             <NavBar.Options
                                 title="Relatórios"
                                 onClick={() => {
@@ -279,7 +293,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {isAdminCongregation || isAdmin &&
+                {(isAdminCongregation || isAdmin) &&
                     <NavBar.ListOptions
                         key={"submenuAdministracao"}
                         showList={showSubMenu.includes('administracao')}
@@ -306,7 +320,7 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {isAdmin || isAdminCongregation &&
+                        {(isAdmin || isAdminCongregation) &&
                             <NavBar.Options
                                 title="Funções"
                                 onClick={() => {
@@ -318,7 +332,7 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {isAdmin || isAdminCongregation ?
+                        {(isAdmin || isAdminCongregation) ?
                             <NavBar.Options
                                 title="Domínio"
                                 onClick={() => {

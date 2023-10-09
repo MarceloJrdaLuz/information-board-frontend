@@ -74,9 +74,13 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
         api.delete(`/permission/${permission_id}`).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.permissionDelete)
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 
@@ -119,9 +123,13 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.roleAddUser)
         }).catch(err => {
-            console.log(err)
             const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 

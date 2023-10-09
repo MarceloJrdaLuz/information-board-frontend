@@ -151,8 +151,13 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
             mutate()
             handleSubmitSuccess(messageSuccessSubmit.documentCreate)
         }).catch(err => {
-            console.log(err)
-            handleSubmitError(messageErrorsSubmit.default)
+            const { response: { data: { message } } } = err
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 

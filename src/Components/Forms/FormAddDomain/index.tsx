@@ -83,8 +83,7 @@ export default function FormAddDomain() {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir usuário ao domínio</div>
-                    <Dropdown textVisible handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Selecionar congregação" border />
-                    <span className="ml-5 mt-2 flex">{congregationSelect}</span>
+                    <Dropdown textVisible selectedItem={congregationSelect} handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Selecionar congregação" border />
                     <Input type="text" placeholder="Código do usuário" registro={{
                         ...register('userCode',
                             { required: "Campo obrigatório" })

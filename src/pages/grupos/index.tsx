@@ -45,8 +45,12 @@ export default function Grupos() {
             handleSubmitSuccess(messageSuccessSubmit.groupDelete)
         }).catch(err => {
             const { response: { data: { message } } } = err
-            console.log(message)
-            handleSubmitError(messageErrorsSubmit.default)
+            if(message === '"Unauthorized"'){
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            }else{
+                console.log(message)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
         })
     }
 
