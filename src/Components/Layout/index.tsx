@@ -322,7 +322,7 @@ export default function Layout(props: LayoutProps) {
 
                         {(isAdmin || isAdminCongregation) &&
                             <NavBar.Options
-                                title="Funções"
+                                title="Atribuir função"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
                                     Router.push('/funcoes/atribuir')
