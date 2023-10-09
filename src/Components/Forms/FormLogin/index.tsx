@@ -70,12 +70,12 @@ export default function FormLogin() {
                     {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
                     <div>
                         <div>
-                            <Link href={'/forgot-password'} className='text-fontColor-100 hover:underline text-center text-sm sm:text-lg'>
+                            <Link href={'/forgot-password'} className='text-primary-200  hover:underline text-center text-sm sm:text-lg'>
                                 Esqueci minha senha
                             </Link>
                         </div>
                         <div>
-                            <Link href={'/cadastro'} className='text-fontColor-100 hover:underline text-center text-sm sm:text-lg'>
+                            <Link href={'/cadastro'} className='text-primary-200  hover:underline text-center text-sm sm:text-lg'>
                                 Criar nova conta
                             </Link>
                         </div>
