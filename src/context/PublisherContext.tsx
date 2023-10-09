@@ -17,7 +17,8 @@ type PublisherContextTypes = {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date
+        dateImmersed?: Date, 
+        birthDate?: Date
     ) => Promise<any>
     updatePublisher: (
         id: string,
@@ -27,7 +28,8 @@ type PublisherContextTypes = {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date
+        dateImmersed?: Date,
+        birthDate?: Date
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -68,7 +70,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date
+        dateImmersed?: Date, 
+        birthDate?: Date
     ) {
 
         await api.post('/publisher', {
@@ -78,7 +81,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             congregation_id,
             hope,
             gender,
-            dateImmersed
+            dateImmersed, 
+            birthDate
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -100,7 +104,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date
+        dateImmersed?: Date, 
+        birthDate?: Date
     ) {
 
         await api.put(`/publisher/${id}`, {
@@ -111,7 +116,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             hope,
             privileges,
             nickname,
-            dateImmersed
+            dateImmersed, 
+            birthDate
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/publicadores')
         }).catch(err => {

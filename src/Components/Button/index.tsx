@@ -3,10 +3,10 @@ import { ButtonHTMLAttributes } from "react"
 import { tv, VariantProps } from 'tailwind-variants'
 
 const button = tv({
-    base: 'flex justify-center items-center transition-all gap-2 duration-500 bg-primary-200 active:shadow-none shadow-xl  rounded-lg hover:opacity-90 border border-current text-xs xs:text-sm sm:text-md lg:text-base text-white justify-self-center max-h-[40px]',
+    base: 'flex justify-center items-center transition-all gap-2 duration-500 bg-primary-200 active:shadow-none shadow-xl  rounded-lg hover:opacity-90 border border-current  text-xs xs:text-sm sm:text-md lg:text-base text-white justify-self-center max-h-[50px]',
     variants: {
         size: {
-            default: 'px-10 py-2',
+            default: 'px-7 py-2',
             sm: 'w-28 py-2',
             md: 'w-36 py-3',
             lg: 'w-40 py-3'

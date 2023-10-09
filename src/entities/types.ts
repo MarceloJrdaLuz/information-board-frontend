@@ -79,8 +79,6 @@ export interface IGroupOverseers extends IPublisher  {
    
 }
 
-
-
 export interface IReports {
     id: string
     month: string
@@ -102,6 +100,7 @@ export interface IPublisher {
     hope: Hope
     gender: Gender
     dateImmersed?: Date
+    birthDate?: Date
     congregation: ICongregation
     group: IGroup
 }

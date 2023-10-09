@@ -15,16 +15,17 @@ export default function Footer(props: FooterProps) {
             `}>
             <div className="flex justify-center w-full relative">
                 <span className="text-white justify-items-end mr-2"><strong>{props.ano} | {props.nomeCongregacao}</strong></span>
-                <Link href={'/login'}>
-                    <span className="flex items-end absolute">
-                        <InformationBoardIcon />
-                        <span className="ml-1 text-white text-xs">Login</span>
-                    </span>
-                </Link>
             </div>
             <span className={`
                 text-center text-black
-                `}><strong>{props.aviso}</strong></span>
+                `}><strong>{props.aviso}</strong>
+            </span>
+            <Link className="w-full ml-3" href={'/login'}>
+                <span className="flex  justify-center items-end ">
+                    <InformationBoardIcon />
+                    <span className="ml-1 text-white text-xs">Login</span>
+                </span>
+            </Link>
         </footer>
     )
 }

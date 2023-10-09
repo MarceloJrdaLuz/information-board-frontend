@@ -14,12 +14,12 @@ export default function NoticesModal(props: INoticesModalProps) {
     }, [setNotices, props.notices])
 
     return (
-        <div className={`bg-gray-700  w-full h-0 ${props.notices && 'h-14 p-3'}  flex overflow-hidden text-white transition-all duration-500 `}>
-            {notices && notices.length > 1
+        <div className={`bg-gray-700 flex  items-center  w-full h-0 ${props.notices && 'h-10 p-3'} absolute top-0 z-50  flex overflow-hidden text-white transition-all duration-500 `}>
+            {notices && notices.length > 0
                 ?
                 <div className="flex w-full justify-between items-center">
                     <div className="flex justify-center items-center gap-1">
-                        <h2 className="w-56 sm:w-96 overflow-hidden whitespace-nowrap text-ellipsis">
+                        <h2 className="w-52 sm:w-96 overflow-hidden whitespace-nowrap text-ellipsis">
                             <span className="font-semibold mr-1 text-sm xs:text-base ">{notices[0]?.title}:</span>
                             <span className={`font-normal text-xs xs:text-sm`}>{notices[0]?.text}</span>
                         </h2>

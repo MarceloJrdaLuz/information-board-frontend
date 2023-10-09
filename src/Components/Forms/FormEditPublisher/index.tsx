@@ -33,7 +33,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
-    const [dateImmersed, setDateImmersed] = useState<Date | null>(null)
+    const [immersedDate, setImmersedDate] = useState<Date | null>(null)
+    const [birthDate, setBirthDate] = useState<Date | null>(null)
+
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -61,8 +63,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         setPrivilegesCheckboxSelected(selectedItems)
     }
 
-    const handleDateChange = (date: Date) => {
-        setDateImmersed(date)
+    const handleBirthDateChange = (date: Date) => {
+        setBirthDate(date)
+    }
+
+    const handleImmersedDateChange = (date: Date) => {
+        setImmersedDate(date)
     }
 
     const optionsCheckboxGender = useState<string[]>([
@@ -120,7 +126,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 hopeCheckboxSelected,
                 privilegesCheckboxSelected,
                 data.nickname,
-                dateImmersed ?? undefined
+                immersedDate ?? undefined,
+                birthDate ?? undefined
             ),
             {
                 pending: 'Atualizando publicador',
@@ -151,12 +158,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
 
                     <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
-                    
+
                     <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
 
-                    <div className='mt-2'>
-                        <Calendar label="Data do batismo:" handleDateChange={handleDateChange} selectedDate={dateImmersed}/>
-                    </div>
+                    <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
+
+                    <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Atualizar publicador</Button>

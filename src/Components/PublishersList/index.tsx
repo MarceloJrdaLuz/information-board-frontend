@@ -84,6 +84,7 @@ export default function PublisherList() {
                             {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
                             <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
                             <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') ?? "Não informado"}</p>
+                            <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') ?? "Não informado"}</p>
                         </div>
                         <div className="flex pl-10">
                             <div className="gap-1 flex">

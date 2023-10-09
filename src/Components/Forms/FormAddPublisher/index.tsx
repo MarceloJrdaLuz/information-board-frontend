@@ -27,7 +27,8 @@ export default function FormAddPublisher() {
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
-    const [dateImmersed, setDateImmersed] = useState<Date | null>(null)
+    const [immersedDate, setImmersedDate] = useState<Date | null>(null)
+    const [birthDate, setBirthDate] = useState<Date | null>(null)
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -45,8 +46,12 @@ export default function FormAddPublisher() {
         setPrivilegesCheckboxSelected(selectedItems)
     };
 
-    const handleDateChange = (date: Date) => {
-        setDateImmersed(date)
+    const handleBirthDateChange = (date: Date) => {
+        setBirthDate(date)
+    }
+
+    const handleImmersedDateChange = (date: Date) => {
+        setImmersedDate(date)
     }
 
     const optionsCheckboxGender = useState<string[]>([
@@ -94,7 +99,8 @@ export default function FormAddPublisher() {
             hopeCheckboxSelected,
             privilegesCheckboxSelected,
             data.nickname,
-            dateImmersed ?? undefined
+            immersedDate ?? undefined, 
+            birthDate ?? undefined, 
         ), {
             pending: 'Criando novo publicador',
         })
@@ -128,7 +134,9 @@ export default function FormAddPublisher() {
 
                     <CheckboxMultiple label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
 
-                    <Calendar label="Data do batismo:" handleDateChange={handleDateChange} selectedDate={dateImmersed} />
+                    <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
+
+                    <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
