@@ -1,11 +1,13 @@
+import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import { domainUrl } from "@/atoms/atom"
 import { CongregationTypes } from "@/entities/types"
 import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
+import { ChevronsLeftIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const { number } = context.query
@@ -46,6 +48,11 @@ export default function PoliticaPrivacidade({ circuit: congregationCircuit, name
 
                     Ao continuar a utilizar nosso site, você concorda com esta coleta e armazenamento de dados pessoais de acordo com os termos desta mensagem de consentimento. <br /><br />
                 </span>
+
+                <Button
+                    onClick={() => Router.push(`/${congregationNumber}`)}
+                    className="w-1/2 mx-auto"
+                ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal>
         </div>
     )

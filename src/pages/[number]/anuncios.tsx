@@ -62,7 +62,7 @@ export default function NoticesPage({ circuit: congregationCircuit, name: congre
     return (
         <>
             <HeadComponent title="Anuncios" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg" />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'[90vh]'} justifyContent="start">
+            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'h-[90vh]'} justifyContent="start">
                     <Notices notices={notices} congregationNumber={number as string} />
             </LayoutPrincipal>
         </>
