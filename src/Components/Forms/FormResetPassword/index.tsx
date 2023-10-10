@@ -58,7 +58,7 @@ export default function FormResetPassword() {
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-blue-500`}>Nova senha</div>
+                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-primary-200`}>Nova senha</div>
                     <p>Insira abaixo a nova senha!</p>
                     <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{
                         ...register('password',

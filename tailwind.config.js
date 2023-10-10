@@ -7,7 +7,8 @@ module.exports = withMT({
   ],
   theme: {
     screens: {
-      'xs': '319px'
+      'xs': '319px', 
+      'xm': '390px'
     },
     extend: {
       brightness: {

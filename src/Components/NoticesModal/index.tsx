@@ -19,14 +19,14 @@ export default function NoticesModal(props: INoticesModalProps) {
                 ?
                 <div className="flex w-full justify-between items-center">
                     <div className="flex justify-center items-center gap-1">
-                        <h2 className="w-52 sm:w-96 overflow-hidden whitespace-nowrap text-ellipsis">
-                            <span className="font-semibold mr-1 text-sm xs:text-base ">{notices[0]?.title}:</span>
-                            <span className={`font-normal text-xs xs:text-sm`}>{notices[0]?.text}</span>
+                        <h2 className={`${notices.length < 2 ? 'w-60 xs:w-80 xm:w-[360px]'  : 'w-48 xs:w-60 xm:w-[330px]'  }   overflow-hidden whitespace-nowrap text-ellipsis`}>
+                            <span className="font-semibold mr-1 text-sm xm:text-base ">{`${notices[0]?.title} | `}</span>
+                            <span className={`font-normal text-xs xm:text-sm`}>{notices[0]?.text}</span>
                         </h2>
                     </div>
                     <div>
                         <span className="flex justify-center items-center text-sm p-2">
-                            <span className="whitespace-nowrap text-xs xs:text-sm ">{`1 de ${notices?.length}`}</span>
+                            {notices?.length > 1 && <span className="whitespace-nowrap text-xs xs:text-sm ">{`1 de ${notices?.length}`}</span>}
                             <ChevronRightIcon onClick={() => router.push(`/${props.congregationNumber}/anuncios`)} className="w-5 h-5 text-white " />
                         </span>
                     </div>

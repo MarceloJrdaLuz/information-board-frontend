@@ -8,7 +8,7 @@ export default function Login() {
     const domain = useAtomValue(domainUrl)
     return (
         <main className={`md:flex md:h-screen`}>
-            <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
+            <HeadComponent title="Login" urlMiniatura={`${domain}/images/miniatura.png`} />
             <section className={`flex justify-center  items-center w-screen h-screen lg:w-7/12 md:w-7/12 md:h-full relative md:static bg-primary-100`}>
                 <div className="hidden md:flex text-gray-200 rounded-xl">
                     <InformationBoardImage size="400" />

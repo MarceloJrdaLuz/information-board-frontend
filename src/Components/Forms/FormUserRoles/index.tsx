@@ -129,10 +129,10 @@ export default function FormUserRoles() {
             {modalHelpShow &&
                 <ModalHelp
                     onClick={() => setModalHelpShow(false)}
-                    title="Como criar um anúncio"
+                    title="Como atribuir e remover funções"
                     text={
                         `
-    Primeiramente escolha na lista suspensa o usuário que você quer designar uma ou mais funções. Após isso escolha na lista seguinte as funções que você deseja atribuir a ele. Elas estão em inglês, abaixo o que cada uma delas libera ao usuário\n.${roles.map(role => `   ${role.name} - ${role.description}\n`).join('')}
+    Primeiramente escolha na lista suspensa o usuário que você quer atribuir uma ou mais funções. Após isso escolha na lista seguinte as funções que você deseja atribuir a ele. As funções selecionadas vão aparecer em etiquetas abaixo, caso queira remover alguma função dada para algum usuário basta clicar no X e ir removendo as que não se aplicam mais. O nome delas estão em inglês, abaixo essa lista mostra o que cada uma delas libera ao usuário.\n${roles.map(role => `   ${role.name} - ${role.description}\n`).join('')}
                         `} />}
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
