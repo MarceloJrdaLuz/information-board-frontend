@@ -6,7 +6,7 @@ import EditIcon from "../Icons/EditIcon";
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal";
 import { Trash } from "lucide-react";
 
-function ListGroups({ items, label, path, onDelete }: IListItemsProps) {
+function ListGroups({ items, label, onDelete }: IListItemsProps) {
   return (
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {items?.map(item => (

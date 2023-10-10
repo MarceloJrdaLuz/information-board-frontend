@@ -1,12 +1,9 @@
 import {
     Card,
     CardBody,
-    CardFooter,
     Typography,
-    Button,
 } from "@material-tailwind/react";
 import { XSquareIcon } from "lucide-react";
-import { title } from "process";
 
 interface ModalHelpProps {
     title?: string
@@ -17,7 +14,7 @@ interface ModalHelpProps {
 export default function ModalHelp({ text, title, onClick }: ModalHelpProps) {
     return (
         <aside className="flex justify-center items-center bg-black bg-opacity-50 absolute top-0 left-0 z-50 w-screen h-screen">
-            <Card className="mt-6 w-full max-w-[600px] ">
+            <Card className="mt-6 w-full max-w-[700px] h-5/6 overflow-auto">
                 <CardBody>
                     <div className="flex justify-between">
                         <Typography variant="h5" color="blue-gray" >

@@ -29,7 +29,7 @@ export default function AtribuirFuncoes() {
         <Layout pageActive="/funcoes/atribuir">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
+                <section className="flex m-10 justify-center items-center">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Atribuir Funções</h1>
                         <FormUserRoles />

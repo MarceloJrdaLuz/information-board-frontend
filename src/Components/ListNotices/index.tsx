@@ -11,21 +11,21 @@ function ListNotices({ notices, onDelete }: IListItemsProps) {
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {notices?.map(notice => (
         <li
-          className={`flex flex-col justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
+          className={`flex flex-col flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
           key={notice.id}
         >
           <div className="flex w-full justify-start items-center p-6 text-primary-200 font-semibold">
             Título do anúncio:
             <span className="font-normal ml-5">{notice.title}</span>
           </div>
-          <div className="flex justify-between w-full p-6 font-semi-bold">
-            <div>
+          <div className="flex flex-wrap justify-between w-full px-6 pb-6 font-semi-bold">
+            <div className="w-96">
               <span className="text-primary-200 font-semibold mr-5">Conteúdo:</span>
               <span>{notice.text}</span>
             </div>
-            <div className="flex pl-10 max-h-10">
+            <div className="flex mt-4">
 
-              <div className="gap-1 flex">
+              <div className="gap-1 flex items-end">
                 <Button
                   onClick={() => Router.push(`/anuncios/edit/${notice.id}`)}
                   outline

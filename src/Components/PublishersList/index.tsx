@@ -13,6 +13,7 @@ import EditIcon from "../Icons/EditIcon"
 import { usePublisherContext } from "@/context/PublisherContext"
 import { toast } from "react-toastify"
 import moment from "moment"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 
 export default function PublisherList() {
     const { user } = useAuthContext()
@@ -38,7 +39,10 @@ export default function PublisherList() {
     }
 
     useEffect(() => {
-        setPublishers(data)
+        if(data){
+            const sort = sortArrayByProperty(data, "fullName")
+            setPublishers(sort)
+        }
     }, [data])
 
     useEffect(() => {

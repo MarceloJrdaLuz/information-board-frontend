@@ -6,6 +6,7 @@ import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { IRole } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
@@ -24,8 +25,11 @@ export default function Funcoes() {
     const { deleteRole } = usePermissionsAndRolesContext()
 
     useEffect(() => {
-        setRoles(getRoles)
-    }, [getRoles, roles])
+        if(getRoles){
+            const sort = sortArrayByProperty(getRoles, "name")
+            setRoles(sort)
+        }
+    }, [getRoles])
 
     useEffect(() => {
         setPageActive('Funções')

@@ -7,6 +7,7 @@ import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { IPermission } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
@@ -25,7 +26,10 @@ export default function Permissoes() {
     const { deletePermission } = usePermissionsAndRolesContext()
 
     useEffect(() => {
-        setPermissions(getPermissions)
+        if(getPermissions){
+            const sort = sortArrayByProperty(getPermissions, "name")
+            setPermissions(sort)
+        }
     }, [getPermissions])
 
     useEffect(() => {

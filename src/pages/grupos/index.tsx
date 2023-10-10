@@ -8,6 +8,7 @@ import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IGroup, IRole } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
@@ -32,8 +33,11 @@ export default function Grupos() {
     const { data: getGroups, mutate } = useFetch<IGroup[]>(fetchConfig)
 
     useEffect(() => {
-        setGroups(getGroups)
-    }, [getGroups, groups])
+        if(getGroups){
+            const sort = sortArrayByProperty(getGroups, "number")
+            setGroups(sort)
+        }
+    }, [getGroups])
 
     useEffect(() => {
         setPageActive('Grupos')
