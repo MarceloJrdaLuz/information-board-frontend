@@ -2,6 +2,7 @@ export interface ResponseAuth {
     user: {
         id: string,
         email: string
+        fullName: string
         code: string
         congregation: ICongregation
         created_at: string
@@ -17,6 +18,7 @@ export interface RolesType extends PermissionType {
 
 export interface UserTypes {
     email: string
+    fullName: string
     id: string
 }
 

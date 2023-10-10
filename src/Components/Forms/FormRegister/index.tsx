@@ -36,13 +36,14 @@ export default function FormRegister() {
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             email: '',
+            fullName: '',
             password: '',
             confirmPassword: ''
         }, resolver: yupResolver(esquemaValidacao)
     })
 
     function onSubmit(data: FormValues) {
-        toast.promise(signUp(data.email, data.password), {
+        toast.promise(signUp(data.email, data.password, data.fullName), {
             pending: 'Autenticando...',
         })
     }
@@ -62,6 +63,13 @@ export default function FormRegister() {
                     }}
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
+
+                    <Input type="text" placeholder="Nome completo" registro={{
+                        ...register('fullName',
+                            { required: "Campo obrigatório" })
+                    }}
+                        invalid={errors?.fullName?.message ? 'invalido' : ''} />
+                    {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
 
                     <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} >
                         {passwordVisible ? (

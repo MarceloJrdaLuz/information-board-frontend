@@ -17,7 +17,7 @@ export default function FormUserRoles() {
 
     const { userRoles } = usePermissionsAndRolesContext()
     const [roles, setRoles] = useState<RolesType[]>([])
-    const [users, setUsers] = useState<{ id: string, email: string }[]>([])
+    const [users, setUsers] = useState<UserTypes[]>([])
     const [userSelected, setUserSelected] = useState('')
     const [userSelectedId, setUserSelectedId] = useState('')
 
@@ -44,7 +44,7 @@ export default function FormUserRoles() {
 
     useEffect(() => {
         const getUsers = async () => {
-            await api.get<{ id: string, email: string }[]>('/users').then(res => {
+            await api.get<UserTypes[]>('/users').then(res => {
                 const { data } = res
 
                 const optionsUsers: UserTypes[] = []

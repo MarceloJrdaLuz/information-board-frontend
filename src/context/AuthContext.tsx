@@ -1,12 +1,10 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
 import { ICongregation, ResponseAuth, RolesType } from "../entities/types"
 import Router from 'next/router'
 import { api } from "@/services/api"
 import { deleteCookie, setCookie, getCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import { domainUrl } from "@/atoms/atom"
-import { copyFile } from "fs"
 import { useSubmitContext } from "./SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
@@ -16,7 +14,7 @@ type AuthContextTypes = {
     login: (email: string, password: string) => Promise<any>
     roleContains: (role: string) => boolean | undefined
     logout: () => void
-    signUp: (email: string, password: string) => Promise<any>,
+    signUp: (email: string, password: string, fullName: string) => Promise<any>,
     resetPassword: (email: string | undefined, token: string | undefined, newPassword: string) => Promise<any>
     forgotMyPassword: (email: string) => Promise<any>
     loading: boolean
@@ -33,6 +31,7 @@ type AuthContextProviderProps = {
 type User = {
     id: String
     email: string
+    fullName: string
     code: string
     congregation: ICongregation
     roles: RolesType[]
@@ -75,6 +74,7 @@ function AuthProvider(props: AuthContextProviderProps) {
             const usuarioLogado = {
                 id: res.data.user.id,
                 email: res.data.user.email,
+                fullName: res.data.user.fullName,
                 code: res.data.user.code,
                 congregation: res.data.user.congregation,
                 roles: res.data.user.roles,
@@ -123,14 +123,16 @@ function AuthProvider(props: AuthContextProviderProps) {
         Router.push('/login')
     }
 
-    async function signUp(email: string, password: string) {
+    async function signUp(email: string, password: string, fullName: string) {
         await api.post<ResponseAuth>('/user', {
             email,
-            password
+            password, 
+            fullName
         }).then(res => {
             const usuarioLogado = {
                 id: res.data.user.id,
                 email: res.data.user.email,
+                fullName: res.data.user.fullName,
                 code: res.data.user.code,
                 congregation: res.data.user.congregation,
                 roles: res.data.user.roles,
