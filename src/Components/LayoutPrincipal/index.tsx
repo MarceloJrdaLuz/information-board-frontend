@@ -14,6 +14,7 @@ interface LayoutPrincipalProps {
     congregationName: string
     circuit: string
     imageUrl?: string
+    justifyContent?: string
 }
 
 export default function LayoutPrincipal(props: LayoutPrincipalProps) {
@@ -24,7 +25,7 @@ export default function LayoutPrincipal(props: LayoutPrincipalProps) {
                 <Header className={props.className} texto={props.textoHeader}>
                     {props.image}
                 </Header>}
-            <Conteudo bgFundo={props.bgFundo} hConteudo={props.heightConteudo}>
+            <Conteudo justifyContent={props.justifyContent} bgFundo={props.bgFundo} hConteudo={props.heightConteudo}>
                 {props.children}
             </Conteudo>
 

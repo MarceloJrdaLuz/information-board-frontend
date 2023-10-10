@@ -41,6 +41,13 @@ export default function FormUserRoles() {
         setOptionsDropUsers(users?.map(user => `${user.email}`))
     }, [users])
 
+    useEffect(() => {
+        const filter = users.find(user => user.id === userSelectedId)
+        const rolesNames = filter?.roles.map(role => role.name)
+        if (rolesNames) {
+            setRolesSelected(rolesNames)
+        }
+    }, [userSelectedId, users])
 
     useEffect(() => {
         const getUsers = async () => {
@@ -94,7 +101,7 @@ export default function FormUserRoles() {
 
     function onSubmit() {
         toast.promise(userRoles(userSelectedId, rolesSelectedsIds), {
-            pending: "Criando nova permissão"
+            pending: "Criando nova função"
         })
         reset()
         setUserSelected("")
@@ -160,7 +167,7 @@ export default function FormUserRoles() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={(userSelectedId === '' || rolesSelectedsIds.length === 0) ? true : disabled} type='submit'>Atribuir Função</Button>
+                        <Button error={dataError} success={dataSuccess} disabled={(userSelectedId === '') ? true : disabled} type='submit'>Atribuir Função</Button>
                     </div>
                 </div>
             </FormStyle>

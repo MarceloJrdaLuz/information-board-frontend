@@ -19,6 +19,7 @@ export interface RolesType extends PermissionType {
 export interface UserTypes {
     email: string
     fullName: string
+    roles: RolesType[]
     id: string
 }
 
