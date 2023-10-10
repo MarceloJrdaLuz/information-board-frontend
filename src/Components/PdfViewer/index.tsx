@@ -24,6 +24,22 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
         setIsLoading(false);
     }
 
+    const handleClickLeft = () => {
+        if (pageNumber > 1) {
+            setPageNumber(pageNumber - 1);
+        } else {
+            setPageNumber(firstPage!);
+        }
+    };
+
+    const handleClickRight = () => {
+        if (pageNumber < numPages!) {
+            setPageNumber(pageNumber + 1);
+        } else {
+            setPageNumber(firstPage!);
+        }
+    };
+
     const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
         if (event.touches.length > 0) {
             touchStartX.current = event.touches[0].clientX;
@@ -52,11 +68,11 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
                 {!isLoading && (
                     <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>
                         <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)}/>
-                        <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={() => { pageNumber > 1 ? setPageNumber(pageNumber - 1) : setPageNumber(lastPage!) }} />
+                        <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickLeft} />
                         <span>
                             Página {pageNumber} / {numPages}
                         </span>
-                        <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={() => { pageNumber < numPages! ? setPageNumber(pageNumber + 1) : setPageNumber(firstPage!) }} />
+                        <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickRight} />
                     </div>
                 )}
             </div>
