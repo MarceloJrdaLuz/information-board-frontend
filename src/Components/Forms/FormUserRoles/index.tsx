@@ -10,6 +10,8 @@ import { IconDelete } from "@/assets/icons"
 import Button from "@/Components/Button"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import { HelpCircle } from "lucide-react"
+import ModalHelp from "@/Components/ModalHelp"
 
 export default function FormUserRoles() {
 
@@ -23,6 +25,8 @@ export default function FormUserRoles() {
     const [optionsDropUsers, setOptionsDropUsers] = useState<string[]>()
     const [rolesSelecteds, setRolesSelected] = useState<string[]>([])
     const [rolesSelectedsIds, setRolesSelectedsIds] = useState([''])
+    const [modalHelpShow, setModalHelpShow] = useState(false)
+
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -122,8 +126,19 @@ export default function FormUserRoles() {
 
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
+            {modalHelpShow &&
+                <ModalHelp
+                    onClick={() => setModalHelpShow(false)}
+                    title="Como criar um anúncio"
+                    text={
+                        `
+    Primeiramente escolha na lista suspensa o usuário que você quer designar uma ou mais funções. Após isso escolha na lista seguinte as funções que você deseja atribuir a ele. Elas estão em inglês, abaixo o que cada uma delas libera ao usuário\n.${roles.map(role => `   ${role.name} - ${role.description}\n`).join('')}
+                        `} />}
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
+                    <div className="flex justify-end ">
+                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                    </div>
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir função a um usuário</div>
 
                     <Dropdown textVisible handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
