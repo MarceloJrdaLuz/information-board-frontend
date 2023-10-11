@@ -1,8 +1,8 @@
-import { handleTouchSwipe } from '@/helpers/handleTouchSwipe';
-import { ChevronLeftIcon, ChevronRightIcon,  Undo2Icon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, Undo2Icon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Spiner from '../Spiner';
+import { useSwipeable } from 'react-swipeable';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -40,26 +40,22 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
         }
     };
 
-    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-        if (event.touches.length > 0) {
-            touchStartX.current = event.touches[0].clientX;
-        }
-    }
-
-    const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-        if (touchStartX.current && event.changedTouches.length > 0) {
-            const newPageNumber = handleTouchSwipe(
-                touchStartX.current,
-                pageNumber,
-                numPages || 0,
-                event.changedTouches[0].clientX < touchStartX.current ? 'left' : 'right',
-                event // Passa o objeto event como argumento
-            );
-
-            setPageNumber(newPageNumber);
-            touchStartX.current = null;
-        }
-    };
+    const handlers = useSwipeable({
+        onSwipedLeft: () => {
+            if (pageNumber < numPages!) {
+                setPageNumber(pageNumber + 1);
+            } else {
+                setPageNumber(firstPage!);
+            }
+        },
+        onSwipedRight: () => {
+            if (pageNumber > 1) {
+                setPageNumber(pageNumber - 1);
+            } else {
+                setPageNumber(lastPage!);
+            }
+        },
+    });
 
     return (
 
@@ -67,7 +63,7 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
             <div className='mb-4'>
                 {!isLoading && (
                     <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>
-                        <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)}/>
+                        <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)} />
                         <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickLeft} />
                         <span>
                             Página {pageNumber} / {numPages}
@@ -77,13 +73,12 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
                 )}
             </div>
             <div
+                {...handlers}
                 className={`w-full h-full flex justify-center items-center lg:w-5/12 md:mt-12`}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
             >
 
-
                 <Document
+
                     file={{ url: url }}
                     onLoadSuccess={onDocumentLoadSuccess}
                     loading={<Spiner />}

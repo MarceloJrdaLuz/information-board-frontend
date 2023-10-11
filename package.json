@@ -38,6 +38,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.42.1",
     "react-pdf": "^7.3.3",
+    "react-swipeable": "^7.0.1",
     "react-toastify": "^9.1.1",
     "swr": "^2.1.0",
     "tailwind-variants": "^0.1.14",
@@ -47,13 +48,13 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@types/cookie": "^0.5.1",
+    "@types/moment": "^2.13.0",
     "@types/node": "18.11.18",
     "@types/nookies": "^2.0.3",
     "@types/react": "18.0.27",
-    "@types/react-dom": "18.0.10",
-    "@types/cookie": "^0.5.1",
-    "@types/moment": "^2.13.0",
     "@types/react-datepicker": "^4.15.0",
+    "@types/react-dom": "18.0.10",
     "@types/uuid": "^9.0.2"
   }
 }
