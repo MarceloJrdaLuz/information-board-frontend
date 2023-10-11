@@ -8,11 +8,11 @@ interface IContentDashboard {
 
 export default function ContentDashboard(props: IContentDashboard) {
     return (
-        <section className={`flex flex-col w-10/12 flex-1 justify-between max-h-screen  bg-secondary-100`}>
+        <section className={`flex flex-col w-[75%] flex-1 justify-between max-h-screen  bg-secondary-100`}>
             <div >
                 <HeaderDashboard />
             </div>
-            <div className="overflow-auto  flex-1 hide-scrollbar">
+            <div className="overflow-y-auto  flex-1 hide-scrollbar">
                 {props.children}
             </div>
             <div>

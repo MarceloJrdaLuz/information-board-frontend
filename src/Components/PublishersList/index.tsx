@@ -65,8 +65,10 @@ export default function PublisherList() {
 
     }
 
-    return (
-        <ul className="flex flex-wrap justify-center items-center w-full mt-5">
+    return (    
+        <>
+        <ul className="flex flex-wrap justify-center items-center w-full">
+        <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Total de publicadores: {publishers?.length}</span>
             {publishers?.map(publisher =>
                 <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                     <div className="flex w-full justify-between items-center">
@@ -116,5 +118,6 @@ export default function PublisherList() {
                 </li>
             )}
         </ul>
+        </>
     )
 }

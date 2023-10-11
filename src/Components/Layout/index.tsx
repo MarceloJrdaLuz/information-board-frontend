@@ -45,7 +45,7 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-        <main className={`flex w-screen h-screen max-h-full overflow-auto`}>
+        <main className={`flex w-screen h-screen max-h-full overflow-y-auto`}>
             <NavBar.Root>
                 {/* <NavBar.Logo /> */}
                 {/* <NavBar.Options
