@@ -43,7 +43,7 @@ export default function FormReport(props: IRelatorioFormProps) {
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
-
+    
     useEffect(() => {
         if (data) {
             setOptionsDrop(data)
@@ -102,7 +102,8 @@ export default function FormReport(props: IRelatorioFormProps) {
             const publisherConsent = {
                 fullName: publisherToSend.fullName,
                 nickname: publisherToSend.nickname,
-                congregation_id: publisherToSend.congregation_id
+                congregation_id: publisherToSend.congregation_id,
+                congregation_number: publisherToSend.congregation_number
             }
             createConsentRecord(publisherConsent, deviceId)
         }
@@ -126,7 +127,8 @@ export default function FormReport(props: IRelatorioFormProps) {
                         {
                             fullName: publisherToSend.fullName,
                             nickName: publisherToSend.nickname || '',
-                            congregation_id: publisherToSend.congregation_id
+                            congregation_id: publisherToSend.congregation_id, 
+                            congregation_number: publisherToSend.congregation_number
                         },
                         Number(data.publications),
                         Number(data.videos),

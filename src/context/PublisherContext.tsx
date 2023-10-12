@@ -1,11 +1,7 @@
 import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
-import { getCookie } from "cookies-next"
 import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
-import Router from "next/router"
-import { useAtom } from "jotai"
-import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 import { useSubmitContext } from "./SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
@@ -40,6 +36,7 @@ type PublisherContextTypes = {
             fullName: string,
             nickName: string,
             congregation_id: string
+            congregation_number: string
         },
         publications: number,
         videos: number,
@@ -174,6 +171,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
                 fullName: publisher.fullName,
                 nickname: publisher.nickname,
                 congregation_id: publisher.congregation_id,
+                congregation_number: publisher.congregation_number
             },
             deviceId
         }).then(suc => {

@@ -3,6 +3,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { IPublisherList } from '@/entities/types'
 import { iconeAddPessoa } from '@/assets/icons'
+import { useRouter } from 'next/router'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -17,6 +18,8 @@ interface IDropdownSearch {
 }
 
 export default function DropdownSearch(props: IDropdownSearch) {
+  const router = useRouter()
+  const { number } = router.query
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState(props.options)
   const [publisherSelected, setPublisherSelected] = useState('')
@@ -32,8 +35,9 @@ export default function DropdownSearch(props: IDropdownSearch) {
     
     if (publisherData) {
       const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
-      setFilteredOptions(parsedPublishers)
-      setPublisherRecover(parsedPublishers)
+     const filter = parsedPublishers.filter(parsed => (parsed.congregation_number === number))
+      setFilteredOptions(filter)
+      setPublisherRecover(filter)
     } else {
       setFilteredOptions(props.options)
     }
@@ -106,7 +110,8 @@ export default function DropdownSearch(props: IDropdownSearch) {
                       props.handleClick({
                         fullName: option.fullName,
                         nickname: option.nickname,
-                        congregation_id: option.congregation_id
+                        congregation_id: option.congregation_id, 
+                        congregation_number: option.congregation_number
                       }),
                         setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
                     }}

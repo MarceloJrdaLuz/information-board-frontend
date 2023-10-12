@@ -112,6 +112,7 @@ export interface IPublisherList {
     fullName: string
     nickname: string
     congregation_id: string
+    congregation_number: string
     consentDate?: string
     deviceId?: string
 }
@@ -182,6 +183,7 @@ export interface IPublisherConsent {
     fullName: string,
     nickname: string,
     congregation_id: string
+    congregation_number: string
 }
 
 export interface ConsentRecordTypes {
