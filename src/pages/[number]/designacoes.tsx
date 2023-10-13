@@ -172,7 +172,7 @@ export default function Designacoes({
                 </div>
               ))}
             </div>}
-            {!lifeAndMinistryOptionsShow && dayMeetingLifeAndMinistary && hourMeetingLifeAndMinistary ? <p className="font-bold my-2  text-xl text-gray-900">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!lifeAndMinistryOptionsShow && dayMeetingLifeAndMinistary && hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <div>
             <Button
@@ -190,7 +190,7 @@ export default function Designacoes({
                 </div>
               )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
             </div>}
-            {!publicOptionsShow && dayMeetingPublic && hourMeetingPublic ? <p className="font-bold text-xl my-2 text-gray-900">{`${dayMeetingPublic} ${hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!publicOptionsShow && dayMeetingPublic && hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${dayMeetingPublic} ${hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <Button
             onClick={() => router.push(`/${congregationNumber}`)}

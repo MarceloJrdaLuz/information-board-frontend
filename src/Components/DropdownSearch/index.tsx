@@ -4,6 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { IPublisherList } from '@/entities/types'
 import { iconeAddPessoa } from '@/assets/icons'
 import { useRouter } from 'next/router'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -27,7 +28,8 @@ export default function DropdownSearch(props: IDropdownSearch) {
   const [addPublisher, setAddPublisher] = useState(false)
 
   useEffect(()=> {
-    setFilteredOptions(props.options)
+    const sortOptions = sortArrayByProperty(props.options, "fullName")
+    setFilteredOptions(sortOptions)
   }, [addPublisher, props.options])
 
   useEffect(() => {
@@ -35,13 +37,15 @@ export default function DropdownSearch(props: IDropdownSearch) {
     
     if (publisherData) {
       const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
-     const filter = parsedPublishers.filter(parsed => (parsed.congregation_number === number))
-      setFilteredOptions(filter)
-      setPublisherRecover(filter)
+     const filterToCongregation = parsedPublishers.filter(parsed => (parsed.congregation_number === number))
+     if(filterToCongregation.length > 0){
+       setFilteredOptions(filterToCongregation)
+       setPublisherRecover(filterToCongregation)
+     }
     } else {
       setFilteredOptions(props.options)
     }
-  }, [props.options])
+  }, [props.options, number])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
