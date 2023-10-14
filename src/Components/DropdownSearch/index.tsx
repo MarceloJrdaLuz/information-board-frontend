@@ -39,11 +39,13 @@ export default function DropdownSearch(props: IDropdownSearch) {
       const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
      const filterToCongregation = parsedPublishers.filter(parsed => (parsed.congregation_number === number))
      if(filterToCongregation.length > 0){
-       setFilteredOptions(filterToCongregation)
-       setPublisherRecover(filterToCongregation)
+      const sortOptions = sortArrayByProperty(filterToCongregation, "fullName")
+       setFilteredOptions(sortOptions)
+       setPublisherRecover(sortOptions)
      }
     } else {
-      setFilteredOptions(props.options)
+      const sortOptions = sortArrayByProperty(props.options, "fullName")
+      setFilteredOptions(sortOptions)
     }
   }, [props.options, number])
 
