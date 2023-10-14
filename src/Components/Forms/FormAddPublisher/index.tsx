@@ -134,9 +134,9 @@ export default function FormAddPublisher() {
 
                     <CheckboxMultiple label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
 
-                    <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
-
                     <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
+
+                    <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
