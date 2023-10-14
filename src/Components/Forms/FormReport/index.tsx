@@ -71,10 +71,7 @@ export default function FormReport(props: IRelatorioFormProps) {
 
     const esquemaValidacao = yup.object({
         month: yup.string().required(),
-        publications: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
-        videos: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
         hours: yup.number(),
-        revisits: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
         studies: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
         observations: yup.string()
     })
@@ -82,10 +79,7 @@ export default function FormReport(props: IRelatorioFormProps) {
     const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors, resetField } = useForm({
         defaultValues: {
             month: '',
-            publications: '',
-            videos: '',
             hours: 0,
-            revisits: '',
             studies: '',
             observations: ''
         },
@@ -130,22 +124,16 @@ export default function FormReport(props: IRelatorioFormProps) {
                             congregation_id: publisherToSend.congregation_id, 
                             congregation_number: publisherToSend.congregation_number
                         },
-                        Number(data.publications),
-                        Number(data.videos),
                         data.hours ?? 0,
-                        Number(data.revisits),
                         Number(data.studies),
-                        underAnHour ? 'Fez atividades' : data.observations
+                        underAnHour ? 'Participou na pregação' : data.observations
                     ),
                     {
                         pending: 'Autenticando...'
                     }
                 )
             }
-            resetField('publications')
-            resetField('videos')
             resetField('hours')
-            resetField('revisits')
             resetField('studies')
             resetField('observations')
         } else {
@@ -202,7 +190,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                         <div className={`m-auto w-fit font-semibold text-2xl sm:text-3xl text-primary-200`}>Relatório</div>
                     </div>
 
-
                     <DropdownSearch full border title="Nome" handleClick={handleClick} options={optionsDrop} />
 
                     <Input
@@ -214,29 +201,9 @@ export default function FormReport(props: IRelatorioFormProps) {
                         }}
                     />
 
-                    <Input
-                        type="number"
-                        placeholder="Publicações"
-                        registro={{
-                            ...register('publications')
-                        }}
-                        invalid={errors?.publications?.message ? 'invalido' : ''}
-                    />
-                    {errors?.publications?.type && <InputError type={errors.publications?.type} field='publications' />}
-
-                    <Input
-                        type="number"
-                        placeholder="Vídeos"
-                        registro={{
-                            ...register('videos')
-                        }}
-                        invalid={errors?.videos?.message ? 'invalido' : ''}
-                    />
-                    {errors?.videos?.type && <InputError type={errors?.videos?.type} field='videos' />}
-
                     <CheckboxBoolean
                         checked={underAnHour}
-                        label="Menos de uma hora"
+                        label="Sou publicador, participei na pregação"
                         handleCheckboxChange={(isChecked) => {
                             setUnderAnHour(isChecked)
                             clearErrors('hours')
@@ -255,16 +222,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                         readOnly={underAnHour}
                     />
                     {errors?.hours?.type && <InputError type={errors?.hours?.type} field='hours' />}
-
-                    <Input
-                        type="number"
-                        placeholder="Revisitas"
-                        registro={{
-                            ...register('revisits')
-                        }}
-                        invalid={errors?.revisits?.message ? 'invalido' : ''}
-                    />
-                    {errors?.revisits?.type && <InputError type={errors?.revisits?.type} field='revisits' />}
 
                     <Input
                         type="number"

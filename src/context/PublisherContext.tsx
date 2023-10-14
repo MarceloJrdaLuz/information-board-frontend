@@ -38,10 +38,7 @@ type PublisherContextTypes = {
             congregation_id: string
             congregation_number: string
         },
-        publications: number,
-        videos: number,
         hours: number,
-        revisits: number,
         studies: number,
         observations: string
     ) => Promise<any>
@@ -136,10 +133,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             nickName: string,
             congregation_id: string
         },
-        publications: number,
-        videos: number,
         hours: number,
-        revisits: number,
         studies: number,
         observations: string
     ) {
@@ -148,10 +142,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             month,
             year,
             publisher,
-            publications,
-            videos,
             hours,
-            revisits,
             studies,
             observations
         },).then(res => {
