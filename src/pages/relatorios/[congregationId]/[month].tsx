@@ -5,6 +5,7 @@ import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { IPublisher, IReports } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
@@ -68,7 +69,8 @@ export default function RelatorioMes() {
             return relatorio.month.toLocaleLowerCase() === monthSelected && relatorio.year === yearSelected
         })
         if (reportsFiltered) {
-            setReportsFiltered(reportsFiltered)
+            const sort = sortArrayByProperty(reportsFiltered, "publisher.fullName")
+            setReportsFiltered(sort)
         }
     }, [monthSelected, yearSelected, setReportsFiltered, reports])
 
