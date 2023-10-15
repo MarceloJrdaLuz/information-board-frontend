@@ -13,5 +13,5 @@ export function removeMimeType(text: string) {
     }
   })
 
-  return camelCasedWords.join('')
+  return camelCasedWords.join(' ')
 }
