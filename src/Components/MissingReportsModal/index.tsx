@@ -2,11 +2,8 @@ import {
     Popover,
     PopoverHandler,
     PopoverContent,
-    Avatar,
-    Typography,
     List,
     ListItem,
-    ListItemPrefix,
 } from "@material-tailwind/react";
 import Button from "../Button";
 import { ChevronDownIcon } from "lucide-react";
@@ -30,12 +27,14 @@ export default function MissingReportsModal({ missingReportsNumber, missingRepor
             </PopoverHandler>
             <PopoverContent className="w-72">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
-                    {missingReports ? missingReports.map(missingReport => (
+                    {missingReports && missingReports.length > 0 ? missingReports.map(missingReport => (
                         <ListItem key={missingReport.id}>
                             {missingReport.fullName}
                         </ListItem>
                     )) : (
-                        <span>Todos os publicadores já enviaram seus relatórios</span>
+                        <ListItem key="All reports send">
+                            Todos os relatórios enviados
+                        </ListItem>
                     )}
                 </List>
             </PopoverContent>
