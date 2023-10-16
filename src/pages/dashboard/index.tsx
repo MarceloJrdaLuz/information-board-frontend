@@ -1,12 +1,13 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { GetServerSideProps } from "next"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { parseCookies } from 'nookies'
 import { getAPIClient } from "@/services/axios"
 import Layout from "@/Components/Layout"
 import ContentDashboard from "@/Components/ContentDashboard"
 import { useAtom } from "jotai"
 import { crumbsAtom } from "@/atoms/atom"
+import { ProfileCard } from "@/Components/ProfileCard"
 
 export default function Dashboard() {
     const { user: getUser } = useAuthContext()
@@ -21,6 +22,9 @@ export default function Dashboard() {
         return contain
     }
 
+    useEffect(() => {
+        setUser(getUser)
+    }, [getUser])
 
     useEffect(() => {
         setCrumbs([{ label: 'Início', link: '/dashboard' }])
@@ -30,7 +34,10 @@ export default function Dashboard() {
     return (
         <Layout pageActive="dashboard">
             <ContentDashboard>
-                <div className="h-96">Dashboard</div>
+                {/* <div className="h-96">Dashboard</div> */}
+                <section className="flex w-full h-full justify-center items-center">
+                    {user && <ProfileCard user_id={user.id as string} fullName={user.fullName} email={user.email} />}
+                </section>
             </ContentDashboard>
         </Layout>
     )

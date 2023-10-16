@@ -1,5 +1,6 @@
 import { IPublisher } from "@/entities/types"
 import { reduzirNome } from "@/functions/reduzirNome"
+import { FullNameShow } from "../FullNameShow"
 
 interface ModalRelatorioProps {
     month: string
@@ -20,7 +21,7 @@ export default function ModalRelatorio(props: ModalRelatorioProps) {
             <span className="py-1 font-semibold w-full text-center">Relatório de Serviço de campo</span>
             <div className="flex ">
                 <span className="font-semibold px-3 ">Nome:</span>
-                <span className="overflow-hidden whitespace-nowrap text-ellipsis border-b-2 border-dashed border-black w-full mr-3">{`${reduzirNome(props.publisher.fullName)} ${props.publisher.nickname ? `(${props.publisher.nickname})` : ""}`}</span>
+                <FullNameShow defaultName={`${props.publisher.nickname ? `(${props.publisher.nickname})` : ""} ${reduzirNome(props.publisher.fullName)}`} fullName={props.publisher.fullName}/>
             </div>
             <div className="flex ">
                 <span className="font-semibold px-3">Mês:</span>

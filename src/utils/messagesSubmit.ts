@@ -21,6 +21,7 @@ export const messageErrorsSubmit = {
 }
 
 export const messageSuccessSubmit = {
+    photoProfileCreate: "Foto de perfil alterada com sucesso!",
     publisherRemoveGroup: "Publicadores removidos do grupo com sucesso!",
     publisherAddGroup: "Publicadores adicionados ao grupo com sucesso!",
     documentCreate: "Documento exluído com sucesso!",

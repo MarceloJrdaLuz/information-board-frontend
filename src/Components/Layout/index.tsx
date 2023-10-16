@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useEffect, useState } from "react"
 import { useAuthContext } from "@/context/AuthContext"
-import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon } from 'lucide-react'
+import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon, HomeIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -18,6 +18,7 @@ import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
 import GroupIcon from "../Icons/GroupIcon"
 import PuzzleIcon from "../Icons/PuzzleIcon"
 import NoticesIcon from "../Icons/NoticesIcon"
+import { ProfileCard } from "../ProfileCard"
 
 export default function Layout(props: LayoutProps) {
 
@@ -48,7 +49,7 @@ export default function Layout(props: LayoutProps) {
         <main className={`flex w-screen h-screen max-h-full overflow-y-auto`}>
             <NavBar.Root>
                 {/* <NavBar.Logo /> */}
-                {/* <NavBar.Options
+                <NavBar.Options
                     title="Início"
                     onClick={() => {
                         setIsMenuOpen(!isMenuOpen)
@@ -56,7 +57,7 @@ export default function Layout(props: LayoutProps) {
                     }}
                     icon={HomeIcon}
                     active={props.pageActive === 'dashboard'}
-                /> */}
+                />
 
                 {isAdmin &&
                     <NavBar.Options
