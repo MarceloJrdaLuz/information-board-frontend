@@ -77,11 +77,11 @@ function AuthProvider(props: AuthContextProviderProps) {
             ))
 
             setCookie('quadro-token', token, {
-                maxAge: 60 * 60 + 8, //1 hora
+                maxAge: 60 * 60 * 8, 
             })
 
             setCookie('user-roles', JSON.stringify(userRoles), {
-                maxAge: 60 * 60 + 8, //1 hora
+                maxAge: 60 * 60 * 8, 
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
@@ -134,7 +134,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 const token = res.data.token
 
                 setCookie('quadro-token', token, {
-                    maxAge: 60 * 60 + 8, //1 hora
+                    maxAge: 60 * 60 * 8, 
                 })
 
                 api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`

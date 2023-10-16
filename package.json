@@ -33,6 +33,7 @@
     "postcss": "^8.4.21",
     "raw-loader": "^4.0.2",
     "react": "18.2.0",
+    "react-avatar-editor": "^13.0.0",
     "react-circular-progressbar": "^2.1.0",
     "react-datepicker": "^4.17.0",
     "react-dom": "18.2.0",
@@ -54,6 +55,7 @@
     "@types/node": "18.11.18",
     "@types/nookies": "^2.0.3",
     "@types/react": "18.0.27",
+    "@types/react-avatar-editor": "^13.0.0",
     "@types/react-datepicker": "^4.15.0",
     "@types/react-dom": "18.0.10",
     "@types/uuid": "^9.0.2"
