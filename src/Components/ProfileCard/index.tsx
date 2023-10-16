@@ -66,7 +66,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
             const canvas = editorRef.current.getImageScaledToCanvas()
             canvas.toBlob((blob) => {
                 setCroppedImage(blob)
-            }, 'image/jpeg', 1)
+            }, 'image/png')
         }
     }
 
