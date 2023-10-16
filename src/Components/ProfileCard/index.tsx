@@ -8,8 +8,8 @@ import {
 } from "@material-tailwind/react"
 import Image from "next/image"
 import avatar from '../../../public/images/avatar-male.png'
-import { ChangeEvent, MouseEvent, useRef, useState } from "react"
-import { CameraIcon, CheckIcon, X, ZoomIn, ZoomOutIcon } from "lucide-react"
+import { ChangeEvent,  useCallback, useEffect, useRef, useState } from "react"
+import { CameraIcon, ZoomIn, ZoomOutIcon } from "lucide-react"
 import { api } from "@/services/api"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -17,9 +17,10 @@ import { toast } from "react-toastify"
 import { UserTypes } from "@/entities/types"
 import AvatarEditor from "react-avatar-editor"
 import { useSwipeable, SwipeEventData } from 'react-swipeable'
+import Button from "../Button"
 
 interface EditorRefType {
-    current: AvatarEditor | null;
+    current: AvatarEditor | null
 }
 
 interface ProfileCardProps {
@@ -30,13 +31,14 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardProps) {
+    const isTouchDevice = "ontouchstart" in window
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null)
     const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null)
-    const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
+    const [croppedImage, setCroppedImage] = useState<Blob | null>(null)
 
-    const editorRef = useRef<AvatarEditor | null>(null);
+    const editorRef = useRef<AvatarEditor | null>(null)
     const [zoom, setZoom] = useState(1)
     const [position, setPosition] = useState({ x: 0.5, y: 0.5 })
 
@@ -49,7 +51,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                 y: prevPosition.y + deltaY,
             }))
 
-            updateCroppedImage();
+            updateCroppedImage()
         }
     }
 
@@ -61,12 +63,53 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
 
     const updateCroppedImage = () => {
         if (editorRef.current) {
-            const canvas = editorRef.current.getImageScaledToCanvas();
+            const canvas = editorRef.current.getImageScaledToCanvas()
             canvas.toBlob((blob) => {
-                setCroppedImage(blob);
-            }, 'image/jpeg'); // ou o formato de sua escolha
+                setCroppedImage(blob)
+            }, 'image/jpeg')
         }
-    };
+    }
+
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+        if (!editorRef.current) return
+
+        let deltaX = 0
+        let deltaY = 0
+
+        switch (event.key) {
+            case "ArrowUp":
+                deltaY = -0.02
+                break
+            case "ArrowDown":
+                deltaY = 0.02
+                break
+            case "ArrowLeft":
+                deltaX = -0.02
+                break
+            case "ArrowRight":
+                deltaX = 0.02
+                break
+            default:
+                return
+        }
+
+        setPosition((prevPosition) => ({
+            x: Math.max(0, Math.min(1, prevPosition.x + deltaX)),
+            y: Math.max(0, Math.min(1, prevPosition.y + deltaY)),
+        }))
+
+        updateCroppedImage()
+    }, [])
+
+    useEffect(() => {
+        if (!isTouchDevice) {
+            window.addEventListener("keydown", handleKeyDown)
+
+            return () => {
+                window.removeEventListener("keydown", handleKeyDown)
+            }
+        }
+    }, [isTouchDevice, handleKeyDown])
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0]
@@ -111,13 +154,12 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         })
     }
 
-    const isTouchDevice = "ontouchstart" in window
     const swipeHandlers = useSwipeable({ onSwiped: handleSwipe })
 
     return (
         <>
             {newAvatarUrl && (
-                <div  {...(isTouchDevice ? swipeHandlers : {})}>
+                <div className="relative" {...(isTouchDevice ? swipeHandlers : {})}>
                     <AvatarEditor
                         ref={editorRef}
                         image={newAvatarUrl}
@@ -128,24 +170,30 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                         scale={zoom}
                         position={position}
                     />
-                    <div className="w-full flex justify-between">
+                    <div className="flex absolute gap-3 top-0 right-0">
                         <button
                             onClick={() => setZoom(Math.max(1, zoom - 0.1))}
                         >
-                            <ZoomOutIcon />
+                            <ZoomOutIcon className="text-primary-200" />
                         </button>
                         <button
                             onClick={() => setZoom(Math.min(3, zoom + 0.1))}
                         >
-                            <ZoomIn />
+                            <ZoomIn className="text-primary-200" />
                         </button>
                     </div>
-                    {/* <div className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-5">
-                    <CheckIcon onClick={sendNewPhoto} className="text-white w-10 h-10" />
-                </div>
-                <div className="flex justify-center items-center absolute bottom-0 left-7 rounded-full bg-red-400 p-5">
-                    <X onClick={() => setNewAvatarUrl(null)} className="text-white w-10 h-10" />
-                </div> */}
+                    <div className="w-full flex justify-between">
+                        <div className="flex justify-center items-center  ">
+                            <Button onClick={() => setNewAvatarUrl(null)} className="w-28 text-xs">
+                                Cancelar
+                            </Button>
+                        </div>
+                        <div onClick={() => sendNewPhoto} className="flex justify-center items-center">
+                            <Button className="w-28 text-xs">
+                                Ok
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
             {!newAvatarUrl && <Card className="w-96">
