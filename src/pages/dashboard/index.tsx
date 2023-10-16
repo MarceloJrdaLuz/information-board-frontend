@@ -36,7 +36,7 @@ export default function Dashboard() {
             <ContentDashboard>
                 {/* <div className="h-96">Dashboard</div> */}
                 <section className="flex w-full h-full justify-center items-center">
-                    {user && <ProfileCard user_id={user.id as string} fullName={user.fullName} email={user.email} />}
+                    {user && <ProfileCard user={user} fullName={user.fullName} email={user.email} avatar_url={user.profile?.avatar_url} />}
                 </section>
             </ContentDashboard>
         </Layout>

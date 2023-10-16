@@ -7,9 +7,16 @@ export interface ResponseAuth {
         congregation: ICongregation
         created_at: string
         updated_at: string
+        profile: Profile | null
         roles: RolesType[]
     },
     token: string
+}
+
+export interface Profile {
+    id: string
+    avatar_bucket_key: string
+    avatar_url: string
 }
 
 export interface RolesType extends PermissionType {
@@ -17,10 +24,13 @@ export interface RolesType extends PermissionType {
 }
 
 export interface UserTypes {
+    id: string
     email: string
     fullName: string
+    code: string
+    congregation: ICongregation
     roles: RolesType[]
-    id: string
+    profile: Profile | null
 }
 
 
@@ -76,10 +86,10 @@ export interface IGroup {
     name: string
     number: string
     groupOverseers: IGroupOverseers
-    
+
 }
-export interface IGroupOverseers extends IPublisher  { 
-   
+export interface IGroupOverseers extends IPublisher {
+
 }
 
 export interface IReports {

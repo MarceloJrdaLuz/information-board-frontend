@@ -14,16 +14,17 @@ import { api } from "@/services/api"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { toast } from "react-toastify"
+import { UserTypes } from "@/entities/types"
 
 
 interface ProfileCardProps {
     fullName: string
     email: string
-    user_id: string
+    user?: UserTypes
     avatar_url?: string
 }
 
-export function ProfileCard({ avatar_url, email, fullName, user_id }: ProfileCardProps) {
+export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardProps) {
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null)
@@ -51,12 +52,21 @@ export function ProfileCard({ avatar_url, email, fullName, user_id }: ProfileCar
             formData.set('avatar', uploadedPhoto)
         }
 
-        await api.post(`profile/${user_id}`, formData).then(() => {
-            handleSubmitSuccess(messageSuccessSubmit.photoProfileCreate)
-        }).catch(err => {
-            handleSubmitError(messageErrorsSubmit.default)
-            console.log(err)
-        })
+        if (!avatar_url) {
+            await api.post(`profile/${user?.id}`, formData).then(() => {
+                handleSubmitSuccess(messageSuccessSubmit.photoProfileCreate)
+            }).catch(err => {
+                handleSubmitError(messageErrorsSubmit.default)
+                console.log(err)
+            })
+        } else {
+            await api.put(`profile/${user?.profile?.id}`, formData).then(() => {
+                handleSubmitSuccess(messageSuccessSubmit.photoProfileUpdate)
+            }).catch(err => {
+                handleSubmitError(messageErrorsSubmit.default)
+                console.log(err)
+            })
+        }
     }
 
     const sendNewPhoto = () => {

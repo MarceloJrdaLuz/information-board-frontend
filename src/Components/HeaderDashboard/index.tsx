@@ -21,7 +21,7 @@ export default function HeaderDashboard() {
                     <AvatarCongregation />
                 </div>
                 <div className="flex justify-center items-center">
-                    <Avatar userName={user?.fullName} />
+                    <Avatar userName={user?.fullName} avatar_url={user?.profile?.avatar_url} />
                 </div>
             </div>
         </header>

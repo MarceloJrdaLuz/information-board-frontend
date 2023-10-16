@@ -1,5 +1,5 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
-import { ICongregation, ResponseAuth, RolesType } from "../entities/types"
+import { ICongregation, Profile, ResponseAuth, RolesType, UserTypes } from "../entities/types"
 import Router from 'next/router'
 import { api } from "@/services/api"
 import { deleteCookie, setCookie, getCookie } from "cookies-next"
@@ -10,7 +10,7 @@ import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmi
 
 type AuthContextTypes = {
     authenticated: boolean
-    user: User | null
+    user: UserTypes | null
     login: (email: string, password: string) => Promise<any>
     roleContains: (role: string) => boolean | undefined
     logout: () => void
@@ -28,21 +28,12 @@ type AuthContextProviderProps = {
     children: ReactNode
 }
 
-type User = {
-    id: String
-    email: string
-    fullName: string
-    code: string
-    congregation: ICongregation
-    roles: RolesType[]
-}
-
 const AuthContext = createContext({} as AuthContextTypes)
 
 function AuthProvider(props: AuthContextProviderProps) {
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
-    const [user, setUser] = useState<User | null>(null)
+    const [user, setUser] = useState<UserTypes | null>(null)
     const [loading, setLoading] = useState(true)
     const [erroCadastro, setErroCadastro] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -62,8 +53,6 @@ function AuthProvider(props: AuthContextProviderProps) {
                 setUser(res.data)
             })
         }
-
-
     }, [])
 
     async function login(email: string, password: string) {
@@ -78,6 +67,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 code: res.data.user.code,
                 congregation: res.data.user.congregation,
                 roles: res.data.user.roles,
+                profile: res.data.user.profile
             }
 
             const token = res.data.token
@@ -126,7 +116,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     async function signUp(email: string, password: string, fullName: string) {
         await api.post<ResponseAuth>('/user', {
             email,
-            password, 
+            password,
             fullName
         }).then(res => {
             const usuarioLogado = {
@@ -135,6 +125,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 fullName: res.data.user.fullName,
                 code: res.data.user.code,
                 congregation: res.data.user.congregation,
+                profile: res.data.user.profile,
                 roles: res.data.user.roles,
                 token: res.data.token
             }
