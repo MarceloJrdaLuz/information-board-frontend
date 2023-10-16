@@ -8,7 +8,7 @@ import {
 } from "@material-tailwind/react"
 import Image from "next/image"
 import avatar from '../../../public/images/avatar-male.png'
-import { ChangeEvent,  useCallback, useEffect, useRef, useState } from "react"
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import { CameraIcon, ZoomIn, ZoomOutIcon } from "lucide-react"
 import { api } from "@/services/api"
 import { useSubmitContext } from "@/context/SubmitFormContext"
@@ -101,6 +101,21 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         updateCroppedImage()
     }, [])
 
+    const handleZoomOut = () => {
+        setZoom(Math.max(1, zoom - 0.1))
+        handleApplyZoom()
+
+    }
+
+    const handleZoomIn = () => {
+        setZoom(Math.min(3, zoom + 0.1))
+        handleApplyZoom()
+    }
+
+    const handleApplyZoom = () => {
+        updateCroppedImage()
+    }
+
     useEffect(() => {
         if (!isTouchDevice) {
             window.addEventListener("keydown", handleKeyDown)
@@ -125,15 +140,14 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
 
         if (croppedImage) {
             formData.set('avatar', croppedImage)
-        } else {
-            if (uploadedPhoto) {
-                formData.set('avatar', uploadedPhoto)
-            }
+        } else if (uploadedPhoto) {
+            formData.set('avatar', uploadedPhoto)
         }
 
         if (!avatar_url) {
             await api.post(`profile/${user?.id}`, formData).then(() => {
                 handleSubmitSuccess(messageSuccessSubmit.photoProfileCreate)
+                setNewAvatarUrl(null)
             }).catch(err => {
                 handleSubmitError(messageErrorsSubmit.default)
                 console.log(err)
@@ -141,6 +155,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         } else {
             await api.put(`profile/${user?.profile?.id}`, formData).then(() => {
                 handleSubmitSuccess(messageSuccessSubmit.photoProfileUpdate)
+                setNewAvatarUrl(null)
             }).catch(err => {
                 handleSubmitError(messageErrorsSubmit.default)
                 console.log(err)
@@ -172,12 +187,12 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                     />
                     <div className="flex absolute gap-3 top-0 right-0">
                         <button
-                            onClick={() => setZoom(Math.max(1, zoom - 0.1))}
+                            onClick={handleZoomOut}
                         >
                             <ZoomOutIcon className="text-primary-200" />
                         </button>
                         <button
-                            onClick={() => setZoom(Math.min(3, zoom + 0.1))}
+                            onClick={handleZoomIn}
                         >
                             <ZoomIn className="text-primary-200" />
                         </button>
@@ -188,7 +203,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                                 Cancelar
                             </Button>
                         </div>
-                        <div onClick={() => sendNewPhoto} className="flex justify-center items-center">
+                        <div onClick={sendNewPhoto} className="flex justify-center items-center">
                             <Button className="w-28 text-xs">
                                 Ok
                             </Button>
