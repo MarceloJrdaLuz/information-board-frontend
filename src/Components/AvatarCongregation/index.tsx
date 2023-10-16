@@ -2,8 +2,13 @@ import Image from "next/image"
 import Dropdown from "../Dropdown"
 import Router from "next/router"
 import { useCongregationContext } from "@/context/CongregationContext"
+import SkeletonAvatarCongregation from "./skeletonAvatarCongregation"
 
-export default function AvatarCongregation() {
+interface AvatarCongregationProps {
+    loading?: boolean
+}
+
+export default function AvatarCongregation({ loading }: AvatarCongregationProps) {
     const { congregation: congregationUser } = useCongregationContext()
 
     function handleClick(option: string) {
@@ -26,7 +31,9 @@ export default function AvatarCongregation() {
     return (
         <>
             <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 ">
-                {congregationUser?.image_url ? (
+                {loading ? (
+                    <SkeletonAvatarCongregation />
+                ) : congregationUser?.image_url ? (
                     <Image src={congregationUser?.image_url} fill sizes="33vw" alt="Foto da congregação"></Image>
                 ) : (
                     <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -35,9 +42,9 @@ export default function AvatarCongregation() {
                 )
                 }
             </div>
-            <div >   
+            <div >
                 {congregationUser &&
-                    <Dropdown  handleClick={(option) => handleClick(option)} options={['Informações da congregação']} title={`Congregação: ${congregationUser?.name} (${congregationUser?.number})`}
+                    <Dropdown handleClick={(option) => handleClick(option)} options={['Informações da congregação']} title={`Congregação: ${congregationUser?.name} (${congregationUser?.number})`}
                     />
                 }
             </div>

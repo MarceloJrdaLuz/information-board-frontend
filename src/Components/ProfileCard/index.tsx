@@ -66,7 +66,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
             const canvas = editorRef.current.getImageScaledToCanvas()
             canvas.toBlob((blob) => {
                 setCroppedImage(blob)
-            }, 'image/jpeg', 0.9)
+            }, 'image/jpeg', 1)
         }
     }
 
@@ -211,7 +211,9 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                     </div>
                 </div>
             )}
-            {!newAvatarUrl && <Card className="w-96">
+            {!newAvatarUrl && 
+            
+            <Card className="w-96">
                 <CardHeader floated={false} className="h-80">
                     <div className="flex justify-center items-center cursor-pointer w-full h-full">
                         {avatar_url ? (

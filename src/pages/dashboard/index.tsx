@@ -34,7 +34,6 @@ export default function Dashboard() {
     return (
         <Layout pageActive="dashboard">
             <ContentDashboard>
-                {/* <div className="h-96">Dashboard</div> */}
                 <section className="flex w-full h-full justify-center items-center">
                     {user && <ProfileCard user={user} fullName={user.fullName} email={user.email} avatar_url={user.profile?.avatar_url} />}
                 </section>
