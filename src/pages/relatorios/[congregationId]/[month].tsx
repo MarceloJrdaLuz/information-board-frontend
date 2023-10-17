@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
+import FIlterPriviles from "@/Components/FilterPrivileges"
 import Layout from "@/Components/Layout"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
@@ -13,7 +14,7 @@ import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { v4 } from "uuid"
 
 export default function RelatorioMes() {
@@ -29,9 +30,13 @@ export default function RelatorioMes() {
     const [reports, setReports] = useState<IReports[]>()
     const [reportsFiltered, setReportsFiltered] = useState<IReports[]>([])
 
+    const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
+
     const [publishers, setPublishers] = useState<IPublisher[]>()
 
     const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
+
+    const [missingReportsCount, setMissingReportsCount] = useState<number>(0)
 
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
@@ -50,29 +55,50 @@ export default function RelatorioMes() {
     }, [monthParam, setPageActive])
 
     useEffect(() => {
-        const relatoriosNaoEnviados: IPublisher[] = publishers?.filter((publisher) => {
-            const relatorioEnviado = reportsFiltered?.some(
-                (relatorio) =>
-                    relatorio.publisher.id === publisher.id &&
-                    relatorio.month.toLowerCase() === monthSelected &&
-                    relatorio.year === yearSelected
-            )
-            return !relatorioEnviado
-        }) || []
-        setMissingReports(relatoriosNaoEnviados)
-    }, [monthSelected, yearSelected, publishers, reportsFiltered])
+        if (reports) {
+            if (reports) {
+                // Filter reports based on month and year
+                const reportsFilteredByDate = reports.filter(report => (
+                    report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
+                ));
 
-    const relatoriosNaoEnviadosCount = missingReports?.length || 0
+                // Filter the filtered reports based on privileges
+                const filteredReports = filterPrivileges.length > 0
+                    ? reportsFilteredByDate.filter(report => (
+                        filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege))
+                    ))
+                    : reportsFilteredByDate;
+
+                const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName");
+
+                setReportsFiltered(sortedReports);
+            }
+        }
+    }, [monthSelected, yearSelected, filterPrivileges, reports]);
 
     useEffect(() => {
-        const reportsFiltered = reports?.filter(relatorio => {
-            return relatorio.month.toLocaleLowerCase() === monthSelected && relatorio.year === yearSelected
-        })
-        if (reportsFiltered) {
-            const sort = sortArrayByProperty(reportsFiltered, "publisher.fullName")
-            setReportsFiltered(sort)
+        if (publishers && reports) {
+            const missingReports = publishers.filter(publisher => {
+                const relatorioEnviado = reports.some(
+                    report =>
+                        report.publisher.id === publisher.id &&
+                        report.month.toLowerCase() === monthSelected &&
+                        report.year === yearSelected
+                );
+                return !relatorioEnviado;
+            });
+
+            setMissingReports(missingReports);
         }
-    }, [monthSelected, yearSelected, setReportsFiltered, reports])
+    }, [monthSelected, yearSelected, publishers, reports]);
+
+    useEffect(() => {
+        if (missingReports) {
+            const missingReportsCount = missingReports.length;
+            setMissingReportsCount(missingReportsCount);
+        }
+    }, [missingReports]);
+
 
     const getRelatorios = useCallback(async () => {
         await api.get(`/reports/${congregationId}`).then(res => {
@@ -84,10 +110,6 @@ export default function RelatorioMes() {
     useEffect(() => {
         getRelatorios()
     }, [getRelatorios])
-
-    useEffect(() => {
-        console.log(reports)
-    }, [reports])
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
@@ -104,6 +126,10 @@ export default function RelatorioMes() {
         }
     }, [setCrumbs, setPageActive, monthSelected, congregationId])
 
+    const handleCheckboxChange = (filter: string[]) => {
+        setFilterPrivileges(filter)
+    }
+
     return (
         <Layout pageActive="relatorios">
             <ContentDashboard>
@@ -111,12 +137,12 @@ export default function RelatorioMes() {
                 <>
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
-                        <div className="flex flex-col mx-5">
-                            <MissingReportsModal missingReportsNumber={relatoriosNaoEnviadosCount} missingReports={missingReports}/>
-                            
+                        <div className="flex flex-1 justify-between mb-4 mx-4">
+                            <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                            <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
                         {reportsFiltered?.length > 0 ? (
-                            <ul className="flex flex-wrap justify-evenly">
+                            <ul className="flex flex-wrap justify-evenly relative">
                                 {reportsFiltered?.map(report =>
                                     <ModalRelatorio
                                         key={v4()}

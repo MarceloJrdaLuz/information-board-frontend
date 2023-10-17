@@ -14,6 +14,7 @@ import { usePublisherContext } from "@/context/PublisherContext"
 import { toast } from "react-toastify"
 import moment from "moment"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import FIlterPriviles from "../FilterPrivileges"
 
 export default function PublisherList() {
     const { user } = useAuthContext()
@@ -26,6 +27,8 @@ export default function PublisherList() {
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [selectedPublishers, setSelectedPublishers] = useState<Set<string>>(new Set())
+    const [filterPublishers, setFilterPublishers] = useState<IPublisher[]>()
+    const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
 
     const handleShowDetails = (publisher: IPublisher) => {
@@ -39,7 +42,7 @@ export default function PublisherList() {
     }
 
     useEffect(() => {
-        if(data){
+        if (data) {
             const sort = sortArrayByProperty(data, "fullName")
             setPublishers(sort)
         }
@@ -62,62 +65,76 @@ export default function PublisherList() {
 
             setSelectedPublishers(updatedSelectedPublishers)
         })
-
     }
 
-    return (    
-        <>
-        <ul className="flex flex-wrap justify-center items-center w-full">
-        {publishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Total de publicadores: {publishers?.length}</span>}
-            {publishers?.map(publisher =>
-                <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
-                    <div className="flex w-full justify-between items-center">
-                        <div className="flex items-center p-6 ">
-                            {publisher.gender === "Masculino" ?
-                                <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-[#a4e6da]" />
-                                :
-                                <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
-                            }
-                            <span className="pl-4 font-semi-bold">{publisher.fullName}</span>
-                        </div>
-                        <button className={`w-6 h-6 mr-4 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
-                    </div>
-                    <div className={` w-full overflow-hidden duration-500 transition-height ${selectedPublishers.has(publisher.id) ? 'h-auto py-5 bg-white' : 'h-0'}`}>                        {/* Exibir as informações adicionais aqui */}
-                        <div className="h-fit pl-10">
-                            {publisher.privileges.map(privilege => <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>{privilege}</span>)}
-                        </div>
-                        <div className="flex flex-wrap w-full mt-2 ">
-                            {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                            <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                        </div>
-                        <div className="flex pl-10">
-                            <div className="gap-1 flex">
-                                <Button
-                                    onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
-                                    outline
-                                >
-                                    <EditIcon />
-                                    Editar
-                                </Button>
-                                <ConfirmDeleteModal
-                                    onDelete={() => onDelete(`${publisher.id}`)}
-                                    button={<Button
-                                        outline
-                                        className="text-red-400"
-                                    >
-                                        <Trash />
-                                        Excluir
-                                    </Button>}
-                                />
-                            </div>
+    const handleCheckboxChange = (filter: string[]) => {
+      setFilterPrivileges(filter)
+    }
 
+    useEffect(()=> {
+        const filterPublishersToPrivileges = filterPrivileges.length > 0 ?
+         publishers?.filter(publisher => (
+            filterPrivileges.every(privilege => publisher.privileges.includes(privilege))
+        )): publishers
+        setFilterPublishers(filterPublishersToPrivileges)
+    }, [filterPrivileges, publishers])
+
+    return (
+        <>
+            <ul className="flex flex-wrap justify-center items-center w-full">
+                <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
+                    <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)}/>
+                    {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
+                </div>
+                {filterPublishers?.map(publisher =>
+                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
+                        <div className="flex w-full justify-between items-center">
+                            <div className="flex items-center p-6 ">
+                                {publisher.gender === "Masculino" ?
+                                    <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-[#a4e6da]" />
+                                    :
+                                    <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
+                                }
+                                <span className="pl-4 font-semi-bold">{publisher.fullName}</span>
+                            </div>
+                            <button className={`w-6 h-6 mr-4 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
                         </div>
-                    </div>
-                </li>
-            )}
-        </ul>
+                        <div className={` w-full overflow-hidden duration-500 transition-height ${selectedPublishers.has(publisher.id) ? 'h-auto py-5 bg-white' : 'h-0'}`}>                        {/* Exibir as informações adicionais aqui */}
+                            <div className="h-fit pl-10">
+                                {publisher.privileges.map(privilege => <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>{privilege}</span>)}
+                            </div>
+                            <div className="flex flex-wrap w-full mt-2 ">
+                                {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
+                                <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
+                                <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                                <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                            </div>
+                            <div className="flex pl-10">
+                                <div className="gap-1 flex">
+                                    <Button
+                                        onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
+                                        outline
+                                    >
+                                        <EditIcon />
+                                        Editar
+                                    </Button>
+                                    <ConfirmDeleteModal
+                                        onDelete={() => onDelete(`${publisher.id}`)}
+                                        button={<Button
+                                            outline
+                                            className="text-red-400"
+                                        >
+                                            <Trash />
+                                            Excluir
+                                        </Button>}
+                                    />
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                )}
+            </ul>
         </>
     )
 }
