@@ -63,28 +63,13 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
 
     const updateCroppedImage = () => {
         if (editorRef.current) {
-            // Capture a imagem atual no tamanho menor (para a área de ajuste).
-            const smallCanvas = editorRef.current.getImageScaledToCanvas();
-
-            // Crie um novo Canvas com o tamanho desejado (maior).
-            const largeCanvas = document.createElement('canvas');
-            const ctx = largeCanvas.getContext('2d');
-            if (ctx) {
-                largeCanvas.width = 1200;  // Defina o tamanho desejado
-                largeCanvas.height = 1200;
-
-                // Desenhe a imagem capturada no Canvas maior.
-                ctx.drawImage(smallCanvas, 0, 0, 1200, 1200);
-
-                // Converta o Canvas maior em um Blob ou em um novo formato de imagem (por exemplo, JPEG).
-                largeCanvas.toBlob((blob) => {
-                  if(blob){
-                    console.log('aqui')
+            const canvas = editorRef.current.getImageScaledToCanvas()
+            canvas.toBlob((blob) => {
+                if (blob) {
                     const pngFile = new File([blob], 'cropped_image.png', { type: 'image/png' })
                     setCroppedImage(pngFile)
-                  }
-                }, 'image/png', 1); // Defina o formato e a qualidade desejados
-            }
+                }
+            }, 'image/png', 1)
         }
     }
 
@@ -166,6 +151,8 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
             await api.post(`profile/${user?.id}`, formData).then(() => {
                 handleSubmitSuccess(messageSuccessSubmit.photoProfileCreate)
                 setNewAvatarUrl(null)
+                setZoom(1)
+                setPosition({ x: 0.5, y: 0.5 })
             }).catch(err => {
                 handleSubmitError(messageErrorsSubmit.default)
                 console.log(err)
@@ -174,6 +161,8 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
             await api.put(`profile/${user?.profile?.id}`, formData).then(() => {
                 handleSubmitSuccess(messageSuccessSubmit.photoProfileUpdate)
                 setNewAvatarUrl(null)
+                setPosition({ x: 0.5, y: 0.5 })
+                setZoom(1)
             }).catch(err => {
                 handleSubmitError(messageErrorsSubmit.default)
                 console.log(err)
@@ -193,16 +182,19 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         <>
             {newAvatarUrl && (
                 <div className="relative" {...(isTouchDevice ? swipeHandlers : {})}>
-                    <AvatarEditor
-                        ref={editorRef}
-                        image={newAvatarUrl}
-                        width={200}
-                        height={200}
-                        border={50}
-                        color={[255, 255, 255, 0.6]}
-                        scale={zoom}
-                        position={position}
-                    />
+                    <div className="w-80 h-80">
+                        <AvatarEditor
+                            ref={editorRef}
+                            image={newAvatarUrl}
+                            width={800}
+                            height={800}
+                            border={50}
+                            color={[255, 255, 255, 0.6]}
+                            scale={zoom}
+                            position={position}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    </div>
                     <div className="flex absolute gap-3 top-0 right-0">
                         <button
                             onClick={handleZoomOut}
@@ -237,7 +229,7 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                             {avatar_url ? (
                                 <div className="flex justify-center items-center w-72 h-72 m-2 relative">
                                     <Image style={{ objectFit: "cover", objectPosition: "top center" }} src={avatar_url} alt="Foto de perfil" fill className="rounded-full p-7" />
-                                    <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
+                                    <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-4 right-7 rounded-full bg-primary-200 p-4">
                                         <CameraIcon className="text-white w-8 h-8" />
                                     </div>
                                 </div>
