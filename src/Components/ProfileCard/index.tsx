@@ -63,10 +63,28 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
 
     const updateCroppedImage = () => {
         if (editorRef.current) {
-            const canvas = editorRef.current.getImageScaledToCanvas()
-            canvas.toBlob((blob) => {
-                setCroppedImage(blob)
-            }, 'image/png')
+            // Capture a imagem atual no tamanho menor (para a área de ajuste).
+            const smallCanvas = editorRef.current.getImageScaledToCanvas();
+
+            // Crie um novo Canvas com o tamanho desejado (maior).
+            const largeCanvas = document.createElement('canvas');
+            const ctx = largeCanvas.getContext('2d');
+            if (ctx) {
+                largeCanvas.width = 1200;  // Defina o tamanho desejado
+                largeCanvas.height = 1200;
+
+                // Desenhe a imagem capturada no Canvas maior.
+                ctx.drawImage(smallCanvas, 0, 0, 1200, 1200);
+
+                // Converta o Canvas maior em um Blob ou em um novo formato de imagem (por exemplo, JPEG).
+                largeCanvas.toBlob((blob) => {
+                  if(blob){
+                    console.log('aqui')
+                    const pngFile = new File([blob], 'cropped_image.png', { type: 'image/png' })
+                    setCroppedImage(pngFile)
+                  }
+                }, 'image/png', 1); // Defina o formato e a qualidade desejados
+            }
         }
     }
 
@@ -211,79 +229,79 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                     </div>
                 </div>
             )}
-            {!newAvatarUrl && 
-            
-            <Card className="w-96">
-                <CardHeader floated={false} className="h-80">
-                    <div className="flex justify-center items-center cursor-pointer w-full h-full">
-                        {avatar_url ? (
-                            <div className="flex justify-center items-center w-72 h-72 m-2 relative">
-                                <Image style={{ objectFit: "cover", objectPosition: "top center" }} src={avatar_url} alt="Foto de perfil" fill className="rounded-full p-7" />
-                                <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
-                                    <CameraIcon className="text-white w-8 h-8" />
+            {!newAvatarUrl &&
+
+                <Card className="w-96">
+                    <CardHeader floated={false} className="h-80">
+                        <div className="flex justify-center items-center cursor-pointer w-full h-full">
+                            {avatar_url ? (
+                                <div className="flex justify-center items-center w-72 h-72 m-2 relative">
+                                    <Image style={{ objectFit: "cover", objectPosition: "top center" }} src={avatar_url} alt="Foto de perfil" fill className="rounded-full p-7" />
+                                    <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
+                                        <CameraIcon className="text-white w-8 h-8" />
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center w-72 h-72 m-2 relative">
-                                <Image alt="Avatar de um homem" src={avatar} className="rounded-full p-1 bg-[#a4e6da]" fill />
-                                <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
-                                    <CameraIcon className="text-white w-8 h-8" />
+                            ) : (
+                                <div className="flex justify-center items-center w-72 h-72 m-2 relative">
+                                    <Image alt="Avatar de um homem" src={avatar} className="rounded-full p-1 bg-[#a4e6da]" fill />
+                                    <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
+                                        <CameraIcon className="text-white w-8 h-8" />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
-                    <input
-                        type="file"
-                        name="avatar"
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                        onChange={handleFileChange}
-                    />
-                </CardHeader>
-                <CardBody className="text-center">
-                    <Typography variant="h4" color="blue-gray" className="mb-2">
-                        {fullName}
-                    </Typography>
-                    <Typography color="blue-gray" className="font-medium" textGradient>
-                        {email}
-                    </Typography>
-                </CardBody>
-                <CardFooter className="flex justify-center gap-7 pt-2">
-                    <Tooltip content="Like">
-                        <Typography
-                            as="a"
-                            href="#facebook"
-                            variant="lead"
-                            color="blue"
-                            textGradient
-                        >
-                            <i className="fab fa-facebook" />
+                            )}
+                        </div>
+                        <input
+                            type="file"
+                            name="avatar"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                    </CardHeader>
+                    <CardBody className="text-center">
+                        <Typography variant="h4" color="blue-gray" className="mb-2">
+                            {fullName}
                         </Typography>
-                    </Tooltip>
-                    <Tooltip content="Follow">
-                        <Typography
-                            as="a"
-                            href="#twitter"
-                            variant="lead"
-                            color="light-blue"
-                            textGradient
-                        >
-                            <i className="fab fa-twitter" />
+                        <Typography color="blue-gray" className="font-medium" textGradient>
+                            {email}
                         </Typography>
-                    </Tooltip>
-                    <Tooltip content="Follow">
-                        <Typography
-                            as="a"
-                            href="#instagram"
-                            variant="lead"
-                            color="purple"
-                            textGradient
-                        >
-                            <i className="fab fa-instagram" />
-                        </Typography>
-                    </Tooltip>
-                </CardFooter>
-            </Card>}
+                    </CardBody>
+                    <CardFooter className="flex justify-center gap-7 pt-2">
+                        <Tooltip content="Like">
+                            <Typography
+                                as="a"
+                                href="#facebook"
+                                variant="lead"
+                                color="blue"
+                                textGradient
+                            >
+                                <i className="fab fa-facebook" />
+                            </Typography>
+                        </Tooltip>
+                        <Tooltip content="Follow">
+                            <Typography
+                                as="a"
+                                href="#twitter"
+                                variant="lead"
+                                color="light-blue"
+                                textGradient
+                            >
+                                <i className="fab fa-twitter" />
+                            </Typography>
+                        </Tooltip>
+                        <Tooltip content="Follow">
+                            <Typography
+                                as="a"
+                                href="#instagram"
+                                variant="lead"
+                                color="purple"
+                                textGradient
+                            >
+                                <i className="fab fa-instagram" />
+                            </Typography>
+                        </Tooltip>
+                    </CardFooter>
+                </Card>}
         </>
     )
 }

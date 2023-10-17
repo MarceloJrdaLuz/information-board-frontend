@@ -38,6 +38,7 @@
     "react-datepicker": "^4.17.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-easy-crop": "^5.0.2",
     "react-hook-form": "^7.42.1",
     "react-pdf": "^7.3.3",
     "react-swipeable": "^7.0.1",
