@@ -12,6 +12,7 @@ import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 import { HelpCircle } from "lucide-react"
 import ModalHelp from "@/Components/ModalHelp"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 
 export default function FormUserRoles() {
 
@@ -83,11 +84,13 @@ export default function FormUserRoles() {
                 })
                 const optionsRolesFilterSelected = optionsRoles.filter(optionRole => rolesSelecteds.includes(optionRole.name))
 
-
                 setRolesSelectedsIds(optionsRolesFilterSelected.map(role => `${role.id}`))
 
                 const optionsRolesFilter = optionsRoles.filter(optionRole => !rolesSelecteds.includes(optionRole.name))
-                setRoles(optionsRolesFilter)
+
+                const sort = sortArrayByProperty(optionsRolesFilter, "name")
+                
+                setRoles(sort)
 
             }).catch(err => console.log(err))
         }
