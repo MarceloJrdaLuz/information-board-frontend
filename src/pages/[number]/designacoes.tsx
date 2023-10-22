@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import Button from "@/Components/Button";
-import { ChevronsLeftIcon } from "lucide-react";
-import LayoutPrincipal from "@/Components/LayoutPrincipal";
-import PdfViewer from "@/Components/PdfViewer";
-import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext";
-import { Categories, CongregationTypes, IDocument } from "@/entities/types";
-import DateConverter, { meses } from "@/functions/meses";
-import { removeMimeType } from "@/functions/removeMimeType";
-import { threeMonths } from "@/functions/threeMonths";
-import { api } from "@/services/api";
-import { useAtomValue } from "jotai";
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Button from '@/Components/Button';
+import { ChevronsLeftIcon } from 'lucide-react';
+import LayoutPrincipal from '@/Components/LayoutPrincipal';
+import { useAtomValue } from 'jotai';
+import { usePublicDocumentsContext } from '@/context/PublicDocumentsContext';
+import { Categories, CongregationTypes, IDocument } from '@/entities/types';
+import DateConverter, { meses } from '@/functions/meses';
+import { removeMimeType } from '@/functions/removeMimeType';
+import { threeMonths } from '@/functions/threeMonths';
+import { api } from '@/services/api';
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 import iconDesignacoes from '../../../public/images/designacoes-gray.png';
-import ButtonHome from "@/Components/ButtonHome";
-import HeadComponent from "@/Components/HeadComponent";
-import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon";
-import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon";
-import { domainUrl } from "@/atoms/atom";
-import NotFoundDocument from "@/Components/NotFoundDocument";
+import HeadComponent from '@/Components/HeadComponent';
+import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon';
+import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon';
+import NotFoundDocument from '@/Components/NotFoundDocument';
+import dynamic from 'next/dynamic';
+import { domainUrl } from '@/atoms/atom';
+
+const DynamicPDFViewer = dynamic(() => import('@/Components/PdfViewer'), {
+  loading: () => <p>Carregando PDF...</p>,
+})
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { number } = context.query;
@@ -59,15 +62,13 @@ export default function Designacoes({
     if (number) {
       setCongregationNumber(number as string);
     }
-  }, [number, setCongregationNumber])
+  }, [number, setCongregationNumber]);
 
   useEffect(() => {
     if (documents) {
       setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana));
       setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana));
     }
-
-
   }, [documents, filterDocuments]);
 
   useEffect(() => {
@@ -201,7 +202,7 @@ export default function Designacoes({
     </div>
   ) : (
     <>
-      <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+      <DynamicPDFViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
     </>
-  )
+  );
 }
