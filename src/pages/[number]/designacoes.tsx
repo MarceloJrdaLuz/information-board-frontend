@@ -1,87 +1,79 @@
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Button from '@/Components/Button';
-import { ChevronsLeftIcon } from 'lucide-react';
-import LayoutPrincipal from '@/Components/LayoutPrincipal';
-import { useAtomValue } from 'jotai';
-import { usePublicDocumentsContext } from '@/context/PublicDocumentsContext';
-import { Categories, CongregationTypes, IDocument } from '@/entities/types';
-import DateConverter, { meses } from '@/functions/meses';
-import { removeMimeType } from '@/functions/removeMimeType';
-import { threeMonths } from '@/functions/threeMonths';
-import { api } from '@/services/api';
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import iconDesignacoes from '../../../public/images/designacoes-gray.png';
-import HeadComponent from '@/Components/HeadComponent';
-import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon';
-import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon';
-import NotFoundDocument from '@/Components/NotFoundDocument';
-import dynamic from 'next/dynamic';
-import { domainUrl } from '@/atoms/atom';
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
+import Button from '@/Components/Button'
+import { ChevronsLeftIcon } from 'lucide-react'
+import LayoutPrincipal from '@/Components/LayoutPrincipal'
+import { useAtomValue } from 'jotai'
+import { usePublicDocumentsContext } from '@/context/PublicDocumentsContext'
+import { Categories, ICongregation, IDocument } from '@/entities/types'
+import DateConverter, { meses } from '@/functions/meses'
+import { removeMimeType } from '@/functions/removeMimeType'
+import { threeMonths } from '@/functions/threeMonths'
+import { useRouter } from 'next/router'
+import iconDesignacoes from '../../../public/images/designacoes-gray.png'
+import HeadComponent from '@/Components/HeadComponent'
+import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
+import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon'
+import NotFoundDocument from '@/Components/NotFoundDocument'
+import dynamic from 'next/dynamic'
+import { domainUrl } from '@/atoms/atom'
+import { useFetch } from '@/hooks/useFetch'
 
 const DynamicPDFViewer = dynamic(() => import('@/Components/PdfViewer'), {
   loading: () => <p>Carregando PDF...</p>,
 })
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { number } = context.query;
-  const getCongregation = await api.get(`/congregation/${number}`);
-  const { data: congregationData } = getCongregation;
+export default function Designacoes() {
+  const router = useRouter()
+  const { number } = router.query
+  const domain = useAtomValue(domainUrl)
 
-  return {
-    props: { ...congregationData },
-  };
-};
+  const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
-export default function Designacoes({
-  circuit: congregationCircuit,
-  name: congregationName,
-  number: congregationNumber,
-  hourMeetingLifeAndMinistary,
-  hourMeetingPublic,
-  dayMeetingLifeAndMinistary,
-  dayMeetingPublic,
-}: CongregationTypes) {
-  const router = useRouter();
-  const { number } = router.query;
-  const domain = useAtomValue(domainUrl);
+  const [pdfShow, setPdfShow] = useState(false)
+  const [publicOptionsShow, setPublicOptionsShow] = useState(false)
+  const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
+  const [pdfUrl, setPdfUrl] = useState('')
+  const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
+  const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
+  const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
+  const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
+  const [congregationData, setCongregationData] = useState<ICongregation>()
 
-  const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext();
+  const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+  const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
-  const [pdfShow, setPdfShow] = useState(false);
-  const [publicOptionsShow, setPublicOptionsShow] = useState(false);
-  const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>();
-  const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>();
-  const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>();
-  const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>();
+  useEffect(() => {
+    if (congregation) {
+      setCongregationData(congregation)
+    }
+  }, [congregation])
+
 
   useEffect(() => {
     if (number) {
-      setCongregationNumber(number as string);
+      setCongregationNumber(number as string)
     }
-  }, [number, setCongregationNumber]);
+  }, [number, setCongregationNumber])
 
   useEffect(() => {
     if (documents) {
-      setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana));
-      setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana));
+      setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana))
+      setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana))
     }
-  }, [documents, filterDocuments]);
+  }, [documents, filterDocuments])
 
   useEffect(() => {
     const others = documentsLifeAndMinistryFilter?.filter(document => {
-      return !meses.includes(removeMimeType(document.fileName));
-    });
+      return !meses.includes(removeMimeType(document.fileName))
+    })
 
-    setDocumentsOthersFilter(others);
+    setDocumentsOthersFilter(others)
 
-    let threeMonthsShow = false;
+    let threeMonthsShow = false
 
     if (new Date().getDate() <= 6 && new Date().getDay() <= 4) {
-      threeMonthsShow = threeMonths();
+      threeMonthsShow = threeMonths()
     }
 
     if (!threeMonthsShow) {
@@ -89,11 +81,11 @@ export default function Designacoes({
         return (
           removeMimeType(document.fileName) === DateConverter('mes') ||
           removeMimeType(document.fileName) === DateConverter('mes+1')
-        );
-      });
+        )
+      })
 
       if (filterTwoMonths) {
-        setDocumentsLifeAndMinistryFilterMonths(filterTwoMonths);
+        setDocumentsLifeAndMinistryFilterMonths(filterTwoMonths)
       }
     } else {
       const filterThreeMonths = documentsLifeAndMinistryFilter?.filter(document => {
@@ -101,36 +93,36 @@ export default function Designacoes({
           removeMimeType(document.fileName) === DateConverter('mes-1') ||
           removeMimeType(document.fileName) === DateConverter('mes') ||
           removeMimeType(document.fileName) === DateConverter('mes+1')
-        );
-      });
+        )
+      })
 
       if (filterThreeMonths) {
-        setDocumentsLifeAndMinistryFilterMonths(filterThreeMonths);
+        setDocumentsLifeAndMinistryFilterMonths(filterThreeMonths)
       }
     }
-  }, [documentsLifeAndMinistryFilter]);
+  }, [documentsLifeAndMinistryFilter])
 
   useEffect(() => {
     // Ordenar os documentos com base nos meses
-    const sortedDocuments = documentsLifeAndMinistryFilterMonths?.sort(compareDocumentsByMonth);
+    const sortedDocuments = documentsLifeAndMinistryFilterMonths?.sort(compareDocumentsByMonth)
     // Faça o que você precisa com os documentos ordenados aqui
-  }, [documentsLifeAndMinistryFilterMonths]);
+  }, [documentsLifeAndMinistryFilterMonths])
 
   function handleButtonClick(url: string) {
-    setPdfUrl(url);
-    setPdfShow(true);
+    setPdfUrl(url)
+    setPdfShow(true)
   }
 
   function compareDocumentsByMonth(a: IDocument, b: IDocument) {
-    const monthA = meses.indexOf(a.fileName.split(".")[0]);
-    const monthB = meses.indexOf(b.fileName.split(".")[0]);
+    const monthA = meses.indexOf(a.fileName.split(".")[0])
+    const monthB = meses.indexOf(b.fileName.split(".")[0])
 
     if (monthA < monthB) {
-      return -1;
+      return -1
     } else if (monthA > monthB) {
-      return 1;
+      return 1
     } else {
-      return 0;
+      return 0
     }
   }
 
@@ -141,8 +133,8 @@ export default function Designacoes({
         image={
           <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
         }
-        congregationName={congregationName}
-        circuit={congregationCircuit}
+        congregationName={congregationData?.name ?? ""}
+        circuit={congregationData?.circuit ?? ""}
         textoHeader="Designações Semanais"
         heightConteudo={'1/2'}
         header
@@ -173,7 +165,7 @@ export default function Designacoes({
                 </div>
               ))}
             </div>}
-            {!lifeAndMinistryOptionsShow && dayMeetingLifeAndMinistary && hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${dayMeetingLifeAndMinistary} ${hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <div>
             <Button
@@ -191,10 +183,10 @@ export default function Designacoes({
                 </div>
               )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
             </div>}
-            {!publicOptionsShow && dayMeetingPublic && hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${dayMeetingPublic} ${hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <Button
-            onClick={() => router.push(`/${congregationNumber}`)}
+            onClick={() => router.push(`/${number}`)}
             className="w-1/2 mx-auto"
           ><ChevronsLeftIcon />Voltar</Button>
         </div>
@@ -204,5 +196,5 @@ export default function Designacoes({
     <>
       <DynamicPDFViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
     </>
-  );
+  )
 }

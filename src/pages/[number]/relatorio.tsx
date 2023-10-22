@@ -1,33 +1,34 @@
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import FormReport from "@/Components/Forms/FormReport"
-import { CongregationTypes } from "@/entities/types"
-import { api } from "@/services/api"
-import { GetServerSideProps } from 'next'
+import { ICongregation } from "@/entities/types"
 import { useAtomValue } from "jotai"
 import { domainUrl } from "@/atoms/atom"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
+import { useFetch } from "@/hooks/useFetch"
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query
-
-    const getCongregation = await api.get(`/congregation/${number}`)
-
-    const { data: congregationData } = getCongregation
-
-    return {
-        // Passed to the page component as props
-        props: { ...congregationData },
-    }
-}
-
-export default function Relatorio({circuit: congregationCircuit, name: congregationName, number: congregationNumber}: CongregationTypes) {
+export default function Relatorio() {
+    const router = useRouter()
+    const { number } = router.query
     const domain = useAtomValue(domainUrl)
+
+    const [congregationData, setCongregationData] = useState<ICongregation>()
+
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+
+    useEffect(() => {
+        if (congregation) {
+            setCongregationData(congregation)
+        }
+    }, [congregation])
 
     return (
         <>
             <HeadComponent title="Relatório" urlMiniatura={`${domain}/images/relatorio.png`} />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
-                <FormReport congregationNumber={congregationNumber} />
+            <LayoutPrincipal congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
+                <FormReport congregationNumber={number as string} />
             </LayoutPrincipal>
         </>
     )

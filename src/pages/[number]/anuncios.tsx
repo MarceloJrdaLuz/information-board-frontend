@@ -1,48 +1,27 @@
-import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import Notices from "@/Components/Notices"
-import PdfViewer from "@/Components/PdfViewer"
-import { useNoticesContext } from "@/context/NoticeContext"
-import { Categories, CongregationTypes, ICongregation, IDocument, INotice } from "@/entities/types"
-import { removeMimeType } from "@/functions/removeMimeType"
+import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
-import { api } from "@/services/api"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query
-
-    const getCongregation = await api.get(`/congregation/${number}`)
-
-    const { data: congregationData } = getCongregation
-
-    return {
-        // Passed to the page component as props
-        props: { ...congregationData },
-    }
-}
-
-export default function NoticesPage({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
+export default function NoticesPage() {
     const router = useRouter()
     const { number } = router.query
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
-    const { setCongregationNumber } = useNoticesContext()
+    const [congregationData, setCongregationData] = useState<ICongregation>()
     const [notices, setNotices] = useState<INotice[]>()
-    const [congregationId, setCongregationId] = useState<string | undefined>('')
-
-    const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
-    const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
 
     useEffect(() => {
         if (congregation) {
-            setCongregationId(congregation?.id)
+            setCongregationData(congregation)
         }
     }, [congregation])
 
-    const fetchConfigNoticesData = congregationId ? `/notices/${congregationId}` : ""
+    const fetchConfigNoticesData = congregationData?.id ? `/notices/${congregationData?.id}` : ""
     const { data } = useFetch<INotice[]>(fetchConfigNoticesData)
 
     useEffect(() => {
@@ -62,8 +41,8 @@ export default function NoticesPage({ circuit: congregationCircuit, name: congre
     return (
         <>
             <HeadComponent title="Anuncios" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg" />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'h-[90vh]'} justifyContent="start">
-                    <Notices notices={notices} congregationNumber={number as string} />
+            <LayoutPrincipal congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'h-[90vh]'} justifyContent="start">
+                <Notices notices={notices} congregationNumber={number as string} />
             </LayoutPrincipal>
         </>
     )

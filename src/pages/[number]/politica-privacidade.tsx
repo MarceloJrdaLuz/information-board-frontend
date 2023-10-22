@@ -2,36 +2,36 @@ import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import { domainUrl } from "@/atoms/atom"
-import { CongregationTypes } from "@/entities/types"
+import { CongregationTypes, ICongregation } from "@/entities/types"
+import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
 import { ChevronsLeftIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Router, { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query
 
-    const getCongregation = await api.get(`/congregation/${number}`)
-
-    const { data: congregationData } = getCongregation
-
-    return {
-        // Passed to the page component as props
-        props: { ...congregationData },
-    }
-}
-
-export default function PoliticaPrivacidade({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
+export default function PoliticaPrivacidade() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
 
+    const [congregationData, setCongregationData] = useState<ICongregation>()
+
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+
+    useEffect(() => {
+        if (congregation) {
+            setCongregationData(congregation)
+        }
+    }, [congregation])
 
     return (
         <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Política de Privacidade" urlMiniatura={`${domain}/images/miniatura.png`} />
-            <LayoutPrincipal congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-gray-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
+            <LayoutPrincipal congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-gray-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
                 <h1 className="mb-5 font-bold text-gray-900 text-2xl">Política sobre coleta e armazenamento de dados</h1>
                 <span className="h-full hide-scrollbar overflow-auto text-gray-900 w-4/6 md:w-3/6 m-auto">
                     Ao utilizar nosso site, você concorda expressamente
@@ -50,7 +50,7 @@ export default function PoliticaPrivacidade({ circuit: congregationCircuit, name
                 </span>
 
                 <Button
-                    onClick={() => Router.push(`/${congregationNumber}`)}
+                    onClick={() => Router.push(`/${number}`)}
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>
             </LayoutPrincipal>

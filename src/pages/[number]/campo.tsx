@@ -7,35 +7,32 @@ import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import PdfViewer from "@/Components/PdfViewer"
 import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
-import { Categories, CongregationTypes, IDocument } from "@/entities/types"
+import { Categories, CongregationTypes, ICongregation, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
 import { ChevronsLeftIcon } from "lucide-react"
-import { GetServerSideProps } from "next"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
 import NotFoundDocument from "@/Components/NotFoundDocument"
+import { useFetch } from "@/hooks/useFetch"
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query
-
-    const getCongregation = await api.get(`/congregation/${number}`)
-
-    const { data: congregationData } = getCongregation
-
-    return {
-        // Passed to the page component as props
-        props: { ...congregationData },
-    }
-}
-
-export default function Campo({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
+export default function Campo() {
     const router = useRouter()
     const { number } = router.query
-    const domain = useAtomValue(domainUrl);
+    const domain = useAtomValue(domainUrl)
+    const [congregationData, setCongregationData] = useState<ICongregation>()
+
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+
+    useEffect(() => {
+        if (congregation) {
+            setCongregationData(congregation)
+        }
+    }, [congregation])
 
     const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
@@ -71,7 +68,7 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                 image={
                     <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
                 }
-                congregationName={congregationName} circuit={congregationCircuit} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
+                congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
                 <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                     <div>
@@ -96,16 +93,6 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                                     <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
                                 )
                             )}
-                            {/* {!fieldServiceOptionsShow ? documentsFieldServiceFilter?.map(document => (
-                                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                    <Button
-                                        className="w-full"
-                                        onClick={() => { handleButtonClick(document.url) }}
-                                    >
-                                        {removeMimeType(document.fileName)}
-                                    </Button>
-                                </div>
-                            )) : <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />} */}
                         </div>
 
                         <div>
@@ -128,7 +115,7 @@ export default function Campo({ circuit: congregationCircuit, name: congregation
                         </div>
                     </div>
                     <Button
-                        onClick={() => router.push(`/${congregationNumber}`)}
+                        onClick={() => router.push(`/${number}`)}
                         className="w-1/2 mx-auto"
                     ><ChevronsLeftIcon />Voltar</Button>
                 </div>

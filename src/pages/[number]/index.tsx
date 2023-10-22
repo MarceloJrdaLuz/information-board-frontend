@@ -1,4 +1,3 @@
-import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import CleanIcon from "@/Components/Icons/CleanIcon"
 import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
@@ -8,54 +7,36 @@ import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import NoticesModal from "@/Components/NoticesModal"
 import { domainUrl } from "@/atoms/atom"
 import { useNoticesContext } from "@/context/NoticeContext"
-import { CongregationTypes, ICongregation, INotice } from "@/entities/types"
+import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
-import { api } from "@/services/api"
 import { useAtomValue } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon } from "lucide-react"
-import { GetServerSideProps } from "next"
 import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
 import Button from "@/Components/Button"
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.query
-
-    const getCongregation = await api.get(`/congregation/${number}`)
-
-    const { data: congregationData } = getCongregation
-
-    return {
-        // Passed to the page component as props
-        props: { ...congregationData },
-    }
-}
-
-export default function Home({ circuit: congregationCircuit, name: congregationName, number: congregationNumber }: CongregationTypes) {
+export default function Home() {
     const router = useRouter()
     const { number } = router.query
-
     const domain = useAtomValue(domainUrl)
 
     const { setCongregationNumber } = useNoticesContext()
 
     const [notices, setNotices] = useState<INotice[]>()
-    const [congregationId, setCongregationId] = useState<string | undefined>('')
-    const [urlImage, setUrlImage] = useState<string | undefined>('')
+    const [congregationData, setCongregationData] = useState<ICongregation>()
 
-    const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
-    const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
-    
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+
     useEffect(() => {
         if (congregation) {
-            setUrlImage(congregation.image_url)
-            setCongregationId(congregation?.id)
+            setCongregationData(congregation)
         }
     }, [congregation])
 
-    const fetchConfigNoticesData = congregationId ? `/notices/${congregationId}` : ""
+    const fetchConfigNoticesData = congregationData?.id ? `/notices/${congregationData?.id}` : ""
     const { data } = useFetch<INotice[]>(fetchConfigNoticesData)
 
     useEffect(() => {
@@ -79,31 +60,31 @@ export default function Home({ circuit: congregationCircuit, name: congregationN
 
     return (
         <div className=" flex flex-col h-screen w-screen bg-gray-200 overflow-auto">
-            {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={congregationNumber} />}
+            {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={number as string} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal image={(
-                urlImage ? (
-                    <Image src={urlImage} alt="Foto do Salão do Reino" fill />
+                congregationData?.image_url ? (
+                    <Image src={congregationData?.image_url} alt="Foto do Salão do Reino" fill />
                 ) : (
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
-            )} congregationName={congregationName} circuit={congregationCircuit} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <Button onClick={() => Router.push(`${congregationNumber}/relatorio`)}>
+            )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
+                <Button onClick={() => Router.push(`${number}/relatorio`)}>
                     <ReportIcon />Relatório de Serviço de campo
                 </Button>
-                <Button onClick={() => Router.push(`${congregationNumber}/limpeza`)}>
+                <Button onClick={() => Router.push(`${number}/limpeza`)}>
                     <CleanIcon />Limpeza do Salão do Reino
                 </Button>
-                <Button onClick={() => Router.push(`${congregationNumber}/designacoes`)}>
+                <Button onClick={() => Router.push(`${number}/designacoes`)}>
                     <PublicMeetingIcon />Designações das Reuniões
                 </Button>
-                <Button onClick={() => Router.push(`${congregationNumber}/campo`)}>
+                <Button onClick={() => Router.push(`${number}/campo`)}>
                     <PrechingHomeIcon />Designações de Campo
                 </Button>
-                <Button onClick={() => Router.push(`${congregationNumber}/financeiro`)}>
+                <Button onClick={() => Router.push(`${number}/financeiro`)}>
                     <CalculatorIcon />Relatório Financeiro
                 </Button>
-                <Button onClick={() => Router.push(`${congregationNumber}/eventos`)}>
+                <Button onClick={() => Router.push(`${number}/eventos`)}>
                     <CalendarDaysIcon />Eventos especiais
                 </Button>
             </LayoutPrincipal>
