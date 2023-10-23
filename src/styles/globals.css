@@ -61,3 +61,10 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+.mm-h-297 {
+  height: 297mm;
+}
+.mm-w-210 {
+  width: 210mm;
+}
