@@ -147,14 +147,14 @@ export default function Designacoes() {
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
             ><LifeAndMinistryIcon />Vida e Ministério</Button>
             {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-              {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 ? documentsLifeAndMinistryFilterMonths?.map(document => (
+              {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
                 <div className="flex-1 " key={document.id}>
                   <Button
                     className="w-full"
                     onClick={() => { handleButtonClick(document.url) }}
                   >{removeMimeType(document.fileName)}</Button>
                 </div>
-              )) : <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
+              ))}
             </div>}
             {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
               {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
@@ -165,7 +165,17 @@ export default function Designacoes() {
                 </div>
               ))}
             </div>}
-            {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!lifeAndMinistryOptionsShow ? (
+              <>
+                {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+              </>
+            ) : (
+              <>
+                {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length < 1 && documentsOthersFilter && documentsOthersFilter.length < 1 && <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
+              </>
+            )}
+
+
           </div>
           <div>
             <Button
