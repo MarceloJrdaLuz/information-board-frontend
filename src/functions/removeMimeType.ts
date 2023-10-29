@@ -2,7 +2,7 @@ export function removeMimeType(text: string) {
   const parts = text.split('.')
   const fileName = parts.length > 0 ? parts[0] : text
 
-  const words = fileName.split(/[^a-zA-Z]+/)
+  const words = text.split(/[^a-zA-ZÀ-ÖØ-öø-ÿ]+/)
 
   // Transform words with more than 3 letters to CamelCase
   const camelCasedWords = words.map((word, index) => {
