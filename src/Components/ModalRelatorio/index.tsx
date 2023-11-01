@@ -6,10 +6,7 @@ interface ModalRelatorioProps {
     month: string
     year: string
     publisher: IPublisher
-    publications?: number
-    videos?: number
-    hours: number
-    revisits?: number
+    hours: number | string
     studies?: number
     observations?: string
 }
@@ -29,20 +26,8 @@ export default function ModalRelatorio(props: ModalRelatorioProps) {
             </div>
             <div className="mt-3 border border-gray-700 divide-y  divide-gray-700">
                 <div className="flex justify-between">
-                    <span className="pl-2 ">Publicações:</span>
-                    <span className="border-l border-gray-700 w-10 text-center">{props.publications}</span>
-                </div>
-                <div className="flex justify-between">
-                    <span className="pl-2 ">Vídeos mostrados:</span>
-                    <span className="border-l border-gray-700 w-10 text-center">{props.videos}</span>
-                </div>
-                <div className="flex justify-between">
                     <span className="pl-2 ">Horas:</span>
                     <span className="border-l border-gray-700 w-10 text-center"> {props.hours}</span>
-                </div>
-                <div className="flex justify-between">
-                    <span className="pl-2 ">Revisitas:</span>
-                    <span className="border-l border-gray-700 w-10 text-center">{props.revisits}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="pl-2 ">Estudos bíblicos:</span>

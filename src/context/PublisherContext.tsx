@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { api } from "@/services/api"
-import { ConsentRecordTypes, IPublisherConsent } from "@/entities/types"
+import { ConsentRecordTypes, IPublisherConsent, Situation } from "@/entities/types"
 import { useSubmitContext } from "./SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
@@ -14,7 +14,8 @@ type PublisherContextTypes = {
         privileges?: string[],
         nickname?: string,
         dateImmersed?: Date, 
-        birthDate?: Date
+        birthDate?: Date, 
+        pioneerMonths?: string[], 
     ) => Promise<any>
     updatePublisher: (
         id: string,
@@ -25,7 +26,9 @@ type PublisherContextTypes = {
         privileges?: string[],
         nickname?: string,
         dateImmersed?: Date,
-        birthDate?: Date
+        birthDate?: Date,
+        pioneerMonths?: string[],
+        situation?: string,
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -65,7 +68,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         privileges?: string[],
         nickname?: string,
         dateImmersed?: Date, 
-        birthDate?: Date
+        birthDate?: Date, 
+        pioneerMonths?: string[]
     ) {
 
         await api.post('/publisher', {
@@ -76,7 +80,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             hope,
             gender,
             dateImmersed, 
-            birthDate
+            birthDate, 
+            pioneerMonths
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -99,7 +104,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         privileges?: string[],
         nickname?: string,
         dateImmersed?: Date, 
-        birthDate?: Date
+        birthDate?: Date, 
+        pioneerMonths?: string[], 
+        situation?: string,
     ) {
 
         await api.put(`/publisher/${id}`, {
@@ -111,7 +118,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             privileges,
             nickname,
             dateImmersed, 
-            birthDate
+            birthDate, 
+            pioneerMonths, 
+            situation
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/publicadores')
         }).catch(err => {

@@ -15,6 +15,7 @@ import { toast } from "react-toastify"
 import moment from "moment"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import FIlterPriviles from "../FilterPrivileges"
+import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 
 export default function PublisherList() {
     const { user } = useAuthContext()
@@ -68,14 +69,20 @@ export default function PublisherList() {
     }
 
     const handleCheckboxChange = (filter: string[]) => {
-      setFilterPrivileges(filter)
+        setFilterPrivileges(filter)
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         const filterPublishersToPrivileges = filterPrivileges.length > 0 ?
-         publishers?.filter(publisher => (
-            filterPrivileges.every(privilege => publisher.privileges.includes(privilege))
-        )): publishers
+            publishers?.filter(publisher => (
+                filterPrivileges.every(privilege => {
+                    if(privilege === 'Pioneiro Auxiliar'){
+                        return isAuxPioneerMonthNow(publisher)
+                    } else {
+                        return publisher.privileges.includes(privilege)
+                    }
+                })
+            )) : publishers
         setFilterPublishers(filterPublishersToPrivileges)
     }, [filterPrivileges, publishers])
 
@@ -83,7 +90,7 @@ export default function PublisherList() {
         <>
             <ul className="flex flex-wrap justify-center items-center w-full">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
-                    <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)}/>
+                    <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)} />
                     {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
                 </div>
                 {filterPublishers?.map(publisher =>
@@ -101,8 +108,27 @@ export default function PublisherList() {
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${selectedPublishers.has(publisher.id) ? 'h-auto py-5 bg-white' : 'h-0'}`}>                        {/* Exibir as informações adicionais aqui */}
                             <div className="h-fit pl-10">
-                                {publisher.privileges.map(privilege => <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>{privilege}</span>)}
+                                {publisher.privileges.map(privilege => {
+                                    if (privilege === "Pioneiro Auxiliar") {
+                                        if (isAuxPioneerMonthNow(publisher)) {
+                                            return (
+                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                    {privilege}
+                                                </span>
+                                            );
+                                        } else {
+                                            return null; // Não exibe "Pioneiro Auxiliar" se não for o mês atual
+                                        }
+                                    } else {
+                                        return (
+                                            <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                {privilege}
+                                            </span>
+                                        );
+                                    }
+                                })}
                             </div>
+
                             <div className="flex flex-wrap w-full mt-2 ">
                                 {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
                                 <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>

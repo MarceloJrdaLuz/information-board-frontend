@@ -1,6 +1,6 @@
 export interface ResponseAuth {
     user: {
-        id: string,
+        id: string
         email: string
         fullName: string
         code: string
@@ -42,6 +42,13 @@ export enum Gender {
 export enum Hope {
     Ungido = "Ungido",
     OutrasOvelhas = "Outras ovelhas"
+}
+
+export enum Situation {
+    ATIVO = "Ativo",
+    INATIVO = "Inativo",
+    REMOVIDO = "Removido",
+    DESASSOCIADO = "Desassociado"
 }
 
 
@@ -97,10 +104,7 @@ export interface IReports {
     month: string
     year: string,
     publisher: IPublisher,
-    publications?: number,
-    videos?: number,
     hours: number,
-    revisits?: number,
     studies?: number,
     observations?: string
 }
@@ -110,12 +114,14 @@ export interface IPublisher {
     fullName: string,
     nickname?: string,
     privileges: string[]
+    pioneerMonths?: string[]
     hope: Hope
     gender: Gender
     dateImmersed?: Date
     birthDate?: Date
     congregation: ICongregation
     group: IGroup
+    situation: Situation
 }
 
 export interface IPublisherList {
@@ -236,4 +242,13 @@ export interface IRole {
     name: string
     description: string
     permissions: IPermission[]
+}
+
+export interface ITotalsReports {
+    month: string
+    year: string
+    totalsFrom: string
+    totalsReports: number
+    hours?: number
+    studies?: number
 }

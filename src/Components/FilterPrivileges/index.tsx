@@ -3,15 +3,12 @@ import {
     PopoverHandler,
     PopoverContent,
     List,
-    ListItem,
 } from "@material-tailwind/react"
 import Button from "../Button"
-import { ChevronDownIcon, CopyCheck, CopyIcon, ListFilterIcon } from "lucide-react"
-import { IPublisher, Privileges } from "@/entities/types"
-import clipboard from 'clipboard'
+import {  ListFilterIcon } from "lucide-react"
+import {  Privileges } from "@/entities/types"
 import { useState } from "react"
 import CheckboxMultiple from "../CheckBoxMultiple"
-import CheckboxUnique from "../CheckBoxUnique"
 
 interface IFIlterPrivilegesProps {
     handleCheckboxChange: (selectedOptions: string[]) => void
@@ -25,7 +22,7 @@ export default function FIlterPriviles({ handleCheckboxChange, checkedOptions }:
         <Popover placement="bottom-start">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0">
+                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold  p-0">
                         <ListFilterIcon />
                     </Button>
                 </div>

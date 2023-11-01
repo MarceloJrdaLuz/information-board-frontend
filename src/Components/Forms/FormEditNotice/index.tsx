@@ -23,6 +23,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
 
     const { updateNotice, setExpiredNotice } = useNoticesContext()
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+    const [initialExpired, setInitialExpired] = useState<Date | null>(null)
     const [noticeUpdated, setNoticeUpdated] = useState<INotice | undefined>(data)
     const [recurrentNotice, setRecurrentNotice] = useState(Boolean(data?.startDay !== undefined && data?.endDay !== undefined))
     const [disabled, setDisabled] = useAtom(buttonDisabled)
@@ -34,7 +35,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
             title: '',
             text: '',
             startDay: undefined,
-            endDay: undefined,
+            endDay: undefined
         },
     })
 
@@ -60,10 +61,20 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
 
     useEffect(() => {
         if (data) {
-            if(data.startDay && data.endDay){
+            if (data.startDay && data.endDay) {
                 handleRecurrentNoticeChange(true)
             }
+            if (data.expired) {
+                const initialDateStr = data.expired
+                const initialDate = new Date(initialDateStr)
+                setSelectedDate(initialDate)
+                setInitialExpired(initialDate)
+            }
             setNoticeUpdated(data)
+        }
+        
+        return () => {
+            handleRecurrentNoticeChange(false)
         }
     }, [data, handleRecurrentNoticeChange])
 
@@ -81,9 +92,11 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     useEffect(() => {
         if (initialFormValues) {
             const isFormChanged = JSON.stringify(watchedFormValues) !== JSON.stringify(initialFormValues)
-            setDisabled(!isFormChanged)
+            const isDateChanged = initialExpired?.toISOString() !== selectedDate?.toISOString()
+            const newDisabled = isFormChanged || isDateChanged
+            setDisabled(!newDisabled)
         }
-    }, [watchedFormValues, initialFormValues, setDisabled])
+    }, [watchedFormValues, initialFormValues, setDisabled, selectedDate, initialExpired])
 
     const onSubmit = ({ title, text, startDay, endDay }: FormValues) => {
         toast.promise(updateNotice(notice_id, title, text, startDay, endDay), {

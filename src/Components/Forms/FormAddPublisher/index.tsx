@@ -16,6 +16,8 @@ import Button from '@/Components/Button'
 import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Calendar from '@/Components/Calendar'
+import { meses } from '@/functions/meses'
+import { Gender, Hope, Privileges } from '@/entities/types'
 
 
 export default function FormAddPublisher() {
@@ -29,6 +31,8 @@ export default function FormAddPublisher() {
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
     const [immersedDate, setImmersedDate] = useState<Date | null>(null)
     const [birthDate, setBirthDate] = useState<Date | null>(null)
+    const [auxPioneerMonthsSelected, setAuxPioneerMonthsSelected] = useState<string[]>([])
+
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -54,22 +58,19 @@ export default function FormAddPublisher() {
         setImmersedDate(date)
     }
 
-    const optionsCheckboxGender = useState<string[]>([
-        'Masculino',
-        'Feminino'
-    ])
-    const optionsCheckboxHope = useState([
-        'Ungido',
-        'Outras ovelhas'
-    ])
+    const handleAuxPioneerMonths = (selectedItems: string[]) => {
+        setAuxPioneerMonthsSelected(selectedItems)
+    }
 
-    const optionsCheckboxPrivileges = useState([
-        'Ancião',
-        'Servo Ministerial',
-        'Pioneiro Regular',
-        'Pioneiro Especial',
-        'Auxiliar Indeterminado'
-    ])
+
+    const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
+
+    const optionsCheckboxHope = useState(Object.values(Hope))
+
+    const optionsCheckboxPrivileges = useState(Object.values(Privileges))
+
+    const optionsPioneerMonths = useState(meses.map(month => `${month}-${new Date().getFullYear()}`))
+
 
     const getPrivilegeOptions = () => {
         if (genderCheckboxSelected === 'Feminino') {
@@ -101,6 +102,7 @@ export default function FormAddPublisher() {
             data.nickname,
             immersedDate ?? undefined, 
             birthDate ?? undefined, 
+            auxPioneerMonthsSelected
         ), {
             pending: 'Criando novo publicador',
         })
@@ -133,6 +135,8 @@ export default function FormAddPublisher() {
                     <CheckboxUnique visibleLabel label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} checked={hopeCheckboxSelected} />
 
                     <CheckboxMultiple label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} checkedOptions={privilegesCheckboxSelected} />
+
+                    {privilegesCheckboxSelected.includes('Pioneiro Auxiliar') && <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label='Meses Pioneiro Auxiliar' visibleLabel options={optionsPioneerMonths[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />}
 
                     <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
 

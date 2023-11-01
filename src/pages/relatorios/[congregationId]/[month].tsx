@@ -2,15 +2,18 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FIlterPriviles from "@/Components/FilterPrivileges"
 import Layout from "@/Components/Layout"
+import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { IPublisher, IReports } from "@/entities/types"
+import { IPublisher, IReports, ITotalsReports, Privileges } from "@/entities/types"
+import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
@@ -38,6 +41,12 @@ export default function RelatorioMes() {
 
     const [missingReportsCount, setMissingReportsCount] = useState<number>(0)
 
+    const [totalsModalShow, setTotalsModalShow] = useState(false)
+
+    const [totalsAuxPioneers, setTotalsAuxPioneers] = useState<ITotalsReports>()
+    const [totalsPioneers, setTotalsPioneers] = useState<ITotalsReports>()
+    const [totalsPublishers, setTotalsPublishers] = useState<ITotalsReports>()
+
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
 
@@ -55,26 +64,118 @@ export default function RelatorioMes() {
     }, [monthParam, setPageActive])
 
     useEffect(() => {
-        if (reports) {
-            if (reports) {
-                // Filter reports based on month and year
-                const reportsFilteredByDate = reports.filter(report => (
-                    report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
-                ));
+        const someTotals = (reports: IReports[]) => {
+            let totalStudiesPublishers = 0
+            let totalsReportsPublishers = 0
 
-                // Filter the filtered reports based on privileges
-                const filteredReports = filterPrivileges.length > 0
-                    ? reportsFilteredByDate.filter(report => (
-                        filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege))
-                    ))
-                    : reportsFilteredByDate;
+            let totalHoursPioneer = 0
+            let totalStudiesPioneer = 0
+            let totalsReportsPioneer = 0
 
-                const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName");
+            let totalHoursAuxPioneer = 0
+            let totalStudiesAuxPioneer = 0
+            let totalsReportsAuxPioneer = 0
 
-                setReportsFiltered(sortedReports);
-            }
+            const filterPublishers = reports.filter(report =>
+            (
+                !report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
+                !report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
+                !report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
+                !report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL)
+            ))
+            const filterPioneer = reports.filter(report => (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR)))
+            const filterAuxPioneer = reports.filter(report => ((report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) || report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))))
+
+
+            filterPublishers.map(report => {
+                totalsReportsPublishers += 1
+                if (report.studies) {
+                    totalStudiesPublishers += report.studies
+                }
+                setTotalsPublishers({
+                    month: monthSelected,
+                    year: yearSelected,
+                    totalsFrom: "Publicadores",
+                    totalsReports: totalsReportsPublishers,
+                    studies: totalStudiesPublishers
+                })
+            })
+
+            filterPioneer.map(report => {
+                totalHoursPioneer += report.hours
+                totalsReportsPioneer += 1
+                if (report.studies) {
+                    totalStudiesPioneer += report.studies
+                }
+                setTotalsPioneers({
+                    month: monthSelected,
+                    year: yearSelected,
+                    totalsFrom: "Pioneiros regulares",
+                    totalsReports: totalsReportsPioneer,
+                    hours: totalHoursPioneer,
+                    studies: totalStudiesPioneer
+                })
+            })
+
+            filterAuxPioneer.map(report => {
+                totalHoursAuxPioneer += report.hours
+                totalsReportsAuxPioneer += 1
+                if (report.studies) {
+                    totalStudiesAuxPioneer += report.studies
+                }
+                setTotalsAuxPioneers({
+                    month: monthSelected,
+                    year: yearSelected,
+                    totalsFrom: "Pioneiros auxiliares, Pioneiros auxiliares indeterminados",
+                    totalsReports: totalsReportsAuxPioneer,
+                    hours: totalHoursAuxPioneer,
+                    studies: totalStudiesAuxPioneer
+                })
+            })
         }
-    }, [monthSelected, yearSelected, filterPrivileges, reports]);
+
+        if (reports) {
+            // Filter reports based on month and year
+            const reportsFilteredByDate = reports.filter(report => (
+                report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
+            ))
+
+            someTotals(reportsFilteredByDate)
+
+            // Filter the filtered reports based on privileges
+            const filteredReports = filterPrivileges.length > 0
+                ? reportsFilteredByDate.filter(report => {
+                    const isPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROAUXILIAR);
+                    const isIndefinitePioneerSelected = filterPrivileges.includes(Privileges.AUXILIARINDETERMINADO);
+                    const isServantSelected = filterPrivileges.includes(Privileges.SM);
+                    const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO);
+
+                    if ((isPioneerSelected || isIndefinitePioneerSelected) && !isElderSelected && !isServantSelected) {
+                        return (
+                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                        )
+                    } else if ((isPioneerSelected || isIndefinitePioneerSelected) && isElderSelected) {
+                        return (
+                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                        ) && report.publisher.privileges.includes(Privileges.ANCIAO);
+                    } else if ((isPioneerSelected || isIndefinitePioneerSelected) && isServantSelected) {
+                        return (
+                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                        ) && report.publisher.privileges.includes(Privileges.SM);
+                    } else {
+                        return filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege));
+                    }
+                })
+                : reportsFilteredByDate;
+
+            const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName")
+
+            setReportsFiltered(sortedReports)
+        }
+    }, [monthSelected, yearSelected, filterPrivileges, reports])
 
     useEffect(() => {
         if (publishers && reports) {
@@ -84,20 +185,20 @@ export default function RelatorioMes() {
                         report.publisher.id === publisher.id &&
                         report.month.toLowerCase() === monthSelected &&
                         report.year === yearSelected
-                );
-                return !relatorioEnviado;
-            });
+                )
+                return !relatorioEnviado
+            })
 
-            setMissingReports(missingReports);
+            setMissingReports(missingReports)
         }
-    }, [monthSelected, yearSelected, publishers, reports]);
+    }, [monthSelected, yearSelected, publishers, reports])
 
     useEffect(() => {
         if (missingReports) {
-            const missingReportsCount = missingReports.length;
-            setMissingReportsCount(missingReportsCount);
+            const missingReportsCount = missingReports.length
+            setMissingReportsCount(missingReportsCount)
         }
-    }, [missingReports]);
+    }, [missingReports])
 
 
     const getRelatorios = useCallback(async () => {
@@ -127,7 +228,13 @@ export default function RelatorioMes() {
     }, [setCrumbs, setPageActive, monthSelected, congregationId])
 
     const handleCheckboxChange = (filter: string[]) => {
-        setFilterPrivileges(filter)
+        if (filter.includes(Privileges.PIONEIROAUXILIAR)) {
+            setFilterPrivileges([...filter, Privileges.AUXILIARINDETERMINADO])
+        } else {
+            setFilterPrivileges(filter)
+        }
+
+
     }
 
     return (
@@ -139,9 +246,19 @@ export default function RelatorioMes() {
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
                             <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                            <span className="flex justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
+                                Totais
+                                {!totalsModalShow ? <EyeIcon /> : <EyeOffIcon />}
+                            </span>
                             <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
-                        {reportsFiltered?.length > 0 ? (
+                        {totalsModalShow ? (
+                            <ul >
+                                {totalsPublishers && <ListTotals key={"Totais de Publicadores"} totals={totalsPublishers} />}
+                                {totalsAuxPioneers && <ListTotals key={"Totais de Pioneiros regulares"} totals={totalsAuxPioneers} />}
+                                {totalsPioneers && <ListTotals key={"Totais de pioneiros auxiliares"} totals={totalsPioneers} />}
+                            </ul>
+                        ) : reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly relative">
                                 {reportsFiltered?.map(report =>
                                     <ModalRelatorio
@@ -149,10 +266,12 @@ export default function RelatorioMes() {
                                         publisher={report.publisher}
                                         month={report.month}
                                         year={report.year}
-                                        publications={report.publications}
-                                        videos={report.videos}
-                                        hours={report.hours}
-                                        revisits={report.revisits}
+                                        hours={
+                                            report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) ||
+                                                report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) ||
+                                                report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) ? report.hours : "Sim"
+
+                                        }
                                         studies={report.studies}
                                         observations={report.observations}
                                     />)}
@@ -160,6 +279,7 @@ export default function RelatorioMes() {
                         ) : (
                             <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
                         )}
+
                     </section>
                 </>
             </ContentDashboard>
