@@ -269,8 +269,8 @@ export default function RelatorioMes() {
                                         hours={
                                             report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) ||
                                                 report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) ||
+                                                report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ||
                                                 report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) ? report.hours : "Sim"
-
                                         }
                                         studies={report.studies}
                                         observations={report.observations}
