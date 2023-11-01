@@ -1,5 +1,5 @@
 // PublisherItem.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { groupPublisherList, selectedPublishersAtom } from '@/atoms/atom';
 import { IPublisher } from '@/entities/types';
@@ -12,7 +12,6 @@ interface IPublisherItemProps {
 export default function PublisherItem({ publisher, group_id }: IPublisherItemProps) {
   const [selectedPublishers, setSelectedPublishers] = useAtom(selectedPublishersAtom)
   const [groupPublisherListOption, setGroupPublisherListOption] = useAtom(groupPublisherList)
-
 
   const isSelected = selectedPublishers.includes(publisher.id);
 
@@ -32,7 +31,7 @@ export default function PublisherItem({ publisher, group_id }: IPublisherItemPro
       className={`my-1 w-full list-none ${(
         groupPublisherListOption === 'add-publishers' ||
         groupPublisherListOption === 'remove-publishers'
-      ) && 'cursor-pointer'} bg-white  ${isSelected && `${groupPublisherListOption === 'add-publishers' && 'bg-light-blue-100'} `} ${isSelected && `${groupPublisherListOption === 'remove-publishers' && 'bg-red-400 text-white'}`}  `}
+      ) && 'cursor-pointer'} ${isSelected ? `${groupPublisherListOption === 'add-publishers' && 'bg-light-blue-100'} `:"bg-white"} ${isSelected ? `${groupPublisherListOption === 'remove-publishers' && 'bg-red-400 text-white'}`:"bg-white"} ${groupPublisherListOption === "disabled" && "bg-white"} `}
     >
       <div className={`flex flex-col w-full p-4`}>
         <span>{publisher.fullName}</span>

@@ -67,9 +67,9 @@ export default function AddPublicadoresGrupo() {
             handleSubmitSuccess(messageSuccessSubmit.publisherRemoveGroup)
         }).catch(err => {
             const { response: { data: { message } } } = err
-            if(message === '"Unauthorized"'){
+            if (message === '"Unauthorized"') {
                 handleSubmitError(messageErrorsSubmit.unauthorized)
-            }else{
+            } else {
                 console.log(message)
                 handleSubmitError(messageErrorsSubmit.default)
             }
@@ -133,8 +133,9 @@ export default function AddPublicadoresGrupo() {
                 <div className="flex justify-between w-full">
                     {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
-                    <div className="flex p-2 gap-1 flex-wrap">
+                    <div className="flex p-2 gap-1 flex-wrap ">
                         <Button
+                        className="w-52"
                             onClick={() => Router.push({
                                 pathname: `/grupos/${group_id}/mudar-dirigente`,
                                 query: { group_number: `${group_number}` }
@@ -144,8 +145,7 @@ export default function AddPublicadoresGrupo() {
                             Mudar dirigente
                         </Button>
                         <Button
-                            className={`${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
-                            size="sm"
+                            className={` w-52 ${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
                             onClick={() => {
                                 setGroupPublisherListOption('add-publishers')
                                 setSelectedPublishers([])
@@ -156,8 +156,7 @@ export default function AddPublicadoresGrupo() {
                         </Button>
 
                         <Button
-                            className={`${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
-                            size='sm'
+                            className={`w-52 ${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
                             remove
                             onClick={() => {
                                 setGroupPublisherListOption('remove-publishers')

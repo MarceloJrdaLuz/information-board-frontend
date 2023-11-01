@@ -138,6 +138,7 @@ export default function PublisherList() {
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">
                                     <Button
+                                        className="w-30"
                                         onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
                                         outline
                                     >
@@ -148,7 +149,7 @@ export default function PublisherList() {
                                         onDelete={() => onDelete(`${publisher.id}`)}
                                         button={<Button
                                             outline
-                                            className="text-red-400"
+                                            className="text-red-400 w-30"
                                         >
                                             <Trash />
                                             Excluir

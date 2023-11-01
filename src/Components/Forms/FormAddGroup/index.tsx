@@ -18,6 +18,7 @@ import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import { useSubmitContext } from '@/context/SubmitFormContext'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 export interface IGroup {
     id: string
@@ -56,7 +57,11 @@ export default function FormAddGroup() {
     }, [data])
 
     useEffect(() => {
-        setPublishers(publishersData)
+        if (publishersData) {
+            const filterPublishersMale = publishersData.filter(publisher => (publisher.gender === 'Masculino'))
+            const sort = sortArrayByProperty(filterPublishersMale, "fullName")
+            setPublishers(sort)
+        }
     }, [publishersData])
 
     const esquemaValidacao = yup.object({
