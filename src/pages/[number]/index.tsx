@@ -69,22 +69,22 @@ export default function Home() {
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
             )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <Button onClick={() => Router.push(`${number}/relatorio`)}>
+                <Button className="w-full md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
                     <ReportIcon />Relatório de Serviço de campo
                 </Button>
-                <Button onClick={() => Router.push(`${number}/limpeza`)}>
+                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/limpeza`)}>
                     <CleanIcon />Limpeza do Salão do Reino
                 </Button>
-                <Button onClick={() => Router.push(`${number}/designacoes`)}>
+                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
                     <PublicMeetingIcon />Designações das Reuniões
                 </Button>
-                <Button onClick={() => Router.push(`${number}/campo`)}>
+                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/campo`)}>
                     <PrechingHomeIcon />Designações de Campo
                 </Button>
-                <Button onClick={() => Router.push(`${number}/financeiro`)}>
+                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
                     <CalculatorIcon />Relatório Financeiro
                 </Button>
-                <Button onClick={() => Router.push(`${number}/eventos`)}>
+                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/eventos`)}>
                     <CalendarDaysIcon />Eventos especiais
                 </Button>
             </LayoutPrincipal>
