@@ -32,6 +32,7 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
             <div className="flex  mt-4  max-h-10">
               <div className="gap-1 flex">
                 <Button
+                className="w-30"
                   onClick={() => Router.push({
                     pathname: `/grupos/${item.id}/add-publicadores`,
                     query: { group_number: `${item.number}` }
@@ -45,7 +46,7 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
                   onDelete={() => onDelete(`${item.id}`)}
                   button={<Button
                     outline
-                    className="text-red-400"
+                    className="text-red-400 w-30"
                   >
                     <Trash />
                     Excluir
