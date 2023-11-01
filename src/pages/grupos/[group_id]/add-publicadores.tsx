@@ -9,6 +9,7 @@ import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom 
 import { useAuthContext } from "@/context/AuthContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IPublisher } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
@@ -97,9 +98,10 @@ export default function AddPublicadoresGrupo() {
             const filterPublisherWithoutGroup = getPublishers.filter(publihser => (
                 !publihser.group
             ))
-            setPublishersOthersGroup(filterPublishersOthersGroups)
-            setPublishersWithoutGroup(filterPublisherWithoutGroup)
-            setGroupPublishers(filterPublishersGroup)
+
+            setPublishersOthersGroup(sortArrayByProperty(filterPublishersOthersGroups, "fullName"))
+            setPublishersWithoutGroup(sortArrayByProperty(filterPublisherWithoutGroup, "fullName"))
+            setGroupPublishers(sortArrayByProperty(filterPublishersGroup, "fullName"))
 
         }
         return () => {
