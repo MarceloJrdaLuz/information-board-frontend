@@ -22,7 +22,7 @@ export default function FIlterPriviles({ handleCheckboxChange, checkedOptions }:
         <Popover placement="bottom-start">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold  p-0">
+                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
                         <ListFilterIcon />
                     </Button>
                 </div>

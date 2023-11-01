@@ -245,10 +245,10 @@ export default function RelatorioMes() {
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
-                            <FIlterPriviles checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
-                            <span className="flex justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
+                            <FIlterPriviles  checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                            <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                 Totais
-                                {!totalsModalShow ? <EyeIcon /> : <EyeOffIcon />}
+                                {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0"/> : <EyeOffIcon className="p-0.5 sm:p-0"/>}
                             </span>
                             <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
