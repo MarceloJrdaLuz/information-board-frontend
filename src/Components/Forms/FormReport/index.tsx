@@ -43,7 +43,7 @@ export default function FormReport(props: IRelatorioFormProps) {
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
-    
+
     useEffect(() => {
         if (data) {
             setOptionsDrop(data)
@@ -121,12 +121,12 @@ export default function FormReport(props: IRelatorioFormProps) {
                         {
                             fullName: publisherToSend.fullName,
                             nickName: publisherToSend.nickname || '',
-                            congregation_id: publisherToSend.congregation_id, 
+                            congregation_id: publisherToSend.congregation_id,
                             congregation_number: publisherToSend.congregation_number
                         },
                         data.hours ?? 0,
                         Number(data.studies),
-                        underAnHour ? 'Participou na pregação' : data.observations
+                        data.observations
                     ),
                     {
                         pending: 'Autenticando...'

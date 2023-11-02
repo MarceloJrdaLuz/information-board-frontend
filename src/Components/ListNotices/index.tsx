@@ -27,6 +27,7 @@ function ListNotices({ notices, onDelete }: IListItemsProps) {
 
               <div className="gap-1 flex items-end">
                 <Button
+                  className="w-30"
                   onClick={() => Router.push(`/anuncios/edit/${notice.id}`)}
                   outline
                 >
@@ -37,7 +38,7 @@ function ListNotices({ notices, onDelete }: IListItemsProps) {
                   onDelete={() => onDelete(`${notice.id}`)}
                   button={<Button
                     outline
-                    className="text-red-400"
+                    className="text-red-400 w-30"
                   >
                     <Trash />
                     Excluir
