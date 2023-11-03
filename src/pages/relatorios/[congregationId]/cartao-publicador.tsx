@@ -1,13 +1,28 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "@/Components/Button";
 import Layout from "@/Components/Layout";
 import ContentDashboard from "@/Components/ContentDashboard";
 import S21 from "@/Components/PublisherCard";
+import { meses } from "@/functions/meses";
+import { useRouter } from "next/router";
+import { useFetch } from "@/hooks/useFetch";
+import { IPublisher } from "@/entities/types";
 
 export default function PublisherCard() {
-    const mainContentRef = useRef<HTMLDivElement | null>(null);
+    const mainContentRef = useRef<HTMLDivElement | null>(null)
+
+    const router = useRouter()
+    const { congregationId } = router.query
+
+    const { data } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`)
+
+    const [publishers, setPublishers] = useState<IPublisher[]>()
+
+    useEffect(() => {
+        setPublishers(data)
+    }, [data])
 
     const capturePage = async () => {
         const mainContent = mainContentRef.current;
@@ -38,7 +53,7 @@ export default function PublisherCard() {
                     y: 0,
                     useCORS: true,
                     scale: 1.5,
-                    
+
                 });
 
                 const canvas = await canvasPromise;
@@ -60,10 +75,7 @@ export default function PublisherCard() {
                 <section className="flex flex-col justify-center items-center">
                     <Button onClick={capturePage}>Gerar Pdf</Button>
                     <div ref={mainContentRef}>
-                        <S21/>
-                        <S21/>
-                        <S21/>
-                        <S21/>
+                        {publishers && publishers.map(publisher => <S21 key={publisher.id} months={meses} publisher={publisher} serviceYear="2023" />)}
                     </div>
                 </section>
             </ContentDashboard>

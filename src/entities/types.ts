@@ -192,7 +192,8 @@ export enum Privileges {
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
-    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado'
+    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado', 
+    MISSIONARIOEMCAMPO = 'Missionário em Campo'
 }
 
 export interface IPublisherConsent {
