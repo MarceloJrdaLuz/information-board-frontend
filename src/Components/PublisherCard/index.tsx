@@ -14,7 +14,7 @@ export default function S21({ months, reports, publisher, serviceYear }: S21Prop
     return (
         <section className="w-[595px] h-[892px] m-4 bg-white p-4 ">
             <div>
-                <h1 className="w-full text-center my-3 font-bold">REGISTRO DE PUBLICADOR DE CONGREGAÇÃO</h1>
+                <h1 className="w-full text-center my-3 font-bold ">REGISTRO DE PUBLICADOR DE CONGREGAÇÃO</h1>
                 <div className="flex justify-between font-semibold text-xs">
                     <div className="flex flex-col gap-1">
                         <span>Nome:
