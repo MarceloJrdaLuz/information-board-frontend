@@ -30,7 +30,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const { data } = useFetch<IPublisher>(`/publisher/${props.id}`)
 
-    const [isFormChanged, setIsFormChanged] = useState(false);
+    const [isFormChanged, setIsFormChanged] = useState(false)
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
     const [auxPioneerMonthsSelected, setAuxPioneerMonthsSelected] = useState<string[]>([])
@@ -57,12 +57,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             setAuxPioneerMonthsSelected(data.pioneerMonths || [])
             setHopeCheckboxSelected(data.hope)
             if (data.birthDate) {
-                const initialDateStr = data.birthDate;
+                const initialDateStr = data.birthDate
                 const initialDate = new Date(initialDateStr)
                 setBirthDate(initialDate)
             }
             if (data.dateImmersed) {
-                const initialDateStr = data.dateImmersed;
+                const initialDateStr = data.dateImmersed
                 const initialDate = new Date(initialDateStr)
                 setImmersedDate(initialDate)
             }
@@ -110,9 +110,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const getPrivilegeOptions = () => {
         if (genderCheckboxSelected === 'Feminino') {
-            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado'];
+            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado']
         } else {
-            return optionsCheckboxPrivileges[0]; // Use default options for other genders
+            return optionsCheckboxPrivileges[0] // Use default options for other genders
         }
     }
 
@@ -126,8 +126,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         resolver: yupResolver(esquemaValidacao)
     })
 
-    const watchFullName = watch('fullName');
-    const watchNickname = watch('nickname');
+    const watchFullName = watch('fullName')
+    const watchNickname = watch('nickname')
 
 
     useEffect(() => {
@@ -148,9 +148,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             privilegesCheckboxSelected.join() !== (data?.privileges || []).join() ||
             auxPioneerMonthsSelected.join() !== (data?.pioneerMonths || []).join() ||
             birthDate?.getTime() !== (data?.birthDate ? new Date(data.birthDate).getTime() : null) ||
-            immersedDate?.getTime() !== (data?.dateImmersed ? new Date(data.dateImmersed).getTime() : null);
+            immersedDate?.getTime() !== (data?.dateImmersed ? new Date(data.dateImmersed).getTime() : null)
 
-        setIsFormChanged(isChanged);
+        setIsFormChanged(isChanged)
     }, [
         publisherToUpdate,
         initialFullNameValue,

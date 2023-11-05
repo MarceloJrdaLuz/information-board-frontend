@@ -164,13 +164,13 @@ function CongregationProvider(props: CongregationContextProviderProps) {
 }
 
 function useCongregationContext(): CongregationContextTypes {
-    const context = useContext(CongregationContext);
+    const context = useContext(CongregationContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { CongregationProvider, useCongregationContext };
+export { CongregationProvider, useCongregationContext }

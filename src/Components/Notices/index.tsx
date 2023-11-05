@@ -1,7 +1,7 @@
-import { INoticesProps } from "./types";
-import Button from "../Button";
-import { useRouter } from "next/router";
-import { ChevronsLeftIcon } from "lucide-react";
+import { INoticesProps } from "./types"
+import Button from "../Button"
+import { useRouter } from "next/router"
+import { ChevronsLeftIcon } from "lucide-react"
 
 export default function Notices({ notices, congregationNumber }: INoticesProps) {
 

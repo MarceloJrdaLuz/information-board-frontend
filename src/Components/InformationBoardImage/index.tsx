@@ -1,4 +1,4 @@
-import { InformationBoardImageProps } from "./types";
+import { InformationBoardImageProps } from "./types"
 
 export default function InformationBoardImage({size}: InformationBoardImageProps) {
     return (

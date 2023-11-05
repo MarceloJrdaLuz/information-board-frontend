@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { obterUltimosMeses } from "@/functions/meses"
-import Router from "next/router"
+import Router, { useRouter } from "next/router"
+import Button from "../Button"
 
 export interface ListRelatoriosProps {
     congregationId: string
@@ -8,6 +9,9 @@ export interface ListRelatoriosProps {
 
 
 export default function ListMonths(props: ListRelatoriosProps) {
+    const router = useRouter()
+    const { congregationId } = router.query
+
     const [anoServicoAtual, setAnoServicoAtual] = useState<string[]>()
     const [anoServicoAnterior, setAnoServicoAnterior] = useState<string[]>()
 
@@ -18,11 +22,14 @@ export default function ListMonths(props: ListRelatoriosProps) {
 
     return (
         <section className="flex flex-col flex-1 h-[90%] overflow-auto">
-            <h1 className="flex flex-1 pl-5 pt-5 text-2xl text-fontColor-200 font-semibold ">Relatórios</h1>
+            <h1 className="flex flex-1 pl-5 pt-5 text-2xl text-primary-200 font-semibold ">Relatórios</h1>
+            <Button className="ml-6 mt-2" onClick={() => router.push(`/relatorios/${congregationId}/cartao-publicador`)}>
+                Gerar S-21
+            </Button>
             <div className="flex justify-evenly items-baseline">
                 <>
-                <ul className="flex flex-col justify-start w-6/12 h-[65vh] overflow-auto  overflow-x-hidden items-center p-5  ">
-                    <span className="w-full min-w-[120px] py-5 text-xs sm:whitespace-nowrap lg:text-lg font-bold bg-primary-100 p-4  text-white">Ano de serviço atual</span>
+                    <ul className="flex flex-col justify-start w-6/12 h-[65vh] overflow-auto  overflow-x-hidden items-center p-5  ">
+                        <span className="w-full min-w-[120px] py-5 text-xs sm:whitespace-nowrap lg:text-lg font-bold bg-primary-100 p-4  text-white">Ano de serviço atual</span>
                         {anoServicoAtual?.map(mes =>
                             <li onClick={() => {
                                 Router.push(`/relatorios/${props.congregationId}/${mes}`)

@@ -15,7 +15,7 @@ interface IFIlterPrivilegesProps {
     checkedOptions?: string[] // torna a propriedade opcional
 }
 
-export default function FIlterPriviles({ handleCheckboxChange, checkedOptions }: IFIlterPrivilegesProps) {
+export default function FilterPrivileges({ handleCheckboxChange, checkedOptions }: IFIlterPrivilegesProps) {
     const [privileges, setPrivileges] = useState(Object.values(Privileges))
 
     return (

@@ -48,7 +48,7 @@ export default function FormAddPublisher() {
 
     const handleCheckboxPrivileges = (selectedItems: string[]) => {
         setPrivilegesCheckboxSelected(selectedItems)
-    };
+    }
 
     const handleBirthDateChange = (date: Date) => {
         setBirthDate(date)
@@ -74,9 +74,9 @@ export default function FormAddPublisher() {
 
     const getPrivilegeOptions = () => {
         if (genderCheckboxSelected === 'Feminino') {
-            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado'];
+            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado']
         } else {
-            return optionsCheckboxPrivileges[0]; // Use default options for other genders
+            return optionsCheckboxPrivileges[0] // Use default options for other genders
         }
     }
 

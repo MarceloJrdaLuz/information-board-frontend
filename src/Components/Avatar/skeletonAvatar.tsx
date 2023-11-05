@@ -1,4 +1,4 @@
-import { UserCircleIcon } from "lucide-react";
+import { UserCircleIcon } from "lucide-react"
 
 export default function SkeletonAvatar() {
     return (

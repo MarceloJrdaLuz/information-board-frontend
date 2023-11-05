@@ -32,7 +32,7 @@ export default function FormAddGroup() {
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
-    const [availableNumbers, setAvailableNumbers] = useState<string[]>([]);
+    const [availableNumbers, setAvailableNumbers] = useState<string[]>([])
     const [selectedNumber, setSelectedNumber] = useState<string>()
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [selectedItem, setSelectedItem] = useState<IPublisher | null>(null)
@@ -49,10 +49,10 @@ export default function FormAddGroup() {
 
     useEffect(() => {
         if (data) {
-            const existingNumbers = data.map(group => group.number);
-            const allNumbers = Array.from({ length: 15 }, (_, index) => (index + 1).toString());
-            const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(number));
-            setAvailableNumbers(availableNumbers);
+            const existingNumbers = data.map(group => group.number)
+            const allNumbers = Array.from({ length: 15 }, (_, index) => (index + 1).toString())
+            const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(number))
+            setAvailableNumbers(availableNumbers)
         }
     }, [data])
 

@@ -1,6 +1,8 @@
 import { IPublisher, IReports, Privileges } from "@/entities/types"
-import { CheckSquareIcon, SquareIcon } from "lucide-react"
 import moment from "moment"
+import React from 'react'
+import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+
 
 export interface S21Props {
     serviceYear: string
@@ -9,104 +11,172 @@ export interface S21Props {
     reports?: IReports[]
 }
 
-export default function S21({ months, reports, publisher, serviceYear }: S21Props) {
+export default function S21({ months, publisher, serviceYear, reports }: S21Props) {
+    const styles = StyleSheet.create({
+        page: {
+            flexDirection: 'row',
+            backgroundColor: '#E4E4E4',
+        },
+        section: {
+            margin: 10,
+            padding: 10,
+            flexGrow: 1
+        },
+        title: {
+            fontSize: 16,
+            fontFamily: "Times-Bold",
+            fontWeight: "bold",
+            textAlign: "center",
+            marginVertical: "10px",
+
+        },
+        tableCell: {
+            borderWidth: 1,
+            borderColor: '#000',
+            padding: 5,
+        },
+        checkbox: {
+            borderWidth: 1,  // Adicione a largura da borda desejada
+            borderColor: '#000',  // Cor da borda (preto)
+            padding: 3,
+            marginRight: 4
+        },
+        checkboxSelected: {
+            borderWidth: 1,  // Adicione a largura da borda desejada
+            borderColor: '#000',
+            backgroundColor: "#000", // Cor da borda (preto)
+            padding: 3,
+            marginRight: 4
+        },
+    })
+
+    const isPionner = publisher.privileges.some(privilege =>
+        privilege === Privileges.AUXILIARINDETERMINADO ||
+        privilege === Privileges.MISSIONARIOEMCAMPO ||
+        privilege === Privileges.PIONEIROREGULAR ||
+        privilege === Privileges.PIONEIROESPECIAL
+    )
 
     return (
-        <section className="w-[595px] h-[892px] m-4 bg-white p-4 ">
-            <div>
-                <h1 className="w-full text-center my-3 font-bold ">REGISTRO DE PUBLICADOR DE CONGREGAÇÃO</h1>
-                <div className="flex justify-between font-semibold text-xs">
-                    <div className="flex flex-col gap-1">
-                        <span>Nome:
-                            <span>{publisher.fullName}</span>
-                        </span>
-                        <span>Data de nascimento:
-                            {publisher.birthDate && <span>{moment(publisher.birthDate).format('DD/MM/YYYY')}</span>}
-                        </span>
-                        <span>Data de batismo:
-                            {publisher.dateImmersed && <span>{moment(publisher.dateImmersed).format('DD/MM/YYYY')}</span>}
-                        </span>
-                    </div>
-                    <div className="flex flex-col justify-end ">
-                        <div className="flex items-center ">
-                            {publisher.gender === "Masculino" ? <CheckSquareIcon className="w-3" /> : <SquareIcon className="w-3" />}
-                            <span className="pl-1 w-32">Masculino</span>
-                            {publisher.gender === "Feminino" ? <CheckSquareIcon className="w-3" /> : <SquareIcon className="w-3" />}
-                            <span className="pl-1">Feminino</span>
-                        </div>
-                        <div className="flex items-center">
-                            {publisher.hope === "Outras ovelhas" ? <CheckSquareIcon className="w-3" /> : <SquareIcon className="w-3" />}
-                            <span className="pl-1 w-32">Outras ovelhas</span>
-                            {publisher.hope === "Ungido" ? <CheckSquareIcon className="w-3" /> : <SquareIcon className="w-3" />}
-                            <span className="pl-1">Ungido</span>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex items-start text-xs font-semibold mt-1">
-                    {publisher.privileges.includes(Privileges.ANCIAO) ? <CheckSquareIcon className="w-4 h-fit mt-0.5" /> : <SquareIcon className="w-4 h-fit mt-0.5" />}
-                    <span className="pl-1 pr-3 whitespace-nowrap ">Ancião</span>
-                    {publisher.privileges.includes(Privileges.SM) ? <CheckSquareIcon className="w-4 h-fit mt-0.5" /> : <SquareIcon className="w-4 h-fit mt-0.5" />}
-                    <span className="pl-1 pr-3 whitespace-nowrap">Servo ministerial</span>
-                    {publisher.privileges.includes(Privileges.PIONEIROREGULAR) ? <CheckSquareIcon className="w-4 h-fit mt-0.5" /> : <SquareIcon className="w-4 h-fit mt-0.5" />}
-                    <span className="pl-1 pr-3 whitespace-nowrap">Pioneiro regular</span>
-                    {publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ? <CheckSquareIcon className="w-4 h-fit mt-0.5" /> : <SquareIcon className="w-4 h-fit mt-0.5" />}
-                    <span className="pl-1 pr-3 whitespace-nowrap">Pioneiro especial</span>
-                    {publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ? <CheckSquareIcon className="w-4 h-fit mt-0.5" /> : <SquareIcon className="w-4 h-fit mt-0.5" />}
-                    <span className="pl-1 pr-3 flex items-baseline">Missionário em campo</span>
-                </div>
-                <table className="h-[280px] text-xs border-collapse table-fixed">
-                    <thead>
-                        <tr className="text-center font-semibold">
-                            <td className="border border-gray-900 w-28 h-16 ">
-                                <div className="flex flex-col">
-                                    <span className="font-semibold">Ano de serviço</span>
-                                    <span className="font-normal">{serviceYear}</span>
-                                </div>
-                            </td>
-                            <td className="border border-gray-900 w-20 px-2" >Participou no ministério</td>
-                            <td className="border border-gray-900 w-20" >Estudos bíblicos</td>
-                            <td className="border border-gray-900 w-20"  >Pioneiro auxiliar</td>
-                            <td className="border border-gray-900 w-20" >
-                                <div className="flex flex-col">
-                                    <span>Horas</span>
-                                    <span className="font-normal text-[10px]">(se for pioneiro ou missionário em campo)
-                                    </span>
-                                </div>
-                            </td>
-                            <td className="border border-gray-900 w-40" >Observações</td>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        {months.map((month) => (
-                            <tr className="h-5" key={month + "2"}>
-                                <td className="border border-gray-900 pl-1">{month}</td>
-                                <td className="border border-gray-900 text-center">
-                                    <span className="flex justify-center">
-                                        <SquareIcon className="w-4 text-gray-900" />
-                                    </span>
-                                </td>
-                                <td className="border border-gray-900 "></td>
-                                <td className="border border-gray-900">
-                                    <span className="flex justify-center">
-                                        <SquareIcon className="w-4 text-gray-900" />
-                                    </span>
-                                </td>
-                                <td className="border border-gray-900"></td>
-                                <td className="border border-gray-900"></td>
-                            </tr>
-                        ))}
-                        <tr className="h-6">
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td className="text-end pr-1 font-semibold">Total</td>
-                            <td className=" border border-gray-900"></td>
-                            <td className=" border border-gray-900"></td>
-                        </tr>
-                    </tbody>
-                </table>
+        <Page size="A4">
+            <View style={{ padding: 20, flex: 1, flexDirection: "column" }}>
+                <>
+                    <Text style={styles.title}>
+                        REGISTRO DE PUBLICADOR DE CONGREGAÇÃO
+                    </Text>
+                    <View style={{
+                        flexDirection: "row", justifyContent: "space-between", fontSize: 12, fontFamily: "Times-Bold",
+                    }}>
+                        <View style={{ flexDirection: "column" }}>
+                            <View style={{ flexDirection: "row", marginBottom: 3 }}>
+                                <Text style={{ fontWeight: "bold", marginRight: 2 }}>Nome:</Text>
+                                <Text>{publisher.fullName}</Text>
+                            </View>
+                            <View style={{ flexDirection: "row", marginBottom: 3 }}>
+                                <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de nascimento:</Text>
+                                <Text>{publisher.birthDate && moment(publisher.birthDate).format("DD/MM/YYYY")}</Text>
+                            </View>
+                            <View style={{ flexDirection: "row", marginBottom: 3 }}>
+                                <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de batismo:</Text>
+                                <Text>{publisher.dateImmersed && moment(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
+                            </View>
+                        </View>
+                        <View style={{ flexDirection: "column", alignSelf: "flex-end" }}>
+                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                {publisher.gender === "Masculino" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                <Text style={{ width: 128 }}>Masculino</Text>
 
-            </div>
-        </section>
+                                {publisher.gender === "Feminino" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                <Text >Feminino</Text>
+                            </View>
+                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                {publisher.hope === "Outras ovelhas" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                <Text style={{ width: 128 }}>Outras ovelhas</Text>
+
+                                {publisher.hope === "Ungido" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                <Text >Ungido</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{
+                        flexDirection: "row", alignItems: "center", marginTop: 2, fontFamily: "Times-Bold",
+                    }}>
+                        {publisher.privileges.includes(Privileges.ANCIAO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Ancião</Text>
+
+                        {publisher.privileges.includes(Privileges.SM) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        <Text style={{ fontSize: 12, marginRight: 12, marginLeft: 2 }}>Servo ministerial</Text>
+
+                        {publisher.privileges.includes(Privileges.PIONEIROREGULAR) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro regular</Text>
+
+                        {publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro especial</Text>
+
+                        {publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Missionário em campo</Text>
+                    </View>
+                    <View>
+                        <View style={{ flexDirection: "row", marginTop: 5, fontFamily: "Times-Bold", }}>
+                            <View style={{ width: 112, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000' }}>
+                                <Text>Ano de serviço</Text>
+                                <Text>{serviceYear}</Text>
+                            </View>
+                            <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                <Text>Participou no ministério</Text>
+                            </View>
+                            <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                <Text>Estudos bíblicos</Text>
+                            </View>
+                            <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                <Text>Pioneiro auxiliar</Text>
+                            </View>
+                            <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                <Text>Horas</Text>
+                                <Text style={{ fontSize: 8, fontFamily: "Times-Roman" }}>(se for pioneiro ou missionário em campo)</Text>
+                            </View>
+                            <View style={{ width: 160, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0 }}>
+                                <Text>Observações</Text>
+                            </View>
+                        </View>
+                        {months.map((month) => {
+                            const report = reports?.find(r => r.year === serviceYear && r.month === month)
+                            return (
+                                <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
+                                    <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000' }}>
+                                        <Text>{month}</Text>
+                                    </View>
+                                    <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
+                                        <Text style={!report || isPionner ? styles.checkbox : styles.checkboxSelected}></Text>
+                                    </View>
+                                    <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
+                                    </View>
+                                    <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
+                                        <Text style={styles.checkbox}></Text>
+                                    </View>
+                                    <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={{ textAlign: "center" }}>{report && isPionner ? report.hours : ""}</Text>
+                                    </View>
+                                    <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>
+                                    </View>
+                                </View>
+                            )
+                        })}
+                        <View style={{ flexDirection: "row", height: 20 }}>
+                            <View style={{ width: 112 }}></View>
+                            <View style={{ width: 80 }}></View>
+                            <View style={{ width: 80 }}></View>
+                            <View style={{ width: 80, fontSize: 10, fontFamily: "Times-Bold", justifyContent: "center", textAlign: "right", paddingRight: 4, borderRight: 1, borderRightWidth: 1 }}>
+                                <Text>Total</Text>
+                            </View>
+                            <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
+                            <View style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
+                        </View>
+                    </View>
+                </>
+            </View>
+        </Page>
     )
 }

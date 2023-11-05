@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { IConsentMessageProps } from "./types";
-import Button from "../Button";
+import Link from "next/link"
+import { IConsentMessageProps } from "./types"
+import Button from "../Button"
 
 export default function ConsentMessage({ onAccepted, onDecline, text, name, congregatioNumber }: IConsentMessageProps) {
     return (

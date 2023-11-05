@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FIlterPriviles from "@/Components/FilterPrivileges"
+import FilterPrivileges from "@/Components/FilterPrivileges"
 import Layout from "@/Components/Layout"
 import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
@@ -126,7 +126,7 @@ export default function RelatorioMes() {
                 setTotalsAuxPioneers({
                     month: monthSelected,
                     year: yearSelected,
-                    totalsFrom: "Pioneiros auxiliares, Pioneiros auxiliares indeterminados",
+                    totalsFrom: "Pioneiros auxiliares",
                     totalsReports: totalsReportsAuxPioneer,
                     hours: totalHoursAuxPioneer,
                     studies: totalStudiesAuxPioneer
@@ -145,10 +145,10 @@ export default function RelatorioMes() {
             // Filter the filtered reports based on privileges
             const filteredReports = filterPrivileges.length > 0
                 ? reportsFilteredByDate.filter(report => {
-                    const isPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROAUXILIAR);
-                    const isIndefinitePioneerSelected = filterPrivileges.includes(Privileges.AUXILIARINDETERMINADO);
-                    const isServantSelected = filterPrivileges.includes(Privileges.SM);
-                    const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO);
+                    const isPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROAUXILIAR)
+                    const isIndefinitePioneerSelected = filterPrivileges.includes(Privileges.AUXILIARINDETERMINADO)
+                    const isServantSelected = filterPrivileges.includes(Privileges.SM)
+                    const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO)
 
                     if ((isPioneerSelected || isIndefinitePioneerSelected) && !isElderSelected && !isServantSelected) {
                         return (
@@ -159,17 +159,17 @@ export default function RelatorioMes() {
                         return (
                             (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
                             (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
-                        ) && report.publisher.privileges.includes(Privileges.ANCIAO);
+                        ) && report.publisher.privileges.includes(Privileges.ANCIAO)
                     } else if ((isPioneerSelected || isIndefinitePioneerSelected) && isServantSelected) {
                         return (
                             (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
                             (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
-                        ) && report.publisher.privileges.includes(Privileges.SM);
+                        ) && report.publisher.privileges.includes(Privileges.SM)
                     } else {
-                        return filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege));
+                        return filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege))
                     }
                 })
-                : reportsFilteredByDate;
+                : reportsFilteredByDate
 
             const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName")
 
@@ -233,8 +233,6 @@ export default function RelatorioMes() {
         } else {
             setFilterPrivileges(filter)
         }
-
-
     }
 
     return (
@@ -245,7 +243,7 @@ export default function RelatorioMes() {
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
-                            <FIlterPriviles  checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                            <FilterPrivileges  checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                             <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                 Totais
                                 {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0"/> : <EyeOffIcon className="p-0.5 sm:p-0"/>}

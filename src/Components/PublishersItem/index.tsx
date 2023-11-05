@@ -1,8 +1,7 @@
-// PublisherItem.tsx
-import React, { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { groupPublisherList, selectedPublishersAtom } from '@/atoms/atom';
-import { IPublisher } from '@/entities/types';
+import React from 'react'
+import { useAtom } from 'jotai'
+import { groupPublisherList, selectedPublishersAtom } from '@/atoms/atom'
+import { IPublisher } from '@/entities/types'
 
 interface IPublisherItemProps {
   publisher: IPublisher,
@@ -13,17 +12,17 @@ export default function PublisherItem({ publisher, group_id }: IPublisherItemPro
   const [selectedPublishers, setSelectedPublishers] = useAtom(selectedPublishersAtom)
   const [groupPublisherListOption, setGroupPublisherListOption] = useAtom(groupPublisherList)
 
-  const isSelected = selectedPublishers.includes(publisher.id);
+  const isSelected = selectedPublishers.includes(publisher.id)
 
   const toggleSelection = () => {
     if (isSelected) {
       setSelectedPublishers((prevSelected) =>
         prevSelected.filter((id) => id !== publisher.id)
-      );
+      )
     } else {
-      setSelectedPublishers((prevSelected) => [...prevSelected, publisher.id]);
+      setSelectedPublishers((prevSelected) => [...prevSelected, publisher.id])
     }
-  };
+  }
 
   return (
     <li
@@ -38,6 +37,6 @@ export default function PublisherItem({ publisher, group_id }: IPublisherItemPro
         {publisher?.group?.id !== group_id && publisher.group && <span>{`Pertence ao grupo: ${publisher?.group?.number}`}</span>}
       </div>
     </li>
-  );
-};
+  )
+}
 

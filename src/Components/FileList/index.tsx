@@ -4,7 +4,7 @@ import { Link2Icon, Trash2Icon, CheckIcon, AlertCircleIcon } from 'lucide-react'
 import Link from "next/link"
 import { useDocumentsContext } from "@/context/DocumentsContext"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
-import 'react-circular-progressbar/dist/styles.css';
+import 'react-circular-progressbar/dist/styles.css'
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 
 export default function FileList({ files }: IFileListProps) {

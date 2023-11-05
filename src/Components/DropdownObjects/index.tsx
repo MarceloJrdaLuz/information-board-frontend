@@ -7,34 +7,34 @@ function classNames(...classes: any) {
 }
 
 interface IDropdown<T> {
-  title: string | undefined;
-  items: T[]; // Use o tipo genérico T para os itens
-  selectedItem: T | null; // Use o tipo genérico T para o item selecionado
-  handleChange: (item: T | null) => void;
-  border?: boolean;
-  full?: boolean;
-  position?: 'right' | 'left';
-  textVisible?: boolean;
+  title: string | undefined
+  items: T[] // Use o tipo genérico T para os itens
+  selectedItem: T | null // Use o tipo genérico T para o item selecionado
+  handleChange: (item: T | null) => void
+  border?: boolean
+  full?: boolean
+  position?: 'right' | 'left'
+  textVisible?: boolean
   textAlign?: 'right' | 'left' | 'center'
-  labelKey?: keyof T; // Chave para determinar a propriedade a ser usada como rótulo
-  labelKeySecondary?: keyof T; // Chave para determinar a propriedade a ser usada como rótulo
+  labelKey?: keyof T // Chave para determinar a propriedade a ser usada como rótulo
+  labelKeySecondary?: keyof T // Chave para determinar a propriedade a ser usada como rótulo
 }
 
 export default function DropdownObject<T>(props: IDropdown<T>) {
-  const { items, selectedItem } = props;
+  const { items, selectedItem } = props
 
   const getLabel = (item: T): string => {
     if (props.labelKey && item[props.labelKey]) {
-      return String(item[props.labelKey]);
+      return String(item[props.labelKey])
     }
-    return String(item);
-  };
+    return String(item)
+  }
   const getLabelSecondary = (item: T): string => {
     if (props.labelKeySecondary && item[props.labelKeySecondary]) {
-      return String(item[props.labelKeySecondary]);
+      return String(item[props.labelKeySecondary])
     }
-    return String("");
-  };
+    return String("")
+  }
 
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
@@ -83,5 +83,5 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
         </Menu.Items>
       </Transition>
     </Menu>
-  );
+  )
 }

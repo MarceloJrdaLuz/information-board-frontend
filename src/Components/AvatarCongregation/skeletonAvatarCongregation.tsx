@@ -1,4 +1,4 @@
-import { ImageIcon } from "lucide-react";
+import { ImageIcon } from "lucide-react"
 
 export default function SkeletonAvatarCongregation() {
     return (

@@ -67,7 +67,7 @@ function useSubmitContext(): SubmitFormContextTypes {
         throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { useSubmitContext, SubmitFormProvider };
+export { useSubmitContext, SubmitFormProvider }

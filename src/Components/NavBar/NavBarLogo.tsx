@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import InformationBoardImage from "../InformationBoardImage";
+import { useEffect } from "react"
+import InformationBoardImage from "../InformationBoardImage"
 
 export interface INavBarLogoProps {
     isMenuOpen: boolean

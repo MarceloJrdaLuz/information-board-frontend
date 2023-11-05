@@ -1,10 +1,10 @@
-import React from "react";
-import Router from "next/router";
-import { IListItemsProps } from "./types";
-import Button from "../Button";
-import EditIcon from "../Icons/EditIcon";
-import { ConfirmDeleteModal } from "../ConfirmDeleteModal";
-import { Trash } from "lucide-react";
+import React from "react"
+import Router from "next/router"
+import { IListItemsProps } from "./types"
+import Button from "../Button"
+import EditIcon from "../Icons/EditIcon"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import { Trash } from "lucide-react"
 
 function ListGroups({ items, label, onDelete }: IListItemsProps) {
   return (
@@ -58,7 +58,7 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
         </li>
       ))}
     </ul>
-  );
+  )
 }
 
-export default ListGroups;
+export default ListGroups

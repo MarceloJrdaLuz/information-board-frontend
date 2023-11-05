@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
+import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Layout from "@/Components/Layout"
 import ListRelatorios from "@/Components/ListMonths"
@@ -20,14 +21,14 @@ export default function ListarRelatorios() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Relatórios')       
+        setPageActive('Relatórios')
     }, [setPageActive])
 
     return (
         <Layout pageActive="relatorios">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <ListRelatorios congregationId={congregationId as string} />
+                <ListRelatorios congregationId={congregationId as string} />    
             </ContentDashboard>
         </Layout>
     )

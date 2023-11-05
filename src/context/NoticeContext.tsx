@@ -129,13 +129,13 @@ function NoticesProvider(props: NoticeContextProviderProps) {
 }
 
 function useNoticesContext(): NoticesContextTypes {
-    const context = useContext(NoticesContext);
+    const context = useContext(NoticesContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { NoticesProvider, useNoticesContext };
+export { NoticesProvider, useNoticesContext }

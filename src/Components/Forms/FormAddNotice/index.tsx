@@ -66,13 +66,13 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
     }
 
     const handleRecurrentNoticeChange = (isChecked: boolean) => {
-        setRecurrentNotice(isChecked);
+        setRecurrentNotice(isChecked)
         // Limpe os valores e erros dos campos startDay e endDay quando o checkbox for desmarcado.
         if (!isChecked) {
-            setValue('startDay', undefined);
-            setValue('endDay', undefined);
-            errors.startDay = undefined;
-            errors.endDay = undefined;
+            setValue('startDay', undefined)
+            setValue('endDay', undefined)
+            errors.startDay = undefined
+            errors.endDay = undefined
         }
     }
 

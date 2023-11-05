@@ -1,10 +1,10 @@
-import { ChevronLeftIcon, ChevronRightIcon, Undo2Icon } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import Spiner from '../Spiner';
-import { useSwipeable } from 'react-swipeable';
+import { ChevronLeftIcon, ChevronRightIcon, Undo2Icon } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
+import Spiner from '../Spiner'
+import { useSwipeable } from 'react-swipeable'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
 
 interface PdfViewerProps {
     url: string
@@ -12,50 +12,50 @@ interface PdfViewerProps {
 }
 
 export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
-    const [numPages, setNumPages] = useState<number | null>(null);
-    const [pageNumber, setPageNumber] = useState<number>(1);
-    const touchStartX = useRef<number | null>(null);
+    const [numPages, setNumPages] = useState<number | null>(null)
+    const [pageNumber, setPageNumber] = useState<number>(1)
+    const touchStartX = useRef<number | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const lastPage = numPages
     const firstPage = numPages! - numPages! + 1
 
     function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-        setNumPages(numPages);
-        setIsLoading(false);
+        setNumPages(numPages)
+        setIsLoading(false)
     }
 
     const handleClickLeft = () => {
         if (pageNumber > 1) {
-            setPageNumber(pageNumber - 1);
+            setPageNumber(pageNumber - 1)
         } else {
-            setPageNumber(firstPage!);
+            setPageNumber(firstPage!)
         }
-    };
+    }
 
     const handleClickRight = () => {
         if (pageNumber < numPages!) {
-            setPageNumber(pageNumber + 1);
+            setPageNumber(pageNumber + 1)
         } else {
-            setPageNumber(firstPage!);
+            setPageNumber(firstPage!)
         }
-    };
+    }
 
     const handlers = useSwipeable({
         onSwipedLeft: () => {
             if (pageNumber < numPages!) {
-                setPageNumber(pageNumber + 1);
+                setPageNumber(pageNumber + 1)
             } else {
-                setPageNumber(firstPage!);
+                setPageNumber(firstPage!)
             }
         },
         onSwipedRight: () => {
             if (pageNumber > 1) {
-                setPageNumber(pageNumber - 1);
+                setPageNumber(pageNumber - 1)
             } else {
-                setPageNumber(lastPage!);
+                setPageNumber(lastPage!)
             }
         },
-    });
+    })
 
     return (
 

@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { IBreadCrumbsProps } from "./types";
+import Link from "next/link"
+import { IBreadCrumbsProps } from "./types"
 
 export default function BreadCrumbs({ crumbs, pageActive }: IBreadCrumbsProps) {
     return (

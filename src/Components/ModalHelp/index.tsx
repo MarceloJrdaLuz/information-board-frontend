@@ -2,8 +2,8 @@ import {
     Card,
     CardBody,
     Typography,
-} from "@material-tailwind/react";
-import { XSquareIcon } from "lucide-react";
+} from "@material-tailwind/react"
+import { XSquareIcon } from "lucide-react"
 
 interface ModalHelpProps {
     title?: string

@@ -37,7 +37,7 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
             name: '',
             description: ''
         },
-    });
+    })
 
     const esquemaValidacao = yup.object({
         name: yup.string(),
@@ -45,10 +45,10 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
     })
 
     // Create a ref to track the initial form values
-    const initialFormValues = useRef<FormValues | null>(null);
+    const initialFormValues = useRef<FormValues | null>(null)
 
     // Watch the form values for changes
-    const watchedFormValues = useWatch({ control: formMethods.control });
+    const watchedFormValues = useWatch({ control: formMethods.control })
 
 
     const { register, reset, handleSubmit, formState: { errors } } = useForm<FormValues>({
@@ -65,27 +65,27 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
                     name: data.name || '',
                     description: data.description || '',
 
-                };
+                }
                 // Set default values manually here
-                formMethods.reset(initialFormValues.current);
+                formMethods.reset(initialFormValues.current)
             }
         }
-    }, [data, formMethods]);
+    }, [data, formMethods])
 
     useEffect(() => {
         if (categoryToUpdate) {
             reset({
                 name: categoryToUpdate.name || '',
                 description: categoryToUpdate.description || '',
-            });
+            })
         }
-    }, [categoryToUpdate, reset]);
+    }, [categoryToUpdate, reset])
 
     useEffect(() => {
         if (initialFormValues.current) {
             const isFormChanged = JSON.stringify(watchedFormValues) !== JSON.stringify(initialFormValues.current)
         }
-    }, [watchedFormValues, initialFormValues, setDisabled]);
+    }, [watchedFormValues, initialFormValues, setDisabled])
 
     async function updateCategory(category_id: string, name?: string, description?: string) {
         await api.put(`/category/${category_id}`, {

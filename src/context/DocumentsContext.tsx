@@ -171,13 +171,13 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
 }
 
 function useDocumentsContext(): DocumentsContextTypes {
-    const context = useContext(DocumentsContext);
+    const context = useContext(DocumentsContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { DocumentsProvider, useDocumentsContext, };
+export { DocumentsProvider, useDocumentsContext, }

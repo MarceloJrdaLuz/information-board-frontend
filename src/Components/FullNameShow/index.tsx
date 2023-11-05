@@ -3,7 +3,7 @@ import {
   PopoverHandler,
   PopoverContent,
   Button,
-} from "@material-tailwind/react";
+} from "@material-tailwind/react"
 
 interface FullNameShowProps {
   defaultName: string

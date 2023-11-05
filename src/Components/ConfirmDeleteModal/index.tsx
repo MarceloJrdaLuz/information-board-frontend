@@ -1,12 +1,12 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement } from "react"
 import {
     Dialog,
     DialogHeader,
     DialogBody,
     DialogFooter,
-} from "@material-tailwind/react";
-import Button from "../Button";
-import { AlertTriangleIcon, Trash } from "lucide-react";
+} from "@material-tailwind/react"
+import Button from "../Button"
+import { AlertTriangleIcon, Trash } from "lucide-react"
 
 interface ConfirmDeleteProps {
     button: ReactElement
@@ -14,7 +14,7 @@ interface ConfirmDeleteProps {
 }
 
 export function ConfirmDeleteModal({ button, onDelete }: ConfirmDeleteProps) {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(false)
 
     const handleOpen = () => {
         setOpen(!open)
@@ -61,5 +61,5 @@ export function ConfirmDeleteModal({ button, onDelete }: ConfirmDeleteProps) {
                 </DialogFooter>
             </Dialog>
         </>
-    );
+    )
 }

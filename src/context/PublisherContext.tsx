@@ -232,13 +232,13 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 }
 
 function usePublisherContext(): PublisherContextTypes {
-    const context = useContext(PublisherContext);
+    const context = useContext(PublisherContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { PublisherProvider, usePublisherContext, };
+export { PublisherProvider, usePublisherContext, }

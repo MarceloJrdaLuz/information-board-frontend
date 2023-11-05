@@ -159,13 +159,13 @@ function PermissionAndRolesProvider(props: PermissionAndRolesContextProviderProp
 }
 
 function usePermissionsAndRolesContext(): PermissionAndRolesContextTypes {
-    const context = useContext(PermissionAndRolesContext);
+    const context = useContext(PermissionAndRolesContext)
 
     if (!context) {
-        throw new Error("useFiles must be used within FileProvider");
+        throw new Error("useFiles must be used within FileProvider")
     }
 
-    return context;
+    return context
 }
 
-export { PermissionAndRolesProvider, usePermissionsAndRolesContext, };
+export { PermissionAndRolesProvider, usePermissionsAndRolesContext, }
