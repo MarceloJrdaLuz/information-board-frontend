@@ -237,7 +237,7 @@ export default function PublisherCard() {
                                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                                 </div>
                             </div>
-                            {publishers ? (
+                            {publishers.length > 0 ? (
                                 publishers?.map(publisher => <PublishersToGenerateS21 key={publisher.id} publisher={publisher} />)
                             ) : (
                                 renderSkeleton()
