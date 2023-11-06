@@ -26,9 +26,9 @@ export default function PublishersToGenerateS21({publisher}: IPublisherItemProps
   return (
       <li
           onClick={toggleSelection}
-          className={`my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-tr from-light-blue-50 to-light-blue-200" : "bg-white"} `}
+          className={`my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-tr from-primary-50 to-primary-100" : "bg-white"} `}
       >
-          <div className={`flex flex-col w-full p-4`}>
+          <div className={`flex flex-col w-full p-4 text-gray-700`}>
               <span>{publisher.fullName}</span>
           </div>
       </li>
