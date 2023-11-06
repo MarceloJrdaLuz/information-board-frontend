@@ -11,7 +11,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function Contas() {
 
@@ -37,7 +37,7 @@ export default function Contas() {
     return (
         <Layout pageActive="contas">
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive}/>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5">
                     <div className="w-full h-full">
                         <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    
+
     if (!token) {
         return {
             redirect: {
@@ -66,11 +66,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
             }
         }
     }
-    
+
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION' || 'DOCUMENTS_MANAGER')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('DOCUMENTS_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',
