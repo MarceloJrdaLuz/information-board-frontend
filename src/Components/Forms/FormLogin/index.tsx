@@ -14,11 +14,12 @@ import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import { useState } from 'react'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import Spiner from '@/Components/Spiner'
 
 
 export default function FormLogin() {
 
-    const { login } = useAuthContext()
+    const { login, loading } = useAuthContext()
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -50,7 +51,8 @@ export default function FormLogin() {
 
     return (
         <>
-            <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
+            {!loading ? (
+                <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full lg:w-11/12 h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 m-auto w-full  font-semibold text-2xl sm:text-3xl text-primary-200`}>Login</div>
                     <Input type="text" placeholder="Email" registro={{
@@ -85,6 +87,9 @@ export default function FormLogin() {
                     </div>
                 </div>
             </FormStyle>
+            ) : (
+                <Spiner/>
+            )}
         </>
     )
 }

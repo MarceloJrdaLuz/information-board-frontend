@@ -34,7 +34,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [user, setUser] = useState<UserTypes | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [erroCadastro, setErroCadastro] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
 
@@ -56,6 +56,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     }, [])
 
     async function login(email: string, password: string) {
+        setLoading(true)
         await api.post<ResponseAuth>("/login", {
             email,
             password
@@ -87,10 +88,12 @@ function AuthProvider(props: AuthContextProviderProps) {
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
             setUser(usuarioLogado)
+            setLoading(false)
 
             Router.push('/dashboard')
 
         }).catch(res => {
+            setLoading(false)
             const { response: { data: { message } } } = res
             if (message === 'Senha inválida') {
                 handleSubmitError(messageErrorsSubmit.passwordNotEqual)
