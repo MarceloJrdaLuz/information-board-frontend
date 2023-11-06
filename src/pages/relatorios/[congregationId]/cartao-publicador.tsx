@@ -158,6 +158,7 @@ export default function PublisherCard() {
     const handleCheckboxGroupsChange = (filter: string[]) => {
         setGroupSelecteds(filter)
     }
+
     useEffect(() => {
 
     }, [yearService])
@@ -215,15 +216,22 @@ export default function PublisherCard() {
                                         title="Como gerar os registros de publicadores (S-21)"
                                         text={
                                             `  
-    Na lista abaixo aparece todos os publicadores da congregação. Por padrão eles vem todos selecionados, fazendo com que seja gerado um Pdf como todos os publicadores.
+    Na lista abaixo aparece todos os publicadores da congregação por ordem alfabética. Por padrão eles vem todos selecionados, fazendo com que seja gerado um Pdf como todos os publicadores.
                                             
-    No botao de filtro você escolher para filtrar pelos privilégios. Ex: selecionando Ancião e Servo, ele selecionará apenas os registros de anciãos e servos. Você também escolher um privilégio, e ainda acrescentar manualmente mais alguns publicadores clicando no nome deles na lista.
+    No botao de filtro você escolher para filtrar pelos privilégios. Ex: selecionando "Ancião" e "Servo", ele selecionará apenas os registros de anciãos e servos. Você também pode escolher um privilégio, e ainda acrescentar manualmente mais alguns publicadores clicando no nome deles na lista.
+
+    Há também o filtro de grupo. Você pode filtrar apenas publicadores de um ou mais grupos, e ainda pode usar o filtro de privilégios em conjunto, para selecionar por exemplo apenas os anciãos do Grupo 1.
                                             
-    Caso queira criar um registro para cada publicador individualmente, pode ir selecionando o nome na lista e clicar no botão Gerar S-21. Se o botão Gerar S-21 não estiver aparecendo é por que nenhum publicador está selecionado.`} />}
+    Caso queira criar um registro para cada publicador individualmente, pode ir selecionando o nome de cada um na lista.
+    
+    Sempre aque você muda os publicadores selecionados e deseja criar o Pdf basta clicar no botão "Preparar registros", quando o Pdf estiver preparado bastar clicar no botão "Gerar S-21".
+    
+    Por padrão quando há mais de um publicador na selecão o Pdf ira com o nome padrão de "Registro de publicadores", e se for apenas um publicador selecionado o nome padrão será o nome completo do publicador selecionado.
+    `} />}
                             </div>
                             <div className="flex justify-between items-center w-full mb-4">
                                 <div className="flex flex-col">
-                                    <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearService} handleClick={(select) => setYearService(select)} textVisible title="Ano de Serviço" options={[`${new Date().getFullYear()}`, `${new Date().getFullYear() - 1}`]} />
+                                    <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearService} handleClick={(select) => setYearService(select)} textVisible title="Ano de Serviço" options={[`${new Date().getFullYear()}`, `${new Date().getFullYear() - 1}`]} />
                                     {pdfGenerating && filterPublishers && filterPublishers.length > 0 ?
                                         <PdfLinkComponent />
                                         :
@@ -232,13 +240,18 @@ export default function PublisherCard() {
                                         </Button>}
                                 </div>
                                 <div className="flex gap-1">
-                                    <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
+                                    <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
 
-                                    <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                                    <FilterPrivileges onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                                 </div>
                             </div>
                             {publishers.length > 0 ? (
-                                publishers?.map(publisher => <PublishersToGenerateS21 key={publisher.id} publisher={publisher} />)
+                                <>
+                                    <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${filterPublishers?.length}`}</span>
+                                    {publishers?.map(publisher => (
+                                        <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} />
+                                    ))}
+                                </>
                             ) : (
                                 renderSkeleton()
                             )}

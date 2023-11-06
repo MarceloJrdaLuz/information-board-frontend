@@ -143,8 +143,8 @@ export default function S21({ months, publisher, serviceYear, reports }: S21Prop
                             const report = reports?.find(r => r.year === serviceYear && r.month === month)
                             return (
                                 <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
-                                    <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000' }}>
-                                        <Text>{month}</Text>
+                                    <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
+                                        <Text style={{paddingLeft: 2}}>{month}</Text>
                                     </View>
                                     <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
                                         <Text style={!report || isPionner ? styles.checkbox : styles.checkboxSelected}></Text>

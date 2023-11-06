@@ -15,11 +15,12 @@ import CheckboxGroups from "../CheckBoxGroups"
 
 interface IFilterGroupsProps {
     handleCheckboxChange: (selectedOptions: string[]) => void
+    onClick?: () => void
     congregation_id: string
     checkedOptions?: string[] // torna a propriedade opcional
 }
 
-export default function FilterGroups({ handleCheckboxChange, checkedOptions, congregation_id }: IFilterGroupsProps) {
+export default function FilterGroups({ handleCheckboxChange, checkedOptions, congregation_id, onClick }: IFilterGroupsProps) {
     const [groups, setGroups] = useState<IGroup[]>([])
 
     const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
@@ -36,7 +37,7 @@ export default function FilterGroups({ handleCheckboxChange, checkedOptions, con
         <Popover placement="bottom-start">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
+                    <Button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
                         <GroupIcon />
                     </Button>
                 </div>

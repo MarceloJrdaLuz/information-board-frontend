@@ -5,24 +5,25 @@ import {
     List,
 } from "@material-tailwind/react"
 import Button from "../Button"
-import {  ListFilterIcon } from "lucide-react"
-import {  Privileges } from "@/entities/types"
+import { ListFilterIcon } from "lucide-react"
+import { Privileges } from "@/entities/types"
 import { useState } from "react"
 import CheckboxMultiple from "../CheckBoxMultiple"
 
 interface IFIlterPrivilegesProps {
     handleCheckboxChange: (selectedOptions: string[]) => void
+    onClick?: () => void
     checkedOptions?: string[] // torna a propriedade opcional
 }
 
-export default function FilterPrivileges({ handleCheckboxChange, checkedOptions }: IFIlterPrivilegesProps) {
+export default function FilterPrivileges({ handleCheckboxChange, checkedOptions, onClick }: IFIlterPrivilegesProps) {
     const [privileges, setPrivileges] = useState(Object.values(Privileges))
 
     return (
         <Popover placement="bottom-start">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
+                    <Button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
                         <ListFilterIcon />
                     </Button>
                 </div>
