@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { meses } from "@/functions/meses"
 import { useRouter } from "next/router"
 import { useFetch } from "@/hooks/useFetch"
@@ -9,7 +9,7 @@ import Layout from "@/Components/Layout"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Button from "@/Components/Button"
 import { useAtom } from "jotai"
-import { selectedPublishersToS21Atom } from "@/atoms/atom"
+import { crumbsAtom, pageActiveAtom, selectedPublishersToS21Atom } from "@/atoms/atom"
 import PublishersToGenerateS21 from "@/Components/PublishersToGenerateS21"
 import ModalHelp from "@/Components/ModalHelp"
 import { HelpCircle } from "lucide-react"
@@ -18,13 +18,16 @@ import FilterPrivileges from "@/Components/FilterPrivileges"
 import FilterGroups from "@/Components/FilterGroups"
 import S21 from "@/Components/PublisherCard"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import PdfIcon from "@/Components/Icons/PdfIcon"
+import BreadCrumbs from "@/Components/BreadCrumbs"
+import SkeletonPublishersList from "@/Components/PublishersToGenerateS21/skeletonPublishersList"
 
 
 export default function PublisherCard() {
-    const mainContentRef = useRef<HTMLDivElement | null>(null)
-
     const router = useRouter()
     const { congregationId } = router.query
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const fetchConfig = congregationId ? `/publishers/congregationId/${congregationId}` : ""
     const { data } = useFetch<IPublisher[]>(fetchConfig)
@@ -39,15 +42,51 @@ export default function PublisherCard() {
     const [modalHelpShow, setModalHelpShow] = useState(false)
     const [yearService, setYearService] = useState(new Date().getFullYear().toString())
     const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
+    const [pdfGenerating, setPdfGenerating] = useState(false)
 
     useEffect(() => {
-        if (data) {
-            const sort = sortArrayByProperty(data, "fullName")
-            setPublishers(sort)
-            setfilterPublishers(sort)
-            sort?.map(publisher => setSelectedPublishersToS21(prev => [...prev, publisher.id]))
+        setPageActive("Registros")
+    }, [setPageActive])
+
+    useEffect(() => {
+        setCrumbs((prevCrumbs) => {
+            const updatedCrumbs = [...prevCrumbs, { label: 'Relatórios', link: `/relatorios/${congregationId}` }]
+            return updatedCrumbs
+        })
+
+        const removeCrumb = () => {
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
         }
-    }, [data, setPublishers, setfilterPublishers, setSelectedPublishersToS21])
+
+        return () => {
+            removeCrumb()
+        }
+    }, [setCrumbs, setPageActive, congregationId])
+
+    let skeletonPublishersList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonPublishersList.map((a, i) => (<SkeletonPublishersList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
+    const sortedData = useMemo(() => {
+        if (data) {
+            return sortArrayByProperty(data, "fullName")
+        }
+        return []
+    }, [data])
+
+    useEffect(() => {
+        if (sortedData) {
+            setPublishers(sortedData)
+            setfilterPublishers(sortedData)
+            sortedData?.map(publisher => setSelectedPublishersToS21(prev => [...prev, publisher.id]))
+        }
+    }, [sortedData, setPublishers, setfilterPublishers, setSelectedPublishersToS21])
 
     useEffect(() => {
         if (publishers) {
@@ -147,9 +186,11 @@ export default function PublisherCard() {
             fileName={filterPublishers && filterPublishers?.length === 1 ? `${filterPublishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}
         >
             {({ blob, url, loading, error }) =>
-                loading ? "Gerando PDF..." :
-                    <Button>
-                        Gerar S-21
+                loading ? "" :
+                    <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                        Salvar S-21
+                        <PdfIcon />
+
                     </Button>
             }
         </PDFDownloadLink>
@@ -159,6 +200,7 @@ export default function PublisherCard() {
     return (
         <Layout pageActive="relatorios">
             <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-col justify-center items-center p-5">
                     <div className="flex justify-between w-full mt-5 ">
                         <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
@@ -182,7 +224,12 @@ export default function PublisherCard() {
                             <div className="flex justify-between items-center w-full mb-4">
                                 <div className="flex flex-col">
                                     <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearService} handleClick={(select) => setYearService(select)} textVisible title="Ano de Serviço" options={[`${new Date().getFullYear()}`, `${new Date().getFullYear() - 1}`]} />
-                                    {filterPublishers && filterPublishers.length > 0 ? <PdfLinkComponent /> : <span>Nenhuma seleção</span>}
+                                    {pdfGenerating && filterPublishers && filterPublishers.length > 0 ?
+                                        <PdfLinkComponent />
+                                        :
+                                        <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                            Preparar registros
+                                        </Button>}
                                 </div>
                                 <div className="flex gap-1">
                                     <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
@@ -190,7 +237,11 @@ export default function PublisherCard() {
                                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                                 </div>
                             </div>
-                            {publishers?.map(publisher => <PublishersToGenerateS21 key={publisher.id} publisher={publisher} />)}
+                            {publishers ? (
+                                publishers?.map(publisher => <PublishersToGenerateS21 key={publisher.id} publisher={publisher} />)
+                            ) : (
+                                renderSkeleton()
+                            )}
                         </div>
                     )}
                 </section>

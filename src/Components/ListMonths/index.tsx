@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { obterUltimosMeses } from "@/functions/meses"
 import Router, { useRouter } from "next/router"
 import Button from "../Button"
+import { FileSpreadsheetIcon } from "lucide-react"
 
 export interface ListRelatoriosProps {
     congregationId: string
@@ -23,8 +24,9 @@ export default function ListMonths(props: ListRelatoriosProps) {
     return (
         <section className="flex flex-col flex-1 h-[90%] overflow-auto">
             <h1 className="flex flex-1 pl-5 pt-5 text-2xl text-primary-200 font-semibold ">Relatórios</h1>
-            <Button className="ml-6 mt-2" onClick={() => router.push(`/relatorios/${congregationId}/cartao-publicador`)}>
-                Gerar S-21
+            <Button  className="m-5 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => router.push(`/relatorios/${congregationId}/cartao-publicador`)}>
+                Criar registros
+                <FileSpreadsheetIcon/>
             </Button>
             <div className="flex justify-evenly items-baseline">
                 <>
