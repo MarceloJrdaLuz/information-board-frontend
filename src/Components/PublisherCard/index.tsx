@@ -57,6 +57,7 @@ export default function S21({ months, publisher, serviceYear, reports }: S21Prop
         privilege === Privileges.PIONEIROESPECIAL
     )
 
+    let totalHours = 0
     return (
         <Page size="A4">
             <View style={{ padding: 20, flex: 1, flexDirection: "column" }}>
@@ -141,10 +142,11 @@ export default function S21({ months, publisher, serviceYear, reports }: S21Prop
                         </View>
                         {months.map((month) => {
                             const report = reports?.find(r => r.year === serviceYear && r.month === month)
+                            if (report && report.hours > 0) totalHours += report.hours
                             return (
                                 <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
                                     <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
-                                        <Text style={{paddingLeft: 2}}>{month}</Text>
+                                        <Text style={{ paddingLeft: 2 }}>{month}</Text>
                                     </View>
                                     <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
                                         <Text style={!report || isPionner ? styles.checkbox : styles.checkboxSelected}></Text>
@@ -171,7 +173,9 @@ export default function S21({ months, publisher, serviceYear, reports }: S21Prop
                             <View style={{ width: 80, fontSize: 10, fontFamily: "Times-Bold", justifyContent: "center", textAlign: "right", paddingRight: 4, borderRight: 1, borderRightWidth: 1 }}>
                                 <Text>Total</Text>
                             </View>
-                            <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
+                            <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center", fontSize: 12, fontFamily: "Times-Bold" }}>
+                                <Text>{totalHours}</Text>
+                            </View>
                             <View style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
                         </View>
                     </View>
