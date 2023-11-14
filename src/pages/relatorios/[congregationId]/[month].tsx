@@ -347,9 +347,11 @@ export default function RelatorioMes() {
     }
 
     const onSubmit = () => {
-        toast.promise(updatePrivilegesReports, {
-            pending: "Registrando relatórios..."
-        })
+        if (!monthAlreadyRegister) {
+            toast.promise(updatePrivilegesReports, {
+                pending: "Registrando relatórios..."
+            })
+        }
         toast.promise(sendTotalsReports, {
             pending: "Registrando totais..."
         })
@@ -393,6 +395,7 @@ export default function RelatorioMes() {
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
                             <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+
                             <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                 Totais
                                 {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}

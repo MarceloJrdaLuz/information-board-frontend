@@ -18,6 +18,8 @@ import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import FilterPrivileges from "../FilterPrivileges"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
+import FilterSituation from "../FilterSituation"
+import CheckboxBoolean from "../CheckboxBoolean"
 
 export default function PublisherList() {
     const { user } = useAuthContext()
@@ -33,6 +35,10 @@ export default function PublisherList() {
     const [filterPublishers, setFilterPublishers] = useState<IPublisher[]>()
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
+    const [filterSituation, setFilterSituation] = useState<string[]>([])
+    const [inactivesShow, setInactivesShow] = useState(false)
+    const [publishersOthers, setPublishersOthers] = useState<IPublisher[]>()
+
 
     const handleShowDetails = (publisher: IPublisher) => {
         const updatedSelectedPublishers = new Set(selectedPublishers)
@@ -46,8 +52,12 @@ export default function PublisherList() {
 
     useEffect(() => {
         if (data) {
-            const sort = sortArrayByProperty(data, "fullName")
-            setPublishers(sort)
+            const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
+            const filterOthers = data?.filter(publisher => (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO))
+            const sortActives = sortArrayByProperty(filterActives, "fullName")
+            const sortOthersSituation = sortArrayByProperty(filterOthers, "fullName")
+            setPublishers(sortActives)
+            setPublishersOthers(sortOthersSituation)
         }
     }, [data])
 
@@ -74,7 +84,15 @@ export default function PublisherList() {
         setFilterPrivileges(filter)
     }
 
+    const handleCheckboxSituationChange = (filter: string[]) => {
+        setFilterSituation(filter)
+    }
+
     useEffect(() => {
+        if (inactivesShow) {
+            setFilterPublishers(publishersOthers)
+            return
+        }
         const filterPublishersToPrivileges = filterPrivileges.length > 0 ?
             publishers?.filter(publisher => {
                 return (publisher.situation === Situation.ATIVO &&
@@ -92,7 +110,7 @@ export default function PublisherList() {
                 )
             }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO);
         setFilterPublishers(filterPublishersToPrivileges)
-    }, [filterPrivileges, publishers])
+    }, [filterPrivileges, publishers, inactivesShow, publishersOthers])
 
     let skeletonPublishersList = Array(6).fill(0)
 
@@ -108,6 +126,7 @@ export default function PublisherList() {
         <>
             <ul className="flex flex-wrap justify-center items-center w-full">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
+                    <CheckboxBoolean handleCheckboxChange={(check) => setInactivesShow(check)} checked={inactivesShow} label="Inativos" />
                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)} />
                     {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
                 </div>
@@ -155,6 +174,11 @@ export default function PublisherList() {
                                         )
                                     }
                                 })}
+                                {publisher.situation !== Situation.ATIVO && (
+                                    <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + publisher.situation}`}>
+                                        {publisher.situation}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap w-full mt-2 ">
