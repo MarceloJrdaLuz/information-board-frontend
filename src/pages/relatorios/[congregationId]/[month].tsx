@@ -158,7 +158,7 @@ export default function RelatorioMes() {
                     month: monthSelected,
                     year: yearSelected,
                     totalsFrom: "Publicadores",
-                    totalsReports: totalsReportsPublishers,
+                    quantity: totalsReportsPublishers,
                     studies: totalStudiesPublishers,
                     publishersActives: publishers?.length ?? 0
                 })
@@ -174,7 +174,7 @@ export default function RelatorioMes() {
                     month: monthSelected,
                     year: yearSelected,
                     totalsFrom: "Pioneiros regulares",
-                    totalsReports: totalsReportsPioneer,
+                    quantity: totalsReportsPioneer,
                     hours: totalHoursPioneer,
                     studies: totalStudiesPioneer,
                     publishersActives: publishers?.length ?? 0
@@ -191,7 +191,7 @@ export default function RelatorioMes() {
                     month: monthSelected,
                     year: yearSelected,
                     totalsFrom: "Pioneiros auxiliares",
-                    totalsReports: totalsReportsAuxPioneer,
+                    quantity: totalsReportsAuxPioneer,
                     hours: totalHoursAuxPioneer,
                     studies: totalStudiesAuxPioneer,
                     publishersActives: publishers?.length ?? 0
@@ -208,7 +208,7 @@ export default function RelatorioMes() {
                     month: monthSelected,
                     year: yearSelected,
                     totalsFrom: "Pioneiros especiais e Missionários em campo",
-                    totalsReports: totalsReportsSpecialPioneer,
+                    quantity: totalsReportsSpecialPioneer,
                     hours: totalHoursSpecialPioneer,
                     studies: totalStudiesSpecialPioneer,
                     publishersActives: publishers?.length ?? 0

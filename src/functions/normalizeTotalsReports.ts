@@ -7,7 +7,7 @@ export const normalizeTotalsReports = (data: ITotalsReports) => {
       year: data?.year,
       publishersActives: data.publishersActives,
       privileges: data?.totalsFrom,
-      quantity: data?.totalsReports,
+      quantity: data?.quantity,
       hours: data?.hours,
       studies: data?.studies
     };
