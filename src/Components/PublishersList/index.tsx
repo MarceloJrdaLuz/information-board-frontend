@@ -18,7 +18,6 @@ import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import FilterPrivileges from "../FilterPrivileges"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
-import FilterSituation from "../FilterSituation"
 import CheckboxBoolean from "../CheckboxBoolean"
 
 export default function PublisherList() {

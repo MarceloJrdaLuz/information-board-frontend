@@ -49,7 +49,6 @@ export default function RelatorioMes() {
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
-    const [publishersOthers, setPublishersOthers] = useState<IPublisher[]>()
 
     const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
 
@@ -73,9 +72,7 @@ export default function RelatorioMes() {
 
     useEffect(() => {
         const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
-        const filterOthers = data?.filter(publisher => (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO))
         setPublishers(filterActives)
-        setPublishersOthers(filterOthers)
     }, [data])
 
     useEffect(() => {
