@@ -7,6 +7,7 @@ import Layout from "@/Components/Layout"
 import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
+import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/entities/types"
@@ -373,6 +374,16 @@ export default function RelatorioMes() {
         setFilterPrivileges(filter)
     }
 
+    let skeletonReportsList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonReportsList.map((a, i) => (<SkeletonModalReport key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
     return (
         <Layout pageActive="relatorios">
             <ContentDashboard>
@@ -403,7 +414,7 @@ export default function RelatorioMes() {
                                 </div>
                                     :
                                     <div className="flex m-4 p-2 bg-blue-gray-100">
-                                        <span className="h-full pr-1"><InfoIcon className="p-0.5 text-blue-gray-700"/></span>
+                                        <span className="h-full pr-1"><InfoIcon className="p-0.5 text-blue-gray-700" /></span>
                                         Este relatório não pode mais ser alterado. Inclua relatórios atrasados no próximo relatório em aberto.
                                     </div>}
                                 <div className="p-4 my-5 w-11/12 m-auto bg-white">
@@ -419,7 +430,7 @@ export default function RelatorioMes() {
                             </ul>
                         ) : reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly relative">
-                                {reportsFiltered?.map(report =>
+                                {reportsFiltered.length > 0 && reportsFiltered?.map(report =>
                                     <ModalRelatorio
                                         key={v4()}
                                         publisher={report.publisher}
@@ -432,8 +443,10 @@ export default function RelatorioMes() {
                                         observations={report.observations}
                                     />)}
                             </ul>
-                        ) : (
+                        ) : missingReportsCount ? (
                             <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
+                        ) : (
+                            renderSkeleton()
                         )}
 
                     </section>
