@@ -275,7 +275,7 @@ export interface ITotalsReports {
     publishersActives: number
     privileges?: string[]
     totalsFrom: string
-    totalsReports: number
+    quantity: number
     hours?: number
     studies?: number
 }

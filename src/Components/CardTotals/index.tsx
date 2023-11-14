@@ -138,7 +138,6 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                             const report = reports?.find(r => {
                                 return (r.month === capitalizeFirstLetter(splitMonth[0]) && r.year === splitMonth[1])
                             })
-
                             if (report?.hours && report.hours > 0) totalHours += report.hours
                             return (
                                 <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
@@ -158,7 +157,7 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                                         <Text style={{ textAlign: "center" }}>{report && !report.privileges?.includes("Publicadores") ? report.hours : ""}</Text>
                                     </View>
                                     <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ textAlign: "center" }}>{report && report.totalsReports}</Text>
+                                        <Text style={{ textAlign: "center" }}>{report && report.quantity}</Text>
                                     </View>
                                 </View>
                             )

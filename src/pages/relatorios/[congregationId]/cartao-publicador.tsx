@@ -209,18 +209,15 @@ export default function PublisherCard() {
                                     />
                                 )
                             )
-                        }) : reportsTotalsFromFilter && reportsTotalsFromFilter?.map((report, index) => {
-                            const reportsTotals = reportsTotalsFromFilter?.filter(report => report.privileges?.includes(totalsFrom))
-                            return (
-                                (
-                                    <CardTotals
-                                        key={index + report.totalsFrom}
-                                        months={months}
-                                        serviceYear={yearService}
-                                        reports={reportsTotals ?? []}
-                                    />
-                                ))
-                        })}
+                        }) : reportsTotalsFromFilter && (
+                            (
+                                <CardTotals
+                                    months={months}
+                                    serviceYear={yearService}
+                                    reports={reportsTotalsFromFilter ?? []}
+                                />
+                            ))
+                    }
                 </Document>
             }
             fileName={filterPublishers && filterPublishers?.length === 1 ? `${filterPublishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}
@@ -275,7 +272,7 @@ export default function PublisherCard() {
                                         <PdfLinkComponent />
                                         :
                                         <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                            {(!totals && filterPublishers && filterPublishers.length > 0) || (totals && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ? "Preparar registros" : "Sem registros"  }
+                                            {(!totals && filterPublishers && filterPublishers.length > 0) || (totals && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ? "Preparar registros" : "Sem registros"}
                                         </Button>}
                                 </div>
                                 <div className="flex gap-1">
@@ -295,7 +292,6 @@ export default function PublisherCard() {
                                     )) : (
                                         <ul>
                                             {Object.values(TotalsFrom).map(ob => (
-
                                                 <li
                                                     key={ob}
                                                     onClick={() => {
