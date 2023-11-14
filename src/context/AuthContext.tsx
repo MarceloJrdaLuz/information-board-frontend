@@ -56,6 +56,23 @@ function AuthProvider(props: AuthContextProviderProps) {
         }
     }, [])
 
+    useEffect(() => {
+        const handleRouteChangeComplete = (url: string) => {
+            // Verifica se a URL atual corresponde à URL de destino
+            if (url === '/dashboard') {
+                setLoading(false);
+            }
+        };
+
+        // Adiciona um ouvinte para o evento de conclusão da mudança de rota
+        Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+
+        // Remove o ouvinte quando o componente for desmontado
+        return () => {
+            Router.events.off('routeChangeComplete', handleRouteChangeComplete);
+        };
+    }, []);
+
     async function login(email: string, password: string) {
         setLoading(true)
         await api.post<ResponseAuth>("/login", {
@@ -79,20 +96,18 @@ function AuthProvider(props: AuthContextProviderProps) {
             ))
 
             setCookie('quadro-token', token, {
-                maxAge: 60 * 60 * 8, 
+                maxAge: 60 * 60 * 8,
             })
 
             setCookie('user-roles', JSON.stringify(userRoles), {
-                maxAge: 60 * 60 * 8, 
+                maxAge: 60 * 60 * 8,
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
             setUser(usuarioLogado)
-            
+
             Router.push('/dashboard')
-            
-            setLoading(false)
         }).catch(res => {
             setLoading(false)
             const { response: { data: { message } } } = res
@@ -138,7 +153,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 const token = res.data.token
 
                 setCookie('quadro-token', token, {
-                    maxAge: 60 * 60 * 8, 
+                    maxAge: 60 * 60 * 8,
                 })
 
                 api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
