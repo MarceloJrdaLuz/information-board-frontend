@@ -37,6 +37,8 @@ export const messageSuccessSubmit = {
     registerCreate: "Cadastro efetuado com sucesso!",
     consentCreate: "Consentimento foi dado com sucesso!",
     reportSend: "Relatório enviado com sucesso!",
+    reportPrivilegesUpdate: "Relatórios registrados com sucesso!",
+    totalsReportsCreate: "Totais registrados com sucesso!",
     groupOverseerUpdate: "Dirigente do grupo atualizado com sucesso!",
     publisherCreate: "Publicador criado com sucesso!",
     publisherUpdate: "Publicador atualizado com sucesso!",
@@ -52,5 +54,6 @@ export const messageSuccessSubmit = {
     noticeCreate: "Anúncio criado com sucesso!",
     noticeUpdate: "Anúncio atualizado com sucesso!",
     noticeDelete: "Anúncio excluído com sucesso!",
-    roleAddUser: "Função atribuída ao usuário com sucesso!"
+    roleAddUser: "Função atribuída ao usuário com sucesso!",
+    assistanceCreate: "Assistência enviada com sucesso!"
 }

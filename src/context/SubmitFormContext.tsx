@@ -25,7 +25,7 @@ function SubmitFormProvider(props: SubmitFormContextProviderProps) {
 
 
     const handleSubmitError = async (messageError: string, redirectTo?: string) => {
-        toast.error(messageError)
+        toast.error(messageError, {autoClose: 3000})
         setDisabled(true)
         setErrorFormSendValue(true)
         setResetFormValue(false)
@@ -33,11 +33,11 @@ function SubmitFormProvider(props: SubmitFormContextProviderProps) {
             setDisabled(false)
             setErrorFormSendValue(false)
             redirectTo && Router.push(redirectTo)
-        }, 6000)
+        }, 4000)
     }
 
     const handleSubmitSuccess = async ( messageSuccess: string, redirectTo?: string) => {
-        toast.success(messageSuccess)
+        toast.success(messageSuccess, {autoClose: 3000})
         setSuccessFormSendValue(true)
         setDisabled(true)
         setResetFormValue(true)
@@ -47,7 +47,7 @@ function SubmitFormProvider(props: SubmitFormContextProviderProps) {
             setDisabled(false)
             setResetFormValue(false)
             redirectTo && Router.push(redirectTo)
-        }, 6000)
+        }, 4000)
     }
 
 

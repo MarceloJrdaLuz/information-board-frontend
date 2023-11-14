@@ -104,9 +104,24 @@ export interface IReports {
     month: string
     year: string,
     publisher: IPublisher,
+    privileges: string[]
     hours: number,
     studies?: number,
     observations?: string
+}
+
+export interface ITotalsReportsCreate {
+    month: string
+    year: string
+    quantity: number
+    hours?: number
+    studies?: number
+    privileges: string
+}
+
+export interface IUpdateReport {
+    report_id: string
+    privileges: string[]
 }
 
 export interface IPublisher {
@@ -118,6 +133,7 @@ export interface IPublisher {
     hope: Hope
     gender: Gender
     dateImmersed?: Date
+    startPioneer?: Date
     birthDate?: Date
     congregation: ICongregation
     group: IGroup
@@ -187,13 +203,21 @@ export enum Categories {
 }
 
 export enum Privileges {
+    PUBLICADOR = "Publicador",
     ANCIAO = "Ancião",
     SM = 'Servo Ministerial',
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
-    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado', 
+    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
     MISSIONARIOEMCAMPO = 'Missionário em Campo'
+}
+
+export enum TotalsFrom {
+    PUBLICADORES = "Publicadores",
+    PIONEIROSREGULARES = "Pioneiros regulares",
+    PIONEIROSAUXILIARES = "Pioneiros auxiliares",
+    ESPECIAISEMISSIONARIOS = 'Pioneiros especiais e Missionários em campo',
 }
 
 export interface IPublisherConsent {
@@ -248,8 +272,22 @@ export interface IRole {
 export interface ITotalsReports {
     month: string
     year: string
+    publishersActives: number
+    privileges?: string[]
     totalsFrom: string
     totalsReports: number
     hours?: number
     studies?: number
+}
+
+export interface IMeetingAssistance {
+    id: string
+    month: string
+    year: string
+    midWeek: string[]
+    midWeekTotal: number
+    midWeekAverage: number
+    endWeek: string[]
+    endWeekTotal: number
+    endWeekAverage: number
 }

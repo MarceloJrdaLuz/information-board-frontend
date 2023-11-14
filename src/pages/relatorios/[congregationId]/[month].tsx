@@ -1,4 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import Button from "@/Components/Button"
+import { ConfirmRegisterReports } from "@/Components/ConfirmRegisterReports"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FilterPrivileges from "@/Components/FilterPrivileges"
 import Layout from "@/Components/Layout"
@@ -6,18 +8,24 @@ import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { IPublisher, IReports, ITotalsReports, Privileges } from "@/entities/types"
+import { useSubmitContext } from "@/context/SubmitFormContext"
+import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/entities/types"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
+import { isPioneerNow } from "@/functions/isRegularPioneerNow"
+import { meses } from "@/functions/meses"
+import { normalizeTotalsReports } from "@/functions/normalizeTotalsReports"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useCallback, useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import { v4 } from "uuid"
 
 export default function RelatorioMes() {
@@ -25,17 +33,22 @@ export default function RelatorioMes() {
     const router = useRouter()
     const { month, congregationId } = router.query
 
+    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+
     const { data } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`)
+    const { data: getAssistance } = useFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`)
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const [reports, setReports] = useState<IReports[]>()
     const [reportsFiltered, setReportsFiltered] = useState<IReports[]>([])
+    const [reportsUpdatePrivileges, setReportsUpdatePrivileges] = useState<IUpdateReport[]>([])
 
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
+    const [publishersOthers, setPublishersOthers] = useState<IPublisher[]>()
 
     const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
 
@@ -45,15 +58,23 @@ export default function RelatorioMes() {
 
     const [totalsAuxPioneers, setTotalsAuxPioneers] = useState<ITotalsReports>()
     const [totalsPioneers, setTotalsPioneers] = useState<ITotalsReports>()
+    const [totalsSpecialsPioneer, setTotalsSpecialsPioneer] = useState<ITotalsReports>()
     const [totalsPublishers, setTotalsPublishers] = useState<ITotalsReports>()
+    const [totalsToRegister, setTotalsToRegister] = useState<ITotalsReportsCreate[]>([])
+    const [monthAlreadyRegister, setMonthAlreadyRegister] = useState(false)
+    const [meetingAssistanceEndWeek, setMeetingAssistanceEndWeek] = useState(0)
 
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
+    const [dateFormat, setDateFormat] = useState<Date>()
 
     const monthParam = month as string
 
     useEffect(() => {
-        setPublishers(data)
+        const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
+        const filterOthers = data?.filter(publisher => (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO))
+        setPublishers(filterActives)
+        setPublishersOthers(filterOthers)
     }, [data])
 
     useEffect(() => {
@@ -61,7 +82,15 @@ export default function RelatorioMes() {
         let dividirPalavra = monthParam.split(" ")
         setMonthSelected(dividirPalavra[0])
         setYearSelected(dividirPalavra[1])
+        setDateFormat(new Date(`${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${dividirPalavra[1]}`))
     }, [monthParam, setPageActive])
+
+    useEffect(() => {
+        if (getAssistance) {
+            const filterAssistanceMeetingEndWeek = getAssistance.filter(assistance => assistance.month === capitalizeFirstLetter(monthSelected) && assistance.year === yearSelected)
+            setMeetingAssistanceEndWeek(filterAssistanceMeetingEndWeek[0]?.endWeekAverage)
+        }
+    }, [getAssistance, monthSelected, yearSelected])
 
     useEffect(() => {
         const someTotals = (reports: IReports[]) => {
@@ -76,16 +105,51 @@ export default function RelatorioMes() {
             let totalStudiesAuxPioneer = 0
             let totalsReportsAuxPioneer = 0
 
-            const filterPublishers = reports.filter(report =>
-            (
-                !report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
-                !report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
-                !report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                !report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL)
-            ))
-            const filterPioneer = reports.filter(report => (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR)))
-            const filterAuxPioneer = reports.filter(report => ((report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) || report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))))
+            let totalHoursSpecialPioneer = 0
+            let totalStudiesSpecialPioneer = 0
+            let totalsReportsSpecialPioneer = 0
 
+            const alreadyRegister = reports[0]?.privileges
+
+            if (alreadyRegister) setMonthAlreadyRegister(true)
+
+            const filterSpecialPioneer = reports.filter(report => {
+                if (report.privileges) {
+                    return ((report.privileges.includes(Privileges.PIONEIROESPECIAL) || report.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
+                } else {
+                    return ((report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) || report.publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
+                }
+            })
+
+            const filterPioneer = reports.filter(report => {
+                if (report.privileges) {
+                    return (report.privileges.includes(Privileges.PIONEIROREGULAR))
+                } else {
+                    return (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && isPioneerNow(report.publisher, dateFormat ?? new Date())
+                }
+            })
+
+            const filterAuxPioneer = reports.filter(report => {
+                if (report.privileges) {
+                    return ((report.privileges.includes(Privileges.PIONEIROAUXILIAR) || report.privileges.includes(Privileges.AUXILIARINDETERMINADO)))
+                } else {
+                    return ((report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) || (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())))
+                }
+            })
+
+            const filterPublishers = reports.filter(report => {
+                if (report.privileges) {
+                    return report.privileges.some(privilege => privilege === Privileges.PUBLICADOR);
+                } else {
+                    return (
+                        report.publisher.privileges.some(privilege => privilege === Privileges.PUBLICADOR) ||
+                        (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
+                            !isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                        (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && !isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
+                        (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && !isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                    )
+                }
+            })
 
             filterPublishers.map(report => {
                 totalsReportsPublishers += 1
@@ -97,7 +161,8 @@ export default function RelatorioMes() {
                     year: yearSelected,
                     totalsFrom: "Publicadores",
                     totalsReports: totalsReportsPublishers,
-                    studies: totalStudiesPublishers
+                    studies: totalStudiesPublishers,
+                    publishersActives: publishers?.length ?? 0
                 })
             })
 
@@ -113,7 +178,8 @@ export default function RelatorioMes() {
                     totalsFrom: "Pioneiros regulares",
                     totalsReports: totalsReportsPioneer,
                     hours: totalHoursPioneer,
-                    studies: totalStudiesPioneer
+                    studies: totalStudiesPioneer,
+                    publishersActives: publishers?.length ?? 0
                 })
             })
 
@@ -129,7 +195,25 @@ export default function RelatorioMes() {
                     totalsFrom: "Pioneiros auxiliares",
                     totalsReports: totalsReportsAuxPioneer,
                     hours: totalHoursAuxPioneer,
-                    studies: totalStudiesAuxPioneer
+                    studies: totalStudiesAuxPioneer,
+                    publishersActives: publishers?.length ?? 0
+                })
+            })
+
+            filterSpecialPioneer.map(report => {
+                totalHoursSpecialPioneer += report.hours
+                totalsReportsSpecialPioneer += 1
+                if (report.studies) {
+                    totalStudiesSpecialPioneer += report.studies
+                }
+                setTotalsSpecialsPioneer({
+                    month: monthSelected,
+                    year: yearSelected,
+                    totalsFrom: "Pioneiros especiais e Missionários em campo",
+                    totalsReports: totalsReportsSpecialPioneer,
+                    hours: totalHoursSpecialPioneer,
+                    studies: totalStudiesSpecialPioneer,
+                    publishersActives: publishers?.length ?? 0
                 })
             })
         }
@@ -140,30 +224,41 @@ export default function RelatorioMes() {
                 report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
             ))
 
+            const updatePrivilegesArray = reportsFilteredByDate.map(report => ({
+                report_id: report.id,
+                privileges: report.publisher?.privileges
+            }))
+
+            setReportsUpdatePrivileges(updatePrivilegesArray)
+
             someTotals(reportsFilteredByDate)
 
             // Filter the filtered reports based on privileges
             const filteredReports = filterPrivileges.length > 0
                 ? reportsFilteredByDate.filter(report => {
-                    const isPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROAUXILIAR)
+                    const isAuxPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROAUXILIAR)
                     const isIndefinitePioneerSelected = filterPrivileges.includes(Privileges.AUXILIARINDETERMINADO)
+                    const isRegPioneerSelected = filterPrivileges.includes(Privileges.PIONEIROREGULAR)
                     const isServantSelected = filterPrivileges.includes(Privileges.SM)
                     const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO)
 
-                    if ((isPioneerSelected || isIndefinitePioneerSelected) && !isElderSelected && !isServantSelected) {
+                    if ((isAuxPioneerSelected || isIndefinitePioneerSelected || isRegPioneerSelected) && !isElderSelected && !isServantSelected) {
                         return (
-                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
-                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                            (isAuxPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
+                            (isRegPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(report.publisher, dateFormat ?? new Date()))
                         )
-                    } else if ((isPioneerSelected || isIndefinitePioneerSelected) && isElderSelected) {
+                    } else if ((isAuxPioneerSelected || isIndefinitePioneerSelected || isRegPioneerSelected) && isElderSelected) {
                         return (
-                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
-                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                            (isAuxPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
+                            (isRegPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(report.publisher, dateFormat ?? new Date()))
                         ) && report.publisher.privileges.includes(Privileges.ANCIAO)
-                    } else if ((isPioneerSelected || isIndefinitePioneerSelected) && isServantSelected) {
+                    } else if ((isAuxPioneerSelected || isIndefinitePioneerSelected || isRegPioneerSelected) && isServantSelected) {
                         return (
-                            (isPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
-                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO))
+                            (isAuxPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                            (isIndefinitePioneerSelected && report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
+                            (isRegPioneerSelected && report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(report.publisher, dateFormat ?? new Date()))
                         ) && report.publisher.privileges.includes(Privileges.SM)
                     } else {
                         return filterPrivileges.every(privilege => report.publisher.privileges.includes(privilege))
@@ -175,7 +270,23 @@ export default function RelatorioMes() {
 
             setReportsFiltered(sortedReports)
         }
-    }, [monthSelected, yearSelected, filterPrivileges, reports])
+
+    }, [monthSelected, yearSelected, filterPrivileges, reports, dateFormat, publishers])
+
+    useEffect(() => {
+        if (totalsAuxPioneers) {
+            setTotalsToRegister(prev => [...prev, normalizeTotalsReports(totalsAuxPioneers)])
+        }
+        if (totalsPioneers) {
+            setTotalsToRegister(prev => [...prev, normalizeTotalsReports(totalsPioneers)])
+        }
+        if (totalsPublishers) {
+            setTotalsToRegister(prev => [...prev, normalizeTotalsReports(totalsPublishers)])
+        }
+        if (totalsSpecialsPioneer) {
+            setTotalsToRegister(prev => [...prev, normalizeTotalsReports(totalsSpecialsPioneer)])
+        }
+    }, [totalsAuxPioneers, totalsPioneers, totalsPublishers, totalsSpecialsPioneer])
 
     useEffect(() => {
         if (publishers && reports) {
@@ -212,6 +323,37 @@ export default function RelatorioMes() {
         getRelatorios()
     }, [getRelatorios])
 
+    const updatePrivilegesReports = async () => {
+        await api.put('/report', {
+            reports: reportsUpdatePrivileges
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.reportPrivilegesUpdate)
+        }).catch(err => {
+            console.log(err)
+            handleSubmitError(messageErrorsSubmit.default)
+        })
+    }
+
+    const sendTotalsReports = async () => {
+        await api.post(`/report/totals/${congregationId}`, {
+            totals: totalsToRegister
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.totalsReportsCreate)
+        }).catch(err => {
+            console.log(err)
+            handleSubmitError(messageErrorsSubmit.default)
+        })
+    }
+
+    const onSubmit = () => {
+        toast.promise(updatePrivilegesReports, {
+            pending: "Registrando relatórios..."
+        })
+        toast.promise(sendTotalsReports, {
+            pending: "Registrando totais..."
+        })
+    }
+
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
             const updatedCrumbs = [...prevCrumbs, { label: 'Todos os meses', link: `/relatorios/${congregationId}` }]
@@ -228,11 +370,7 @@ export default function RelatorioMes() {
     }, [setCrumbs, setPageActive, monthSelected, congregationId])
 
     const handleCheckboxChange = (filter: string[]) => {
-        if (filter.includes(Privileges.PIONEIROAUXILIAR)) {
-            setFilterPrivileges([...filter, Privileges.AUXILIARINDETERMINADO])
-        } else {
-            setFilterPrivileges(filter)
-        }
+        setFilterPrivileges(filter)
     }
 
     return (
@@ -243,18 +381,41 @@ export default function RelatorioMes() {
                     <section className="flex flex-col flex-wrap w-full">
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
-                            <FilterPrivileges  checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                            <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                             <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                 Totais
-                                {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0"/> : <EyeOffIcon className="p-0.5 sm:p-0"/>}
+                                {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}
                             </span>
                             <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
                         {totalsModalShow ? (
                             <ul >
+                                {!monthAlreadyRegister ? <div className="p-5">
+                                    <ConfirmRegisterReports
+                                        onRegister={() => onSubmit()}
+                                        button={<Button
+                                            outline
+                                            className="text-red-400 w-30"
+                                        >
+                                            Registrar
+                                        </Button>}
+                                    />
+                                </div>
+                                    :
+                                    <div className="flex m-4 p-2 bg-blue-gray-100">
+                                        <span className="h-full pr-1"><InfoIcon className="p-0.5 text-blue-gray-700"/></span>
+                                        Este relatório não pode mais ser alterado. Inclua relatórios atrasados no próximo relatório em aberto.
+                                    </div>}
+                                <div className="p-4 my-5 w-11/12 m-auto bg-white">
+                                    <li className="text-gray-700">Publicadores ativos</li>
+                                    <li className="mb-4 text-gray-900">{publishers?.length}</li>
+                                    <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
+                                    <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
+                                </div>
                                 {totalsPublishers && <ListTotals key={"Totais de Publicadores"} totals={totalsPublishers} />}
                                 {totalsAuxPioneers && <ListTotals key={"Totais de Pioneiros regulares"} totals={totalsAuxPioneers} />}
                                 {totalsPioneers && <ListTotals key={"Totais de pioneiros auxiliares"} totals={totalsPioneers} />}
+                                {totalsSpecialsPioneer && <ListTotals key={"Totais de P.E e M.C"} totals={totalsSpecialsPioneer} />}
                             </ul>
                         ) : reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly relative">

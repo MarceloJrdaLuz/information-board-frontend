@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useEffect, useState } from "react"
 import { useAuthContext } from "@/context/AuthContext"
-import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon, HomeIcon } from 'lucide-react'
+import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon, HomeIcon, FileTextIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -289,6 +289,18 @@ export default function Layout(props: LayoutProps) {
                                 }}
                                 icon={ReportIcon}
                                 active={props.pageActive === 'relatorios'}
+                            />
+                        }
+
+                        {(isAdminCongregation) &&
+                            <NavBar.Options
+                                title="Assistência"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push(`/assistencia/${user?.congregation.id}`)
+                                }}
+                                icon={FileTextIcon}
+                                active={props.pageActive === 'assistencia'}
                             />
                         }
                     </NavBar.ListOptions>

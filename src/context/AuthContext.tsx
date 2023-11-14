@@ -18,6 +18,7 @@ type AuthContextTypes = {
     resetPassword: (email: string | undefined, token: string | undefined, newPassword: string) => Promise<any>
     forgotMyPassword: (email: string) => Promise<any>
     loading: boolean
+    setLoading: Dispatch<SetStateAction<boolean>>
     erroCadastro: boolean
     setErroCadastro?: Dispatch<SetStateAction<boolean>>
     btnDisabled?: boolean
@@ -88,10 +89,10 @@ function AuthProvider(props: AuthContextProviderProps) {
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
             setUser(usuarioLogado)
-            setLoading(false)
-
+            
             Router.push('/dashboard')
-
+            
+            setLoading(false)
         }).catch(res => {
             setLoading(false)
             const { response: { data: { message } } } = res
@@ -203,7 +204,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains
+            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading
         }}>
             {props.children}
         </AuthContext.Provider>

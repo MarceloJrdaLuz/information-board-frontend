@@ -15,6 +15,7 @@ export const pageActiveAtom = atom('')
 
 export const selectedPublishersAtom = atom<string[]>([])
 export const selectedPublishersToS21Atom = atom<string[]>([])
+export const selectedTotalsToS21Atom = atom<string[]>([])
 export const groupPublisherList = atom<'add-publishers' | 'remove-publishers' | 'disabled' | 'invisible'>('disabled')
 
 export const domainUrl = atom('')

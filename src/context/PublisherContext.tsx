@@ -16,6 +16,8 @@ type PublisherContextTypes = {
         dateImmersed?: Date, 
         birthDate?: Date, 
         pioneerMonths?: string[], 
+        situation?: string,
+        startPioneer?: Date
     ) => Promise<any>
     updatePublisher: (
         id: string,
@@ -29,6 +31,7 @@ type PublisherContextTypes = {
         birthDate?: Date,
         pioneerMonths?: string[],
         situation?: string,
+        startPioneer?: Date
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -69,9 +72,10 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         nickname?: string,
         dateImmersed?: Date, 
         birthDate?: Date, 
-        pioneerMonths?: string[]
+        pioneerMonths?: string[],
+        situation?: string,
+        startPioneer?: Date
     ) {
-
         await api.post('/publisher', {
             fullName,
             nickname,
@@ -81,7 +85,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             gender,
             dateImmersed, 
             birthDate, 
-            pioneerMonths
+            pioneerMonths, 
+            situation,
+            startPioneer
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -107,6 +113,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         birthDate?: Date, 
         pioneerMonths?: string[], 
         situation?: string,
+        startPioneer?: Date
     ) {
 
         await api.put(`/publisher/${id}`, {
@@ -120,7 +127,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             dateImmersed, 
             birthDate, 
             pioneerMonths, 
-            situation
+            situation, 
+            startPioneer
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/publicadores')
         }).catch(err => {

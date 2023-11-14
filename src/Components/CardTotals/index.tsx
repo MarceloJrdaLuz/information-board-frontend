@@ -1,18 +1,17 @@
-import { IPublisher, IReports, Privileges } from "@/entities/types"
-import moment from "moment"
+import { ITotalsReports } from "@/entities/types"
 import React from 'react'
 import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 
 
-export interface S21Props {
-    publisher: IPublisher
-    reports?: IReports[]
-    monthsWithYear: string[]
+interface S21Props {
     serviceYear: string
+    months: string[]
+    reports?: ITotalsReports[]
 }
 
-export default function S21({ publisher, reports, monthsWithYear, serviceYear }: S21Props) {
+export default function CardTotals({ months, serviceYear, reports }: S21Props) {
+
     const styles = StyleSheet.create({
         page: {
             flexDirection: 'row',
@@ -51,19 +50,6 @@ export default function S21({ publisher, reports, monthsWithYear, serviceYear }:
         },
     })
 
-    const isPublisher = (privileges: string[]) => {
-        return privileges?.some(privilege =>
-            privilege === Privileges.PUBLICADOR
-        )
-    }
-
-    const isAuxPioneer = (privileges: string[]) => {
-        return privileges?.some(privilege =>
-        (privilege === Privileges.PIONEIROAUXILIAR ||
-            privilege === Privileges.AUXILIARINDETERMINADO)
-        )
-    }
-
     let totalHours = 0
     return (
         <Page size="A4">
@@ -78,30 +64,30 @@ export default function S21({ publisher, reports, monthsWithYear, serviceYear }:
                         <View style={{ flexDirection: "column" }}>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Nome:</Text>
-                                <Text>{publisher.fullName}</Text>
+                                <Text>{reports && reports.length > 0 ? reports[0]?.privileges : ""}</Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de nascimento:</Text>
-                                <Text>{publisher.birthDate && moment(publisher.birthDate).format("DD/MM/YYYY")}</Text>
+                                <Text></Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de batismo:</Text>
-                                <Text>{publisher.dateImmersed && moment(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
+                                <Text></Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "column", alignSelf: "flex-end" }}>
                             <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                {publisher.gender === "Masculino" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                {<Text style={styles.checkbox}></Text>}
                                 <Text style={{ width: 128 }}>Masculino</Text>
 
-                                {publisher.gender === "Feminino" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                {<Text style={styles.checkbox}></Text>}
                                 <Text >Feminino</Text>
                             </View>
                             <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                {publisher.hope === "Outras ovelhas" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                {<Text style={styles.checkbox}></Text>}
                                 <Text style={{ width: 128 }}>Outras ovelhas</Text>
 
-                                {publisher.hope === "Ungido" ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                                {<Text style={styles.checkbox}></Text>}
                                 <Text >Ungido</Text>
                             </View>
                         </View>
@@ -109,19 +95,19 @@ export default function S21({ publisher, reports, monthsWithYear, serviceYear }:
                     <View style={{
                         flexDirection: "row", alignItems: "center", marginTop: 2, fontFamily: "Times-Bold",
                     }}>
-                        {publisher.privileges.includes(Privileges.ANCIAO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {<Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Ancião</Text>
 
-                        {publisher.privileges.includes(Privileges.SM) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {<Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginRight: 12, marginLeft: 2 }}>Servo ministerial</Text>
 
-                        {publisher.privileges.includes(Privileges.PIONEIROREGULAR) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {reports && reports[0]?.privileges?.includes("Pioneiros regulares") ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro regular</Text>
 
-                        {publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {reports && reports[0]?.privileges?.includes("Pioneiros especiais e Missionários em campo") ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro especial</Text>
 
-                        {publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {reports && reports[0]?.privileges?.includes("Pioneiros especiais e Missionários em campo") ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Missionário em campo</Text>
                     </View>
                     <View>
@@ -147,29 +133,32 @@ export default function S21({ publisher, reports, monthsWithYear, serviceYear }:
                                 <Text>Observações</Text>
                             </View>
                         </View>
-                        {monthsWithYear.map((month) => {
-                            let dividir = month.split(" ")
-                            const report = reports?.find(r => r.month === capitalizeFirstLetter(dividir[0]) && r.year === dividir[1])
-                            if (report && report.hours > 0) totalHours += report.hours
+                        {months.map((month) => {
+                            let splitMonth = month.split(" ")
+                            const report = reports?.find(r => {
+                                return (r.month === capitalizeFirstLetter(splitMonth[0]) && r.year === splitMonth[1])
+                            })
+
+                            if (report?.hours && report.hours > 0) totalHours += report.hours
                             return (
                                 <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
                                     <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
-                                        <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(dividir[0])}</Text>
+                                        <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(splitMonth[0])}</Text>
                                     </View>
                                     <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                        <Text style={!report || !isPublisher(report.privileges) ? styles.checkbox : styles.checkboxSelected}></Text>
+                                        <Text style={styles.checkbox}></Text>
                                     </View>
                                     <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
                                         <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
                                     </View>
                                     <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                        <Text style={report && isAuxPioneer(report.privileges) ? styles.checkboxSelected : styles.checkbox}></Text>
+                                        <Text style={styles.checkbox}></Text>
                                     </View>
                                     <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ textAlign: "center" }}>{report && !isPublisher(report.privileges) ? report.hours : ""}</Text>
+                                        <Text style={{ textAlign: "center" }}>{report && !report.privileges?.includes("Publicadores") ? report.hours : ""}</Text>
                                     </View>
                                     <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                        <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>
+                                        <Text style={{ textAlign: "center" }}>{report && report.totalsReports}</Text>
                                     </View>
                                 </View>
                             )

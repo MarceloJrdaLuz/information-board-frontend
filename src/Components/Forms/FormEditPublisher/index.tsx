@@ -5,7 +5,7 @@ import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Gender, Hope, IPublisher, Privileges, Situation } from '@/entities/types'
 import { usePublisherContext } from '@/context/PublisherContext'
 import { useFetch } from '@/hooks/useFetch'
@@ -32,28 +32,51 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const [isFormChanged, setIsFormChanged] = useState(false)
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
-    const [privilegesCheckboxSelected, setPrivilegesCheckboxSelected] = useState<string[]>([])
+    const [privilegeCheckboxSelected, setPrivilegeCheckboxSelected] = useState('')
     const [auxPioneerMonthsSelected, setAuxPioneerMonthsSelected] = useState<string[]>([])
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
+    const [pioneerCheckboxSelected, setPioneerCheckboxSelected] = useState<string>('')
     const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>('')
     const [initialFullNameValue, setInitialFullNameValue] = useState<string>('')
     const [initialNicknameValue, setInitialNicknameValue] = useState<string>('')
     const [immersedDate, setImmersedDate] = useState<Date | null>(null)
     const [birthDate, setBirthDate] = useState<Date | null>(null)
-
+    const [startPioneer, setStartPioneer] = useState<Date | null>(null)
+    const [allPrivileges, setAllPrivileges] = useState<string[]>([])
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
+    const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
+
+    const optionsCheckboxHope = useState(Object.values(Hope))
+
+    const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
+
+    const optionsCheckboxPrivileges = useMemo(() => {
+        return [`${Privileges.ANCIAO}`, `${Privileges.SM}`];
+    }, []);
+
+    const optionsCheckboxPioneer = useMemo(() => {
+        return [`${Privileges.PIONEIROAUXILIAR}`, `${Privileges.AUXILIARINDETERMINADO}`, `${Privileges.MISSIONARIOEMCAMPO}`, `${Privileges.PIONEIROESPECIAL}`, `${Privileges.PIONEIROREGULAR}`]
+
+    }, [])
+    const optionsPioneerMonths = useState(meses.map(month => `${month}-${new Date().getFullYear()}`))
+
     useEffect(() => {
         if (data) {
+            const isPrivilege = data.privileges.filter(privilege => optionsCheckboxPrivileges.includes(privilege))
+            const isPioneer = data.privileges.filter(privilege => optionsCheckboxPioneer.includes(privilege))
+
             setPublisherToUpdate(data)
             setInitialFullNameValue(data.fullName)
             setInitialNicknameValue(data.nickname ?? '')
-            setGenderCheckboxSelected(data.gender) 
-            setSituationPublisherCheckboxSelected(data.situation) 
-            setPrivilegesCheckboxSelected(data.privileges || []) // Set the privileges checkboxes
+            setGenderCheckboxSelected(data.gender)
+            setSituationPublisherCheckboxSelected(data.situation)
+            setPrivilegeCheckboxSelected(isPrivilege[0])
+            setPioneerCheckboxSelected(isPioneer[0])
+            setAllPrivileges(data.privileges || [])
             setAuxPioneerMonthsSelected(data.pioneerMonths || [])
             setHopeCheckboxSelected(data.hope)
             if (data.birthDate) {
@@ -66,8 +89,13 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 const initialDate = new Date(initialDateStr)
                 setImmersedDate(initialDate)
             }
+            if (data.startPioneer) {
+                const initialDateStr = data.startPioneer
+                const initialDate = new Date(initialDateStr)
+                setStartPioneer(initialDate)
+            }
         }
-    }, [data])
+    }, [data, optionsCheckboxPioneer, optionsCheckboxPrivileges])
 
 
     const handleCheckboxGender = (selectedItems: string) => {
@@ -77,13 +105,16 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const handleCheckboxHope = (selectedItems: string) => {
         setHopeCheckboxSelected(selectedItems)
     }
+    const handleCheckboxPioneer = (selectedItem: string) => {
+        setPioneerCheckboxSelected(selectedItem)
+    }
 
     const handleCheckboxSituationPublisher = (selectedItems: string) => {
         setSituationPublisherCheckboxSelected(selectedItems)
     }
 
-    const handleCheckboxPrivileges = (selectedItems: string[]) => {
-        setPrivilegesCheckboxSelected(selectedItems)
+    const handleCheckboxPrivileges = (selectedItem: string) => {
+        setPrivilegeCheckboxSelected(selectedItem)
     }
 
     const handleBirthDateChange = (date: Date) => {
@@ -98,22 +129,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         setImmersedDate(date)
     }
 
-    const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
-    
-    const optionsCheckboxHope = useState(Object.values(Hope))
-
-    const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
-
-    const optionsCheckboxPrivileges = useState(Object.values(Privileges))
-
-    const optionsPioneerMonths = useState(meses.map(month => `${month}-${new Date().getFullYear()}`))
-
-    const getPrivilegeOptions = () => {
-        if (genderCheckboxSelected === 'Feminino') {
-            return ['Pioneiro Regular', 'Pioneiro Especial', 'Auxiliar Indeterminado']
-        } else {
-            return optionsCheckboxPrivileges[0] // Use default options for other genders
-        }
+    const handleStartPioneerDateChange = (date: Date) => {
+        setStartPioneer(date)
     }
 
     const esquemaValidacao = yup.object({
@@ -129,6 +146,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const watchFullName = watch('fullName')
     const watchNickname = watch('nickname')
 
+    useEffect(() => {
+        const updatePrivileges = []
+        if (pioneerCheckboxSelected && pioneerCheckboxSelected !== '') updatePrivileges.push(pioneerCheckboxSelected)
+        if (privilegeCheckboxSelected && privilegeCheckboxSelected !== '') updatePrivileges.push(privilegeCheckboxSelected)
+        setAllPrivileges(updatePrivileges)
+    }, [pioneerCheckboxSelected, privilegeCheckboxSelected])
 
     useEffect(() => {
         if (publisherToUpdate) {
@@ -145,10 +168,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             watchNickname !== initialNicknameValue ||
             genderCheckboxSelected !== (data?.gender || '') ||
             hopeCheckboxSelected !== (data?.hope || '') ||
-            privilegesCheckboxSelected.join() !== (data?.privileges || []).join() ||
+            situationPublisherCheckboxSelected !== (data?.situation || '') ||
+            allPrivileges.join() !== (data?.privileges || []).join() ||
             auxPioneerMonthsSelected.join() !== (data?.pioneerMonths || []).join() ||
             birthDate?.getTime() !== (data?.birthDate ? new Date(data.birthDate).getTime() : null) ||
-            immersedDate?.getTime() !== (data?.dateImmersed ? new Date(data.dateImmersed).getTime() : null)
+            immersedDate?.getTime() !== (data?.dateImmersed ? new Date(data.dateImmersed).getTime() : null) ||
+            startPioneer?.getTime() !== (data?.startPioneer ? new Date(data.startPioneer).getTime() : null)
 
         setIsFormChanged(isChanged)
     }, [
@@ -158,12 +183,14 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         data,
         genderCheckboxSelected,
         hopeCheckboxSelected,
-        privilegesCheckboxSelected,
+        allPrivileges,
+        immersedDate,
         auxPioneerMonthsSelected,
         birthDate,
-        immersedDate,
+        startPioneer,
         watchFullName,
-        watchNickname
+        watchNickname,
+        situationPublisherCheckboxSelected
     ])
 
     const onSubmit = (data: FormValues) => {
@@ -174,20 +201,19 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 publisherToUpdate?.congregation?.id ?? '',
                 genderCheckboxSelected,
                 hopeCheckboxSelected,
-                privilegesCheckboxSelected,
+                allPrivileges,
                 data.nickname,
                 immersedDate ?? undefined,
                 birthDate ?? undefined,
-                auxPioneerMonthsSelected, 
-                situationPublisherCheckboxSelected
+                auxPioneerMonthsSelected,
+                situationPublisherCheckboxSelected,
+                startPioneer ?? undefined
             ),
             {
                 pending: 'Atualizando publicador',
             }
         )
-        reset()
     }
-
 
     function onError(error: any) {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
@@ -208,20 +234,35 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                    <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
-                    
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
+                    </div>
 
-                    <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
+                    </div>
 
-                    <CheckboxMultiple checkedOptions={privilegesCheckboxSelected} label='Privilégios' visibleLabel options={getPrivilegeOptions()} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handleCheckboxSituationPublisher(selectedItems)} />
+                    </div>
 
-                    {privilegesCheckboxSelected.includes('Pioneiro Auxiliar') && <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label='Meses Pioneiro Auxiliar' visibleLabel options={optionsPioneerMonths[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />}
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
+                        {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handleCheckboxPioneer(selectedItems)} />}
 
-                    <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
+                        {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) && <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label='Meses Pioneiro Auxiliar' visibleLabel options={optionsPioneerMonths[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />}
 
-                    <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
-                    
-                    <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handleCheckboxSituationPublisher(selectedItems)} />
+                        {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handleStartPioneerDateChange} selectedDate={startPioneer} />}
+                    </div>}
+
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
+                    </div>}
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
+
+                        <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
+                    </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button error={dataError} success={dataSuccess} disabled={disabled || !isFormChanged} type='submit' >Atualizar publicador</Button>

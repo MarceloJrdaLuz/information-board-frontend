@@ -39,6 +39,26 @@ export function MesString(mes: number) {
     return diaAtual >= 25 ? meses[mes] : meses[mes === 0 || mes === 11 ? casoJanOuDez(mes) : mes - 1] //caso o mes atual for dezembro ou janeiro caem num caso diferente de mes ou mes -1, então é chamada a função pra esse caso.
 }
 
+export function getMonthsByYear(year: string): { months: string[] } {
+    moment.locale('pt-br') // Set the locale to English
+    const currentSeptember = moment(`09-01-${year}`, 'MM-DD-YYYY')
+    const previousSeptember = currentSeptember.clone().subtract(1, 'year')
+
+    const monthsOfYear: string[] = []
+
+    let currentMonth = currentSeptember.clone()
+    while (currentMonth.isSameOrAfter(previousSeptember) || currentMonth.isSame(previousSeptember, 'month')) {
+        if (currentMonth.isBefore(currentSeptember)) {
+            monthsOfYear.push(currentMonth.format('MMMM YYYY'))
+        }
+        currentMonth.subtract(1, 'month')
+    }
+
+    return {
+        months: monthsOfYear.reverse(),
+    }
+}
+
 export function obterUltimosMeses(): { anoCorrente: string[], anoAnterior: string[] } {
     moment.locale('pt-br')
     const dataAtual = moment()
@@ -65,4 +85,6 @@ export function obterUltimosMeses(): { anoCorrente: string[], anoAnterior: strin
         anoCorrente: mesesAnoCorrente,
         anoAnterior: mesesAnoAnterior
     }
+
+
 }

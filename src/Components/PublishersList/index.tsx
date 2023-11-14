@@ -1,5 +1,5 @@
 import { useAuthContext } from "@/context/AuthContext"
-import { IPublisher } from "@/entities/types"
+import { IPublisher, Privileges, Situation } from "@/entities/types"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import avatarMale from '../../../public/images/avatar-male.png'
@@ -16,6 +16,8 @@ import moment from "moment"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import FilterPrivileges from "../FilterPrivileges"
+import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 
 export default function PublisherList() {
     const { user } = useAuthContext()
@@ -74,17 +76,33 @@ export default function PublisherList() {
 
     useEffect(() => {
         const filterPublishersToPrivileges = filterPrivileges.length > 0 ?
-            publishers?.filter(publisher => (
-                filterPrivileges.every(privilege => {
-                    if(privilege === 'Pioneiro Auxiliar'){
-                        return isAuxPioneerMonthNow(publisher)
-                    } else {
-                        return publisher.privileges.includes(privilege)
-                    }
-                })
-            )) : publishers
+            publishers?.filter(publisher => {
+                return (publisher.situation === Situation.ATIVO &&
+                    filterPrivileges.every(privilege => {
+                        if (privilege === Privileges.PIONEIROAUXILIAR) {
+                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher);
+                        } else if (privilege === Privileges.PIONEIROREGULAR) {
+                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date());
+                        } else if (privilege === Privileges.AUXILIARINDETERMINADO) {
+                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date());
+                        } else {
+                            return publisher.privileges.includes(privilege);
+                        }
+                    })
+                )
+            }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO);
         setFilterPublishers(filterPublishersToPrivileges)
     }, [filterPrivileges, publishers])
+
+    let skeletonPublishersList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonPublishersList.map((a, i) => (<SkeletonPublishersWithAvatarList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
 
     return (
         <>
@@ -93,7 +111,7 @@ export default function PublisherList() {
                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)} />
                     {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
                 </div>
-                {filterPublishers?.map(publisher =>
+                {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
                     <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 ">
@@ -109,8 +127,18 @@ export default function PublisherList() {
                         <div className={` w-full overflow-hidden duration-500 transition-height ${selectedPublishers.has(publisher.id) ? 'h-auto py-5 bg-white' : 'h-0'}`}>                        {/* Exibir as informações adicionais aqui */}
                             <div className="h-fit pl-10">
                                 {publisher.privileges.map(privilege => {
-                                    if (privilege === "Pioneiro Auxiliar") {
+                                    if (privilege === Privileges.PIONEIROAUXILIAR) {
                                         if (isAuxPioneerMonthNow(publisher)) {
+                                            return (
+                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                    {privilege}
+                                                </span>
+                                            )
+                                        } else {
+                                            return null // Não exibe "Pioneiro Auxiliar" se não for o mês atual
+                                        }
+                                    } else if ((privilege === Privileges.PIONEIROREGULAR || privilege === Privileges.AUXILIARINDETERMINADO)) {
+                                        if (isPioneerNow(publisher, new Date())) {
                                             return (
                                                 <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
                                                     {privilege}
@@ -134,6 +162,7 @@ export default function PublisherList() {
                                 <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
                                 <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
                                 <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                                {(publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) || publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && <p className="p-10"><span className="text-primary-200 font-semibold">Início como Pioneiro:</span> {publisher.startPioneer ? moment(publisher.startPioneer?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>}
                             </div>
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">
@@ -160,6 +189,8 @@ export default function PublisherList() {
                             </div>
                         </div>
                     </li>
+                ) : (
+                    renderSkeleton()
                 )}
             </ul>
         </>
