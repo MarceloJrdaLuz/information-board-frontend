@@ -254,15 +254,13 @@ export default function PublisherCard() {
                                         title="Como gerar os registros de publicadores (S-21)"
                                         text={
                                             `  
-    Na lista abaixo aparece todos os publicadores da congregação por ordem alfabética. Por padrão eles vem todos selecionados, fazendo com que seja gerado um Pdf como todos os publicadores.
+    Na lista abaixo aparece todos os publicadores da congregação por ordem alfabética. Por padrão nenhum deles vem selecionado.
                                             
-    No botao de filtro você escolher para filtrar pelos privilégios. Ex: selecionando "Ancião" e "Servo", ele selecionará apenas os registros de anciãos e servos. Você também pode escolher um privilégio, e ainda acrescentar manualmente mais alguns publicadores clicando no nome deles na lista.
+    No botao de filtro você escolher para filtrar pelos privilégios. Ex: selecionando "Ancião" e "Servo", ele selecionará apenas os registros de anciãos e servos. Você também pode escolher um privilégio, e ainda acrescentar manualmente mais alguns publicadores clicando no nome deles na lista. Caso queira incluir todos os registros para gerar um Pdf com todos, no botão de filtros escolha a opção "Todos". Dessa forma todos os privilégios vão ser selecionados.
 
     Há também o filtro de grupo. Você pode filtrar apenas publicadores de um ou mais grupos, e ainda pode usar o filtro de privilégios em conjunto, para selecionar por exemplo apenas os anciãos do Grupo 1.
-                                            
-    Caso queira criar um registro para cada publicador individualmente, pode ir selecionando o nome de cada um na lista.
     
-    Sempre aque você muda os publicadores selecionados e deseja criar o Pdf basta clicar no botão "Preparar registros", quando o Pdf estiver preparado bastar clicar no botão "Gerar S-21".
+    Sempre que você muda os publicadores selecionados e deseja criar o Pdf basta clicar no botão na parte superior "Preparar registros", quando o Pdf estiver preparado bastar clicar no botão "Gerar S-21". Lembrando que quando mais de um publicador está selecionado é necessário usar esse botão. Caso queira criar um registro para cada publicador individualmente, você seleciona ele na lista e vai aparecer ao lado ou abaixo do seu nome um botão "Preparar registro" ao clicar nele ele vai aparecer o botão "Gerar S-21" desse registro individual. 
     
     Por padrão quando há mais de um publicador na selecão o Pdf ira com o nome padrão de "Registro de publicadores", e se for apenas um publicador selecionado o nome padrão será o nome completo do publicador selecionado.
     `} />}
