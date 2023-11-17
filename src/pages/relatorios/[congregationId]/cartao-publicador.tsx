@@ -95,8 +95,8 @@ export default function PublisherCard() {
     useEffect(() => {
         if (sortedData) {
             setPublishers(sortedData)
-            setfilterPublishers(sortedData)
-            sortedData?.map(publisher => setSelectedPublishersToS21(prev => [...prev, publisher.id]))
+            // setfilterPublishers(sortedData)
+            // sortedData?.map(publisher => setSelectedPublishersToS21(prev => [...prev, publisher.id]))
         }
     }, [sortedData, setPublishers, setfilterPublishers, setSelectedPublishersToS21])
 
@@ -115,7 +115,7 @@ export default function PublisherCard() {
                 filterPrivileges.some(privilege => {
                     return publisher.privileges.includes(privilege)
                 })
-                const hasSelectedPrivileges = filterPrivileges.length === 0 ||
+                const hasSelectedPrivileges = 
                     filterPrivileges.some(privilege => publisher.privileges.includes(privilege))
 
                 return belongsToSelectedGroups && hasSelectedPrivileges
@@ -167,6 +167,8 @@ export default function PublisherCard() {
     const handleCheckboxChange = (filter: string[]) => {
         if (filter.includes(Privileges.PIONEIROAUXILIAR)) {
             setFilterPrivileges([...filter, Privileges.AUXILIARINDETERMINADO])
+        } else if (filter.includes('Todos')) {
+            setFilterPrivileges([...Object.values(Privileges), ...filter])
         } else {
             setFilterPrivileges(filter)
         }
@@ -268,17 +270,17 @@ export default function PublisherCard() {
                             <div className="flex justify-between items-center w-full mb-4">
                                 <div className="flex flex-col">
                                     <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearService} handleClick={(select) => setYearService(select)} textVisible title="Ano de Serviço" options={[`${new Date().getFullYear() + 1}`, `${new Date().getFullYear()}`, `${new Date().getFullYear() - 1}`]} />
-                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 0) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ?
+                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ?
                                         <PdfLinkComponent />
                                         :
-                                        <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                            {(!totals && filterPublishers && filterPublishers.length > 0) || (totals && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ? "Preparar registros" : "Sem registros"}
-                                        </Button>}
+                                        filterPublishers && filterPublishers?.length > 1 && (<Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                           Preparar registros
+                                        </Button>)}
                                 </div>
                                 <div className="flex gap-1">
                                     <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
 
-                                    <FilterPrivileges onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                                    <FilterPrivileges includeOptionAll onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                                 </div>
                             </div>
                             {publishers.length > 0 ? (
@@ -288,7 +290,22 @@ export default function PublisherCard() {
                                         <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
                                     </div>
                                     {!totals ? publishers?.map(publisher => (
-                                        <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} />
+                                        <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
+                                            {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
+                                                <div>
+                                                    {!pdfGenerating ? (
+                                                        <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                           Preparar registro
+                                                        </Button>
+                                                    ) : (
+                                                        <div className="px-2">
+                                                            <PdfLinkComponent />
+                                                        </div>
+                                                    )}
+
+                                                </div>
+                                            }
+                                        </PublishersToGenerateS21>
                                     )) : (
                                         <ul>
                                             {Object.values(TotalsFrom).map(ob => (

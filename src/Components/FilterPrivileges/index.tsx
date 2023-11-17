@@ -13,11 +13,12 @@ import CheckboxMultiple from "../CheckBoxMultiple"
 interface IFIlterPrivilegesProps {
     handleCheckboxChange: (selectedOptions: string[]) => void
     onClick?: () => void
-    checkedOptions?: string[] // torna a propriedade opcional
+    checkedOptions?: string[]
+    includeOptionAll?: boolean
 }
 
-export default function FilterPrivileges({ handleCheckboxChange, checkedOptions, onClick }: IFIlterPrivilegesProps) {
-    const [privileges, setPrivileges] = useState(Object.values(Privileges))
+export default function FilterPrivileges({ handleCheckboxChange, checkedOptions, onClick, includeOptionAll }: IFIlterPrivilegesProps) {
+    const [privileges, setPrivileges] = useState(includeOptionAll ? [...Object.values(Privileges), 'Todos'] : Object.values(Privileges))
 
     return (
         <Popover placement="bottom-start">

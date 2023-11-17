@@ -1,5 +1,5 @@
 // PublisherItem.tsx
-import React, { useEffect } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { selectedPublishersAtom, selectedPublishersToS21Atom } from '@/atoms/atom'
 import { IPublisher } from '@/entities/types'
@@ -7,9 +7,10 @@ import { IPublisher } from '@/entities/types'
 interface IPublisherItemProps {
     publisher: IPublisher
     onClick?: () => void
+    children?: ReactNode
 }
 
-export default function PublishersToGenerateS21({ publisher, onClick }: IPublisherItemProps) {
+export default function PublishersToGenerateS21({ publisher, onClick, children }: IPublisherItemProps) {
     const [selectedPublishersToS21, setSelectedPublishersToS21] = useAtom(selectedPublishersToS21Atom)
 
     const isSelected = selectedPublishersToS21.includes(publisher.id)
@@ -29,12 +30,13 @@ export default function PublishersToGenerateS21({ publisher, onClick }: IPublish
 
     return (
         <li
-            onClick={toggleSelection}
-            className={`my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
+           
+            className={`flex justify-between flex-wrap my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
         >
-            <div className={`flex flex-col w-full p-4 text-gray-700`}>
+            <div  onClick={toggleSelection} className={`flex flex-1 whitespace-nowrap p-4 text-gray-700`}>
                 <span>{publisher.fullName}</span>
             </div>
+            {children}
         </li>
     )
 }
