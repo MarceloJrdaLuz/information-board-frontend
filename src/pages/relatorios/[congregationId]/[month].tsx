@@ -38,6 +38,7 @@ export default function RelatorioMes() {
 
     const { data } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`)
     const { data: getAssistance } = useFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`)
+    const { data: getTotals } = useFetch<ITotalsReports[]>(`/report/totals/${congregationId}`)
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
@@ -62,6 +63,7 @@ export default function RelatorioMes() {
     const [totalsPublishers, setTotalsPublishers] = useState<ITotalsReports>()
     const [totalsToRegister, setTotalsToRegister] = useState<ITotalsReportsCreate[]>([])
     const [monthAlreadyRegister, setMonthAlreadyRegister] = useState(false)
+    const [totalsRecover, setTotalsRecover] = useState<ITotalsReports[]>()
     const [meetingAssistanceEndWeek, setMeetingAssistanceEndWeek] = useState(0)
 
     const [yearSelected, setYearSelected] = useState('')
@@ -74,6 +76,13 @@ export default function RelatorioMes() {
         const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
         setPublishers(filterActives)
     }, [data])
+
+    useEffect(() => {
+        if (getTotals) {
+            const filterByMonth = getTotals.filter(total => (total.month === capitalizeFirstLetter(monthSelected) && total.year === yearSelected))
+            setTotalsRecover(filterByMonth)
+        }
+    }, [getTotals, monthSelected, yearSelected])
 
     useEffect(() => {
         setPageActive(monthParam)
@@ -419,7 +428,7 @@ export default function RelatorioMes() {
                                     </div>}
                                 <div className="p-4 my-5 w-11/12 m-auto bg-white">
                                     <li className="text-gray-700">Publicadores ativos</li>
-                                    <li className="mb-4 text-gray-900">{publishers?.length}</li>
+                                    <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length }</li>
                                     <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
                                     <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
                                 </div>
