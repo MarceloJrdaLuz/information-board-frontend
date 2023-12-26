@@ -18,6 +18,7 @@ import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
 import NotFoundDocument from "@/Components/NotFoundDocument"
 import { useFetch } from "@/hooks/useFetch"
+import Spiner from "@/Components/Spiner"
 
 export default function Campo() {
     const router = useRouter()
@@ -78,20 +79,22 @@ export default function Campo() {
                         ><PreachingIcon /> Saídas de Campo</Button>
                         <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                             {fieldServiceOptionsShow && (
-                                documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
-                                    documentsFieldServiceFilter?.map(document => (
-                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                            <Button
-                                                className="w-full"
-                                                onClick={() => { handleButtonClick(document.url) }}
-                                            >
-                                                {removeMimeType(document.fileName)}
-                                            </Button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
-                                )
+                               documents ?  documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
+                                documentsFieldServiceFilter?.map(document => (
+                                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                        <Button
+                                            className="w-full"
+                                            onClick={() => { handleButtonClick(document.url) }}
+                                        >
+                                            {removeMimeType(document.fileName)}
+                                        </Button>
+                                    </div>
+                                ))
+                            ) : (
+                                <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
+                            )  : (
+                               <div className="w-full"><Spiner size="w-8 h-8"/></div>
+                            )
                             )}
                         </div>
 
@@ -102,14 +105,20 @@ export default function Campo() {
                             ><PublicPreachingIcon />Testemunho Público</Button>
                             <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                                 {publicServiceOptionsShow && (
-                                    documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
-                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                            <Button
-                                                className="w-full"
-                                                onClick={() => { handleButtonClick(document.url) }}
-                                            >{removeMimeType(document.fileName)}</Button>
+                                    documents ? (
+                                        documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
+                                            <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                                <Button
+                                                    className="w-full"
+                                                    onClick={() => { handleButtonClick(document.url) }}
+                                                >{removeMimeType(document.fileName)}</Button>
+                                            </div>
+                                        )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                    ) : (
+                                        <div className="w-full">
+                                            <Spiner size="w-8 h-8"/>
                                         </div>
-                                    )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                    )
                                 )}
                             </div>
                         </div>

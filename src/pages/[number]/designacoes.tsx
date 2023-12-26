@@ -18,10 +18,8 @@ import NotFoundDocument from '@/Components/NotFoundDocument'
 import dynamic from 'next/dynamic'
 import { domainUrl } from '@/atoms/atom'
 import { useFetch } from '@/hooks/useFetch'
-
-const DynamicPDFViewer = dynamic(() => import('@/Components/PdfViewer'), {
-  loading: () => <p>Carregando PDF...</p>,
-})
+import PdfViewer from '@/Components/PdfViewer'
+import Spiner from '@/Components/Spiner'
 
 export default function Designacoes() {
   const router = useRouter()
@@ -146,7 +144,8 @@ export default function Designacoes() {
               className="w-full"
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
             ><LifeAndMinistryIcon />Vida e Ministério</Button>
-            {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
+            {lifeAndMinistryOptionsShow && (
+              documents ?  (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
               {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
                 <div className="flex-1 " key={document.id}>
                   <Button
@@ -155,16 +154,22 @@ export default function Designacoes() {
                   >{removeMimeType(document.fileName)}</Button>
                 </div>
               ))}
-            </div>}
-            {lifeAndMinistryOptionsShow && <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-              {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
-                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                  <Button
-                    onClick={() => { handleButtonClick(document.url) }}
-                    className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
-                </div>
-              ))}
-            </div>}
+            </div>) : (
+              <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
+            )
+            )
+             }
+            {lifeAndMinistryOptionsShow &&
+              <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
+                {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
+                  <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                    <Button
+                      onClick={() => { handleButtonClick(document.url) }}
+                      className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
+                  </div>
+                ))}
+              </div>}
+
             {!lifeAndMinistryOptionsShow ? (
               <>
                 {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
@@ -175,7 +180,6 @@ export default function Designacoes() {
               </>
             )}
 
-
           </div>
           <div>
             <Button
@@ -183,16 +187,22 @@ export default function Designacoes() {
               className="w-full"
             ><PublicMeetingIcon />Reunião Pública
             </Button>
-            {publicOptionsShow && <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-              {publicOptionsShow && documentsPublicFilter && documentsPublicFilter.length > 0 ? documentsPublicFilter?.map(document => (
-                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                  <Button
-                    onClick={() => { handleButtonClick(document.url) }}
-                    className="w-full"
-                  >{removeMimeType(document.fileName)}</Button>
+            {publicOptionsShow && (
+              documents ? (
+                <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
+                  {publicOptionsShow && documentsPublicFilter && documentsPublicFilter.length > 0 ? documentsPublicFilter?.map(document => (
+                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                      <Button
+                        onClick={() => { handleButtonClick(document.url) }}
+                        className="w-full"
+                      >{removeMimeType(document.fileName)}</Button>
+                    </div>
+                  )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
                 </div>
-              )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
-            </div>}
+              ) : (
+                <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
+              )
+            )}
             {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <Button
@@ -204,7 +214,7 @@ export default function Designacoes() {
     </div>
   ) : (
     <>
-      <DynamicPDFViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+      <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
     </>
   )
 }
