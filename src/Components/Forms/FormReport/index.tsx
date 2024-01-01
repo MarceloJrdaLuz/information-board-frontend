@@ -8,7 +8,6 @@ import { toast } from 'react-toastify'
 import * as yup from 'yup'
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from 'react-hook-form'
-import { meses } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
 import { IPublisherList } from "@/entities/types"
 import DropdownSearch from "../../DropdownSearch"
@@ -20,6 +19,9 @@ import ConsentMessage from "../../ConsentMessage"
 import Button from "@/Components/Button"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
+import moment from "moment"
+import 'moment/locale/pt-br';
+import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 
 interface IRelatorioFormProps {
     congregationNumber: string
@@ -37,8 +39,6 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [consentRecords, setConsentRecords] = useState<IPublisherList[]>()
     const [submittedData, setSubmittedData] = useState<FormValues>()
     const [deviceId, setDeviceId] = useState<string | undefined>()
-    const date = new Date().getDate()
-    const monthNow = new Date().getMonth()
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -61,9 +61,12 @@ export default function FormReport(props: IRelatorioFormProps) {
     }, [])
 
     useEffect(() => {
-        setMonth(meses[date >= 1 && date <= 25 ? monthNow - 1 : monthNow])
-        setYear(new Date().getFullYear().toString())
-    }, [date, monthNow])
+        const today = moment()
+        const isFirstHalfOfMonth = today.date() >= 1 && today.date() <= 25
+
+        setMonth(capitalizeFirstLetter(isFirstHalfOfMonth ? today.clone().subtract(1, 'month').format('MMMM') : today.format('MMMM')))
+        setYear(today.format('YYYY'));
+    }, [])
 
     const handleClick = (option: IPublisherList | undefined) => {
         setPublisherToSend(option)
