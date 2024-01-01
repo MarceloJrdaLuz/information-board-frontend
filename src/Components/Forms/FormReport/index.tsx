@@ -64,8 +64,9 @@ export default function FormReport(props: IRelatorioFormProps) {
         const today = moment()
         const isFirstHalfOfMonth = today.date() >= 1 && today.date() <= 25
 
-        setMonth(capitalizeFirstLetter(isFirstHalfOfMonth ? today.clone().subtract(1, 'month').format('MMMM') : today.format('MMMM')))
-        setYear(today.format('YYYY'));
+        const newDate = isFirstHalfOfMonth ? today.clone().subtract(1, 'month') : today
+        setMonth(capitalizeFirstLetter(newDate.format('MMMM')))
+        setYear(newDate.format('YYYY'))
     }, [])
 
     const handleClick = (option: IPublisherList | undefined) => {
