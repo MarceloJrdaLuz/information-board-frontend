@@ -8,7 +8,7 @@ import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
-import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { crumbsAtom, pageActiveAtom, reportsAtom } from "@/atoms/atom"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/entities/types"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
@@ -43,7 +43,7 @@ export default function RelatorioMes() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
-    const [reports, setReports] = useState<IReports[]>()
+    const [reports, setReports] = useAtom(reportsAtom)
     const [reportsFiltered, setReportsFiltered] = useState<IReports[]>([])
     const [reportsUpdatePrivileges, setReportsUpdatePrivileges] = useState<IUpdateReport[]>([])
 
@@ -324,7 +324,7 @@ export default function RelatorioMes() {
             const { data } = res
             setReports([...data])
         }).catch(err => console.log(err))
-    }, [congregationId])
+    }, [congregationId, setReports])
 
     useEffect(() => {
         getRelatorios()
@@ -428,7 +428,7 @@ export default function RelatorioMes() {
                                     </div>}
                                 <div className="p-4 my-5 w-11/12 m-auto bg-white">
                                     <li className="text-gray-700">Publicadores ativos</li>
-                                    <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length }</li>
+                                    <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
                                     <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
                                     <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
                                 </div>
@@ -451,9 +451,21 @@ export default function RelatorioMes() {
                                         studies={report.studies}
                                         observations={report.observations}
                                     />)}
+                                <div className="flex w-full justify-center items-center mt-4">
+                                    <Button onClick={() => router.push(`/relatorios/${congregationId}/${month}/inserir`)}>
+                                        Inserir manualmente
+                                    </Button>
+                                </div>
                             </ul>
                         ) : missingReportsCount ? (
-                            <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
+                            <>
+                                <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
+                                <div className="flex w-full justify-center items-center mt-4">
+                                    <Button onClick={() => router.push(`/relatorios/${congregationId}/${month}/inserir`)}>
+                                        Inserir manualmente
+                                    </Button>
+                                </div>
+                            </>
                         ) : (
                             renderSkeleton()
                         )}

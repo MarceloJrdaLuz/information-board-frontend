@@ -1,17 +1,15 @@
-import { ITotalsReports } from "@/entities/types"
+import { IMonthsWithYear, ITotalsReports } from "@/entities/types"
 import React from 'react'
 import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 
 
 interface S21Props {
-    serviceYear: string
-    months: string[]
+    months: IMonthsWithYear[]
     reports?: ITotalsReports[]
 }
 
-export default function CardTotals({ months, serviceYear, reports }: S21Props) {
-
+export default function CardTotals({ months, reports }: S21Props) {
     const styles = StyleSheet.create({
         page: {
             flexDirection: 'row',
@@ -50,7 +48,6 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
         },
     })
 
-    let totalHours = 0
     return (
         <Page size="A4">
             <View style={{ padding: 20, flex: 1, flexDirection: "column" }}>
@@ -59,12 +56,12 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                         REGISTRO DE PUBLICADOR DE CONGREGAÇÃO
                     </Text>
                     <View style={{
-                        flexDirection: "row", justifyContent: "space-between", fontSize: 12, fontFamily: "Times-Bold",
+                        flexDirection: "row", justifyContent: "space-between", fontSize: 12, fontFamily: "Times-Bold"
                     }}>
                         <View style={{ flexDirection: "column" }}>
-                            <View style={{ flexDirection: "row", marginBottom: 3 }}>
+                            <View style={{ flexDirection: "row", marginBottom: 3, fontWeight: "bold" }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Nome:</Text>
-                                <Text>{reports && reports.length > 0 ? reports[0]?.privileges : ""}</Text>
+                                <Text style={{fontFamily: "Times-Roman"}}>{reports && reports.length > 0 ? reports[0]?.privileges : ""}</Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de nascimento:</Text>
@@ -110,11 +107,12 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                         {reports && reports[0]?.privileges?.includes("Pioneiros especiais e Missionários em campo") ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Missionário em campo</Text>
                     </View>
-                    <View>
+                    {months.map((serviceYear, i) => (
+                        <View key={`${serviceYear} ${i}`}>
                         <View style={{ flexDirection: "row", marginTop: 5, fontFamily: "Times-Bold", }}>
                             <View style={{ width: 112, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000' }}>
                                 <Text>Ano de serviço</Text>
-                                <Text>{serviceYear}</Text>
+                                <Text>{serviceYear.year}</Text>
                             </View>
                             <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
                                 <Text>Participou no ministério</Text>
@@ -133,12 +131,12 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                                 <Text>Observações</Text>
                             </View>
                         </View>
-                        {months.map((month) => {
+                        {serviceYear.months.map((month) => {
                             let splitMonth = month.split(" ")
                             const report = reports?.find(r => {
                                 return (r.month === capitalizeFirstLetter(splitMonth[0]) && r.year === splitMonth[1])
                             })
-                            if (report?.hours && report.hours > 0) totalHours += report.hours
+                            if (report?.hours && report.hours > 0) serviceYear.totalHours += report.hours
                             return (
                                 <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={month}>
                                     <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
@@ -170,11 +168,12 @@ export default function CardTotals({ months, serviceYear, reports }: S21Props) {
                                 <Text>Total</Text>
                             </View>
                             <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center", fontSize: 12, fontFamily: "Times-Bold" }}>
-                                <Text>{totalHours > 0 && totalHours}</Text>
+                                <Text>{serviceYear.totalHours > 0 && serviceYear.totalHours}</Text>
                             </View>
                             <View style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
                         </View>
                     </View>
+                    ))}
                 </>
             </View>
         </Page>

@@ -48,6 +48,19 @@ type PublisherContextTypes = {
         studies: number,
         observations: string
     ) => Promise<any>
+    createReportManually: (
+        month: string,
+        year: string,
+        publisher: {
+            fullName: string,
+            nickName: string,
+            privileges: string[]
+            congregation_id: string
+        },
+        hours: number,
+        studies: number,
+        observations: string
+    ) => Promise<any>
     createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => Promise<any>
     deletePublisher: (publisher_id: string) => Promise<any>
 }
@@ -172,6 +185,37 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     }
 
+    async function createReportManually(
+        month: string,
+        year: string,
+        publisher: {
+            fullName: string,
+            nickName: string,
+            privileges: string[]
+            congregation_id: string
+        },
+        hours: number,
+        studies: number,
+        observations: string
+    ) {
+
+        await api.post('/reportManually', {
+            month,
+            year,
+            publisher,
+            hours,
+            studies,
+            observations
+        },).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.reportSend)
+        }).catch(err => {
+            console.log(err)
+            const { response: { data: { message } } } = err
+            handleSubmitError(messageErrorsSubmit.default)
+        })
+
+    }
+
     async function createConsentRecord(publisher: IPublisherConsent, deviceId?: string) {
 
         await api.post<ConsentRecordTypes>('/consentRecord', {
@@ -232,7 +276,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually
         }}>
             {props.children}
         </PublisherContext.Provider>

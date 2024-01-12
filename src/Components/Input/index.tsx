@@ -21,6 +21,7 @@ export default function Input(props: InputProps) {
                 text-black appearance-none placeholder-transparent focus:outline-none rounded-xl bg-transparent read-only:bg-gray-300 read-only:rounded-lg font-sans font-normal text-left ${props.readOnly && 'cursor-not-allowed'}`}
                 readOnly={props.readOnly}
                 autoComplete="off"
+                maxLength={props.maxLength} 
                 required={props.required}    
                 ref={props.registro}
                 {...props.registro}

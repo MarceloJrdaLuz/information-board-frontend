@@ -39,6 +39,13 @@ export function MesString(mes: number) {
     return diaAtual >= 25 ? meses[mes] : meses[mes === 0 || mes === 11 ? casoJanOuDez(mes) : mes - 1] //caso o mes atual for dezembro ou janeiro caem num caso diferente de mes ou mes -1, então é chamada a função pra esse caso.
 }
 
+export function getYearService() {
+    moment.locale('pt-br') // Set the locale to English
+    const dateCurrent = moment()
+    const currentYear = dateCurrent.month() >= 8 ? dateCurrent.year() + 1 : dateCurrent.year()
+    return currentYear
+}
+
 export function getMonthsByYear(year: string): { months: string[] } {
     moment.locale('pt-br') // Set the locale to English
     const currentSeptember = moment(`09-01-${year}`, 'MM-DD-YYYY')

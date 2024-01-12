@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { getMonthsByYear, meses, obterUltimosMeses } from "@/functions/meses"
+import { getMonthsByYear, getYearService, meses, obterUltimosMeses } from "@/functions/meses"
 import { useRouter } from "next/router"
 import { useFetch } from "@/hooks/useFetch"
-import { IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/entities/types"
+import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/entities/types"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { api } from "@/services/api"
 import Layout from "@/Components/Layout"
@@ -45,11 +45,11 @@ export default function PublisherCard() {
     const [reportsFiltered, setReportsFiltered] = useState<IReports[]>([])
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
     const [modalHelpShow, setModalHelpShow] = useState(false)
-    const [yearService, setYearService] = useState((new Date().getFullYear() + 1).toString())
+    const [yearService, setYearService] = useState(getYearService().toString())
+    const [yearServiceSelected, setYearServiceSelected] = useState(getYearService().toString())
     const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
     const [pdfGenerating, setPdfGenerating] = useState(false)
-    const [months, setMonths] = useState<string[]>([])
-
+    const [monthsServiceYears, setMonthsServiceYears] = useState<IMonthsWithYear[]>([])
     const [totals, setTotals] = useState(false)
     const [totalsFrom, setTotalsFrom] = useState('')
     const [reportsTotalsFrom, setReportsTotalsFrom] = useState<ITotalsReports[]>()
@@ -58,6 +58,10 @@ export default function PublisherCard() {
     useEffect(() => {
         setPageActive("Registros")
     }, [setPageActive])
+
+    // useEffect(() => {
+    //     setYearServiceSelected(yearService)
+    // }, [setYearServiceSelected, yearService])
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
@@ -115,7 +119,7 @@ export default function PublisherCard() {
                 filterPrivileges.some(privilege => {
                     return publisher.privileges.includes(privilege)
                 })
-                const hasSelectedPrivileges = 
+                const hasSelectedPrivileges =
                     filterPrivileges.some(privilege => publisher.privileges.includes(privilege))
 
                 return belongsToSelectedGroups && hasSelectedPrivileges
@@ -162,7 +166,7 @@ export default function PublisherCard() {
                 setReportsFiltered(reportsFilteredByPublisher)
             }
         }
-    }, [reports, filterPublishers, yearService])
+    }, [reports, filterPublishers, yearServiceSelected])
 
     const handleCheckboxChange = (filter: string[]) => {
         if (filter.includes(Privileges.PIONEIROAUXILIAR)) {
@@ -178,15 +182,28 @@ export default function PublisherCard() {
         setGroupSelecteds(filter)
     }
 
-    const handleCheckboxTotalsChange = (filter: boolean) => {
+    const handleCheckboxTotalsChange = (check: boolean) => {
         setPdfGenerating(false)
-        setTotals(filter)
+        setTotals(check)
+        !check && setTotalsFrom('')
     }
 
     useEffect(() => {
-        const { months } = getMonthsByYear(yearService)
-        setMonths(months)
-    }, [yearService])
+        const previousServiceYear = (Number(yearServiceSelected) - 1).toString()
+        const { months } = getMonthsByYear(yearServiceSelected)
+        const { months: monthsPreviousServiceYear } = getMonthsByYear(previousServiceYear)
+        const monthsPreviousServiceYearObject: IMonthsWithYear = {
+            year: (Number(yearServiceSelected) - 1).toString(),
+            months: monthsPreviousServiceYear,
+            totalHours: 0
+        }
+        const monthsServiceYearObject: IMonthsWithYear = {
+            year: yearServiceSelected,
+            months,
+            totalHours: 0
+        }
+        setMonthsServiceYears([monthsServiceYearObject, monthsPreviousServiceYearObject])
+    }, [yearServiceSelected])
 
     useEffect(() => {
         const filter = reportsTotalsFrom?.filter(report => report.privileges?.includes(totalsFrom))
@@ -205,17 +222,15 @@ export default function PublisherCard() {
                                     <S21
                                         key={index}
                                         publisher={publisher}
-                                        serviceYear={yearService}
                                         reports={reports}
-                                        monthsWithYear={months ?? []}
+                                        monthsWithYear={monthsServiceYears}
                                     />
                                 )
                             )
                         }) : reportsTotalsFromFilter && (
                             (
                                 <CardTotals
-                                    months={months}
-                                    serviceYear={yearService}
+                                    months={monthsServiceYears}
                                     reports={reportsTotalsFromFilter ?? []}
                                 />
                             ))
@@ -234,7 +249,6 @@ export default function PublisherCard() {
             }
         </PDFDownloadLink>
     )
-
 
     return (
         <Layout pageActive="relatorios">
@@ -267,13 +281,15 @@ export default function PublisherCard() {
                             </div>
                             <div className="flex justify-between items-center w-full mb-4">
                                 <div className="flex flex-col">
-                                    <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearService} handleClick={(select) => setYearService(select)} textVisible title="Ano de Serviço" options={[`${new Date().getFullYear() + 1}`, `${new Date().getFullYear()}`, `${new Date().getFullYear() - 1}`]} />
-                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 0) ?
+                                    <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ?
                                         <PdfLinkComponent />
                                         :
-                                        filterPublishers && filterPublishers?.length > 1 && (<Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                           Preparar registros
-                                        </Button>)}
+                                        (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
+                                            <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                Preparar registros
+                                            </Button>)
+                                    }
                                 </div>
                                 <div className="flex gap-1">
                                     <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
@@ -284,7 +300,7 @@ export default function PublisherCard() {
                             {publishers.length > 0 ? (
                                 <>
                                     <div className="flex justify-between">
-                                        <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
+                                        <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais"/>
                                         <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
                                     </div>
                                     {!totals ? publishers?.map(publisher => (
@@ -293,7 +309,7 @@ export default function PublisherCard() {
                                                 <div>
                                                     {!pdfGenerating ? (
                                                         <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                                           Preparar registro
+                                                            Preparar registro
                                                         </Button>
                                                     ) : (
                                                         <div className="px-2">
@@ -311,13 +327,14 @@ export default function PublisherCard() {
                                                     key={ob}
                                                     onClick={() => {
                                                         setPdfGenerating(false),
-                                                            setTotalsFrom(ob)
+                                                        setTotalsFrom(ob)
                                                     }}
-                                                    className={`my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
+                                                    className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
                                                 >
-                                                    <div className={`flex flex-col w-full p-4 text-gray-700`}>
+                                                    <div className={`flex flex-col p-4 text-gray-700`}>
                                                         <span>{ob}</span>
                                                     </div>
+
                                                 </li>
 
                                             ))}

@@ -110,6 +110,12 @@ export interface IReports {
     observations?: string
 }
 
+export interface IMonthsWithYear {
+    year: string,
+    months: string[],
+    totalHours: number
+}
+
 export interface ITotalsReportsCreate {
     month: string
     year: string
@@ -210,6 +216,14 @@ export enum Privileges {
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
     AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
+    MISSIONARIOEMCAMPO = 'Missionário em Campo'
+}
+
+export enum PrivilegesMinistry {
+    PUBLICADOR = "Publicador",
+    PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
+    PIONEIROREGULAR = 'Pioneiro Regular',
+    PIONEIROESPECIAL = 'Pioneiro Especial',
     MISSIONARIOEMCAMPO = 'Missionário em Campo'
 }
 
