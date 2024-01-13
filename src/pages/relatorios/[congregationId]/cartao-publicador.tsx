@@ -59,10 +59,6 @@ export default function PublisherCard() {
         setPageActive("Registros")
     }, [setPageActive])
 
-    // useEffect(() => {
-    //     setYearServiceSelected(yearService)
-    // }, [setYearServiceSelected, yearService])
-
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
             const updatedCrumbs = [...prevCrumbs, { label: 'Relatórios', link: `/relatorios/${congregationId}` }]

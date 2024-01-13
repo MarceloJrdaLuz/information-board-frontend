@@ -10,6 +10,8 @@ interface S21Props {
 }
 
 export default function CardTotals({ months, reports }: S21Props) {
+    months.map(month => month.totalHours = 0)
+
     const styles = StyleSheet.create({
         page: {
             flexDirection: 'row',

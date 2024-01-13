@@ -1,6 +1,6 @@
 import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/entities/types"
 import moment from "moment"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 
@@ -11,6 +11,7 @@ export interface S21Props {
 }
 
 export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
+    monthsWithYear.map(month => month.totalHours = 0)
     const styles = StyleSheet.create({
         page: {
             flexDirection: 'row',
@@ -75,15 +76,15 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                         <View style={{ flexDirection: "column" }}>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Nome:</Text>
-                                <Text style={{fontFamily: "Times-Roman"}}>{publisher.fullName}</Text>
+                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.fullName}</Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de nascimento:</Text>
-                                <Text style={{fontFamily: "Times-Roman"}}>{publisher.birthDate && moment(publisher.birthDate).format("DD/MM/YYYY")}</Text>
+                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.birthDate && moment(publisher.birthDate).format("DD/MM/YYYY")}</Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de batismo:</Text>
-                                <Text style={{fontFamily: "Times-Roman"}}>{publisher.dateImmersed && moment(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
+                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.dateImmersed && moment(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "column", alignSelf: "flex-end" }}>
@@ -123,69 +124,69 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                     </View>
 
                     {monthsWithYear.map((serviceYear, i) => (
-                            <View key={`${serviceYear} ${i}`}> 
-                                <View style={{ flexDirection: "row", marginTop: 5, fontFamily: "Times-Bold", }}>
-                                    <View style={{ width: 112, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000' }}>
-                                        <Text>Ano de serviço</Text>
-                                        <Text>{serviceYear.year}</Text>
-                                    </View>
-                                    <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
-                                        <Text>Participou no ministério</Text>
-                                    </View>
-                                    <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
-                                        <Text>Estudos bíblicos</Text>
-                                    </View>
-                                    <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
-                                        <Text>Pioneiro auxiliar</Text>
-                                    </View>
-                                    <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
-                                        <Text>Horas</Text>
-                                        <Text style={{ fontSize: 8, fontFamily: "Times-Roman" }}>(se for pioneiro ou missionário em campo)</Text>
-                                    </View>
-                                    <View style={{ width: 160, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0 }}>
-                                        <Text>Observações</Text>
-                                    </View>
+                        <View key={`${serviceYear} ${i}`}>
+                            <View style={{ flexDirection: "row", marginTop: 5, fontFamily: "Times-Bold", }}>
+                                <View style={{ width: 112, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000' }}>
+                                    <Text>Ano de serviço</Text>
+                                    <Text>{serviceYear.year}</Text>
                                 </View>
-                                {serviceYear.months.map((month) => {
-                                    let dividir = month.split(" ")
-                                    const report = reports?.find(r => r.month === capitalizeFirstLetter(dividir[0]) && r.year === dividir[1])
-                                    if (report && report.hours > 0 ) serviceYear.totalHours += report.hours
-                                    return (
-                                        <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={`${serviceYear.year}-${month}`}>
-                                            <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
-                                                <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(dividir[0])}</Text>
-                                            </View>
-                                            <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                                <Text style={!report || !isPublisher(report.privileges) ? styles.checkbox : styles.checkboxSelected}></Text>
-                                            </View>
-                                            <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                                <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
-                                            </View>
-                                            <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                                <Text style={report && isAuxPioneer(report.privileges) ? styles.checkboxSelected : styles.checkbox}></Text>
-                                            </View>
-                                            <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                                <Text style={{ textAlign: "center" }}>{report && !isPublisher(report.privileges) ? report.hours : ""}</Text>
-                                            </View>
-                                            <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                                <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>
-                                            </View>
-                                        </View>
-                                    )
-                                })}
-                                <View style={{ flexDirection: "row", height: 20, marginBottom: 15 }}>
-                                    <View style={{ width: 112 }}></View>
-                                    <View style={{ width: 80 }}></View>
-                                    <View style={{ width: 80 }}></View>
-                                    <View style={{ width: 80, fontSize: 10, fontFamily: "Times-Bold", justifyContent: "center", textAlign: "right", paddingRight: 4, borderRight: 1, borderRightWidth: 1 }}>
-                                        <Text>Total</Text>
-                                    </View>
-                                    <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center", fontSize: 12, fontFamily: "Times-Bold" }}>
-                                        <Text>{serviceYear.totalHours > 0 && serviceYear.totalHours}</Text>
-                                    </View>
-                                    <View style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
+                                <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                    <Text>Participou no ministério</Text>
+                                </View>
+                                <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                    <Text>Estudos bíblicos</Text>
+                                </View>
+                                <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                    <Text>Pioneiro auxiliar</Text>
+                                </View>
+                                <View style={{ width: 80, height: 64, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0, paddingHorizontal: 8, textAlign: "center" }}>
+                                    <Text>Horas</Text>
+                                    <Text style={{ fontSize: 8, fontFamily: "Times-Roman" }}>(se for pioneiro ou missionário em campo)</Text>
+                                </View>
+                                <View style={{ width: 160, fontSize: 12, fontWeight: "bold", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: '#000', borderLeft: 0 }}>
+                                    <Text>Observações</Text>
                                 </View>
                             </View>
+                            {serviceYear.months.map((month) => {
+                                let dividir = month.split(" ")
+                                const report = reports?.find(r => r.month === capitalizeFirstLetter(dividir[0]) && r.year === dividir[1])
+                                if (report && report.hours > 0) serviceYear.totalHours += report.hours
+                                return (
+                                    <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={`${serviceYear.year}-${month}`}>
+                                        <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
+                                            <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(dividir[0])}</Text>
+                                        </View>
+                                        <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
+                                            <Text style={!report || !isPublisher(report.privileges) ? styles.checkbox : styles.checkboxSelected}></Text>
+                                        </View>
+                                        <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                            <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
+                                        </View>
+                                        <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
+                                            <Text style={report && isAuxPioneer(report.privileges) ? styles.checkboxSelected : styles.checkbox}></Text>
+                                        </View>
+                                        <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                            <Text style={{ textAlign: "center" }}>{report && !isPublisher(report.privileges) ? report.hours : ""}</Text>
+                                        </View>
+                                        <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
+                                            <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>
+                                        </View>
+                                    </View>
+                                )
+                            })}
+                            <View style={{ flexDirection: "row", height: 20, marginBottom: 15 }}>
+                                <View style={{ width: 112 }}></View>
+                                <View style={{ width: 80 }}></View>
+                                <View style={{ width: 80 }}></View>
+                                <View style={{ width: 80, fontSize: 10, fontFamily: "Times-Bold", justifyContent: "center", textAlign: "right", paddingRight: 4, borderRight: 1, borderRightWidth: 1 }}>
+                                    <Text>Total</Text>
+                                </View>
+                                <View style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center", fontSize: 12, fontFamily: "Times-Bold" }}>
+                                    <Text>{serviceYear.totalHours > 0 && serviceYear.totalHours}</Text>
+                                </View>
+                                <View style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}></View>
+                            </View>
+                        </View>
                     ))}
                 </>
             </View>
