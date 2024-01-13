@@ -27,7 +27,7 @@ export function ConfirmRegisterReports({ button, onRegister }: ConfirmRegisterRe
 
     return (
         <>
-            <div onClick={handleOpen}>
+            <div onClick={handleOpen} className="w-fit">
                 {button}
             </div>
             <Dialog
