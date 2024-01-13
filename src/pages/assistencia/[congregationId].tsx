@@ -37,8 +37,6 @@ export default function ListarRelatorios() {
             const sortedMeetingAssistance = data.sort((a, b) => {
                 const dateA = moment(`${a.year}-${moment().month(a.month).format('MM')}`, 'YYYY-MM')
                 const dateB = moment(`${b.year}-${moment().month(b.month).format('MM')}`, 'YYYY-MM')
-                console.log('dateA:', dateA.format('MM-YYYY'))
-                console.log('dateB:', dateB.format('MM-YYYY'))
                 return dateB.diff(dateA)
             })
             setMeetingAssistance(sortedMeetingAssistance)
