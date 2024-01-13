@@ -230,7 +230,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                     <Input
                         type="number"
                         placeholder="Estudos"
-                        maxLength={26}
                         registro={{
                             ...register('studies')
                         }}
@@ -241,6 +240,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                     <Input
                         type="text"
                         placeholder="Observações"
+                        maxLength={26}
                         registro={{
                             ...register('observations')
                         }}
