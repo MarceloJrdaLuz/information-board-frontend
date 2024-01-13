@@ -39,29 +39,6 @@ function ListMeetingAssistance({ items }: IListItemsProps) {
                 <span>{item.endWeekAverage}</span>
               </div>
             </div>
-            {/* <div className="flex  mt-4  max-h-10">
-              <div className="gap-1 flex">
-                <Button
-                  className="w-30"
-                  onClick={() => Router.push(`/${path}/edit/${item.id}`)}
-                  outline
-                >
-                  <EditIcon />
-                  Editar
-                </Button>
-                <ConfirmDeleteModal
-                  onDelete={() => onDelete(`${item.id}`)}
-                  button={
-                    <Button
-                      outline
-                      className="text-red-400 w-30"
-                    >
-                      <Trash />
-                      Excluir
-                    </Button>}
-                />
-              </div>
-            </div> */}
           </div>
         </li>
       ))}

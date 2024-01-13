@@ -9,10 +9,12 @@ import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { FilePlus2Icon, GroupIcon } from "lucide-react"
+import moment from "moment"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
+import 'moment/locale/pt-br'
 
 export default function ListarRelatorios() {
 
@@ -32,7 +34,14 @@ export default function ListarRelatorios() {
 
     useEffect(() => {
         if (data) {
-            setMeetingAssistance(data)
+            const sortedMeetingAssistance = data.sort((a, b) => {
+                const dateA = moment(`${a.year}-${moment().month(a.month).format('MM')}`, 'YYYY-MM')
+                const dateB = moment(`${b.year}-${moment().month(b.month).format('MM')}`, 'YYYY-MM')
+                console.log('dateA:', dateA.format('MM-YYYY'))
+                console.log('dateB:', dateB.format('MM-YYYY'))
+                return dateB.diff(dateA)
+            })
+            setMeetingAssistance(sortedMeetingAssistance)
         }
     }, [data])
 
