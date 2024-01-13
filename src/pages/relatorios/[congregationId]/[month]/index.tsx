@@ -116,10 +116,6 @@ export default function RelatorioMes() {
             let totalStudiesSpecialPioneer = 0
             let totalsReportsSpecialPioneer = 0
 
-            const alreadyRegister = reports[0]?.privileges
-
-            if (alreadyRegister) setMonthAlreadyRegister(true)
-
             const filterSpecialPioneer = reports.filter(report => {
                 if (report.privileges) {
                     return ((report.privileges.includes(Privileges.PIONEIROESPECIAL) || report.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
@@ -233,7 +229,7 @@ export default function RelatorioMes() {
 
             const updatePrivilegesArray = reportsFilteredByDate.map(report => ({
                 report_id: report.id,
-                privileges: report.publisher?.privileges
+                privileges: report.privileges ? report.privileges : report.publisher?.privileges
             }))
 
             setReportsUpdatePrivileges(updatePrivilegesArray)
@@ -342,6 +338,7 @@ export default function RelatorioMes() {
     }
 
     const sendTotalsReports = async () => {
+        console.log(totalsToRegister)
         await api.post(`/report/totals/${congregationId}`, {
             totals: totalsToRegister
         }).then(res => {
@@ -439,6 +436,11 @@ export default function RelatorioMes() {
                             </ul>
                         ) : reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly relative">
+                                <div className="flex w-full justify-center items-center mt-4">
+                                    <Button onClick={() => router.push(`/relatorios/${congregationId}/${month}/inserir`)}>
+                                        Inserir manualmente
+                                    </Button>
+                                </div>
                                 {reportsFiltered.length > 0 && reportsFiltered?.map(report =>
                                     <ModalRelatorio
                                         key={v4()}
@@ -451,11 +453,6 @@ export default function RelatorioMes() {
                                         studies={report.studies}
                                         observations={report.observations}
                                     />)}
-                                <div className="flex w-full justify-center items-center mt-4">
-                                    <Button onClick={() => router.push(`/relatorios/${congregationId}/${month}/inserir`)}>
-                                        Inserir manualmente
-                                    </Button>
-                                </div>
                             </ul>
                         ) : missingReportsCount ? (
                             <>

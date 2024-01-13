@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { useEffect, useState } from "react"
 import Input from "../../Input"
 import FormStyle from "../FormStyle"
@@ -8,18 +7,11 @@ import { toast } from 'react-toastify'
 import * as yup from 'yup'
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from 'react-hook-form'
-import { useFetch } from "@/hooks/useFetch"
-import { IPublisher, IPublisherList, IReports, Privileges, PrivilegesMinistry } from "@/entities/types"
-import DropdownSearch from "../../DropdownSearch"
+import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/entities/types"
 import { usePublisherContext } from "@/context/PublisherContext"
-import CheckboxBoolean from "../../CheckboxBoolean"
-import { ArrowLeftIcon } from "lucide-react"
-import { api } from "@/services/api"
-import ConsentMessage from "../../ConsentMessage"
 import Button from "@/Components/Button"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import moment from "moment"
 import 'moment/locale/pt-br';
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useRouter } from "next/router"
@@ -31,7 +23,7 @@ interface IRelatorioFormProps {
 }
 
 export default function FormReportManually({ report, publisher }: IRelatorioFormProps) {
-    const {createReportManually} = usePublisherContext()
+    const { createReportManually } = usePublisherContext()
     const router = useRouter()
     const { month, congregationId } = router.query
     const monthParam = month as string
@@ -42,7 +34,6 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
 
     const [privilege, setPrivilege] = useState<string>(Privileges.PUBLICADOR)
     const optionsCheckboxPrivilege = useState<string[]>(Object.values(PrivilegesMinistry))
-
 
     const esquemaValidacao = yup.object({
         month: yup.string().required(),
@@ -62,6 +53,9 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     })
 
     useEffect(() => {
+        if(report?.privileges){
+            setPrivilege(report?.privileges[0])
+        }
         setValue('month', capitalizeFirstLetter(monthParam));
         setValue('hours', privilege !== "Publicador" ? report?.hours : 0);
         if (report?.studies) {
@@ -74,7 +68,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         setPrivilege(selectedItems)
     }
 
-     async function onSubmit(data: FormValues) {
+    async function onSubmit(data: FormValues) {
         const splitMonth = data.month.split(' ')
         toast.promise(
             createReportManually(

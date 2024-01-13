@@ -12,7 +12,7 @@ export default function ContentDashboard(props: IContentDashboard) {
             <div >
                 <HeaderDashboard />
             </div>
-            <div className="overflow-y-auto  flex-1 hide-scrollbar">
+            <div className="overflow-y-auto  flex-1 thin-scrollbar">
                 {props.children}
             </div>
             <div>
