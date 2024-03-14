@@ -81,6 +81,7 @@ export default function RelatorioMes() {
         if (getTotals) {
             const filterByMonth = getTotals.filter(total => (total.month === capitalizeFirstLetter(monthSelected) && total.year === yearSelected))
             setTotalsRecover(filterByMonth)
+            filterByMonth.length > 0 && setMonthAlreadyRegister(true)
         }
     }, [getTotals, monthSelected, yearSelected])
 
@@ -407,22 +408,18 @@ export default function RelatorioMes() {
                         </div>
                         {totalsModalShow ? (
                             <ul >
-                                {!monthAlreadyRegister ? <div className="p-5">
+                                {<div className="p-5">
                                     <ConfirmRegisterReports
                                         onRegister={() => onSubmit()}
                                         button={<Button
                                             outline
                                             className="text-red-400 w-30"
                                         >
-                                            Registrar
+                                            {!monthAlreadyRegister ? "Registrar" : "Atualizar"}
                                         </Button>}
                                     />
                                 </div>
-                                    :
-                                    <div className="flex m-4 p-2 bg-blue-gray-100">
-                                        <span className="h-full pr-1"><InfoIcon className="p-0.5 text-blue-gray-700" /></span>
-                                        Este relatório não pode mais ser alterado. Inclua relatórios atrasados no próximo relatório em aberto.
-                                    </div>}
+                                }
                                 <div className="p-4 my-5 w-11/12 m-auto bg-white">
                                     <li className="text-gray-700">Publicadores ativos</li>
                                     <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
