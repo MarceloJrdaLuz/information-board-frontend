@@ -53,9 +53,6 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     })
 
     useEffect(() => {
-        if(report?.privileges){
-            setPrivilege(report?.privileges[0])
-        }
         setValue('month', capitalizeFirstLetter(monthParam));
         setValue('hours', privilege !== "Publicador" ? report?.hours : 0);
         if (report?.studies) {
