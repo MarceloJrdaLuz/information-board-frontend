@@ -227,7 +227,7 @@ export default function FormAssistencia({ congregation_id }: IFormAssistanceProp
                         </div>
                     </div>
                     <div className="flex flex-col w-full border border-blue-gray-200 py-6 px-16 my-4">
-                        <h2 className="font-semibold">Reunião do meio de semana</h2>
+                        <h2 className="font-semibold">Reunião do fim de semana</h2>
                         <Input type="number" placeholder="1ª semana" registro={{ ...register('endWeek1') }} invalid={errors?.endWeek1?.message ? 'invalido' : ''} />
                         {errors?.endWeek1?.type && <InputError type={errors.endWeek1.type} field='endWeek1' />}
                         <Input type="number" placeholder="2ª semana" registro={{ ...register('endWeek2') }} invalid={errors?.endWeek2?.message ? 'invalido' : ''} />
