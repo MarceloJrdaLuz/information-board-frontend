@@ -15,6 +15,7 @@ import ModalHelp from "@/Components/ModalHelp"
 import { HelpCircle } from "lucide-react"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
+import TextArea from "@/Components/TextArea"
 
 export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
@@ -107,7 +108,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                         invalid={errors?.title?.message ? 'invalido' : ''} />
                     {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
 
-                    <Input type="text" placeholder="Conteúdo" registro={{
+                    <TextArea placeholder="Conteúdo" registro={{
                         ...register('text',
                             { required: "Campo obrigatório" })
                     }}
