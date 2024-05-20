@@ -13,6 +13,7 @@ import CheckboxBoolean from '@/Components/CheckboxBoolean'
 import Calendar from '@/Components/Calendar'
 import { useAtom, useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import TextArea from '@/Components/TextArea'
 
 export interface IUpdateNotice {
     notice_id: string
@@ -139,7 +140,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
                         invalid={errors?.title?.message ? 'invalido' : ''} />
                     {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
 
-                    <Input type="text" placeholder="Conteúdo" registro={{ ...register('text', { required: "Campo obrigatório" }) }} invalid={errors?.text?.message ? 'invalido' : ''} />
+                    <TextArea placeholder="Conteúdo" registro={{ ...register('text', { required: "Campo obrigatório" }) }} invalid={errors?.text?.message ? 'invalido' : ''} />
                     {errors?.text?.type && <InputError type={errors.text.type} field='text' />}
 
                     <CheckboxBoolean
