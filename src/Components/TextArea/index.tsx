@@ -17,7 +17,7 @@ export default function TextArea(props: TextAreaProps) {
                 name={props.name}
                 placeholder={props.placeholder}
                 className={` block px-3 py-2.5 w-full text-sm 
-                text-black appearance-none placeholder-transparent focus:outline-none rounded-xl bg-transparent read-only:bg-gray-300 read-only:rounded-lg font-sans font-normal text-left ${props.readOnly && 'cursor-not-allowed'}`}
+                text-black appearance-none placeholder-transparent focus:outline-none rounded-xl bg-transparent read-only:bg-gray-300 read-only:rounded-lg font-sans font-normal text-left ${props.readOnly && 'cursor-not-allowed'} thin-scrollbar`}
                 readOnly={props.readOnly}
                 autoComplete="off"
                 maxLength={props.maxLength} 
