@@ -201,7 +201,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 publisherToUpdate?.congregation?.id ?? '',
                 genderCheckboxSelected,
                 hopeCheckboxSelected,
-                allPrivileges,
+                allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
                 data.nickname,
                 immersedDate ?? undefined,
                 birthDate ?? undefined,

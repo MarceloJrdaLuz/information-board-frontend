@@ -154,7 +154,7 @@ export default function RelatorioMes() {
                     )
                 }
             })
-
+            
             filterPublishers.map(report => {
                 totalsReportsPublishers += 1
                 if (report.studies) {
