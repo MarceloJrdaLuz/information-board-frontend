@@ -118,43 +118,27 @@ export default function RelatorioMes() {
             let totalsReportsSpecialPioneer = 0
 
             const filterSpecialPioneer = reports.filter(report => {
-                if (report.privileges) {
-                    return ((report.privileges.includes(Privileges.PIONEIROESPECIAL) || report.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
-                } else {
-                    return ((report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) || report.publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
-                }
+                return ((report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) || report.publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO)))
             })
 
             const filterPioneer = reports.filter(report => {
-                if (report.privileges) {
-                    return (report.privileges.includes(Privileges.PIONEIROREGULAR))
-                } else {
-                    return (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && isPioneerNow(report.publisher, dateFormat ?? new Date())
-                }
+                return (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && isPioneerNow(report.publisher, dateFormat ?? new Date())
             })
 
             const filterAuxPioneer = reports.filter(report => {
-                if (report.privileges) {
-                    return ((report.privileges.includes(Privileges.PIONEIROAUXILIAR) || report.privileges.includes(Privileges.AUXILIARINDETERMINADO)))
-                } else {
-                    return ((report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) || (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())))
-                }
+                return ((report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) || (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(report.publisher, dateFormat ?? new Date())))
             })
 
             const filterPublishers = reports.filter(report => {
-                if (report.privileges) {
-                    return report.privileges.some(privilege => privilege === Privileges.PUBLICADOR);
-                } else {
-                    return (
-                        report.publisher.privileges.some(privilege => privilege === Privileges.PUBLICADOR) ||
-                        (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                            !isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
-                        (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && !isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
-                        (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && !isPioneerNow(report.publisher, dateFormat ?? new Date()))
-                    )
-                }
+                return (
+                    report.publisher.privileges.some(privilege => privilege === Privileges.PUBLICADOR) ||
+                    (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
+                        !isAuxPioneerMonth(report.publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)) ||
+                    (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && !isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
+                    (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) && !isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                )
             })
-            
+
             filterPublishers.map(report => {
                 totalsReportsPublishers += 1
                 if (report.studies) {
@@ -186,6 +170,7 @@ export default function RelatorioMes() {
                     publishersActives: publishers?.length ?? 0
                 })
             })
+
 
             filterAuxPioneer.map(report => {
                 totalHoursAuxPioneer += report.hours
