@@ -153,7 +153,11 @@ export default function PublisherList() {
                                                 </span>
                                             )
                                         } else {
-                                            return null // Não exibe "Pioneiro Auxiliar" se não for o mês atual
+                                            return (
+                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                    {Privileges.PUBLICADOR}
+                                                </span>
+                                            ) // Não exibe "Pioneiro Auxiliar" se não for o mês atual
                                         }
                                     } else if ((privilege === Privileges.PIONEIROREGULAR || privilege === Privileges.AUXILIARINDETERMINADO)) {
                                         if (isPioneerNow(publisher, new Date())) {
