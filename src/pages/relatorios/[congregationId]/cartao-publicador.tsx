@@ -303,7 +303,7 @@ export default function PublisherCard() {
                                         <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
                                             {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
                                                 <div>
-                                                    {!pdfGenerating ? (
+                                                    {pdfGenerating ? (
                                                         <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
                                                             Preparar registro
                                                         </Button>

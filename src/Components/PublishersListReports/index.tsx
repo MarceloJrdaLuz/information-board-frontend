@@ -39,7 +39,7 @@ export default function PublisherListReports() {
 
     const [inactivesShow, setInactivesShow] = useState(false)
     const [publishersOthers, setPublishersOthers] = useState<IPublisher[]>()
-    const [arrowClicked, setArrowClicked] = useState(false);
+    const [arrowClicked, setArrowClicked] = useState(false)
 
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
@@ -47,16 +47,16 @@ export default function PublisherListReports() {
 
     const handleShowDetails = (publisher: IPublisher) => {
         if (selectedPublisher && selectedPublisher.id === publisher.id) {
-            setArrowClicked(!arrowClicked);
+            setArrowClicked(!arrowClicked)
         } else {
-            setSelectedPublisher(publisher);
-            setArrowClicked(true);
+            setSelectedPublisher(publisher)
+            setArrowClicked(true)
         }
     }
 
     const handleMonthArrowClick = () => {
-        setSelectedPublisher(null);
-        setArrowClicked(false);
+        setSelectedPublisher(null)
+        setArrowClicked(false)
     }
 
     useEffect(() => {
@@ -99,17 +99,17 @@ export default function PublisherListReports() {
                 return (publisher.situation === Situation.ATIVO &&
                     filterPrivileges.every(privilege => {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher);
+                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date());
+                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date())
                         } else if (privilege === Privileges.AUXILIARINDETERMINADO) {
-                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date());
+                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date())
                         } else {
-                            return publisher.privileges.includes(privilege);
+                            return publisher.privileges.includes(privilege)
                         }
                     })
                 )
-            }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO);
+            }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO)
         setFilterPublishers(filterPublishersToPrivileges)
     }, [filterPrivileges, publishers, inactivesShow, publishersOthers])
 

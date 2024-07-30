@@ -1,14 +1,31 @@
-import React from "react"
-import Router from "next/router"
+import React, { useEffect, useMemo, useState } from "react"
 import { IListItemsProps } from "./types"
-import Button from "../Button"
-import { EditIcon, Trash } from "lucide-react"
-import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { getMonthsByYear } from "@/functions/meses"
+import { IMeetingAssistance } from "@/entities/types"
 
-function ListMeetingAssistance({ items }: IListItemsProps) {
+function ListMeetingAssistance({ items, yearService }: IListItemsProps) {
+  const months = useMemo(() => getMonthsByYear(yearService).months, [yearService])
+  const [filteredByYearService, setFilteredByYearService] = useState<IMeetingAssistance[]>([])
+
+  useEffect(() => {
+    const filteredItems: IMeetingAssistance[] = months.reduce((acc: IMeetingAssistance[], month) => {
+      const filterByYearService = items?.find(
+        (item) =>
+          item.month === capitalizeFirstLetter(month.split(" ")[0]) &&
+          item.year === month.split(" ")[1]
+      )
+      if (filterByYearService) {
+        acc.push(filterByYearService)
+      }
+      return acc
+    }, [])
+    setFilteredByYearService(filteredItems)
+  }, [items, months])
+  
   return (
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
-      {items?.map(item => (
+      {filteredByYearService?.map(item => (
         <li
           className={`flex flex-col flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
           key={item.id}

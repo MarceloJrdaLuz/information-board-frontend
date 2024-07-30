@@ -22,5 +22,5 @@ export function FullNameShow({defaultName, fullName}: FullNameShowProps) {
        {fullName}
       </PopoverContent>
     </Popover>
-  );
+  )
 }

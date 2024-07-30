@@ -7,26 +7,26 @@ export function capitalizeFirstLetter(string: string) {
 }
 
 export const isAuxPioneerMonthNow = (publisher: IPublisher) => {
-    const currentDate = moment(); // Obtém a data atual
-    const currentDay = currentDate.date(); // Obtém o dia atual do mês
-    let targetDate;
+    const currentDate = moment() // Obtém a data atual
+    const currentDay = currentDate.date() // Obtém o dia atual do mês
+    let targetDate
 
     // Se estiver até o dia 20 do mês atual, retorna o mês anterior
     if (currentDay <= 20) {
-        targetDate = currentDate.subtract(1, 'months');
+        targetDate = currentDate.subtract(1, 'months')
     } else {
-        targetDate = currentDate;
+        targetDate = currentDate
     }
 
-    const targetMonth = targetDate.format("MMMM");
-    const targetYear = targetDate.format("YYYY");
+    const targetMonth = targetDate.format("MMMM")
+    const targetYear = targetDate.format("YYYY")
 
     // Verifica se o publisher tem o privilégio "Pioneiro Auxiliar" no mês alvo
     if (publisher.pioneerMonths) {
-        return publisher.pioneerMonths.includes(`${capitalizeFirstLetter(targetMonth)}-${targetYear}`);
+        return publisher.pioneerMonths.includes(`${capitalizeFirstLetter(targetMonth)}-${targetYear}`)
     }
 
-    return false;
+    return false
 }
 
 export const isAuxPioneerMonth = (publisher: IPublisher, monthAndYear: string) => {

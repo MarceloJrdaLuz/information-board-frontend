@@ -55,8 +55,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
 
     const optionsCheckboxPrivileges = useMemo(() => {
-        return [`${Privileges.ANCIAO}`, `${Privileges.SM}`];
-    }, []);
+        return [`${Privileges.ANCIAO}`, `${Privileges.SM}`]
+    }, [])
 
     const optionsCheckboxPioneer = useMemo(() => {
         return [`${Privileges.PIONEIROAUXILIAR}`, `${Privileges.AUXILIARINDETERMINADO}`, `${Privileges.MISSIONARIOEMCAMPO}`, `${Privileges.PIONEIROESPECIAL}`, `${Privileges.PIONEIROREGULAR}`]

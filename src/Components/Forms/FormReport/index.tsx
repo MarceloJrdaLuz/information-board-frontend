@@ -20,7 +20,7 @@ import Button from "@/Components/Button"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import moment from "moment"
-import 'moment/locale/pt-br';
+import 'moment/locale/pt-br'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 
 interface IRelatorioFormProps {

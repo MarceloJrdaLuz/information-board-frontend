@@ -97,17 +97,17 @@ export default function PublisherList() {
                 return (publisher.situation === Situation.ATIVO &&
                     filterPrivileges.every(privilege => {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher);
+                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date());
+                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date())
                         } else if (privilege === Privileges.AUXILIARINDETERMINADO) {
-                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date());
+                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date())
                         } else {
-                            return publisher.privileges.includes(privilege);
+                            return publisher.privileges.includes(privilege)
                         }
                     })
                 )
-            }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO);
+            }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO)
         setFilterPublishers(filterPublishersToPrivileges)
     }, [filterPrivileges, publishers, inactivesShow, publishersOthers])
 

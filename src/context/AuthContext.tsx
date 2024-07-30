@@ -60,18 +60,18 @@ function AuthProvider(props: AuthContextProviderProps) {
         const handleRouteChangeComplete = (url: string) => {
             // Verifica se a URL atual corresponde à URL de destino
             if (url === '/dashboard') {
-                setLoading(false);
+                setLoading(false)
             }
-        };
+        }
 
         // Adiciona um ouvinte para o evento de conclusão da mudança de rota
-        Router.events.on('routeChangeComplete', handleRouteChangeComplete);
+        Router.events.on('routeChangeComplete', handleRouteChangeComplete)
 
         // Remove o ouvinte quando o componente for desmontado
         return () => {
-            Router.events.off('routeChangeComplete', handleRouteChangeComplete);
-        };
-    }, []);
+            Router.events.off('routeChangeComplete', handleRouteChangeComplete)
+        }
+    }, [])
 
     async function login(email: string, password: string) {
         setLoading(true)

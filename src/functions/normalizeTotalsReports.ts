@@ -1,5 +1,5 @@
-import { ITotalsReports } from "@/entities/types";
-import { capitalizeFirstLetter } from "./isAuxPioneerMonthNow";
+import { ITotalsReports } from "@/entities/types"
+import { capitalizeFirstLetter } from "./isAuxPioneerMonthNow"
 
 export const normalizeTotalsReports = (data: ITotalsReports) => {
     return {
@@ -10,5 +10,5 @@ export const normalizeTotalsReports = (data: ITotalsReports) => {
       quantity: data?.quantity,
       hours: data?.hours,
       studies: data?.studies
-    };
-  };
+    }
+  }

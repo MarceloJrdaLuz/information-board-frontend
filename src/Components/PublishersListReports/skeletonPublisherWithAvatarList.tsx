@@ -1,4 +1,4 @@
-import SkeletonAvatar from "../Avatar/skeletonAvatar";
+import SkeletonAvatar from "../Avatar/skeletonAvatar"
 
 export default function SkeletonPublishersWithAvatarList() {
     return (

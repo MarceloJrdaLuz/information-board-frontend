@@ -12,7 +12,7 @@ import { usePublisherContext } from "@/context/PublisherContext"
 import Button from "@/Components/Button"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import 'moment/locale/pt-br';
+import 'moment/locale/pt-br'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useRouter } from "next/router"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
@@ -53,12 +53,12 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     })
 
     useEffect(() => {
-        setValue('month', capitalizeFirstLetter(monthParam));
-        setValue('hours', privilege !== "Publicador" ? report?.hours : 0);
+        setValue('month', capitalizeFirstLetter(monthParam))
+        setValue('hours', privilege !== "Publicador" ? report?.hours : 0)
         if (report?.studies) {
-            setValue('studies', report?.studies.toString());
+            setValue('studies', report?.studies.toString())
         }
-        setValue('observations', report?.observations ?? "");
+        setValue('observations', report?.observations ?? "")
     }, [report, monthParam, setValue, privilege])
 
     const handleCheckboxPrivilege = (selectedItems: string) => {
