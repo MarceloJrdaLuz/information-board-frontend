@@ -16,8 +16,9 @@ import Button from '@/Components/Button'
 import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Calendar from '@/Components/Calendar'
-import { meses } from '@/functions/meses'
+import { getMonthsByYear, getYearService } from '@/functions/meses'
 import { Gender, Hope, Privileges, Situation } from '@/entities/types'
+import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
 
 
 export default function FormAddPublisher() {
@@ -36,6 +37,7 @@ export default function FormAddPublisher() {
     const [pioneerCheckboxSelected, setPioneerCheckboxSelected] = useState('')
     const [startPioneer, setStartPioneer] = useState<Date | null>(null)
     const [allPrivileges, setAllPrivileges] = useState<string[]>([])
+    const [yearService, setYearService] = useState(getYearService().toString())
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -51,7 +53,19 @@ export default function FormAddPublisher() {
 
     const optionsCheckboxHope = useState(Object.values(Hope))
 
-    const optionsPioneerMonths = useState(meses.map(month => `${month}-${new Date().getFullYear()}`))
+    const serviceYearActual = getMonthsByYear(yearService).months
+    const lastServiceYear = getMonthsByYear((Number(yearService) - 1).toString()).months
+
+    const normalizeMonths = (months: string[]) => {
+        const normalize = months.map(month => {
+            const splitWord = month.split(" ")
+            return `${capitalizeFirstLetter(splitWord[0])}-${splitWord[1]}`
+        })
+
+        return normalize
+    }
+    const optionsPioneerMonthsServiceYearActual = useState([...normalizeMonths(serviceYearActual)])
+    const optionsPioneerMonthsLastServiceYear = useState([ ...normalizeMonths(lastServiceYear)])
 
     const handleCheckboxGender = (selectedItems: string) => {
         setGenderCheckboxSelected(selectedItems)
@@ -175,7 +189,15 @@ export default function FormAddPublisher() {
                     {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
                         {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handleCheckboxPioneer(selectedItems)} />}
 
-                        {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) && <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label='Meses Pioneiro Auxiliar' visibleLabel options={optionsPioneerMonths[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />}
+                        {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
+                            (
+                                <>
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) -1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
+                                </>
+
+                            )
+                        }
 
                         {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}

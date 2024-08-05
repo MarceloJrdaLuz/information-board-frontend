@@ -1,8 +1,8 @@
 import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/entities/types"
 import moment from "moment"
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
-import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 
 export interface S21Props {
     publisher: IPublisher
@@ -58,8 +58,21 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
 
     const isAuxPioneer = (privileges: string[]) => {
         return privileges?.some(privilege =>
-        (privilege === Privileges.PIONEIROAUXILIAR ||
-            privilege === Privileges.AUXILIARINDETERMINADO)
+            (privilege === Privileges.PIONEIROAUXILIAR)
+        )
+    }
+
+    const isAuxPioneerUndetermined = (privileges: string[]) => {
+        return privileges?.some(privilege =>
+            (privilege === Privileges.AUXILIARINDETERMINADO)
+        )
+    }
+
+    const isPioneer = (privileges: string[]) => {
+        return privileges?.some(privilege =>
+            (privilege === Privileges.PIONEIROESPECIAL ||
+                privilege === Privileges.PIONEIROREGULAR) ||
+            privilege === Privileges.MISSIONARIOEMCAMPO
         )
     }
 
@@ -157,16 +170,16 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                                             <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(dividir[0])}</Text>
                                         </View>
                                         <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                            <Text style={!report || !isPublisher(report.privileges) ? styles.checkbox : styles.checkboxSelected}></Text>
+                                            <Text style={(report && !isPioneer(report.privileges) && !isAuxPioneerUndetermined(report.privileges) && !isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(dividir[0])}-${dividir[1]}`)) ? styles.checkboxSelected : styles.checkbox}></Text>
                                         </View>
                                         <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
                                             <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
                                         </View>
                                         <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                            <Text style={report && isAuxPioneer(report.privileges) ? styles.checkboxSelected : styles.checkbox}></Text>
+                                            <Text style={(report && (isAuxPioneer(report.privileges) && isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(dividir[0])}-${dividir[1]}`) || isAuxPioneerUndetermined(report.privileges))) ? styles.checkboxSelected : styles.checkbox}></Text>
                                         </View>
                                         <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                            <Text style={{ textAlign: "center" }}>{report && !isPublisher(report.privileges) ? report.hours : ""}</Text>
+                                            <Text style={{ textAlign: "center" }}>{(report && !isPublisher(report.privileges) && (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(dividir[0])}-${dividir[1]}`) || isAuxPioneerUndetermined(report.privileges) || isPioneer(report.privileges))) ? report.hours : ""}</Text>
                                         </View>
                                         <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
                                             <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>

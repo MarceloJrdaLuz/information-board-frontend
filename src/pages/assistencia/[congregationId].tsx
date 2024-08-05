@@ -62,7 +62,7 @@ export default function ListarRelatorios() {
                 <Document>
                     <S88
                         meetingAssistance={data}
-                        yearsServices={[yearServiceSelected, (Number(yearServiceSelected)-1).toString()]}
+                        yearsServices={[yearServiceSelected, (Number(yearServiceSelected) - 1).toString()]}
                     />
                 </Document>
             }
@@ -70,10 +70,11 @@ export default function ListarRelatorios() {
         >
             {({ blob, url, loading, error }) =>
                 loading ? "" :
-                    <Button className="bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                        Salvar S-88
+                    <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
                         <PdfIcon />
-
+                        <span className="text-primary-200 font-semibold">
+                            Salvar S-88
+                        </span>
                     </Button>
             }
         </PDFDownloadLink>
@@ -90,7 +91,7 @@ export default function ListarRelatorios() {
                                 onClick={() => {
                                     router.push(`/assistencia/${congregationId}/enviar`)
                                 }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
                                 <FilePlus2Icon />
                                 <span className="text-primary-200 font-semibold">Adicionar</span>
                             </Button>
