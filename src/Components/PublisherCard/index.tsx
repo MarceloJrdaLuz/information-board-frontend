@@ -182,7 +182,7 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                                             <Text style={{ textAlign: "center" }}>{(report && !isPublisher(report.privileges) && (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(dividir[0])}-${dividir[1]}`) || isAuxPioneerUndetermined(report.privileges) || isPioneer(report.privileges))) ? report.hours : ""}</Text>
                                         </View>
                                         <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                            <Text style={{ textAlign: "center" }}>{report ? report.observations : ""}</Text>
+                                            <Text style={{ textAlign: "center", fontSize: report && report.observations && report.observations.length > 30 ? 8 : 11 }}>{report ? report.observations : ""}</Text>
                                         </View>
                                     </View>
                                 )
