@@ -63,6 +63,7 @@ type PublisherContextTypes = {
     ) => Promise<any>
     createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => Promise<any>
     deletePublisher: (publisher_id: string) => Promise<any>
+    deleteReport: (report_id: string) => Promise<any>
 }
 
 type PublisherContextProviderProps = {
@@ -274,9 +275,23 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
+    async function deleteReport(report_id: string) {
+        api.delete(`/report/${report_id}`).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.reportDelete)
+        }).catch(err => {
+            const { response: { data: { message } } } = err
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
+        })
+    }
+
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport
         }}>
             {props.children}
         </PublisherContext.Provider>

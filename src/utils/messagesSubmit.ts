@@ -43,6 +43,7 @@ export const messageSuccessSubmit = {
     publisherCreate: "Publicador criado com sucesso!",
     publisherUpdate: "Publicador atualizado com sucesso!",
     publisherDelete: "Publicador excluído com sucesso!",
+    reportDelete: "Relatório excluído com sucesso!",
     categoryCreate: "Categoria criada com sucesso!",
     categoryUpdate: "Categoria atualizada com sucesso!",
     roleCreate: "Função criada com sucesso!",

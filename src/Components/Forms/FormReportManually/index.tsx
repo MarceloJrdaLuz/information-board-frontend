@@ -16,6 +16,8 @@ import 'moment/locale/pt-br'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useRouter } from "next/router"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
+import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
+import { Trash } from "lucide-react"
 
 interface IRelatorioFormProps {
     report: IReports | null
@@ -23,7 +25,7 @@ interface IRelatorioFormProps {
 }
 
 export default function FormReportManually({ report, publisher }: IRelatorioFormProps) {
-    const { createReportManually } = usePublisherContext()
+    const { createReportManually, deleteReport } = usePublisherContext()
     const router = useRouter()
     const { month, congregationId } = router.query
     const monthParam = month as string
@@ -65,6 +67,12 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         setPrivilege(selectedItems)
     }
 
+    async function onDelete(report_id: string) {
+        await toast.promise(deleteReport(report_id), {
+            pending: "Excluindo relatório..."
+        })
+    }
+
     async function onSubmit(data: FormValues) {
         const splitMonth = data.month.split(' ')
         toast.promise(
@@ -92,10 +100,25 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     }
 
     return (
-        <section className="flex justify-center ">
+        <section className="flex flex-col justify-center items-center">
+             <div className="w-full flex justify-end pr-6 max-w-[600px]">
+                {report && (
+                    <ConfirmDeleteModal
+                        onDelete={() => onDelete(`${report && report.id}`)}
+                        button={
+                            <Button
+                                outline
+                                className="text-red-400 w-30"
+                            >
+                                <Trash />
+                                Excluir
+                            </Button>
+                        }
+                    />
+                )}
+            </div>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-auto flex-col justify-center items-center`}>
-
                     <Input
                         readOnly
                         type="text"
@@ -151,6 +174,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
                             type='submit'
                         >Enviar</Button>
                     </div>
+
                 </div>
             </FormStyle>
         </section>
