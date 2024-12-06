@@ -24,7 +24,7 @@ export default function CheckboxUnique(props: ICheckbox) {
               <input
                 id={`${props.label}-${option}`}
                 type="radio"
-                name={props.label} // Use a propriedade 'label' para criar um nome exclusivo para cada grupo de opções
+                name={props.label} 
                 value={option}
                 checked={props.checked === option} // Verifica se a opção é a selecionada
                 className="w-4 h-4 cursor-pointer text-primary-200 bg-gray-100  border-gray-300 rounded focus:bg-primary-200 accent-primary-200"

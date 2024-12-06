@@ -111,7 +111,7 @@ export default function PublisherCard() {
             const filteredPublishers = publishers.filter(publisher => {
 
                 const belongsToSelectedGroups = groupSelecteds.length === 0 ||
-                    groupSelecteds.includes(publisher.group.id)
+                (publisher.group && !groupSelecteds.includes(publisher.group.id))
                 filterPrivileges.some(privilege => {
                     return publisher.privileges.includes(privilege)
                 })

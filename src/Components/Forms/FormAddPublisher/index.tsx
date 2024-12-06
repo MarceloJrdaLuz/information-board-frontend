@@ -105,8 +105,8 @@ export default function FormAddPublisher() {
 
     useEffect(() => {
         const updatePrivileges = []
-        if (pioneerCheckboxSelected !== '') updatePrivileges.push(pioneerCheckboxSelected)
-        if (privilegeCheckboxSelected !== '') updatePrivileges.push(privilegeCheckboxSelected)
+        pioneerCheckboxSelected !== '' ? updatePrivileges.push(pioneerCheckboxSelected) : updatePrivileges.push(Privileges.PUBLICADOR)
+        privilegeCheckboxSelected !== '' && updatePrivileges.push(privilegeCheckboxSelected)
         setAllPrivileges(updatePrivileges)
     }, [pioneerCheckboxSelected, privilegeCheckboxSelected])
 

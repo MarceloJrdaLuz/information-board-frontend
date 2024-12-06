@@ -163,7 +163,7 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                             {serviceYear.months.map((month) => {
                                 let dividir = month.split(" ")
                                 const report = reports?.find(r => r.month === capitalizeFirstLetter(dividir[0]) && r.year === dividir[1])
-                                if (report && report.hours > 0) serviceYear.totalHours += report.hours
+                                if (report && !isPublisher(report.privileges) && (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(dividir[0])}-${dividir[1]}`) || isAuxPioneerUndetermined(report.privileges) || isPioneer(report.privileges))) serviceYear.totalHours += report.hours
                                 return (
                                     <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={`${serviceYear.year}-${month}`}>
                                         <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
