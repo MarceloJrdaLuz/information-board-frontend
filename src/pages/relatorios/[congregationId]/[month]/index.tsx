@@ -400,7 +400,7 @@ export default function RelatorioMes() {
                             <ul>
                                 {<div className="p-5">
                                     {monthAlreadyRegister &&
-                                        <div className="flex text-gray-800 border-l-4 border-2 border-primary-200 m-4 ml-0 p-2 ">
+                                        <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 m-4 mx-0 p-2 ">
                                             <span className="h-full pr-1">
                                                 <InfoIcon className="p-0.5 text-primary-200" />
                                             </span>
