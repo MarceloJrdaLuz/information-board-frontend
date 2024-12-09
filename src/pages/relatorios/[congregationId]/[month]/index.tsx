@@ -398,9 +398,9 @@ export default function RelatorioMes() {
                         </div>
                         {totalsModalShow ? (
                             <ul>
-                                {<div className="p-5">
+                                {<div className="px-5 py-0">
                                     {monthAlreadyRegister &&
-                                        <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 m-4 mx-0 p-2 ">
+                                        <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                             <span className="h-full pr-1">
                                                 <InfoIcon className="p-0.5 text-primary-200" />
                                             </span>
