@@ -22,6 +22,7 @@ import { getAPIClient } from "@/services/axios"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
 import { EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react"
+import moment from "moment"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
@@ -33,6 +34,7 @@ export default function RelatorioMes() {
 
     const router = useRouter()
     const { month, congregationId } = router.query
+    const date = moment().date()
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
@@ -208,6 +210,9 @@ export default function RelatorioMes() {
         }
 
         if (reports) {
+            const reportsFiltered = reports.filter(report => (report.publisher.id === "b0c8aee6-1c4f-4c40-8dc7-6e41ad741085"
+
+            ))
             // Filter reports based on month and year
             const reportsFilteredByDate = reports.filter(report => (
                 report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
@@ -258,6 +263,7 @@ export default function RelatorioMes() {
             const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName")
 
             setReportsFiltered(sortedReports)
+            console.log(reportsFiltered)
         }
 
     }, [monthSelected, yearSelected, filterPrivileges, reports, dateFormat, publishers])
@@ -324,7 +330,6 @@ export default function RelatorioMes() {
     }
 
     const sendTotalsReports = async () => {
-        console.log(totalsToRegister)
         await api.post(`/report/totals/${congregationId}`, {
             totals: totalsToRegister
         }).then(res => {
@@ -392,8 +397,23 @@ export default function RelatorioMes() {
                             <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
                         {totalsModalShow ? (
-                            <ul >
+                            <ul>
                                 {<div className="p-5">
+                                    {monthAlreadyRegister &&
+                                        <div className="flex text-gray-800 border-l-4 border-2 border-primary-200 m-4 ml-0 p-2 ">
+                                            <span className="h-full pr-1">
+                                                <InfoIcon className="p-0.5 text-primary-200" />
+                                            </span>
+                                            {
+                                                date > 20 ?
+                                                    <span>Este relatório já foi registrado. Como já passamos do dia 20, o relatório já deve ter sido registrado em Betel. Caso precise fazer alguma alteração, insira manualmente o relatório alterado. No mês seguinte nos totais do relatório enviado para Betel acrescente as diferenças.
+                                                    </span>
+                                                    :
+                                                    <span>Este relatório já foi registrado. Como ainda não é dia 20, o relatório enviado para Betel ainda pode ser alterado mesmo que já foi enviado. Nesse caso após as alterações, atualize o registro aqui e também o registro enviado para Betel.
+                                                    </span>
+                                            }
+                                        </div>
+                                    }
                                     <ConfirmRegisterReports
                                         onRegister={() => onSubmit()}
                                         button={<Button
