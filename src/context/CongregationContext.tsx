@@ -1,8 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
 import { api } from "@/services/api"
 import { ICongregation } from "@/entities/types"
-import Router, { useRouter } from "next/router"
 import { useAuthContext } from "./AuthContext"
 import { useFetch } from "@/hooks/useFetch"
 import { useSubmitContext } from "./SubmitFormContext"

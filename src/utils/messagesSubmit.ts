@@ -17,7 +17,8 @@ export const messageErrorsSubmit = {
     userCodeNotFound: "Código de usuário não existe!",
     emailNotSend: "Houve um erro ao enviar o e-mail!",
     publisherAlreadyOverseer: "Publicador já é dirigente de outro grupo!",
-    unauthorized: "Você não tem permissão para executar essa ação!"
+    unauthorized: "Você não tem permissão para executar essa ação!", 
+    completionDate: "Data de conclusão tem que ser igual ou maior que a data de designação!"
 }
 
 export const messageSuccessSubmit = {
@@ -56,5 +57,8 @@ export const messageSuccessSubmit = {
     noticeUpdate: "Anúncio atualizado com sucesso!",
     noticeDelete: "Anúncio excluído com sucesso!",
     roleAddUser: "Função atribuída ao usuário com sucesso!",
-    assistanceCreate: "Assistência enviada com sucesso!"
+    assistanceCreate: "Assistência enviada com sucesso!",
+    territoryCreate: "Território criado com sucesso!",
+    territoryUpdate: "Território atualizado com sucesso!",
+    territoryDelete: "Território excluído com sucesso!"
 }

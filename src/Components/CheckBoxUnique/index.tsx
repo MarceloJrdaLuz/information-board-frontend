@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactElement } from 'react'
 
 interface ICheckbox {
   options: string[]
@@ -6,7 +6,9 @@ interface ICheckbox {
   label: string
   visibleLabel?: boolean
   checked?: string
+  disabled?: boolean
   handleCheckboxChange: (selectedOption: string) => void
+  children?: ReactElement | null
 }
 
 export default function CheckboxUnique(props: ICheckbox) {
@@ -29,6 +31,7 @@ export default function CheckboxUnique(props: ICheckbox) {
                 checked={props.checked === option} // Verifica se a opção é a selecionada
                 className="w-4 h-4 cursor-pointer text-primary-200 bg-gray-100  border-gray-300 rounded focus:bg-primary-200 accent-primary-200"
                 onChange={() => handleCheckboxChange(option)}
+                disabled={props.disabled}
               />
               <label
                 htmlFor={`${props.label}-${option}`}
@@ -39,6 +42,7 @@ export default function CheckboxUnique(props: ICheckbox) {
             </div>
           </li>
         ))}
+        {props.children}
       </ul>
     </div>
   )

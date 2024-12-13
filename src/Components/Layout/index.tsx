@@ -19,6 +19,7 @@ import GroupIcon from "../Icons/GroupIcon"
 import PuzzleIcon from "../Icons/PuzzleIcon"
 import NoticesIcon from "../Icons/NoticesIcon"
 import { ProfileCard } from "../ProfileCard"
+import TerritoryIcon from "../Icons/TerritoryIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -301,6 +302,20 @@ export default function Layout(props: LayoutProps) {
                                 }}
                                 icon={FileTextIcon}
                                 active={props.pageActive === 'assistencia'}
+                            />
+                        }
+
+                        {(isAdminCongregation ||
+                            roleContains('TERRITORIES_MANAGER') ||
+                            roleContains('TERRITORIES_VIEWER')) &&
+                            <NavBar.Options
+                                title="Territórios"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push(`/territorios`)
+                                }}
+                                icon={TerritoryIcon}
+                                active={props.pageActive === 'territorios'}
                             />
                         }
                     </NavBar.ListOptions>

@@ -67,5 +67,20 @@
     }, 
     "text": {
         "required": "Texto é um campo obrigatório"
+    },
+    "caretaker": {
+        "required": "Nome do dirigente é um campo obrigatório"
+    },
+    "assignment_date":{
+        "required": "Data da designação é um campo obrigatório", 
+        "typeError": "Data da designação é um campo obrigatório, e precisa ser uma data válida"
+    },
+    "completion_date":{
+        "required": "Data da designação é um campo obrigatório", 
+        "typeError": "Formato de data inválida"
+    },
+    "work_type":{
+        "required": "Campo obrigatório quando OUTRA é selecionado"
     }
+    
 }

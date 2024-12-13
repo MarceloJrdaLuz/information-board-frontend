@@ -14,6 +14,9 @@ export const crumbsAtom = atom<IBreadCrumbs[]>([
 
 export const pageActiveAtom = atom('')
 
+export const territoryHistoryToUpdate = atom('')
+export const atomTerritoryHistoryAction = atom<"create" | "update" | "">("")
+
 export const selectedPublishersAtom = atom<string[]>([])
 export const selectedPublishersToS21Atom = atom<string[]>([])
 export const selectedTotalsToS21Atom = atom<string[]>([])

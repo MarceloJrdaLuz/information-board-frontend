@@ -26,6 +26,9 @@ module.exports = withMT({
         },
         success: {
           100: "#07bc0c"
+        }, 
+        typography: {
+          100: "#424242"
         }
       }
     },

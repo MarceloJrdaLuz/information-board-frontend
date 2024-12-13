@@ -1,0 +1,126 @@
+import { useAuthContext } from "@/context/AuthContext"
+import { useTerritoryContext } from "@/context/TerritoryContext"
+import { ITerritory } from "@/entities/territory"
+import { useFetch } from "@/hooks/useFetch"
+import { ChevronDownIcon, FileClockIcon, InfoIcon, Trash } from "lucide-react"
+import Image from "next/image"
+import Router from "next/router"
+import { useEffect, useState } from "react"
+import mapGeneric from '../../../public/images/mapGeneric.png'
+import Button from "../Button"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import EditIcon from "../Icons/EditIcon"
+import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+
+export default function TerritoriesList() {
+    const { user, roleContains } = useAuthContext()
+    const { deleteTerritory } = useTerritoryContext()
+    const congregationId = user?.congregation.id
+
+    const [territories, setTerritories] = useState<ITerritory[]>()
+    const [selectedTerritories, setSelectedTerritories] = useState<Set<string>>(new Set())
+
+    const fetch = congregationId ? `/territories/${congregationId}` : ""
+    const { data } = useFetch<ITerritory[]>(fetch)
+
+    useEffect(() => {
+        if (data) {
+            setTerritories(data)
+        }
+    }, [data])
+
+    async function onDelete(territory_id: string) {
+        deleteTerritory({
+            territory_id
+        })
+    }
+
+    const handleShowDetails = (territory: ITerritory) => {
+        const updatedSelectedTerritories = new Set(selectedTerritories)
+        if (selectedTerritories.has(territory.id)) {
+            updatedSelectedTerritories.delete(territory.id)
+        } else {
+            updatedSelectedTerritories.add(territory.id)
+        }
+        setSelectedTerritories(updatedSelectedTerritories)
+    }
+
+
+    let skeletonPublishersList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonPublishersList.map((a, i) => (<SkeletonPublishersWithAvatarList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
+    return (
+        <>
+            <ul className="flex flex-wrap justify-center items-center w-full">
+                {territories && territories.length > 0 ? territories?.map(territory =>
+                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full  text-typography-100  m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
+                        <div className="flex w-full justify-between items-center">
+                            <div className="flex items-center p-6 pl-0 ">
+                                <span className="pl-4 font-semi-bold">{territory.name}</span>
+                                <FileClockIcon className="ml-2" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                            </div>
+                            <button className={`w-6 h-6 mr-4 flex justify-center items-center text-typography-100  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
+                        </div>
+                        <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-white' : 'h-0'}`}>
+                            <div className="flex-col flex-wrap m-4">
+                                <div className={`relative w-full h-60`}>
+                                    {territory.image_url ?
+                                        <Image style={{ objectFit: 'cover' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
+                                        :
+                                        <div className="relative flex w-full h-full justify-center items-center">
+                                            <Image style={{ objectFit: 'cover' }} alt={`Imagem do território ${territory.name}`} src={mapGeneric} fill />
+                                            <div className="flex items-center justify-center">
+                                                <span className="absolute text-center text-white bg-black bg-opacity-50 px-2 py-1 rounded">Sem foto</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span className="my-2">{`Referência: ${territory.description}`}</span>
+                            </div>
+                            <div className="flex pl-10">
+                                <div className="gap-1 flex">
+                                    {roleContains("TERRITORIES_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
+                                        <Button
+                                            className="w-30"
+                                            onClick={() => Router.push(`/territorios/edit/${territory.id}`)}
+                                            outline
+                                        >
+                                            <EditIcon />
+                                            Editar
+                                        </Button>}
+                                    {roleContains("TERRITORIES_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
+                                        <ConfirmDeleteModal
+                                            onDelete={() => onDelete(`${territory.id}`)}
+                                            button={<Button
+                                                outline
+                                                className="text-red-400 w-30"
+                                            >
+                                                <Trash />
+                                                Excluir
+                                            </Button>}
+                                        />}
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+                ) : (
+                    // renderSkeleton()
+                    <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                        <span className="h-full pr-1">
+                            <InfoIcon className="p-0.5 text-primary-200" />
+                        </span>
+                        <span>Nenhum território cadastrado nessa congregação.</span>
+                    </div>
+                )}
+            </ul>
+        </>
+    )
+}

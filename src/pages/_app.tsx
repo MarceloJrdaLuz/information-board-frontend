@@ -6,6 +6,7 @@ import { PermissionAndRolesProvider } from '@/context/PermissionAndRolesContext'
 import { PublicDocumentsProvider } from '@/context/PublicDocumentsContext'
 import { PublisherProvider } from '@/context/PublisherContext'
 import { SubmitFormProvider } from '@/context/SubmitFormContext'
+import { TerritoryProvider } from '@/context/TerritoryContext'
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ToastContainer } from 'react-toastify'
@@ -16,18 +17,20 @@ export default function App({ Component, pageProps }: AppProps) {
     <SubmitFormProvider>
       <AuthProvider>
         <CongregationProvider>
-          <DocumentsProvider>
-            <PublisherProvider>
-              <PermissionAndRolesProvider>
-                <NoticesProvider>
-                  <ToastContainer />
-                  <PublicDocumentsProvider>
-                    <Component {...pageProps} />
-                  </PublicDocumentsProvider>
-                </NoticesProvider>
-              </PermissionAndRolesProvider>
-            </PublisherProvider>
-          </DocumentsProvider>
+          <TerritoryProvider>
+            <DocumentsProvider>
+              <PublisherProvider>
+                <PermissionAndRolesProvider>
+                  <NoticesProvider>
+                    <ToastContainer />
+                    <PublicDocumentsProvider>
+                      <Component {...pageProps} />
+                    </PublicDocumentsProvider>
+                  </NoticesProvider>
+                </PermissionAndRolesProvider>
+              </PublisherProvider>
+            </DocumentsProvider>
+          </TerritoryProvider>
         </CongregationProvider>
       </AuthProvider>
     </SubmitFormProvider>

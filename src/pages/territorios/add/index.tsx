@@ -1,42 +1,44 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
-import AddPersonIcon from "@/Components/Icons/AddPersonIcon"
+import FormAddTerritory from "@/Components/Forms/FormAddTerritory"
 import Layout from "@/Components/Layout"
-import PublisherList from "@/Components/PublishersList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
-import Router from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect } from "react"
+import { FormProvider, useForm } from 'react-hook-form'
 
-export default function Publicadores() {
-
+export default function CreateTerritory() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Publicadores')
+        setCrumbs((prevCrumbs) => {
+            const updatedCrumbs = [...prevCrumbs, { label: 'Territórios', link: `/territorios` }]
+            return updatedCrumbs
+        })
+
+        const removeCrumb = () => {
+            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
+        }
+
+        return () => {
+            removeCrumb()
+        }
+    }, [setCrumbs])
+
+    useEffect(() => {
+        setPageActive('Adicionar Território')
     }, [setPageActive])
+
     return (
-        <Layout pageActive="publicadores">
+        <Layout pageActive="territorios">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de pessoas</h1>
-                        <Button
-                            onClick={() => {
-                                Router.push('/publicadores/add')
-                            }}
-                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                            <AddPersonIcon />
-                            <span className="text-primary-200 font-semibold">Adicionar pessoa</span>
-                        </Button>
-                        <PublisherList />
-                    </div>
+                <section className="flex justify-center">
+                    <FormAddTerritory />
                 </section>
             </ContentDashboard>
         </Layout>
@@ -52,6 +54,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
                 permanent: false
             }
         }

@@ -21,7 +21,7 @@ import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import CheckboxBoolean from "../CheckboxBoolean"
 
 export default function PublisherList() {
-    const { user } = useAuthContext()
+    const { user, roleContains } = useAuthContext()
     const { deletePublisher } = usePublisherContext()
     const congregationUser = user?.congregation
 
@@ -193,24 +193,26 @@ export default function PublisherList() {
                             </div>
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">
-                                    <Button
-                                        className="w-30"
-                                        onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
-                                        outline
-                                    >
-                                        <EditIcon />
-                                        Editar
-                                    </Button>
-                                    <ConfirmDeleteModal
-                                        onDelete={() => onDelete(`${publisher.id}`)}
-                                        button={<Button
+                                    {roleContains("PUBLISHERS_MANAGER") &&
+                                        <Button
+                                            className="w-30"
+                                            onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
                                             outline
-                                            className="text-red-400 w-30"
                                         >
-                                            <Trash />
-                                            Excluir
+                                            <EditIcon />
+                                            Editar
                                         </Button>}
-                                    />
+                                    {roleContains("PUBLISHERS_MANAGER") &&
+                                        <ConfirmDeleteModal
+                                            onDelete={() => onDelete(`${publisher.id}`)}
+                                            button={<Button
+                                                outline
+                                                className="text-red-400 w-30"
+                                            >
+                                                <Trash />
+                                                Excluir
+                                            </Button>}
+                                        />}
                                 </div>
 
                             </div>

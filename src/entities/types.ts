@@ -227,6 +227,14 @@ export enum PrivilegesMinistry {
     MISSIONARIOEMCAMPO = 'Missionário em Campo'
 }
 
+export enum WORKTYPESTERRITORY {
+    NORMAL = "Padrão",
+    VISITA = "Visita",
+    CELEBRACAO = 'Celebração',
+    CONGRESSO = 'Congresso',
+    OUTRA = 'Outra',
+}
+
 export enum TotalsFrom {
     PUBLICADORES = "Publicadores",
     PIONEIROSREGULARES = "Pioneiros regulares",

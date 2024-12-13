@@ -26,7 +26,7 @@ export default function Input(props: InputProps) {
                 ref={props.registro}
                 {...props.registro}
             />
-            <Label invalido={props.invalid === 'invalido' ?? true } text={props.placeholder} readonly={props.readOnly}/>
+            <Label invalido={props.invalid === 'invalido'} text={props.placeholder} readonly={props.readOnly}/>
             {props.children}
         </div>
     )
