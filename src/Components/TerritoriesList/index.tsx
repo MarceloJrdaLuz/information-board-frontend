@@ -64,7 +64,7 @@ export default function TerritoriesList() {
                             <div className="flex items-center p-6 text-base xs:px-2">
                                 <span className="font-bold">{territory.name}</span>
                             </div>
-                            <div className="flex justify-center items-center">
+                            <div className="flex justify-center items-center gap-2 xs:gap-4">
                                 <span>
                                     {(() => {
                                         const relevantHistory = territoriesHistory?.find(
@@ -74,8 +74,7 @@ export default function TerritoriesList() {
                                         );
 
                                         return relevantHistory ? (
-                                            <div className="flex justify-center items-center w-32 h-full gap-2 xs:gap-4">
-                                                <FileClockIcon className="text-primary-200" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                                            <div className="flex justify-center items-center  h-full gap-2 xs:gap-4">
                                                 <span className="text-sm text-center text-gray-700">
                                                     {relevantHistory.caretaker}
                                                 </span>
@@ -86,6 +85,7 @@ export default function TerritoriesList() {
                                         );
                                     })()}
                                 </span>
+                                <FileClockIcon className="text-primary-200" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
                                 <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
                             </div>
                         </div>
