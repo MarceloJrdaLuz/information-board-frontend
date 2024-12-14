@@ -1,6 +1,6 @@
 import { atomTerritoryHistoryAction, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
-import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
+import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
@@ -8,10 +8,12 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { mutate } from "swr"
 import { useAuthContext } from "./AuthContext"
 import { useSubmitContext } from "./SubmitFormContext"
+import { useFetch } from "@/hooks/useFetch"
 
 type TerritoryContextTypes = {
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>
     uploadedFile: File | null
+    territoriesHistory: ITerritoryHistory[] | undefined
     createTerritory: (
         { name, description }: CreateTerritoryArgs
     ) => Promise<any>
@@ -41,10 +43,19 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     const [congregationId, setCongregationId] = useState<string | undefined>("")
     const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
     const [territoryHistoryToUpdateId, setTerritoryHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
+    const [territoriesHistory, setTerritoriesHistory] = useState<ITerritoryHistory[] | undefined>()
+    const { data } = useFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "");
+    useEffect(() => {
+        if (user?.congregation?.id) {
+            setCongregationId(user.congregation.id);
+        }
+    }, [user])
 
     useEffect(() => {
-       user?.congregation &&  setCongregationId(user?.congregation.id)
-    }, [user])
+        if (data) {
+          setTerritoriesHistory(data);
+        }
+      }, [data]);
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
@@ -143,7 +154,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     }
 
     async function updateTerritoryHistory(
-        { assignment_date, caretaker, territoryHistory_id, completion_date, work_type, territory_id}: UpdateTerritoryHistoryArgs
+        { assignment_date, caretaker, territoryHistory_id, completion_date, work_type, territory_id }: UpdateTerritoryHistoryArgs
     ) {
 
         await api.put(`${API_ROUTES.TERRITORYHISTORY}/${territoryHistory_id}`, {
@@ -173,7 +184,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
 
     return (
         <TerritoryContext.Provider value={{
-            createTerritory, updateTerritory, deleteTerritory, setUploadedFile, uploadedFile, createTerritoryHistory, updateTerritoryHistory
+            createTerritory, updateTerritory, deleteTerritory, setUploadedFile, uploadedFile, createTerritoryHistory, updateTerritoryHistory, territoriesHistory
         }}>
             {props.children}
         </TerritoryContext.Provider>

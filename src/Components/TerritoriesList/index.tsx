@@ -2,7 +2,7 @@ import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
 import { ITerritory } from "@/entities/territory"
 import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon, FileClockIcon, InfoIcon, Trash } from "lucide-react"
+import { ChevronDownIcon, CircleIcon, FileClockIcon, HistoryIcon, InfoIcon, Trash } from "lucide-react"
 import Image from "next/image"
 import Router from "next/router"
 import { useEffect, useState } from "react"
@@ -14,7 +14,7 @@ import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
 export default function TerritoriesList() {
     const { user, roleContains } = useAuthContext()
-    const { deleteTerritory } = useTerritoryContext()
+    const { deleteTerritory, territoriesHistory } = useTerritoryContext()
     const congregationId = user?.congregation.id
 
     const [territories, setTerritories] = useState<ITerritory[]>()
@@ -45,7 +45,6 @@ export default function TerritoriesList() {
         setSelectedTerritories(updatedSelectedTerritories)
     }
 
-
     let skeletonPublishersList = Array(6).fill(0)
 
     function renderSkeleton() {
@@ -60,17 +59,39 @@ export default function TerritoriesList() {
         <>
             <ul className="flex flex-wrap justify-center items-center w-full">
                 {territories && territories.length > 0 ? territories?.map(territory =>
-                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full  text-typography-100  m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
+                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full  text-typography-100 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
                         <div className="flex w-full justify-between items-center">
-                            <div className="flex items-center p-6 pl-0 ">
-                                <span className="pl-4 font-semi-bold">{territory.name}</span>
-                                <FileClockIcon className="ml-2" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                            <div className="flex items-center p-6 text-base xs:px-2">
+                                <span className="font-bold">{territory.name}</span>
                             </div>
-                            <button className={`w-6 h-6 mr-4 flex justify-center items-center text-typography-100  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
+                            <div className="flex justify-center items-center">
+                                <span>
+                                    {(() => {
+                                        const relevantHistory = territoriesHistory?.find(
+                                            (history) =>
+                                                history.territory.id === territory.id &&
+                                                history.completion_date === null
+                                        );
+
+                                        return relevantHistory ? (
+                                            <div className="flex justify-center items-center w-32 h-full gap-2 xs:gap-4">
+                                                <FileClockIcon className="text-primary-200" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                                                <span className="text-sm text-center text-gray-700">
+                                                    {relevantHistory.caretaker}
+                                                </span>
+                                                <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4" />
+                                            </div>
+                                        ) : (
+                                            <CircleIcon className="bg-red-600 rounded-full text-red-600 w-4 h-4" />
+                                        );
+                                    })()}
+                                </span>
+                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
+                            </div>
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-white' : 'h-0'}`}>
                             <div className="flex-col flex-wrap m-4">
-                                <div className={`relative w-full h-60`}>
+                                <div className={`relative w-full h-60 mb-4`}>
                                     {territory.image_url ?
                                         <Image style={{ objectFit: 'cover' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
                                         :

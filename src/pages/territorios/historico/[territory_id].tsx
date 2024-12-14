@@ -57,7 +57,7 @@ export default function EditHistoryTerritory() {
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <FormProvider {...methods}>
                     <section className="flex flex-wrap justify-around ">
-                        <div className="w-full m-5 mb-0 flex justify-start">
+                        <div className="w-full m-5 flex justify-start">
                         {!getHistory?.some(history => history.completion_date === null) ? (
                             <Button
                                 onClick={() => {

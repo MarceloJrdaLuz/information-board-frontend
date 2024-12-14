@@ -193,7 +193,7 @@ export default function PublisherList() {
                             </div>
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">
-                                    {roleContains("PUBLISHERS_MANAGER") &&
+                                    {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
                                         <Button
                                             className="w-30"
                                             onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
@@ -202,7 +202,7 @@ export default function PublisherList() {
                                             <EditIcon />
                                             Editar
                                         </Button>}
-                                    {roleContains("PUBLISHERS_MANAGER") &&
+                                    {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
                                         <ConfirmDeleteModal
                                             onDelete={() => onDelete(`${publisher.id}`)}
                                             button={<Button

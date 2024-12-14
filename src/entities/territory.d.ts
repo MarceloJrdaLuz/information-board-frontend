@@ -26,6 +26,7 @@ export interface ITerritoryHistory {
     work_type: string,
     assignment_date: Date,
     completion_date?: Date
+    territory: ITerritory
 }
 
 export type CreateTerritoryHistoryArgs = {
