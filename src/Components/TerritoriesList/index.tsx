@@ -75,7 +75,7 @@ export default function TerritoriesList() {
 
                                         return relevantHistory ? (
                                             <div className="flex justify-center items-center  h-full gap-2 xs:gap-4">
-                                                <span className="text-sm text-center text-gray-700">
+                                                <span className="text-sm text-center text-success-100">
                                                     {relevantHistory.caretaker}
                                                 </span>
                                                 <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4" />
@@ -85,8 +85,8 @@ export default function TerritoriesList() {
                                         );
                                     })()}
                                 </span>
-                                <FileClockIcon className="text-primary-200" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
-                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
+                                <FileClockIcon className="text-primary-200 hover:text-primary-100" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
                             </div>
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-white' : 'h-0'}`}>
