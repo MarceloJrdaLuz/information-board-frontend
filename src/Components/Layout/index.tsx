@@ -236,7 +236,9 @@ export default function Layout(props: LayoutProps) {
                     roleContains('GROUPS_MANAGER') ||
                     roleContains('PUBLISHERS_VIEWER') ||
                     roleContains('REPORTS_VIEWER') ||
-                    roleContains('REPORTS_MANAGER')) &&
+                    roleContains('REPORTS_MANAGER')) ||
+                    roleContains('TERRITORIES_MANAGER') ||
+                    roleContains('TERRITORIES_VIEWER') &&
                     <NavBar.ListOptions
                         key={"submenuCongregação"}
                         showList={showSubMenu.includes('congregação')}
