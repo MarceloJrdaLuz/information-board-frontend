@@ -2,13 +2,14 @@ import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
 import { ITerritory } from "@/entities/territory"
 import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon, CircleIcon, FileClockIcon, HistoryIcon, InfoIcon, Trash } from "lucide-react"
+import { ChevronDownIcon, CircleIcon, FileClockIcon, InfoIcon, Trash } from "lucide-react"
 import Image from "next/image"
 import Router from "next/router"
 import { useEffect, useState } from "react"
 import mapGeneric from '../../../public/images/mapGeneric.png'
 import Button from "../Button"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import FullScreenImage from "../FullScreenImage"
 import EditIcon from "../Icons/EditIcon"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
@@ -93,10 +94,11 @@ export default function TerritoriesList() {
                             <div className="flex-col flex-wrap m-4">
                                 <div className={`relative w-full h-60 mb-4`}>
                                     {territory.image_url ?
-                                        <Image style={{ objectFit: 'cover' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
+                                    <FullScreenImage alt={`Imagem do território ${territory.name}`} src={territory.image_url} key={territory.id}/>
+                                        // <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
                                         :
                                         <div className="relative flex w-full h-full justify-center items-center">
-                                            <Image style={{ objectFit: 'cover' }} alt={`Imagem do território ${territory.name}`} src={mapGeneric} fill />
+                                            <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={mapGeneric} fill />
                                             <div className="flex items-center justify-center">
                                                 <span className="absolute text-center text-white bg-black bg-opacity-50 px-2 py-1 rounded">Sem foto</span>
                                             </div>
