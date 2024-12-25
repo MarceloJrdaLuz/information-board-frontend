@@ -263,7 +263,6 @@ export default function RelatorioMes() {
             const sortedReports = sortArrayByProperty(filteredReports, "publisher.fullName")
 
             setReportsFiltered(sortedReports)
-            console.log(reportsFiltered)
         }
 
     }, [monthSelected, yearSelected, filterPrivileges, reports, dateFormat, publishers])

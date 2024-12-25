@@ -92,6 +92,25 @@ export function obterUltimosMeses(): { anoCorrente: string[], anoAnterior: strin
         anoCorrente: mesesAnoCorrente,
         anoAnterior: mesesAnoAnterior
     }
+}
 
+export function getMonthsPast(yearService: string): string[] {
+    moment.locale('pt-br') // Define o idioma para português
+    const currentDate = moment() // Data atual
+    const serviceStartYear = parseInt(yearService) - 1 // Ano inicial do ano de serviço
+    const serviceStartDate = moment(`09-01-${serviceStartYear}`, 'MM-DD-YYYY') // Setembro do ano inicial
+    const serviceEndDate = serviceStartDate.clone().add(1, 'year').subtract(1, 'day') // Até agosto do próximo ano
 
+    const months: string[] = []
+    let monthPointer = serviceStartDate.clone()
+
+    // Ajusta a data atual para o mês anterior
+    const adjustedCurrentDate = currentDate.clone().subtract(1, 'month')
+
+    // Enquanto o ponteiro de meses estiver no intervalo do ano de serviço e não passar do mês ajustado
+    while (monthPointer.isSameOrBefore(serviceEndDate) && monthPointer.isSameOrBefore(adjustedCurrentDate, 'month')) {
+        months.push(monthPointer.format('MMMM YYYY'))
+        monthPointer.add(1, 'month') // Incrementa para o próximo mês
+    }
+    return months
 }
