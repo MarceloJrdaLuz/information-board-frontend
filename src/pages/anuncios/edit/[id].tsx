@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditNotice from "@/Components/Forms/FormEditNotice"
-import FormEditPublisher from "@/Components/Forms/FormEditPublisher"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
@@ -72,7 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('NOTICES_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

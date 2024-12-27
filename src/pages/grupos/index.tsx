@@ -33,7 +33,7 @@ export default function Grupos() {
     const { data: getGroups, mutate } = useFetch<IGroup[]>(fetchConfig)
 
     useEffect(() => {
-        if(getGroups){
+        if (getGroups) {
             const sort = sortArrayByProperty(getGroups, "number")
             setGroups(sort)
         }
@@ -49,9 +49,9 @@ export default function Grupos() {
             handleSubmitSuccess(messageSuccessSubmit.groupDelete)
         }).catch(err => {
             const { response: { data: { message } } } = err
-            if(message === '"Unauthorized"'){
+            if (message === '"Unauthorized"') {
                 handleSubmitError(messageErrorsSubmit.unauthorized)
-            }else{
+            } else {
                 console.log(message)
                 handleSubmitError(messageErrorsSubmit.default)
             }
@@ -91,7 +91,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
 
     if (!token) {
         return {
@@ -102,9 +101,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('GROUPS_MANAGER') && !userRolesParse.includes('GROUPS_VIEWER')) {
         return {
             redirect: {
                 destination: '/dashboard',

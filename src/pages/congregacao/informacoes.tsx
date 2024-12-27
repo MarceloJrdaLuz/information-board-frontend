@@ -8,7 +8,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import {  useEffect } from "react"
+import { useEffect } from "react"
 
 export default function InformacoesCongregacoes() {
     const { user: getUser, roleContains } = useAuthContext()

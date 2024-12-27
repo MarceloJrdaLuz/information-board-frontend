@@ -20,7 +20,6 @@ import { GetServerSideProps } from "next"
 import Router, { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
 
 export default function AddPublicadoresGrupo() {
     const { group_id, group_number } = useRouter().query
@@ -249,7 +248,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
 
     if (!token) {
         return {
@@ -260,9 +258,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('GROUPS_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddNotice from "@/Components/Forms/FormAddNotice"
-import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
 import Layout from "@/Components/Layout"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -9,7 +8,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 
 export default function AddPublicadores() {
     const { congregation } = useCongregationContext()
@@ -66,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('NOTICES_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

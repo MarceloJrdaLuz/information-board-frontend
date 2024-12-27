@@ -7,7 +7,7 @@ import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
-import {  useEffect } from "react"
+import { useEffect } from "react"
 
 export default function AddGrupo() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -37,7 +37,7 @@ export default function AddGrupo() {
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex m-10 justify-center items-center">
-                    <FormAddGroup/>
+                    <FormAddGroup />
                 </section>
             </ContentDashboard>
         </Layout>
@@ -48,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
 
     if (!token) {
         return {
@@ -59,12 +58,13 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if(!userRolesParse.includes('ADMIN_CONGREGATION')){
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('GROUPS_MANAGER')) {
         return {
             redirect: {
-                destination: '/dashboard', 
+                destination: '/dashboard',
                 permanent: false
             }
         }

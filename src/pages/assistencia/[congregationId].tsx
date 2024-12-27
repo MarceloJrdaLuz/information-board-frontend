@@ -1,25 +1,25 @@
+import S88 from "@/Components/AssistanceCard"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
+import Dropdown from "@/Components/Dropdown"
+import PdfIcon from "@/Components/Icons/PdfIcon"
 import Layout from "@/Components/Layout"
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { IMeetingAssistance } from "@/entities/types"
+import { getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
+import { Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
-import { FilePlus2Icon, GroupIcon } from "lucide-react"
+import { FilePlus2Icon } from "lucide-react"
 import moment from "moment"
+import 'moment/locale/pt-br'
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
-import 'moment/locale/pt-br'
-import S88 from "@/Components/AssistanceCard"
-import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
-import PdfIcon from "@/Components/Icons/PdfIcon"
-import { getYearService } from "@/functions/meses"
-import Dropdown from "@/Components/Dropdown"
 
 export default function ListarRelatorios() {
 

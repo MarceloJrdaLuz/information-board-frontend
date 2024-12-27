@@ -18,10 +18,13 @@ import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
+import { getAPIClient } from "@/services/axios"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import { HelpCircle } from "lucide-react"
+import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
+import { parseCookies } from "nookies"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 
@@ -111,7 +114,7 @@ export default function PublisherCard() {
             const filteredPublishers = publishers.filter(publisher => {
 
                 const belongsToSelectedGroups = groupSelecteds.length === 0 ||
-                (publisher.group && !groupSelecteds.includes(publisher.group.id))
+                    (publisher.group && !groupSelecteds.includes(publisher.group.id))
                 filterPrivileges.some(privilege => {
                     return publisher.privileges.includes(privilege)
                 })
@@ -296,7 +299,7 @@ export default function PublisherCard() {
                             {publishers.length > 0 ? (
                                 <>
                                     <div className="flex justify-between">
-                                        <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais"/>
+                                        <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
                                         <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
                                     </div>
                                     {!totals ? publishers?.map(publisher => (
@@ -323,7 +326,7 @@ export default function PublisherCard() {
                                                     key={ob}
                                                     onClick={() => {
                                                         setPdfGenerating(false),
-                                                        setTotalsFrom(ob)
+                                                            setTotalsFrom(ob)
                                                     }}
                                                     className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
                                                 >
@@ -346,4 +349,35 @@ export default function PublisherCard() {
             </ContentDashboard>
         </Layout>
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+
+    const apiClient = getAPIClient(ctx)
+    const { ['quadro-token']: token } = parseCookies(ctx)
+
+    if (!token) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('REPORTS_MANAGER')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {}
+    }
 }

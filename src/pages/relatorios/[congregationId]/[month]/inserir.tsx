@@ -47,7 +47,7 @@ export default function Inserir() {
         <Layout pageActive="relatorios">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <PublisherListReports/>
+                <PublisherListReports />
             </ContentDashboard>
         </Layout>
     )
@@ -67,6 +67,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('REPORTS_MANAGER')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false
+            }
+        }
+    }
+    
     return {
         props: {}
     }

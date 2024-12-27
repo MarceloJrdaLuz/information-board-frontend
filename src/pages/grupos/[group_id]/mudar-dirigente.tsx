@@ -3,7 +3,7 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import Layout from "@/Components/Layout"
-import { buttonDisabled, crumbsAtom, errorFormSend,  pageActiveAtom,  successFormSend } from "@/atoms/atom"
+import { buttonDisabled, crumbsAtom, errorFormSend, pageActiveAtom, successFormSend } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { IPublisher } from "@/entities/types"
@@ -15,7 +15,7 @@ import { useAtom, useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
-import {  useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function MudarDirigente() {
     const { group_id, group_number } = useRouter().query
@@ -45,9 +45,9 @@ export default function MudarDirigente() {
             mutate()
         }).catch(err => {
             const { response: { data: { message } } } = err
-            if(message === '"Unauthorized"'){
+            if (message === '"Unauthorized"') {
                 handleSubmitError(messageErrorsSubmit.unauthorized)
-            }else{
+            } else {
                 console.log(message)
                 handleSubmitError(messageSuccessSubmit.groupOverseerUpdate)
             }
@@ -128,7 +128,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const apiClient = getAPIClient(ctx)
     const { ['quadro-token']: token } = parseCookies(ctx)
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
 
     if (!token) {
         return {
@@ -139,9 +138,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     }
 
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('GROUPS_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

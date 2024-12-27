@@ -1,14 +1,14 @@
-import { useAuthContext } from "@/context/AuthContext"
-import { GetServerSideProps } from "next"
-import { useEffect, useState } from "react"
-import { parseCookies } from 'nookies'
-import { getAPIClient } from "@/services/axios"
-import Layout from "@/Components/Layout"
-import ContentDashboard from "@/Components/ContentDashboard"
-import { useAtom } from "jotai"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddDomain from "@/Components/Forms/FormAddDomain"
+import Layout from "@/Components/Layout"
+import { useAuthContext } from "@/context/AuthContext"
+import { getAPIClient } from "@/services/axios"
+import { useAtom } from "jotai"
+import { GetServerSideProps } from "next"
+import { parseCookies } from 'nookies'
+import { useEffect, useState } from "react"
 
 export default function AddDomain() {
     const { user: getUser, roleContains } = useAuthContext()
@@ -53,6 +53,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         return {
             redirect: {
                 destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('ADMIN')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
                 permanent: false
             }
         }

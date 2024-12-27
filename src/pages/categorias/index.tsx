@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddCategory from "@/Components/Forms/FormAddCategory"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
 import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
