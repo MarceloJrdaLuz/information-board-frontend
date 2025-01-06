@@ -238,6 +238,8 @@ export default function Layout(props: LayoutProps) {
                     roleContains('REPORTS_VIEWER') ||
                     roleContains('REPORTS_MANAGER') ||
                     roleContains('TERRITORIES_MANAGER') ||
+                    roleContains('ASSISTANCE_MANAGER') ||
+                    roleContains('ASSISTANCE_VIEWER') ||
                     roleContains('TERRITORIES_VIEWER')) &&
                     <NavBar.ListOptions
                         key={"submenuCongregação"}
@@ -295,7 +297,9 @@ export default function Layout(props: LayoutProps) {
                             />
                         }
 
-                        {(isAdminCongregation) &&
+                        {(isAdminCongregation ||
+                            roleContains('ASSISTANCE_MANAGER') ||
+                            roleContains('ASSISTANCE_VIEWER')) &&
                             <NavBar.Options
                                 title="Assistência"
                                 onClick={() => {
