@@ -7,6 +7,7 @@ import PdfIcon from "@/Components/Icons/PdfIcon"
 import Layout from "@/Components/Layout"
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { useAuthContext } from "@/context/AuthContext"
 import { IMeetingAssistance } from "@/entities/types"
 import { getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
@@ -22,7 +23,7 @@ import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 
 export default function ListarRelatorios() {
-
+    const { roleContains } = useAuthContext()
     const router = useRouter()
     const { congregationId } = router.query
 
@@ -87,14 +88,16 @@ export default function ListarRelatorios() {
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
                         <div className="flex justify-between">
-                            <Button
-                                onClick={() => {
-                                    router.push(`/assistencia/${congregationId}/enviar`)
-                                }}
-                                className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <FilePlus2Icon />
-                                <span className="text-primary-200 font-semibold">Adicionar</span>
-                            </Button>
+                            {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
+                                <Button
+                                    onClick={() => {
+                                        router.push(`/assistencia/${congregationId}/enviar`)
+                                    }}
+                                    className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    <FilePlus2Icon />
+                                    <span className="text-primary-200 font-semibold">Adicionar</span>
+                                </Button>
+                            )}
                             {pdfGenerating && <PdfLinkComponent />}
                         </div>
                         <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
