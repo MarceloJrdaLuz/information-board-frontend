@@ -1,12 +1,14 @@
 import { atomTerritoryHistoryAction, buttonDisabled, errorFormSend, successFormSend, territoryHistoryToUpdate } from "@/atoms/atom"
 import Button from "@/Components/Button"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
+import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
+import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
 import { CreateTerritoryHistoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
 import { WORKTYPESTERRITORY } from "@/entities/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtom, useAtomValue } from "jotai"
-import { EditIcon } from "lucide-react"
+import { EditIcon, Trash } from "lucide-react"
 import 'moment/locale/pt-br'
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -20,7 +22,8 @@ import { FormValues, ITerritoryHiistoryFormProps } from "./types"
 
 
 export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHiistoryFormProps) {
-    const { createTerritoryHistory, updateTerritoryHistory } = useTerritoryContext()
+    const { createTerritoryHistory, updateTerritoryHistory, deleteTerritoryHistory } = useTerritoryContext()
+    const { roleContains } = useAuthContext()
     const router = useRouter()
     const { territory_id } = router.query
     const dataSuccess = useAtomValue(successFormSend)
@@ -71,7 +74,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
     }
 
     async function onSubmit(data: FormValues) {
-        const territoryId = typeof territory_id === 'string' ? territory_id : '';
+        const territoryId = typeof territory_id === 'string' ? territory_id : ''
 
         switch (workType) {
             case "Outra":
@@ -112,24 +115,47 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
+    async function onDelete(territoryHistory_id: string, territory_id: string) {
+        deleteTerritoryHistory({
+            territoryHistory_id,
+            territory_id
+        })
+    }
+
     return (
         <section className="w-80 m-5">
             <FormStyle full onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-auto flex-col justify-center items-center`}>
                     {territoryHistory && <div className="w-full flex ">
-                        <Button
-                            className="w-30"
-                            onClick={() => {
-                                territoryHistory && setTerritoryHistoryToUpdateId(territoryHistory.id),
-                                    setTerritoryHistoryAction("update")
-                            }}
-                            outline
-                            type="button"
-                        >
-                            <EditIcon />
-                            Editar
-                        </Button>
-                    </div>}
+                        <div className="w-full flex justify-between">
+                            <Button
+                                className="w-30"
+                                onClick={() => {
+                                    territoryHistory && setTerritoryHistoryToUpdateId(territoryHistory.id),
+                                        setTerritoryHistoryAction("update")
+                                }}
+                                outline
+                                type="button"
+                            >
+                                <EditIcon />
+                                Editar
+                            </Button>
+                            <ConfirmDeleteModal
+                                onDelete={() => onDelete(`${territoryHistory.id}`, `${territoryHistory.territory.id}`)}
+                                button={
+                                    <Button
+                                        type="button"
+                                        outline
+                                        className="text-red-400 w-30"
+                                    >
+                                        <Trash />
+                                        Excluir
+                                    </Button>}
+                            />
+                        </div>
+
+                    </div>
+                    }
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type={"text"}
@@ -139,7 +165,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                                 required: 'Campo Obrigatório'
                             })
                         }}
-                        // invalid={errors?.caretaker ? 'invalido' : ''}
+                    // invalid={errors?.caretaker ? 'invalido' : ''}
                     // readOnly={}
                     />
                     {errors?.caretaker?.type && <InputError type={errors?.caretaker?.type} field='caretaker' />}

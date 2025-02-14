@@ -60,5 +60,8 @@ export const messageSuccessSubmit = {
     assistanceCreate: "Assistência enviada com sucesso!",
     territoryCreate: "Território criado com sucesso!",
     territoryUpdate: "Território atualizado com sucesso!",
-    territoryDelete: "Território excluído com sucesso!"
+    territoryDelete: "Território excluído com sucesso!",
+    territoryHistoryDelete: "Registro de histórico excluído com sucesso!",
+    territoryHistoryUpdate: "Registro de histórico atualizado com sucesso!",
+    territoryHistoryCreate: "Registro de histórico criado com sucesso!"
 }

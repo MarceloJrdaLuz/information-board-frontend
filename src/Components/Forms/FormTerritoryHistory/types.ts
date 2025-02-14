@@ -2,8 +2,8 @@ import { ITerritoryHistory } from "@/entities/territory"
 
 export type FormValues = {
     caretaker: string
-    assignment_date:  Date | null ,
-    completion_date?: Date | null ,
+    assignment_date:  string | null ,
+    completion_date?: string | null ,
     work_type?: string
 }
 

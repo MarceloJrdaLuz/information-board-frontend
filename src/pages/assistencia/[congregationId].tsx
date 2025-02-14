@@ -38,7 +38,6 @@ export default function ListarRelatorios() {
         setPdfGenerating(true)
     }, [])
 
-
     useEffect(() => {
         setPageActive('Assistência')
     }, [setPageActive])

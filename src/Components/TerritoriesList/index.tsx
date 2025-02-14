@@ -1,8 +1,10 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
 import { ITerritory } from "@/entities/territory"
+import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { ChevronDownIcon, CircleIcon, FileClockIcon, InfoIcon, Trash } from "lucide-react"
+import moment from "moment"
 import Image from "next/image"
 import Router from "next/router"
 import { useEffect, useState } from "react"
@@ -26,6 +28,7 @@ export default function TerritoriesList() {
 
     useEffect(() => {
         if (data) {
+            data.sort((a, b) => a.number - b.number)
             setTerritories(data)
         }
     }, [data])
@@ -63,7 +66,7 @@ export default function TerritoriesList() {
                     <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full  text-typography-100 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 text-base xs:px-2">
-                                <span className="font-bold">{territory.name}</span>
+                                <span className="font-bold">{`Território ${territory.number}: ${territory.name}`}</span>
                             </div>
                             <div className="flex justify-center items-center gap-2 xs:gap-4">
                                 <span>
@@ -72,7 +75,7 @@ export default function TerritoriesList() {
                                             (history) =>
                                                 history.territory.id === territory.id &&
                                                 history.completion_date === null
-                                        );
+                                        )
 
                                         return relevantHistory ? (
                                             <div className="flex justify-center items-center  h-full gap-2 xs:gap-4">
@@ -83,7 +86,7 @@ export default function TerritoriesList() {
                                             </div>
                                         ) : (
                                             <CircleIcon className="bg-red-600 rounded-full text-red-600 w-4 h-4" />
-                                        );
+                                        )
                                     })()}
                                 </span>
                                 <FileClockIcon className="text-primary-200 hover:text-primary-100" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
@@ -94,7 +97,7 @@ export default function TerritoriesList() {
                             <div className="flex-col flex-wrap m-4">
                                 <div className={`relative w-full h-60 mb-4`}>
                                     {territory.image_url ?
-                                    <FullScreenImage alt={`Imagem do território ${territory.name}`} src={territory.image_url} key={territory.id}/>
+                                        <FullScreenImage alt={`Imagem do território ${territory.name}`} src={territory.image_url} key={territory.id} />
                                         // <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
                                         :
                                         <div className="relative flex w-full h-full justify-center items-center">
@@ -106,6 +109,37 @@ export default function TerritoriesList() {
                                     }
                                 </div>
                                 <span className="my-2">{`Referência: ${territory.description}`}</span>
+                                <div>
+                                    {(() => {
+                                        const relevantHistory = territoriesHistory?.filter(
+                                            (history) => history.territory.id === territory.id
+                                        ) ?? []
+
+                                        const sortedHistory = sortByCompletionDate(relevantHistory)
+                                        const lastCompletedHistory = sortedHistory.length > 0 ? sortedHistory[0] : null
+
+                                        // Verifica se a data é válida com o moment
+                                        const formattedDate = lastCompletedHistory?.completion_date
+                                            ? moment(lastCompletedHistory.completion_date).format("DD/MM/YYYY")
+                                            : null;
+
+                                        // Se a data for inválida, mostra "Território em aberto"
+                                        const displayDate = formattedDate && moment(formattedDate, "DD/MM/YYYY", true).isValid()
+                                            ? formattedDate
+                                            : "Território em aberto";
+
+                                        return (
+                                            <span>
+                                                {`Concluído por último em: `}
+                                                <span className="text-sm text-center text-success-100">
+                                                    {displayDate}
+                                                </span>
+                                            </span>
+                                        );
+                                    })()}
+                                </div>
+
+
                             </div>
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">

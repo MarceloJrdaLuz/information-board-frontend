@@ -14,17 +14,30 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues, IUpdateTerritory } from './type'
+import Dropdown from '@/Components/Dropdown'
 
 
 
 export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
     const { data } = useFetch<ITerritory>(`${API_ROUTES.TERRITORY}/${territory_id}`)
+    const { territories } = useTerritoryContext()
 
+    const [selectedNumber, setSelectedNumber] = useState<string>()
+    const [availableNumbers, setAvailableNumbers] = useState<string[]>([])
     const { updateTerritory, setUploadedFile, uploadedFile } = useTerritoryContext()
     const [territoryUpdated, setTerritoryUpdated] = useState<ITerritory | undefined>(data)
     const [disabled, setDisabled] = useAtom(buttonDisabled)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
+
+    useEffect(() => {
+        if (territories) {
+            const existingNumbers = territories.map(territory => territory.number)
+            const allNumbers = Array.from({ length: 50 }, (_, index) => (index + 1).toString())
+            const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(Number(number)))
+            setAvailableNumbers(availableNumbers)
+        }
+    }, [territories])
 
     const formMethods = useForm<FormValues>({
         defaultValues: data || { // Set default values to the fetched data or empty values
@@ -44,6 +57,7 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
     useEffect(() => {
         if (data) {
             setTerritoryUpdated(data)
+            setSelectedNumber(data.number.toString())
         }
     }, [data])
 
@@ -56,9 +70,14 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
         }
     }, [territoryUpdated, reset])
 
+    function handleClick(number: string) {
+        setSelectedNumber(number)
+    }
+
     const onSubmit = ({ name, description}: FormValues) => {
         toast.promise(updateTerritory({
             name,
+            number: Number(selectedNumber),
             description, 
             territory_id
         }), {
@@ -96,6 +115,9 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
                     }}
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
+
+                    <Dropdown selectedItem={selectedNumber} textAlign='left' full border textVisible handleClick={option => handleClick(option)} title='Número do território' options={availableNumbers} />
+
 
                     <TextArea placeholder="Referência" registro={{ ...register('description', { required: "Campo obrigatório" }) }} invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}

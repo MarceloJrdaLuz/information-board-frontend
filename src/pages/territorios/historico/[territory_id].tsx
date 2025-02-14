@@ -6,6 +6,7 @@ import Layout from "@/Components/Layout"
 import { atomTerritoryHistoryAction, crumbsAtom, pageActiveAtom, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { ITerritoryHistory } from "@/entities/territory"
+import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
@@ -51,6 +52,9 @@ export default function EditHistoryTerritory() {
         setPageActive('Histórico')
     }, [setPageActive])
 
+    
+
+
     return (
         <Layout pageActive="territorios">
             <ContentDashboard>
@@ -58,42 +62,30 @@ export default function EditHistoryTerritory() {
                 <FormProvider {...methods}>
                     <section className="flex flex-wrap justify-around ">
                         <div className="w-full m-5 flex justify-start">
-                        {!getHistory?.some(history => history.completion_date === null) ? (
-                            <Button
-                                onClick={() => {
-                                    setTerritoryHistoryAction("create");
-                                    setTerritorHistoryToUpdateId("");
-                                }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <FileClockIcon />
-                                <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
-                            </Button>
-                        ) : (
-                            <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
-                            <span className="h-full pr-1">
-                                <InfoIcon className="p-0.5 text-primary-200" />
-                            </span>
-                            <span>Existe um histórico em aberto. Conclua-o antes de adicionar um novo.</span>
-                        </div>
-                        )}
+                            {!getHistory?.some(history => history.completion_date === null) ? (
+                                <Button
+                                    onClick={() => {
+                                        setTerritoryHistoryAction("create");
+                                        setTerritorHistoryToUpdateId("");
+                                    }}
+                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    <FileClockIcon />
+                                    <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
+                                </Button>
+                            ) : (
+                                <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                                    <span className="h-full pr-1">
+                                        <InfoIcon className="p-0.5 text-primary-200" />
+                                    </span>
+                                    <span>Existe um histórico em aberto. Conclua-o antes de adicionar um novo.</span>
+                                </div>
+                            )}
                         </div>
                         {territoryHistoryAction === "create" && (
                             <FormTerritoryHistory key="new" territoryHistory={null} />
                         )}
                         {getHistory && getHistory.length > 0 ? (
-                            getHistory.slice() // Faz uma cópia da lista para evitar mutações indesejadas
-                            .sort((a, b) => {
-                                // Primeiramente, ordena por completion_date nulo
-                                if (a.completion_date === null && b.completion_date !== null) return -1;
-                                if (a.completion_date !== null && b.completion_date === null) return 1;
-                    
-                                // Se ambos têm completion_date, ordena por data de conclusão ascendente
-                                if (a.completion_date && b.completion_date) {
-                                    return new Date(b.completion_date).getTime() - new Date(a.completion_date).getTime();
-                                }
-                    
-                                return 0; // Mantém a ordem para outros casos
-                            }).map((history) => (
+                            sortByCompletionDate(getHistory).map((history) => (
                                 <FormTerritoryHistory key={history.id} territoryHistory={history} />
                             ))
                         ) : (

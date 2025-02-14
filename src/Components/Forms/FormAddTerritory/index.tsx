@@ -11,14 +11,33 @@ import { toast } from 'react-toastify'
 import * as yup from 'yup'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
+import Dropdown from '@/Components/Dropdown'
+import { useEffect, useState } from 'react'
 
 
 export default function FormAddTerritory() {
 
     const { createTerritory, setUploadedFile, uploadedFile } = useTerritoryContext()
+    const { territories } = useTerritoryContext()
+    const [availableNumbers, setAvailableNumbers] = useState<string[]>([])
     const [disabled, setDisabled] = useAtom(buttonDisabled)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
+    const [selectedNumber, setSelectedNumber] = useState<string>()
+
+    useEffect(() => {
+        if (territories) {
+            const existingNumbers = territories.map(territory => territory.number)
+            const allNumbers = Array.from({ length: 50 }, (_, index) => (index + 1).toString())
+            const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(Number(number)))
+            setAvailableNumbers(availableNumbers)
+        }
+    }, [territories])
+
+
+    function handleClick(number: string) {
+        setSelectedNumber(number)
+    }
 
     const validationSchema = yup.object({
         name: yup.string().required(),
@@ -31,11 +50,12 @@ export default function FormAddTerritory() {
             description: '',
         }, resolver: yupResolver(validationSchema)
     })
-   
-    const onSubmit = ({ name, description}: FormValues) => {
+
+    const onSubmit = ({ name, description }: FormValues) => {
         toast.promise(createTerritory({
             name,
-            description, 
+            number: Number(selectedNumber),
+            description,
         }), {
             pending: "Criando território"
         })
@@ -49,7 +69,7 @@ export default function FormAddTerritory() {
     function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
         setUploadedFile(event.target.files?.[0] ?? null)
     }
-  
+
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
@@ -61,6 +81,9 @@ export default function FormAddTerritory() {
                     }}
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
+
+                    <Dropdown selectedItem={selectedNumber} textAlign='left' full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
+
 
                     <TextArea placeholder="Referência" registro={{ ...register('description', { required: "Campo obrigatório" }) }} invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}

@@ -1,10 +1,10 @@
 import { atomTerritoryHistoryAction, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
-import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
+import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, DeleteTerritoryHistoryArgs, ITerritory, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { mutate } from "swr"
 import { useAuthContext } from "./AuthContext"
 import { useSubmitContext } from "./SubmitFormContext"
@@ -14,8 +14,9 @@ type TerritoryContextTypes = {
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>
     uploadedFile: File | null
     territoriesHistory: ITerritoryHistory[] | undefined
+    territories: ITerritory[] | undefined
     createTerritory: (
-        { name, description }: CreateTerritoryArgs
+        { name, description, number }: CreateTerritoryArgs
     ) => Promise<any>
     createTerritoryHistory: (
         { territory_id, assignment_date, caretaker, work_type, completion_date }: CreateTerritoryHistoryArgs
@@ -24,10 +25,13 @@ type TerritoryContextTypes = {
         { assignment_date, caretaker, work_type, completion_date, territoryHistory_id }: UpdateTerritoryHistoryArgs
     ) => Promise<any>
     updateTerritory: (
-        { name, territory_id, description }: UpdateTerritoryArgs
+        { name, number, territory_id, description }: UpdateTerritoryArgs
     ) => Promise<any>
     deleteTerritory: (
         { territory_id }: DeleteTerritoryArgs
+    ) => Promise<any>
+    deleteTerritoryHistory: (
+        { territoryHistory_id, territory_id }: DeleteTerritoryHistoryArgs
     ) => Promise<any>
 }
 
@@ -44,7 +48,9 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
     const [territoryHistoryToUpdateId, setTerritoryHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
     const [territoriesHistory, setTerritoriesHistory] = useState<ITerritoryHistory[] | undefined>()
-    const { data } = useFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "");
+    const [territories, setTerritories] = useState<ITerritory[] | undefined>()
+    const { data } = useFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "")
+
     useEffect(() => {
         if (user?.congregation?.id) {
             setCongregationId(user.congregation.id);
@@ -53,19 +59,20 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
 
     useEffect(() => {
         if (data) {
-          setTerritoriesHistory(data);
+            setTerritoriesHistory(data);
         }
-      }, [data]);
+    }, [data])
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     async function createTerritory(
-        { name, description }: CreateTerritoryArgs
+        { name, number, description }: CreateTerritoryArgs
     ) {
         const congregation_id = congregationId
         const formData = new FormData()
 
         formData.set('name', name)
+        formData.set('number', number.toString())
         description && formData.set('description', description)
 
         if (uploadedFile) {
@@ -84,11 +91,12 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     }
 
     async function updateTerritory(
-        { name, territory_id, description }: UpdateTerritoryArgs
+        { name, number, territory_id, description }: UpdateTerritoryArgs
     ) {
         const formData = new FormData()
 
         formData.set('name', name)
+        formData.set('number', number.toString())
         description && formData.set('description', description)
 
         if (uploadedFile) {
@@ -112,6 +120,20 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
         })
     }
 
+    const getTerritories = useCallback(async () => {
+        if (!congregationId) return;
+
+        try {
+            const response = await api.get<ITerritory[]>(`/territories/${congregationId}`);
+            setTerritories(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }, [congregationId])
+
+    useEffect(() => {
+        getTerritories()
+    }, [congregationId, getTerritories])
 
     async function deleteTerritory(
         { territory_id }: DeleteTerritoryArgs
@@ -141,7 +163,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
             completion_date
         }).then(res => {
             setTerritoryHistoryAction("")
-            handleSubmitSuccess(messageSuccessSubmit.territoryCreate)
+            handleSubmitSuccess(messageSuccessSubmit.territoryHistoryCreate)
             if (uploadedFile) {
                 setUploadedFile(null)
             }
@@ -167,7 +189,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
         ).then(res => {
             setTerritoryHistoryAction("")
             setTerritoryHistoryToUpdateId("")
-            handleSubmitSuccess(messageSuccessSubmit.territoryUpdate)
+            handleSubmitSuccess(messageSuccessSubmit.territoryHistoryUpdate)
             if (uploadedFile) {
                 setUploadedFile(null)
             }
@@ -182,9 +204,26 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
         })
     }
 
+    async function deleteTerritoryHistory(
+        { territoryHistory_id, territory_id }: DeleteTerritoryHistoryArgs
+    ) {
+        await api.delete(`${API_ROUTES.TERRITORYHISTORY}/${territoryHistory_id}`).then(res => {
+            mutate(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`)
+            handleSubmitSuccess(messageSuccessSubmit.territoryHistoryDelete)
+        }).catch(err => {
+            const { response: { data: { message } } } = err
+            if (message === '"Unauthorized"') {
+                handleSubmitError(messageErrorsSubmit.unauthorized)
+            } else {
+                console.log(err)
+                handleSubmitError(messageErrorsSubmit.default)
+            }
+        })
+    }
+
     return (
         <TerritoryContext.Provider value={{
-            createTerritory, updateTerritory, deleteTerritory, setUploadedFile, uploadedFile, createTerritoryHistory, updateTerritoryHistory, territoriesHistory
+            createTerritory, updateTerritory, deleteTerritory, setUploadedFile, uploadedFile, createTerritoryHistory, updateTerritoryHistory, deleteTerritoryHistory, territoriesHistory, territories
         }}>
             {props.children}
         </TerritoryContext.Provider>
