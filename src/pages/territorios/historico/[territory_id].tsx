@@ -71,24 +71,15 @@ export default function EditHistoryTerritory() {
                                 <FileClockIcon />
                                 <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
                             </Button>
-                            {/* {!getHistory?.some(history => history.completion_date === null) ? (
-                                <Button
-                                    onClick={() => {
-                                        setTerritoryHistoryAction("create");
-                                        setTerritorHistoryToUpdateId("");
-                                    }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                    <FileClockIcon />
-                                    <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
-                                </Button>
-                            ) : (
+                            {!getHistory?.some(history => history.completion_date === null) && (
                                 <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                     <span className="h-full pr-1">
                                         <InfoIcon className="p-0.5 text-primary-200" />
                                     </span>
-                                    <span>Existe um histórico em aberto. Conclua-o antes de adicionar um novo.</span>
+                                    <span>Existe um histórico em aberto. Conclua-o antes de reabri-lo.</span>
                                 </div>
-                            )} */}
+
+                            )}
                         </div>
                         {territoryHistoryAction === "create" && (
                             <FormTerritoryHistory key="new" territoryHistory={null} />
