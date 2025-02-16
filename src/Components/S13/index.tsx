@@ -1,8 +1,8 @@
-import { ITerritoryWithHistories } from '@/entities/territory';
-import { getYearService } from '@/functions/meses';
-import { Page, StyleSheet, Text, View } from '@react-pdf/renderer';
-import moment from 'moment';
-import React from 'react';
+import { ITerritoryWithHistories } from '@/entities/territory'
+import { getYearService } from '@/functions/meses'
+import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import moment from 'moment'
+import React from 'react'
 
 const styles = StyleSheet.create({
     page: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '50%'
     }
-    
+
 })
 
 export interface S13Props {
@@ -119,7 +119,6 @@ export interface S13Props {
 }
 
 export default function S13({ territoriesHistory }: S13Props) {
-
     return (
         <Page size="A4" style={styles.page}>
             <Text style={styles.header}>REGISTRO DE DESIGNAÇÃO DE TERRITÓRIO</Text>
@@ -155,28 +154,34 @@ export default function S13({ territoriesHistory }: S13Props) {
                                 <Text style={styles.firstCollText}>{rowData.number || ''}</Text>
                             </View>
                             <View style={[styles.rowUltimaData, { backgroundColor: "white" }]}>
-                                <Text style={styles.firstCollText}>{moment(rowData.last_completion_date).format("DD/MM/YYYY") || ''}</Text>
+                                <Text style={styles.firstCollText}>{rowData.last_completion_date ? moment(rowData.last_completion_date).format("DD/MM/YYYY") : ''}</Text>
                             </View>
                         </View>
 
-                        {Array(4).fill(null).map((_, colIndex) => (
-                            <View key={colIndex} style={[styles.tableColl, { backgroundColor: "white" }]}>
-                                <View style={styles.row}>
-                                    <View style={styles.rowDesignadoPara}>
-                                        <Text>{rowData.histories[colIndex]?.caretaker || ''}</Text>
-                                        <Text>- {rowData.histories[colIndex]?.work_type || ''}</Text>
-                                    </View>
-                                    <View style={styles.rowTwoColl}>
-                                        <Text style={styles.rowLeft}>{rowData.histories[colIndex]?.assignment_date
-                                            ? moment(rowData.histories[colIndex]?.assignment_date).format("DD/MM/YYYY")
-                                            : ''}</Text>
-                                        <Text style={styles.rowRight}> {rowData.histories[colIndex]?.completion_date
-                                            ? moment(rowData.histories[colIndex]?.completion_date).format("DD/MM/YYYY")
-                                            : ''}</Text>
+                        {Array(4).fill(null).map((_, colIndex) => {
+                            const reversedHistories = rowData.histories.slice().reverse() // Inverte a ordem do histories
+                            const history = reversedHistories[colIndex] // Usa o índice normal, mas já com histories invertido
+
+                            return (
+                                <View key={colIndex} style={[styles.tableColl, { backgroundColor: "white" }]}>
+                                    <View style={styles.row}>
+                                        <View style={styles.rowDesignadoPara}>
+                                            <Text>{history?.caretaker || ''}</Text>
+                                            <Text>- {history?.work_type || ''}</Text>
+                                        </View>
+                                        <View style={styles.rowTwoColl}>
+                                            <Text style={styles.rowLeft}>
+                                                {history?.assignment_date ? moment(history.assignment_date).format("DD/MM/YYYY") : ''}
+                                            </Text>
+                                            <Text style={styles.rowRight}>
+                                                {history?.completion_date ? moment(history.completion_date).format("DD/MM/YYYY") : ''}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        ))}
+                            )
+                        })}
+
                     </React.Fragment>
                 ))}
 
@@ -207,5 +212,5 @@ export default function S13({ territoriesHistory }: S13Props) {
                 ))}
             </View>
         </Page>
-    );
+    )
 }
