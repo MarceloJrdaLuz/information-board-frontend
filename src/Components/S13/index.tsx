@@ -88,13 +88,14 @@ const styles = StyleSheet.create({
     rowTwoColl: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        height: '60%'
+        justifyContent: 'center', // Isso centraliza os elementos horizontalmente
+        alignItems: 'center', // Isso centraliza os elementos verticalmente
+        height: '60%', // Ajuste conforme necessário
     },
     rowLeft: {
-        display:'flex', 
-        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center', // Centraliza o texto verticalmente
+        alignItems: 'center', // Centraliza o texto horizontalmente
         textAlign: "center",
         borderRight: 1,
         padding: '2px',
@@ -102,11 +103,15 @@ const styles = StyleSheet.create({
         width: '50%'
     },
     rowRight: {
+        display: 'flex',
+        justifyContent: 'center', // Centraliza o texto verticalmente
+        alignItems: 'center', // Centraliza o texto horizontalmente
         textAlign: "center",
         padding: '2px',
         height: '100%',
         width: '50%'
     }
+    
 })
 
 export interface S13Props {

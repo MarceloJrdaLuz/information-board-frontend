@@ -52,7 +52,7 @@ export default function EditHistoryTerritory() {
         setPageActive('Histórico')
     }, [setPageActive])
 
-    
+
 
 
     return (
@@ -62,7 +62,16 @@ export default function EditHistoryTerritory() {
                 <FormProvider {...methods}>
                     <section className="flex flex-wrap justify-around ">
                         <div className="w-full m-5 flex justify-start">
-                            {!getHistory?.some(history => history.completion_date === null) ? (
+                            <Button
+                                onClick={() => {
+                                    setTerritoryHistoryAction("create");
+                                    setTerritorHistoryToUpdateId("");
+                                }}
+                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                <FileClockIcon />
+                                <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
+                            </Button>
+                            {/* {!getHistory?.some(history => history.completion_date === null) ? (
                                 <Button
                                     onClick={() => {
                                         setTerritoryHistoryAction("create");
@@ -79,7 +88,7 @@ export default function EditHistoryTerritory() {
                                     </span>
                                     <span>Existe um histórico em aberto. Conclua-o antes de adicionar um novo.</span>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                         {territoryHistoryAction === "create" && (
                             <FormTerritoryHistory key="new" territoryHistory={null} />
