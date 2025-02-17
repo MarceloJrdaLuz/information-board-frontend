@@ -3,9 +3,15 @@ import HeadComponent from "@/Components/HeadComponent"
 import InformationBoardImage from "@/Components/InformationBoardImage"
 import { domainUrl } from "@/atoms/atom"
 import { useAtomValue } from "jotai"
+import { GetServerSideProps } from "next"
+import { useRouter } from "next/router"
+import { parseCookies } from "nookies"
+import { useEffect } from "react"
 
 export default function Login() {
+    const router = useRouter()
     const domain = useAtomValue(domainUrl)
+
     return (
         <main className={`md:flex md:h-screen`}>
             <HeadComponent title="Login" urlMiniatura={`${domain}/images/miniatura.png`} />
@@ -19,5 +25,21 @@ export default function Login() {
             </section>
         </main>
     )
+}
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const { ["quadro-token"]: token } = parseCookies(ctx)
+
+    if (token) {
+        return {
+            redirect: {
+                destination: "/dashboard",
+                permanent: false,
+            },
+        }
+    }
+
+    return {
+        props: {},
+    }
 }
 

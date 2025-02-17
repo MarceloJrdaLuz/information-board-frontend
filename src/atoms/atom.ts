@@ -27,3 +27,6 @@ export const domainUrl = atom('')
 export const buttonStyledEdit = "flex items-center border rounded-none border-gray-300 bg-white hover:bg-sky-100 p-3 text-primary-200 font-semibold"
 
 export const reportsAtom = atom<IReports[]>([])
+
+export const showSubmenu = atom<string[]>([])
+export const submenuActive = atom('')
