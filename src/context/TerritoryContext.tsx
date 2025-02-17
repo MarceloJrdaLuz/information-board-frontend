@@ -105,7 +105,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
 
         await api.put(`${API_ROUTES.TERRITORY}/${territory_id}`, formData
         ).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.territoryUpdate, '/territorios')
+            handleSubmitSuccess(messageSuccessSubmit.territoryUpdate, '/congregacao/territorios')
             if (uploadedFile) {
                 setUploadedFile(null)
             }

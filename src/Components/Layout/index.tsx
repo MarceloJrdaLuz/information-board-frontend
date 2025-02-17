@@ -20,6 +20,8 @@ import PuzzleIcon from "../Icons/PuzzleIcon"
 import NoticesIcon from "../Icons/NoticesIcon"
 import { ProfileCard } from "../ProfileCard"
 import TerritoryIcon from "../Icons/TerritoryIcon"
+import { useAtom } from "jotai"
+import { openSubMenuAtom } from "@/atoms/atom"
 
 export default function Layout(props: LayoutProps) {
 
@@ -28,19 +30,24 @@ export default function Layout(props: LayoutProps) {
     const { user: getUser, roleContains } = useAuthContext()
     const [isHovering, setIsHovering] = useState(props.pageActive)
     const [user, setUser] = useState(getUser)
-    const [showSubMenu, setShowSubMenu] = useState<string[]>([])
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+    const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
+    
     useEffect(() => {
         const path = router.pathname
-        const parts = path.split('/') // Dividir a string usando a barra como separador
-        const middlePart = parts[1] // Obter o elemento do meio (índice 1)   
-        setShowSubMenu(prevState => [...prevState, middlePart])
-    }, [router.pathname])
+        const parts = path.split('/') 
+        const middlePart = parts[1]  
+    
+        setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
+    }, [router.pathname, setOpenSubMenu])
 
     useEffect(() => {
         setUser(getUser)
     }, [setUser, getUser])
+
+    const toggleSubMenu = (menuKey: string) => {
+        setOpenSubMenu((prev) => (prev === menuKey ? null : menuKey))
+    }
 
     const isAdmin = roleContains('ADMIN')
 
@@ -160,14 +167,8 @@ export default function Layout(props: LayoutProps) {
                 {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuReunioes"}
-                        showList={showSubMenu.includes('reunioes')}
-                        onClick={() => {
-                            if (showSubMenu.includes('reunioes')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'reunioes'))
-                            } else {
-                                setShowSubMenu(prevState => [...prevState, 'reunioes'])
-                            }
-                        }}
+                        showList={openSubMenu === 'reunioes'}
+                        onClick={() => toggleSubMenu('reunioes')}
                         title="Reuniões"
                         icon={MeetingIcon}
                     >
@@ -196,14 +197,8 @@ export default function Layout(props: LayoutProps) {
                 {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuPregacao"}
-                        showList={showSubMenu.includes('pregacao')}
-                        onClick={() => {
-                            if (showSubMenu.includes('pregacao')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'pregacao'))
-                            } else {
-                                setShowSubMenu(prevState => [...prevState, 'pregacao'])
-                            }
-                        }}
+                        showList={openSubMenu === 'pregacao'}
+                        onClick={() => toggleSubMenu('pregacao')}
                         title="Pregação"
                         icon={PreachingIcon}
                     >
@@ -243,14 +238,8 @@ export default function Layout(props: LayoutProps) {
                     roleContains('TERRITORIES_VIEWER')) &&
                     <NavBar.ListOptions
                         key={"submenuCongregação"}
-                        showList={showSubMenu.includes('congregação')}
-                        onClick={() => {
-                            if (showSubMenu.includes('congregação')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'congregação'))
-                            } else {
-                                setShowSubMenu(prevState => [...prevState, 'congregação'])
-                            }
-                        }}
+                        showList={openSubMenu === 'congregacao'}
+                        onClick={() => toggleSubMenu('congregacao')}
                         title="Congregação"
                         icon={SalonIcon}
                     >
@@ -261,7 +250,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Publicadores"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/publicadores')
+                                    Router.push('/congregacao/publicadores')
                                 }}
                                 icon={PublisherIcon}
                                 active={props.pageActive === 'publicadores'}
@@ -275,7 +264,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Grupos de Campo"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/grupos')
+                                    Router.push('/congregacao/grupos')
                                 }}
                                 icon={GroupIcon}
                                 active={props.pageActive === 'grupos'}
@@ -290,7 +279,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Relatórios"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push(`/relatorios/${user?.congregation.id}`)
+                                    Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
                                 }}
                                 icon={ReportIcon}
                                 active={props.pageActive === 'relatorios'}
@@ -304,7 +293,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Assistência"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push(`/assistencia/${user?.congregation.id}`)
+                                    Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
                                 }}
                                 icon={FileTextIcon}
                                 active={props.pageActive === 'assistencia'}
@@ -318,7 +307,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Territórios"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push(`/territorios`)
+                                    Router.push(`/congregacao/territorios`)
                                 }}
                                 icon={TerritoryIcon}
                                 active={props.pageActive === 'territorios'}
@@ -330,14 +319,8 @@ export default function Layout(props: LayoutProps) {
                 {(isAdminCongregation || isAdmin) &&
                     <NavBar.ListOptions
                         key={"submenuAdministracao"}
-                        showList={showSubMenu.includes('administracao')}
-                        onClick={() => {
-                            if (showSubMenu.includes('administracao')) {
-                                setShowSubMenu(prevState => prevState.filter(item => item !== 'administracao'))
-                            } else {
-                                setShowSubMenu(prevState => [...prevState, 'administracao'])
-                            }
-                        }}
+                        showList={openSubMenu === 'administracao'}
+                        onClick={() => toggleSubMenu('administracao')}
                         title="Administração"
                         icon={SecurityIcon}
                     >
@@ -347,7 +330,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Funções"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/funcoes')
+                                    Router.push('/administracao/funcoes')
                                 }}
                                 icon={FunctionSquareIcon}
                                 active={props.pageActive === 'funcoes'}
@@ -359,7 +342,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Atribuir função"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/funcoes/atribuir')
+                                    Router.push('/administracao/funcoes/atribuir')
                                 }}
                                 icon={FunctionSquareIcon}
                                 active={props.pageActive === '/funcoes/atribuir'}
@@ -371,7 +354,7 @@ export default function Layout(props: LayoutProps) {
                                 title="Domínio"
                                 onClick={() => {
                                     setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/add-domain')
+                                    Router.push('/administracao/add-domain')
                                 }}
                                 icon={PuzzleIcon}
                                 active={props.pageActive === 'add-domain'}

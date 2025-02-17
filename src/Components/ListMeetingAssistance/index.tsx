@@ -3,10 +3,14 @@ import { IListItemsProps } from "./types"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear } from "@/functions/meses"
 import { IMeetingAssistance } from "@/entities/types"
+import SkeletonAssistanceList from "./skeletonAssistanceList"
+import { InfoIcon } from "lucide-react"
 
 function ListMeetingAssistance({ items, yearService }: IListItemsProps) {
   const months = useMemo(() => getMonthsByYear(yearService).months, [yearService])
   const [filteredByYearService, setFilteredByYearService] = useState<IMeetingAssistance[]>([])
+
+  console.log(items)
 
   useEffect(() => {
     const filteredItems: IMeetingAssistance[] = months.reduce((acc: IMeetingAssistance[], month) => {
@@ -22,10 +26,20 @@ function ListMeetingAssistance({ items, yearService }: IListItemsProps) {
     }, [])
     setFilteredByYearService(filteredItems)
   }, [items, months])
-  
+
+  let skeletonTerritoriesList = Array(6).fill(0)
+
+  function renderSkeleton() {
+    return (
+      <ul className="flex w-full h-fit flex-wrap justify-center">
+        {skeletonTerritoriesList.map((a, i) => (<SkeletonAssistanceList key={i + 'skeleton'} />))}
+      </ul>
+    )
+  }
+
   return (
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
-      {filteredByYearService?.map(item => (
+      {filteredByYearService && filteredByYearService.length > 0 ? filteredByYearService?.map(item => (
         <li
           className={`flex flex-col flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
           key={item.id}
@@ -58,7 +72,19 @@ function ListMeetingAssistance({ items, yearService }: IListItemsProps) {
             </div>
           </div>
         </li>
-      ))}
+      )) : (
+        <>
+          {
+            renderSkeleton()
+            // <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 my-4 mx-0 p-2 ">
+            //   <span className="h-full pr-1">
+            //     <InfoIcon className="p-0.5 text-primary-200" />
+            //   </span>
+            //   <span>Nenhum registro de assistência cadastrado nessa congregação no ano de serviço selecionado.</span>
+            // </div>
+          }
+        </>
+      )}
     </ul>
   )
 }

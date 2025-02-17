@@ -29,4 +29,4 @@ export const buttonStyledEdit = "flex items-center border rounded-none border-gr
 export const reportsAtom = atom<IReports[]>([])
 
 export const showSubmenu = atom<string[]>([])
-export const submenuActive = atom('')
+export const openSubMenuAtom = atom<string | null>(null)

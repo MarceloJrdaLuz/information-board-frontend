@@ -154,7 +154,7 @@ export default function FormAssistencia({ congregation_id }: IFormAssistanceProp
         api.post(`/assistance/${congregation_id}`, {
             ...payload
         }).then(suc => {
-            handleSubmitSuccess(messageSuccessSubmit.assistanceCreate, `/assistencia/${congregation_id}`)
+            handleSubmitSuccess(messageSuccessSubmit.assistanceCreate, `/congregacao/assistencia/${congregation_id}`)
         }).catch(err => {
             console.log(err)
             handleSubmitError(messageErrorsSubmit.default)

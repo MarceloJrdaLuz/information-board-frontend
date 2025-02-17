@@ -144,7 +144,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             situation, 
             startPioneer
         }).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/publicadores')
+            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
         }).catch(err => {
             const { response: { data: { message } } } = err
             if (message === '"Unauthorized"') {

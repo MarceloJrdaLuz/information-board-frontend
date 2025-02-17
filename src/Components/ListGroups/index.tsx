@@ -34,7 +34,7 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
                 <Button
                 className="w-30"
                   onClick={() => Router.push({
-                    pathname: `/grupos/${item.id}/add-publicadores`,
+                    pathname: `/congregacao/grupos/${item.id}/add-publicadores`,
                     query: { group_number: `${item.number}` }
                   })}
                   outline

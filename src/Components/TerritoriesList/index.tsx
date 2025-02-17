@@ -13,7 +13,7 @@ import Button from "../Button"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import FullScreenImage from "../FullScreenImage"
 import EditIcon from "../Icons/EditIcon"
-import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+import SkeletonTerritoriesList from "./skeletonTerritoriesList"
 
 export default function TerritoriesList() {
     const { user, roleContains } = useAuthContext()
@@ -49,12 +49,12 @@ export default function TerritoriesList() {
         setSelectedTerritories(updatedSelectedTerritories)
     }
 
-    let skeletonPublishersList = Array(6).fill(0)
+    let skeletonTerritoriesList = Array(6).fill(0)
 
     function renderSkeleton() {
         return (
             <ul className="flex w-full h-fit flex-wrap justify-center">
-                {skeletonPublishersList.map((a, i) => (<SkeletonPublishersWithAvatarList key={i + 'skeleton'} />))}
+                {skeletonTerritoriesList.map((a, i) => (<SkeletonTerritoriesList key={i + 'skeleton'} />))}
             </ul>
         )
     }
@@ -82,14 +82,14 @@ export default function TerritoriesList() {
                                                 <span className="text-sm text-center text-success-100">
                                                     {relevantHistory.caretaker}
                                                 </span>
-                                                <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4" />
+                                                <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4 flex-shrink-0" />
                                             </div>
                                         ) : (
-                                            <CircleIcon className="bg-red-600 rounded-full text-red-600 w-4 h-4" />
+                                            <CircleIcon className="bg-red-600 rounded-full text-red-600 w-4 h-4 flex-shrink-0" />
                                         )
                                     })()}
                                 </span>
-                                <FileClockIcon className="text-primary-200 hover:text-primary-100" onClick={() => Router.push(`/territorios/historico/${territory.id}`)} />
+                                <FileClockIcon className="text-primary-200 hover:text-primary-100 flex-shrink-0" onClick={() => Router.push(`/congregacao/territorios/historico/${territory.id}`)} />
                                 <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
                             </div>
                         </div>
@@ -146,7 +146,7 @@ export default function TerritoriesList() {
                                     {roleContains("TERRITORIES_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
                                         <Button
                                             className="w-30"
-                                            onClick={() => Router.push(`/territorios/edit/${territory.id}`)}
+                                            onClick={() => Router.push(`/congregacao/territorios/edit/${territory.id}`)}
                                             outline
                                         >
                                             <EditIcon />
@@ -169,13 +169,20 @@ export default function TerritoriesList() {
                         </div>
                     </li>
                 ) : (
-                    // renderSkeleton()
-                    <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
-                        <span className="h-full pr-1">
-                            <InfoIcon className="p-0.5 text-primary-200" />
-                        </span>
-                        <span>Nenhum território cadastrado nessa congregação.</span>
-                    </div>
+
+                    <>
+                        {!territories ?
+                            renderSkeleton()
+                            :
+                            <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 my-4 mx-0 p-2 ">
+                                <span className="h-full pr-1">
+                                    <InfoIcon className="p-0.5 text-primary-200" />
+                                </span>
+                                <span>Nenhum território cadastrado nessa congregação.</span>
+                            </div>}
+                    </>
+
+
                 )}
             </ul>
         </>

@@ -196,7 +196,7 @@ export default function PublisherList() {
                                     {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
                                         <Button
                                             className="w-30"
-                                            onClick={() => Router.push(`/publicadores/edit/${publisher.id}`)}
+                                            onClick={() => Router.push(`/congregacao/publicadores/edit/${publisher.id}`)}
                                             outline
                                         >
                                             <EditIcon />
