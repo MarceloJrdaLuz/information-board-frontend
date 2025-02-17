@@ -12,6 +12,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { useAtom } from "jotai"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import BreadCrumbs from "@/Components/BreadCrumbs"
+import SkeletonFileList from "@/Components/FileList/skeletonFileList"
 
 export default function FimDeSemana() {
 
@@ -34,10 +35,20 @@ export default function FimDeSemana() {
         setDocumentCategoryId(categoryId)
     }, [categories, setDocumentCategoryId, category])
 
+    let skeletonFileList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonFileList.map((a, i) => (<SkeletonFileList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
     return (
         <Layout pageActive="fimdesemana">
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive}/>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5">
                     <div className="w-full h-full">
                         <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
@@ -45,7 +56,11 @@ export default function FimDeSemana() {
                                 'application/pdf': []
                             }} />
                         </div>
-                        <FileList files={uploadedFiles} />
+                        {uploadedFiles && uploadedFiles.length > 0 ? (
+                            <FileList files={uploadedFiles} />
+                        ) : (
+                            renderSkeleton()
+                        )}
                     </div>
                 </section>
             </ContentDashboard>

@@ -1,6 +1,7 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FileList from "@/Components/FileList"
+import SkeletonFileList from "@/Components/FileList/skeletonFileList"
 import Layout from "@/Components/Layout"
 import Upload from "@/Components/Upload"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
@@ -35,6 +36,16 @@ export default function EventosEspeciais() {
         setDocumentCategoryId(categoryId)
     }, [categories, setDocumentCategoryId, category])
 
+    let skeletonFileList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonFileList.map((a, i) => (<SkeletonFileList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
     return (
         <Layout pageActive="eventosespeciais">
             <ContentDashboard>
@@ -46,7 +57,11 @@ export default function EventosEspeciais() {
                                 'application/pdf': []
                             }} />
                         </div>
-                        <FileList files={uploadedFiles} />
+                        {uploadedFiles && uploadedFiles.length > 0 ? (
+                            <FileList files={uploadedFiles} />
+                        ) : (
+                            renderSkeleton()
+                        )}
                     </div>
                 </section>
             </ContentDashboard>
