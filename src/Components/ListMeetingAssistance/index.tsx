@@ -1,16 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react"
-import { IListItemsProps } from "./types"
+import { IMeetingAssistance } from "@/entities/types"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear } from "@/functions/meses"
-import { IMeetingAssistance } from "@/entities/types"
+import { useEffect, useMemo, useState } from "react"
 import SkeletonAssistanceList from "./skeletonAssistanceList"
-import { InfoIcon } from "lucide-react"
+import { IListItemsProps } from "./types"
 
 function ListMeetingAssistance({ items, yearService }: IListItemsProps) {
   const months = useMemo(() => getMonthsByYear(yearService).months, [yearService])
   const [filteredByYearService, setFilteredByYearService] = useState<IMeetingAssistance[]>([])
-
-  console.log(items)
 
   useEffect(() => {
     const filteredItems: IMeetingAssistance[] = months.reduce((acc: IMeetingAssistance[], month) => {
