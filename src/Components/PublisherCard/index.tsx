@@ -139,7 +139,7 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                     </View>
 
                     {monthsWithYear.map((serviceYear, i) => {
-
+                        console.log("teste" + i)
                         return (
                             <View key={`${serviceYear} ${i}`}>
                                 <View style={{ flexDirection: "row", marginTop: 5, fontFamily: "Times-Bold", }}>

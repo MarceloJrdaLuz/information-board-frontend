@@ -7,6 +7,9 @@
         "required": "Senha é um campo obrigatório",
         "matches": "A senha deve conter pelo menos 8 caracteres, pelo menos uma letra e um número"
     },
+    "phone": {
+        "matches": "Número inválido"
+    },
     "confirmPassword": {
         "required": "Repetir senha é um campo obrigatório",
         "oneOf": "As duas senhas não conferem!"

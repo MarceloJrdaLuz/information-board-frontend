@@ -17,7 +17,9 @@ type PublisherContextTypes = {
         birthDate?: Date, 
         pioneerMonths?: string[], 
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date, 
+        address?: string,
+        phone?: string
     ) => Promise<any>
     updatePublisher: (
         id: string,
@@ -31,7 +33,9 @@ type PublisherContextTypes = {
         birthDate?: Date,
         pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date, 
+        address?: string,
+        phone?: string
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -88,7 +92,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         birthDate?: Date, 
         pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date, 
+        address?: string,
+        phone?: string  
     ) {
         await api.post('/publisher', {
             fullName,
@@ -101,7 +107,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             birthDate, 
             pioneerMonths, 
             situation,
-            startPioneer
+            startPioneer, 
+            address,
+            phone
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -127,11 +135,12 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         birthDate?: Date, 
         pioneerMonths?: string[], 
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date,
+        address?: string,
+        phone?: string
     ) {
 
         await api.put(`/publisher/${id}`, {
-            id,
             fullName,
             congregation_id,
             gender,
@@ -142,7 +151,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             birthDate, 
             pioneerMonths, 
             situation, 
-            startPioneer
+            startPioneer,
+            address,
+            phone
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
         }).catch(err => {

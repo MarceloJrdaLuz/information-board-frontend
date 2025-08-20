@@ -43,6 +43,7 @@
     "react-dropzone": "^14.2.3",
     "react-easy-crop": "^5.0.2",
     "react-hook-form": "^7.42.1",
+    "react-input-mask": "^2.0.4",
     "react-pdf": "^7.3.3",
     "react-swipeable": "^7.0.1",
     "react-to-pdf": "^1.0.1",
@@ -63,6 +64,7 @@
     "@types/react-avatar-editor": "^13.0.0",
     "@types/react-datepicker": "^4.15.0",
     "@types/react-dom": "18.0.10",
+    "@types/react-input-mask": "^3.0.6",
     "@types/uuid": "^9.0.2"
   }
 }

@@ -1,25 +1,25 @@
 import * as yup from 'yup'
 
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormValues } from './type'
-import { toast } from 'react-toastify'
-import FormStyle from '../FormStyle'
-import { useForm } from 'react-hook-form'
-import { useEffect, useMemo, useState } from 'react'
-import { Gender, Hope, IPublisher, Privileges, Situation } from '@/entities/types'
-import { usePublisherContext } from '@/context/PublisherContext'
-import { useFetch } from '@/hooks/useFetch'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import Button from '@/Components/Button'
+import Calendar from '@/Components/Calendar'
 import CheckboxMultiple from '@/Components/CheckBoxMultiple'
 import CheckboxUnique from '@/Components/CheckBoxUnique'
-import InputError from '@/Components/InputError'
 import Input from '@/Components/Input'
-import Button from '@/Components/Button'
-import { useAtomValue } from 'jotai'
-import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
-import Calendar from '@/Components/Calendar'
-import { getMonthsByYear, getYearService } from '@/functions/meses'
+import InputError from '@/Components/InputError'
+import { usePublisherContext } from '@/context/PublisherContext'
+import { Gender, Hope, IPublisher, Privileges, Situation } from '@/entities/types'
 import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
-
+import { getMonthsByYear, getYearService } from '@/functions/meses'
+import { useFetch } from '@/hooks/useFetch'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useAtomValue } from 'jotai'
+import { useEffect, useMemo, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import FormStyle from '../FormStyle'
+import { FormValues } from './type'
+import ReactInputMask from 'react-input-mask'
 export interface IUpdatePublisher {
     id: string
 }
@@ -40,6 +40,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>('')
     const [initialFullNameValue, setInitialFullNameValue] = useState<string>('')
     const [initialNicknameValue, setInitialNicknameValue] = useState<string>('')
+    const [initialAddressValue, setInitialAddressValue] = useState<string>('')
+    const [initialPhoneValue, setInitialPhoneValue] = useState<string>('')
     const [immersedDate, setImmersedDate] = useState<Date | null>(null)
     const [birthDate, setBirthDate] = useState<Date | null>(null)
     const [startPioneer, setStartPioneer] = useState<Date | null>(null)
@@ -50,11 +52,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
-    const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
+    const optionsCheckboxGender = Object.values(Gender)
+    const optionsCheckboxHope = Object.values(Hope)
+    const optionsCheckboxSituationPublisher = Object.values(Situation)
 
-    const optionsCheckboxHope = useState(Object.values(Hope))
-
-    const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
 
     const optionsCheckboxPrivileges = useMemo(() => {
         return [`${Privileges.ANCIAO}`, `${Privileges.SM}`]
@@ -76,8 +77,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
         return normalize
     }
-    const optionsPioneerMonthsServiceYearActual = useState([...normalizeMonths(serviceYearActual)])
-    const optionsPioneerMonthsLastServiceYear = useState([ ...normalizeMonths(lastServiceYear)])
+    const optionsPioneerMonthsServiceYearActual = normalizeMonths(serviceYearActual)
+    const optionsPioneerMonthsLastServiceYear = normalizeMonths(lastServiceYear)
 
     useEffect(() => {
         if (data) {
@@ -87,6 +88,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             setPublisherToUpdate(data)
             setInitialFullNameValue(data.fullName)
             setInitialNicknameValue(data.nickname ?? '')
+            setInitialAddressValue(data.address ?? '')
+            setInitialPhoneValue(data.phone ?? '')
             setGenderCheckboxSelected(data.gender)
             setSituationPublisherCheckboxSelected(data.situation)
             setPrivilegeCheckboxSelected(isPrivilege[0])
@@ -150,15 +153,20 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const esquemaValidacao = yup.object({
         fullName: yup.string().required(),
-        nickname: yup.string()
+        nickname: yup.string(),
+        address: yup.string(),
+        phone: yup
+            .string()
+            .matches(/^\(\d{2}\) \d{5}-\d{4}$/)
     })
-    
-    const { register, reset, handleSubmit, formState: { errors }, watch } = useForm<FormValues>({
+
+    const { register, reset, handleSubmit, formState: { errors }, control, watch } = useForm<FormValues>({
         resolver: yupResolver(esquemaValidacao)
     })
 
     const watchFullName = watch('fullName')
     const watchNickname = watch('nickname')
+    const watchAddress = watch('address')
 
     useEffect(() => {
         const updatePrivileges = []
@@ -172,6 +180,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             reset({
                 fullName: publisherToUpdate.fullName || '', // Set default values
                 nickname: publisherToUpdate.nickname || '', // Set default values
+                address: publisherToUpdate.address || '', // Set default values
+                phone: publisherToUpdate.phone || '', // Set default values
             })
         }
     }, [publisherToUpdate, reset])
@@ -180,6 +190,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         const isChanged =
             watchFullName !== initialFullNameValue ||
             watchNickname !== initialNicknameValue ||
+            watchAddress !== initialAddressValue ||
             genderCheckboxSelected !== (data?.gender || '') ||
             hopeCheckboxSelected !== (data?.hope || '') ||
             situationPublisherCheckboxSelected !== (data?.situation || '') ||
@@ -204,6 +215,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         startPioneer,
         watchFullName,
         watchNickname,
+        watchAddress,
+        initialAddressValue,
         situationPublisherCheckboxSelected
     ])
 
@@ -221,7 +234,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                 birthDate ?? undefined,
                 auxPioneerMonthsSelected,
                 situationPublisherCheckboxSelected,
-                startPioneer ?? undefined
+                startPioneer ?? undefined,
+                data.address,
+                data.phone
             ),
             {
                 pending: 'Atualizando publicador',
@@ -248,16 +263,43 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
+                    <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
+                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
+
+                    <Controller
+                        name="phone"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                            <ReactInputMask
+                                mask="(99) 99999-9999"
+                                value={field.value}
+                                onChange={field.onChange}
+                            >
+                                {(inputProps: any) => (
+                                    <Input
+                                        {...inputProps}
+                                        name={field.name}
+                                        type="text"
+                                        placeholder="Telefone"
+                                        invalid={errors?.phone?.message ? 'invalido' : ''}
+                                    />
+                                )}
+                            </ReactInputMask>
+                        )}
+                    />
+                    {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
+
                     <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
+                        <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
                     </div>
 
                     <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
+                        <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
                     </div>
 
                     <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handleCheckboxSituationPublisher(selectedItems)} />
+                        <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher} handleCheckboxChange={(selectedItems) => handleCheckboxSituationPublisher(selectedItems)} />
                     </div>
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
@@ -266,8 +308,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
                             (
                                 <>
-                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
-                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) -1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) - 1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
                                 </>
 
                             )

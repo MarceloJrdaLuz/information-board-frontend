@@ -1,4 +1,5 @@
-import FormRegister from "@/Components/Forms/FormRegister"
+import dynamic from 'next/dynamic'
+const FormRegister = dynamic(() => import('@/Components/Forms/FormRegister'), { ssr: false })
 import InformationBoardImage from "@/Components/InformationBoardImage"
 
 export default function Cadastro() {

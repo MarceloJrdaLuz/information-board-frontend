@@ -1,8 +1,10 @@
-import FormResetPassword from "@/Components/Forms/FormResetPassword"
 import HeadComponent from "@/Components/HeadComponent"
 import InformationBoardImage from "@/Components/InformationBoardImage"
 import { domainUrl } from "@/atoms/atom"
 import { useAtomValue } from "jotai"
+import dynamic from "next/dynamic"
+const FormResetPassword = dynamic(() => import('@/Components/Forms/FormResetPassword'), { ssr: false })
+
 
 export default function ResetPassword() {
     const domain = useAtomValue(domainUrl)
@@ -16,7 +18,7 @@ export default function ResetPassword() {
                 </div>
             </section>
             <section className={`flex flex-wrap w-9/12 sm:w-2/3 h-4/5 absolute rounded-xl md:rounded-none top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 justify-center items-center md:w-5/12 md:h-full md:static md:transform-none bg-gray-200`}>
-            <FormResetPassword />
+                <FormResetPassword />
             </section>
         </main>
     )

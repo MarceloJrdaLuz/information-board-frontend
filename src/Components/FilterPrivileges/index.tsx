@@ -18,7 +18,7 @@ interface IFIlterPrivilegesProps {
 }
 
 export default function FilterPrivileges({ handleCheckboxChange, checkedOptions, onClick, includeOptionAll }: IFIlterPrivilegesProps) {
-    const [privileges, setPrivileges] = useState(includeOptionAll ? [...Object.values(Privileges), 'Todos'] : Object.values(Privileges))
+    const [privileges, setPrivileges] = useState(includeOptionAll ? ['Todos', ...Object.values(Privileges)] : Object.values(Privileges))
 
     return (
         <Popover placement="bottom-start">
