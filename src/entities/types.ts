@@ -132,8 +132,8 @@ export interface IUpdateReport {
 
 export interface IPublisher {
     id: string
-    fullName: string,
-    nickname?: string,
+    fullName: string
+    nickname?: string
     privileges: string[]
     pioneerMonths?: string[]
     hope: Hope
@@ -144,6 +144,8 @@ export interface IPublisher {
     congregation: ICongregation
     group: IGroup
     situation: Situation
+    address?: string
+    phone?: string
 }
 
 export interface IPublisherList {

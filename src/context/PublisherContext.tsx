@@ -13,11 +13,13 @@ type PublisherContextTypes = {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date, 
-        birthDate?: Date, 
-        pioneerMonths?: string[], 
+        dateImmersed?: Date,
+        birthDate?: Date,
+        pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date,
+        address?: string,
+        phone?: string
     ) => Promise<any>
     updatePublisher: (
         id: string,
@@ -31,7 +33,9 @@ type PublisherContextTypes = {
         birthDate?: Date,
         pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date,
+        address?: string,
+        phone?: string
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -84,11 +88,13 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date, 
-        birthDate?: Date, 
+        dateImmersed?: Date,
+        birthDate?: Date,
         pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date,
+        address?: string,
+        phone?: string
     ) {
         await api.post('/publisher', {
             fullName,
@@ -97,11 +103,13 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             congregation_id,
             hope,
             gender,
-            dateImmersed, 
-            birthDate, 
-            pioneerMonths, 
+            dateImmersed,
+            birthDate,
+            pioneerMonths,
             situation,
-            startPioneer
+            startPioneer,
+            address,
+            phone
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -123,26 +131,29 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         hope?: string,
         privileges?: string[],
         nickname?: string,
-        dateImmersed?: Date, 
-        birthDate?: Date, 
-        pioneerMonths?: string[], 
+        dateImmersed?: Date,
+        birthDate?: Date,
+        pioneerMonths?: string[],
         situation?: string,
-        startPioneer?: Date
+        startPioneer?: Date,
+        address?: string,
+        phone?: string
     ) {
 
         await api.put(`/publisher/${id}`, {
-            id,
             fullName,
             congregation_id,
             gender,
             hope,
             privileges,
             nickname,
-            dateImmersed, 
-            birthDate, 
-            pioneerMonths, 
-            situation, 
-            startPioneer
+            dateImmersed,
+            birthDate,
+            pioneerMonths,
+            situation,
+            startPioneer, 
+            address,
+            phone
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
         }).catch(err => {
