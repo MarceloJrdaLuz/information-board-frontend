@@ -143,9 +143,7 @@ export interface IPublisher {
     birthDate?: Date
     congregation: ICongregation
     group: IGroup
-    situation: Situation, 
-    address?: string,
-    phone?: string,
+    situation: Situation
 }
 
 export interface IPublisherList {

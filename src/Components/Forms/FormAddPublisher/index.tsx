@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormValues } from './type'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useAuthContext } from '@/context/AuthContext'
 import { usePublisherContext } from '@/context/PublisherContext'
@@ -19,8 +19,6 @@ import Calendar from '@/Components/Calendar'
 import { getMonthsByYear, getYearService } from '@/functions/meses'
 import { Gender, Hope, Privileges, Situation } from '@/entities/types'
 import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
-import { add } from 'lodash'
-import ReactInputMask from 'react-input-mask'
 
 
 export default function FormAddPublisher() {
@@ -67,7 +65,7 @@ export default function FormAddPublisher() {
         return normalize
     }
     const optionsPioneerMonthsServiceYearActual = useState([...normalizeMonths(serviceYearActual)])
-    const optionsPioneerMonthsLastServiceYear = useState([...normalizeMonths(lastServiceYear)])
+    const optionsPioneerMonthsLastServiceYear = useState([ ...normalizeMonths(lastServiceYear)])
 
     const handleCheckboxGender = (selectedItems: string) => {
         setGenderCheckboxSelected(selectedItems)
@@ -114,18 +112,13 @@ export default function FormAddPublisher() {
 
     const esquemaValidacao = yup.object({
         fullName: yup.string().required(),
-        nickname: yup.string(),
-        phone: yup
-            .string()
-            .matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido')
+        nickname: yup.string()
     })
 
-    const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
+    const { register, reset, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             fullName: '',
-            nickname: '',
-            address: '',
-            phone: ''
+            nickname: ''
         }, resolver: yupResolver(esquemaValidacao)
     })
 
@@ -139,11 +132,9 @@ export default function FormAddPublisher() {
             data.nickname,
             immersedDate ?? undefined,
             birthDate ?? undefined,
-            auxPioneerMonthsSelected,
-            situationPublisherCheckboxSelected ?? Situation.ATIVO,
-            startPioneer ?? undefined, 
-            data.address, 
-            data.phone
+            auxPioneerMonthsSelected, 
+            situationPublisherCheckboxSelected ?? Situation.ATIVO, 
+            startPioneer ?? undefined
         ), {
             pending: 'Criando novo publicador',
         })
@@ -180,36 +171,8 @@ export default function FormAddPublisher() {
                     }}
                         invalid={errors?.fullName?.message ? 'invalido' : ''} />
                     {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
-
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
-
-                    <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
-                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
-
-                    <Controller
-                        name="phone"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                            <ReactInputMask
-                                mask="(99) 99999-9999"
-                                value={field.value}
-                                onChange={field.onChange}
-                            >
-                                {(inputProps: any) => (
-                                    <Input
-                                        {...inputProps}
-                                        name={field.name}
-                                        type="text"
-                                        placeholder="Telefone"
-                                        invalid={errors?.phone?.message ? 'invalido' : ''}
-                                    />
-                                )}
-                            </ReactInputMask>
-                        )}
-                    />
-                    {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
                     <div className='border border-gray-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
@@ -230,7 +193,7 @@ export default function FormAddPublisher() {
                             (
                                 <>
                                     <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
-                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) - 1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) -1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
                                 </>
 
                             )

@@ -25,7 +25,6 @@ export default function Input(props: InputProps) {
                 required={props.required}    
                 ref={props.registro}
                 {...props.registro}
-                {...props}
             />
             <Label invalido={props.invalid === 'invalido'} text={props.placeholder} readonly={props.readOnly}/>
             {props.children}
