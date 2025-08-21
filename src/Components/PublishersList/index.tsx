@@ -185,11 +185,13 @@ export default function PublisherList() {
                             </div>
 
                             <div className="flex flex-wrap w-full mt-2 ">
-                                {publisher.nickname && <p className="p-10"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
-                                <p className="p-10"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
-                                <p className="p-10"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                                <p className="p-10"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                                {(publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) || publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && <p className="p-10"><span className="text-primary-200 font-semibold">Início como Pioneiro:</span> {publisher.startPioneer ? moment(publisher.startPioneer?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>}
+                                {publisher.nickname && <p className="p-4"><span className="text-primary-200 font-semibold">Apelido:</span> {publisher.nickname}</p>}
+                                <p className="p-4"><span className="text-primary-200 font-semibold">Esperança:</span> {publisher.hope}</p>
+                                <p className="p-4"><span className="text-primary-200 font-semibold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                                <p className="p-4"><span className="text-primary-200 font-semibold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
+                                {(publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) || publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && <p className="p-4"><span className="text-primary-200 font-semibold">Início como Pioneiro:</span> {publisher.startPioneer ? moment(publisher.startPioneer?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>}
+                                <p className="p-4"><span className="text-primary-200 font-semibold">Telefone:</span> {publisher.phone ? publisher.phone : "Não informado"}</p>
+                                <p className="p-4"><span className="text-primary-200 font-semibold">Endereço:</span> {publisher.address ? publisher.address : "Não informado"}</p>
                             </div>
                             <div className="flex pl-10">
                                 <div className="gap-1 flex">
