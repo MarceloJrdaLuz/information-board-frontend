@@ -146,6 +146,7 @@ export interface IPublisher {
     situation: Situation
     address?: string
     phone?: string
+    emergencyContact?: IEmergencyContact
 }
 
 export interface IPublisherList {
@@ -315,3 +316,11 @@ export interface IMeetingAssistance {
     endWeekTotal: number
     endWeekAverage: number
 }
+
+export interface IEmergencyContact  {
+    id: string
+    name: string
+    phone: string
+    relationship: string
+    isTj: boolean
+} 

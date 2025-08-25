@@ -14,7 +14,7 @@ function ListItems({ items, label, path, onDelete }: IListItemsProps) {
           key={item.id}
         >
           <div className="flex w-full justify-start items-center p-6 text-primary-200 font-semibold">
-            Nome da {label}:
+            Nome {label}:
             <span className="font-normal ml-5">{item.name}</span>
           </div>
           <div className="flex flex-wrap justify-between w-full p-6 font-semi-bold">

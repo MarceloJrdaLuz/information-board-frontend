@@ -63,5 +63,8 @@ export const messageSuccessSubmit = {
     territoryDelete: "Território excluído com sucesso!",
     territoryHistoryDelete: "Registro de histórico excluído com sucesso!",
     territoryHistoryUpdate: "Registro de histórico atualizado com sucesso!",
-    territoryHistoryCreate: "Registro de histórico criado com sucesso!"
+    territoryHistoryCreate: "Registro de histórico criado com sucesso!",
+    emergencyContactDelete: "Contato de emergência excluído com sucesso!",
+    emergencyContactUpdate: "Contato de emergência atualizado com sucesso!",
+    emergencyContactCreate: "Contato de emergência criado com sucesso!"
 }

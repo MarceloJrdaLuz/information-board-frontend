@@ -22,6 +22,7 @@ import { ProfileCard } from "../ProfileCard"
 import TerritoryIcon from "../Icons/TerritoryIcon"
 import { useAtom } from "jotai"
 import { openSubMenuAtom } from "@/atoms/atom"
+import EmergencyContactIcon from "../Icons/PhoneContactIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -311,6 +312,20 @@ export default function Layout(props: LayoutProps) {
                                 }}
                                 icon={TerritoryIcon}
                                 active={props.pageActive === 'territorios'}
+                            />
+                        }
+
+                        {(isAdminCongregation ||
+                            roleContains('PUBLISHERS_MANAGER') ||
+                            roleContains('PUBLISHERS_VIEWER')) &&
+                            <NavBar.Options
+                                title="Contatos de emergência"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push(`/congregacao/contatos-emergencia`)
+                                }}
+                                icon={EmergencyContactIcon}
+                                active={props.pageActive === 'contatos-emergencia'}
                             />
                         }
                     </NavBar.ListOptions>

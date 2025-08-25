@@ -1,9 +1,11 @@
-import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import { showModalEmergencyContact } from "@/atoms/atom"
+import { ConsentRecordTypes, IEmergencyContact, IPublisherConsent } from "@/entities/types"
 import { api } from "@/services/api"
-import { ConsentRecordTypes, IPublisherConsent, Situation } from "@/entities/types"
-import { useSubmitContext } from "./SubmitFormContext"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { useSetAtom } from "jotai"
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
+import { toast } from "react-toastify"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type PublisherContextTypes = {
     createPublisher: (
@@ -19,8 +21,16 @@ type PublisherContextTypes = {
         situation?: string,
         startPioneer?: Date,
         address?: string,
-        phone?: string
+        phone?: string,
+        emergencyContact_id?: string | undefined
     ) => Promise<any>
+    createEmergencyContact: ({
+        name,
+        phone,
+        relationship,
+        isTj,
+        congregation_id
+    }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }) => Promise<any>
     updatePublisher: (
         id: string,
         fullName: string,
@@ -35,7 +45,8 @@ type PublisherContextTypes = {
         situation?: string,
         startPioneer?: Date,
         address?: string,
-        phone?: string
+        phone?: string,
+        emergencyContact_id?: string | undefined
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -80,6 +91,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const modal = useSetAtom(showModalEmergencyContact)
+
 
     async function createPublisher(
         fullName: string,
@@ -94,8 +107,11 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         situation?: string,
         startPioneer?: Date,
         address?: string,
-        phone?: string
+        phone?: string,
+        emergencyContact_id?: string
     ) {
+        console.log(emergencyContact_id)
+
         await api.post('/publisher', {
             fullName,
             nickname,
@@ -109,7 +125,8 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             situation,
             startPioneer,
             address,
-            phone
+            phone,
+            emergencyContact_id
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
         }).catch(err => {
@@ -137,9 +154,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         situation?: string,
         startPioneer?: Date,
         address?: string,
-        phone?: string
+        phone?: string,
+        emergencyContact_id?: string
     ) {
-
         await api.put(`/publisher/${id}`, {
             fullName,
             congregation_id,
@@ -151,9 +168,10 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             birthDate,
             pioneerMonths,
             situation,
-            startPioneer, 
+            startPioneer,
             address,
-            phone
+            phone,
+            emergencyContact_id
         }).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
         }).catch(err => {
@@ -300,9 +318,28 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
+    async function createEmergencyContact(
+        { name, phone, relationship, isTj, congregation_id }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }
+    ) {
+        console.log({ name, phone, relationship, isTj, congregation_id })
+        await api.post('/emergencyContact', {
+            name,
+            phone,
+            relationship,
+            isTj,
+            congregation_id
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.emergencyContactCreate)
+            modal(false)
+        }).catch(err => {
+            console.log(err)
+            toast.error(messageErrorsSubmit.default)
+        })
+    }
+
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, createEmergencyContact
         }}>
             {props.children}
         </PublisherContext.Provider>
@@ -319,4 +356,4 @@ function usePublisherContext(): PublisherContextTypes {
     return context
 }
 
-export { PublisherProvider, usePublisherContext, }
+export { PublisherProvider, usePublisherContext }

@@ -73,7 +73,7 @@ export default function Grupos() {
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
                         <Button
                             onClick={() => {
-                                Router.push('/congregacao/grupos/add')
+                                Router.push('congregacao/grupos/add')
                             }}
                             className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
                             <GroupIcon />
