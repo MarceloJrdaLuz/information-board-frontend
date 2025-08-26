@@ -214,10 +214,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
                         </div>
                         {emergencyContactShow && (
-                            <div
-                                className={`overflow-hidden transition-all duration-1000 ease-in-out ${emergencyContactShow ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                                    }`}
-                            >
+                            <>
                                 <DropdownObject<IEmergencyContact>
                                     title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                     textVisible
@@ -230,7 +227,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                 <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
                                     <Button type='button' className='w-fit'><span><PlusIcon className='bg-white rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
                                 </span>
-                            </div>
+                            </>
                         )}
                     </div>
 

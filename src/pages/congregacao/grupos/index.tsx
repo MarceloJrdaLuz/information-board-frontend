@@ -96,7 +96,7 @@ export default function Grupos() {
                         )
                             : (
                                 <>
-                                    {groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
+                                    {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
                                 </>
                             )
                         }
