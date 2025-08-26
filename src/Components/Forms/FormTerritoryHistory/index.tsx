@@ -165,14 +165,12 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                                 required: 'Campo Obrigatório'
                             })
                         }}
-                    // invalid={errors?.caretaker ? 'invalido' : ''}
-                    // readOnly={}
                     />
                     {errors?.caretaker?.type && <InputError type={errors?.caretaker?.type} field='caretaker' />}
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type="date"
-                        placeholder={territoryHistory ? String(territoryHistory.assignment_date) : "Data da designação"}
+                        placeholder="Data da designação"
                         registro={{
                             ...register('assignment_date')
                         }}
@@ -182,7 +180,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type="date"
-                        placeholder={territoryHistory ? String(territoryHistory.completion_date) : "Data da conclusão"}
+                        placeholder="Data da conclusão"
                         maxLength={50}
                         registro={{
                             ...register('completion_date')

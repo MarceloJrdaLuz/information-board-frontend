@@ -1,9 +1,11 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
+import EmptyState from "@/Components/EmptyState"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import Layout from "@/Components/Layout"
 import ListGroups from "@/Components/ListGroups"
+import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
@@ -64,6 +66,16 @@ export default function Grupos() {
         })
     }
 
+    let skeletonGropsList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonGropsList.map((a, i) => (<SkeletonGroupsList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
+
     return (
         <Layout pageActive="grupos">
             <ContentDashboard>
@@ -73,13 +85,21 @@ export default function Grupos() {
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
                         <Button
                             onClick={() => {
-                                Router.push('congregacao/grupos/add')
+                                Router.push('/congregacao/grupos/add')
                             }}
                             className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
                             <GroupIcon />
                             <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
-                        {groups && <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />}
+                        {groups && groups.length > 0 ? (
+                            <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
+                        )
+                            : (
+                                <>
+                                    {groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
+                                </>
+                            )
+                        }
                     </div>
                 </section>
             </ContentDashboard>

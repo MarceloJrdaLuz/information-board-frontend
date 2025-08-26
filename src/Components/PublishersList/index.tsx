@@ -142,8 +142,8 @@ export default function PublisherList() {
                             </div>
                             <button className={`w-6 h-6 mr-4 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
                         </div>
-                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-white' : 'h-0'}`}>                        {/* Exibir as informações adicionais aqui */}
-                            <div className="h-fit px-8 ">
+                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-white' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
+                            <div className="h-fit ">
                                 {publisher.privileges.map(privilege => {
                                     if (privilege === Privileges.PIONEIROAUXILIAR) {
                                         if (isAuxPioneerMonthNow(publisher)) {
@@ -184,7 +184,7 @@ export default function PublisherList() {
                                 )}
                             </div>
 
-                            <div className="flex flex-wrap w-full mt-4">
+                            <div className="flex flex-wrap w-full mt-4 text-sm sm:text-base">
                                 {publisher.nickname && <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Apelido:</span> {publisher.nickname}</p>}
                                 <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Esperança:</span> {publisher.hope}</p>
                                 <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
@@ -192,29 +192,37 @@ export default function PublisherList() {
                                 {(publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) || publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Início como Pioneiro:</span> {publisher.startPioneer ? moment(publisher.startPioneer?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>}
                                 <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Telefone:</span> {publisher.phone ? publisher.phone : "Não informado"}</p>
                                 <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Endereço:</span> {publisher.address ? publisher.address : "Não informado"}</p>
-                                <div className='w-full m-2 border-t border-gray-300 my-4 p-4'>
-                                    <span>Contato de emergência</span>
-                                    <div className="flex flex-wrap justify-between text-typography-100">
-                                        <div className="flex flex-col p-4">
-                                            <span className="text-primary-200 font-bold">Nome:</span>
-                                            <span>{publisher.emergencyContact?.name}</span>
+                                <div className='w-full m-2 border-t border-gray-300 my-4 p-2'>
+                                    <span className="text-primary-200 font-semibold text-base sm:text-lg">Contato de emergência</span>
+                                    {publisher.emergencyContact ? (
+                                        <>
+                                            <div className="flex flex-wrap justify-between text-typography-100">
+                                                <div className="flex flex-col p-4">
+                                                    <span className="text-primary-200 font-bold">Nome:</span>
+                                                    <span>{publisher.emergencyContact?.name}</span>
+                                                </div>
+                                                <div className="flex flex-col p-4">
+                                                    <span className="text-primary-200 font-bold">Telefone:</span>
+                                                    <span>{publisher.emergencyContact?.phone}</span>
+                                                </div>
+                                                <div className="flex flex-col p-4">
+                                                    <span className="text-primary-200 font-bold">Relacionamento:</span>
+                                                    <span>{publisher.emergencyContact?.relationship}</span>
+                                                </div>
+                                                <div className="flex flex-col p-4">
+                                                    <span className="text-primary-200 font-bold">É TJ?:</span>
+                                                    <span>{publisher.emergencyContact?.isTj ? "Sim" : "Não"}</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex justify-center py-2">
+                                            <span className="text-typography-100">Nenhum contato de emergência adicionado!</span>
                                         </div>
-                                        <div className="flex flex-col p-4">
-                                            <span className="text-primary-200 font-bold">Telefone:</span>
-                                            <span>{publisher.emergencyContact?.phone}</span>
-                                        </div>
-                                        <div className="flex flex-col p-4">
-                                            <span className="text-primary-200 font-bold">Relacionamento:</span>
-                                            <span>{publisher.emergencyContact?.relationship}</span>
-                                        </div>
-                                        <div className="flex flex-col p-4">
-                                            <span className="text-primary-200 font-bold">É TJ?:</span>
-                                            <span>{publisher.emergencyContact?.isTj ? "Sim" : "Não"}</span>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
-                            <div className="flex pl-10">
+                            <div className="flex">
                                 <div className="gap-1 flex">
                                     {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
                                         <Button

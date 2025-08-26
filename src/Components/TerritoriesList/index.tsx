@@ -14,6 +14,7 @@ import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import FullScreenImage from "../FullScreenImage"
 import EditIcon from "../Icons/EditIcon"
 import SkeletonTerritoriesList from "./skeletonTerritoriesList"
+import EmptyState from "../EmptyState"
 
 export default function TerritoriesList() {
     const { user, roleContains } = useAuthContext()
@@ -174,12 +175,7 @@ export default function TerritoriesList() {
                         {!territories ?
                             renderSkeleton()
                             :
-                            <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 my-4 mx-0 p-2 ">
-                                <span className="h-full pr-1">
-                                    <InfoIcon className="p-0.5 text-primary-200" />
-                                </span>
-                                <span>Nenhum território cadastrado nessa congregação.</span>
-                            </div>}
+                            <EmptyState message="Nenhum território cadastrado nessa congregação!" />}
                     </>
 
 

@@ -45,7 +45,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [birthDate, setBirthDate] = useState<Date | null>(null)
     const [startPioneer, setStartPioneer] = useState<Date | null>(null)
     const [allPrivileges, setAllPrivileges] = useState<string[]>([])
-    const [yearService, setYearService] = useState(getYearService().toString())
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -56,8 +55,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const fetchEmergencyContactDataConfig = publisherToUpdate ? `/emergencyContacts/${publisherToUpdate?.congregation?.id}` : ''
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
-
-    console.log(existingContacts)
 
     const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
     const optionsCheckboxHope = useState(Object.values(Hope))
@@ -183,7 +180,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     }
 
     function onError(error: any) {
-        console.log(error)
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
@@ -200,6 +196,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                     <Input type="text" placeholder="Apelido" registro={{ ...register('nickname') }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
                     <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
                     <Controller name="phone" control={control} render={({ field }) => <Input type="tel" placeholder="Telefone" mask="(99) 99999-9999" {...field} />} />
+                    {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
                     {/* Checkboxes e Calendários */}
                     <div className='border border-gray-300 my-4 p-4'>
@@ -222,7 +219,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                     }`}
                             >
                                 <DropdownObject<IEmergencyContact>
-                                    title="Selecione um contato"
+                                    title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                    textVisible
                                     items={existingContacts ?? []}
                                     selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
                                     handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
