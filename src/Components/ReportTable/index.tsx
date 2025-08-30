@@ -91,7 +91,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
         ))}
 
         {/* Card com total */}
-        <div className="bg-primary-50 shadow-md rounded-xl p-4 border border-primary-200">
+        <div className="bg-primary-50 shadow-md rounded-xl p-4 border border-primary-200 mb-4">
           <div className="flex justify-between items-center gap-3">
             <span className="font-semibold text-primary-200">Total</span>
             {isPioneiroRegular ? (
