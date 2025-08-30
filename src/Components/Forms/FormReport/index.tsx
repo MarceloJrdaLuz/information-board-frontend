@@ -248,7 +248,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                     />
                     {errors?.observations?.type && <InputError type={errors?.observations?.type} field='observations' />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
+                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button
                             size="lg"
                             disabled={disabled}
@@ -257,7 +257,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                             type='submit'
                         >Enviar</Button>
                     </div>
-                    <Link className="text-primary-200 hover:underline font-semibold mt-4" href={"/meus-relatorios"}>
+                    <Link className="text-primary-200 hover:underline font-semibold" href={"/meus-relatorios"}>
                         Meus Relatórios
                     </Link>
                 </div>
