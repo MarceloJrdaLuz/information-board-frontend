@@ -107,15 +107,11 @@ function AuthProvider(props: AuthContextProviderProps) {
 
             setUser(usuarioLogado)
 
-            Router.push('/dashboard')
         }).catch(res => {
             setLoading(false)
             const { response: { data: { message } } } = res
-            if (message === 'Senha inválida') {
-                handleSubmitError(messageErrorsSubmit.passwordNotEqual)
-            }
-            if (message === 'E-mail não cadastrado') {
-                handleSubmitError(messageErrorsSubmit.emailInvalid)
+            if (message === 'Credentials invalid!') {
+                handleSubmitError(messageErrorsSubmit.credentialsInvalid)
             }
         })
     }
