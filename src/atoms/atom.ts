@@ -31,3 +31,5 @@ export const reportsAtom = atom<IReports[]>([])
 export const showSubmenu = atom<string[]>([])
 export const openSubMenuAtom = atom<string | null>(null)
 export const showModalEmergencyContact = atom(false)
+
+export const showConfirmForceModal = atom(false)

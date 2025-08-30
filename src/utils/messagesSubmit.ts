@@ -66,5 +66,7 @@ export const messageSuccessSubmit = {
     territoryHistoryCreate: "Registro de histórico criado com sucesso!",
     emergencyContactDelete: "Contato de emergência excluído com sucesso!",
     emergencyContactUpdate: "Contato de emergência atualizado com sucesso!",
-    emergencyContactCreate: "Contato de emergência criado com sucesso!"
+    emergencyContactCreate: "Contato de emergência criado com sucesso!",
+    linkPublisherToUserSuccess: "Publicador vinculado com sucesso!",
+    unLinkPublisherToUserSuccess: "Publicador desvinculado com sucesso!"
 }

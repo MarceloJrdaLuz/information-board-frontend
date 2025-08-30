@@ -1,33 +1,32 @@
-import { buttonDisabled, errorFormSend, showModalEmergencyContact, successFormSend } from '@/atoms/atom'
+import { buttonDisabled, errorFormSend, showConfirmForceModal, showModalEmergencyContact, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import CheckboxUnique from '@/Components/CheckBoxUnique'
 import DropdownObject from '@/Components/DropdownObjects'
+import UserLinkIcon from '@/Components/Icons/UserLinkIcon'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { usePublisherContext } from '@/context/PublisherContext'
-import { Gender, Hope, IEmergencyContact, IPublisher, Privileges, Situation } from '@/entities/types'
-import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
-import { getMonthsByYear, getYearService } from '@/functions/meses'
+import { Gender, Hope, IEmergencyContact, IPublisher, Privileges, Situation, UserTypes } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtom, useAtomValue } from 'jotai'
+import { ChevronDownIcon, PlusIcon, Trash } from 'lucide-react'
+import Router from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import * as yup from 'yup'
-import FormAddEmergencyContact from '../FormAddEmergencyContact'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
 import { publisherEditSchema } from './validations'
-import Router from 'next/router'
-import { ChevronDownIcon, PlusCircleIcon, PlusIcon, PlusSquareIcon } from 'lucide-react'
+import { ConfirmDeleteModal } from '@/Components/ConfirmDeleteModal'
+import { ConfirmLinkForceModal } from '@/Components/ConfirmLinkForceModal'
 
 export interface IUpdatePublisher {
     id: string
 }
 
 export default function FormEditPublisher(props: IUpdatePublisher) {
-    const { updatePublisher } = usePublisherContext()
+    const { updatePublisher, linkPublisherToUser, unlinkPublisherToUser } = usePublisherContext()
     const [publisherToUpdate, setPublisherToUpdate] = useState<IPublisher>()
     const { data } = useFetch<IPublisher>(`/publisher/${props.id}`)
     const [isFormChanged, setIsFormChanged] = useState(false)
@@ -45,6 +44,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [birthDate, setBirthDate] = useState<Date | null>(null)
     const [startPioneer, setStartPioneer] = useState<Date | null>(null)
     const [allPrivileges, setAllPrivileges] = useState<string[]>([])
+    const [modalConfirmForce, setModalConfirmeForce] = useAtom(showConfirmForceModal)
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -52,9 +52,13 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
 
     const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(data?.emergencyContact?.id || null);
+    const [selectedUser, setSelectedUser] = useState<string | null>(data?.user?.id ?? null);
 
     const fetchEmergencyContactDataConfig = publisherToUpdate ? `/emergencyContacts/${publisherToUpdate?.congregation?.id}` : ''
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
+
+    const fetchUsersCongregation = publisherToUpdate ? `/users/${publisherToUpdate?.congregation?.id}` : ''
+    const { data: usersData } = useFetch<UserTypes[]>(fetchUsersCongregation)
 
     const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
     const optionsCheckboxHope = useState(Object.values(Hope))
@@ -62,13 +66,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const optionsCheckboxPrivileges = useMemo(() => [`${Privileges.ANCIAO}`, `${Privileges.SM}`], [])
     const optionsCheckboxPioneer = useMemo(() => [`${Privileges.PIONEIROAUXILIAR}`, `${Privileges.AUXILIARINDETERMINADO}`, `${Privileges.MISSIONARIOEMCAMPO}`, `${Privileges.PIONEIROESPECIAL}`, `${Privileges.PIONEIROREGULAR}`], [])
 
-
     // Carregar dados do publisher
     useEffect(() => {
         if (data) {
             const isPrivilege = data.privileges.filter(privilege => optionsCheckboxPrivileges.includes(privilege))
             const isPioneer = data.privileges.filter(privilege => optionsCheckboxPioneer.includes(privilege))
-
+            setSelectedUser(data.user?.id ?? "")
             setPublisherToUpdate(data)
             setInitialFullNameValue(data.fullName)
             setInitialNicknameValue(data.nickname ?? '')
@@ -91,6 +94,35 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const handleCheckboxGender = (selectedItems: string) => setGenderCheckboxSelected(selectedItems)
     const handleCheckboxHope = (selectedItems: string) => setHopeCheckboxSelected(selectedItems)
     const handleCheckboxSituationPublisher = (selectedItems: string) => setSituationPublisherCheckboxSelected(selectedItems)
+
+
+    function handleLinkPublisherToUser(force: boolean = false) {
+        if (!selectedUser || !publisherToUpdate?.id) {
+            toast.error("Selecione um usuário e certifique-se que o publicador está carregado.");
+            return
+        }
+
+        toast.promise(linkPublisherToUser({
+            user_id: selectedUser ?? "",
+            publisher_id: publisherToUpdate?.id ?? "",
+            force
+        }), {
+            pending: 'Vinculando publicador...'
+        })
+    }
+
+    function handleUnLinkPublisherToUser() {
+        toast.promise(unlinkPublisherToUser({
+            publisher_id: publisherToUpdate?.id ?? ""
+        }), {
+            pending: 'Desvinculando publicador...'
+        })
+    }
+
+    // Função chamada quando o usuário confirma no modal para forçar a vinculação
+    async function handleConfirmForceLink() {
+        handleLinkPublisherToUser(true)
+    }
 
     const { register, reset, handleSubmit, formState: { errors }, watch, control } = useForm<FormValues>({
         resolver: yupResolver(publisherEditSchema)
@@ -230,6 +262,41 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             </>
                         )}
                     </div>
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <span className='my-2 font-semibold text-gray-900 '>Vincular publicador a usuário</span>
+                        <div className='flex flex-col w-full items-start justify-start my-4 gap-5'>
+                            <DropdownObject<UserTypes>
+                                title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                textVisible
+                                items={usersData ?? []}
+                                selectedItem={usersData && usersData.find(c => c.id === selectedUser) || null}
+                                handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
+                                labelKey="fullName"
+                            />
+                            <ConfirmLinkForceModal button={
+                                <Button
+                                    type='button'
+                                    onClick={() => { handleLinkPublisherToUser() }}
+                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    <UserLinkIcon />
+                                    <span className="text-primary-200 font-semibold">Vincular publicador</span>
+                                </Button>
+                            }
+                                onDelete={() => handleConfirmForceLink()}
+                                message='Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?'
+                                canOpen={modalConfirmForce}
+                            />
+                            <Button
+                                type='button'
+                                onClick={() => { handleUnLinkPublisherToUser() }}
+                                className="bg-white text-red-500 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                <UserLinkIcon />
+                                <span className="text-primary-200 font-semibold">Desvincular publicador</span>
+                            </Button>
+                        </div>
+                    </div>
+
 
 
                     <div className='flex justify-center items-center m-auto w-11/12 h-12 my-[5%]'>

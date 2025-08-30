@@ -19,6 +19,7 @@ import FilterPrivileges from "../FilterPrivileges"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import CheckboxBoolean from "../CheckboxBoolean"
+import UserLinkIcon from "../Icons/UserLinkIcon"
 
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()

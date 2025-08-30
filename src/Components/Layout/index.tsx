@@ -23,6 +23,7 @@ import TerritoryIcon from "../Icons/TerritoryIcon"
 import { useAtom } from "jotai"
 import { openSubMenuAtom } from "@/atoms/atom"
 import EmergencyContactIcon from "../Icons/PhoneContactIcon"
+import MyReportsIcon from "../Icons/MyReportsIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -33,12 +34,12 @@ export default function Layout(props: LayoutProps) {
     const [user, setUser] = useState(getUser)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
-    
+
     useEffect(() => {
         const path = router.pathname
-        const parts = path.split('/') 
-        const middlePart = parts[1]  
-    
+        const parts = path.split('/')
+        const middlePart = parts[1]
+
         setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
     }, [router.pathname, setOpenSubMenu])
 
@@ -66,6 +67,16 @@ export default function Layout(props: LayoutProps) {
                     }}
                     icon={HomeIcon}
                     active={props.pageActive === 'dashboard'}
+                />
+
+                <NavBar.Options
+                    title="Meus relatórios"
+                    onClick={() => {
+                        setIsMenuOpen(!isMenuOpen)
+                        Router.push('/meus-relatorios')
+                    }}
+                    icon={MyReportsIcon}
+                    active={props.pageActive === 'meus-relatorios'}
                 />
 
                 {isAdmin &&

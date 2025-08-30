@@ -13,10 +13,15 @@ import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/ato
 import { HelpCircle } from "lucide-react"
 import ModalHelp from "@/Components/ModalHelp"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import { useCongregationContext } from "@/context/CongregationContext"
+import { useAuthContext } from "@/context/AuthContext"
 
 export default function FormUserRoles() {
-
-    const { userRoles } = usePermissionsAndRolesContext()
+    const { roleContains } = useAuthContext()
+    const isAdmin = roleContains('ADMIN')
+    const { congregation } = useCongregationContext()
+    const congregationId = congregation?.id
+    const { userRoles, } = usePermissionsAndRolesContext()
     const [roles, setRoles] = useState<RolesType[]>([])
     const [users, setUsers] = useState<UserTypes[]>([])
     const [userSelected, setUserSelected] = useState('')
@@ -51,8 +56,9 @@ export default function FormUserRoles() {
     }, [userSelectedId, users])
 
     useEffect(() => {
+        if (!congregationId && !isAdmin) return;
         const getUsers = async () => {
-            await api.get<UserTypes[]>('/users').then(res => {
+            await api.get<UserTypes[]>(!isAdmin ? `/users/${congregationId}` : "/users").then(res => {
                 const { data } = res
 
                 const optionsUsers: UserTypes[] = []
@@ -89,7 +95,7 @@ export default function FormUserRoles() {
                 const optionsRolesFilter = optionsRoles.filter(optionRole => !rolesSelecteds.includes(optionRole.name))
 
                 const sort = sortArrayByProperty(optionsRolesFilter, "name")
-                
+
                 setRoles(sort)
 
             }).catch(err => console.log(err))

@@ -257,6 +257,9 @@ export default function FormReport(props: IRelatorioFormProps) {
                             type='submit'
                         >Enviar</Button>
                     </div>
+                    <Link className="text-primary-200 hover:underline font-semibold" href={"/meus-relatorios"}>
+                        Meus Relatórios
+                    </Link>
                 </div>
             </FormStyle>
             {consentAcceptedShow &&

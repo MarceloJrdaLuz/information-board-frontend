@@ -1,26 +1,19 @@
-import { useAuthContext } from "@/context/AuthContext"
-import { GetServerSideProps } from "next"
-import { useEffect, useState } from "react"
-import { parseCookies } from 'nookies'
-import { getAPIClient } from "@/services/axios"
-import Layout from "@/Components/Layout"
-import ContentDashboard from "@/Components/ContentDashboard"
-import { useAtom } from "jotai"
 import { crumbsAtom } from "@/atoms/atom"
+import ContentDashboard from "@/Components/ContentDashboard"
+import Layout from "@/Components/Layout"
 import { ProfileCard } from "@/Components/ProfileCard"
+import { useAuthContext } from "@/context/AuthContext"
+import { getAPIClient } from "@/services/axios"
+import { useAtom } from "jotai"
+import { GetServerSideProps } from "next"
+import { parseCookies } from 'nookies'
+import { useEffect, useState } from "react"
 
 export default function Dashboard() {
     const { user: getUser } = useAuthContext()
 
     const [user, setUser] = useState(getUser)
     const [, setCrumbs] = useAtom(crumbsAtom)
-
-    const rolesName = user?.roles.map(role => role.name)
-
-    function roleContains(role: string) {
-        const contain = rolesName?.includes(role)
-        return contain
-    }
 
     useEffect(() => {
         setUser(getUser)

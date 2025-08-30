@@ -147,6 +147,7 @@ export interface IPublisher {
     address?: string
     phone?: string
     emergencyContact?: IEmergencyContact
+    user?: UserTypes
 }
 
 export interface IPublisherList {
@@ -317,10 +318,19 @@ export interface IMeetingAssistance {
     endWeekAverage: number
 }
 
-export interface IEmergencyContact  {
+export interface IEmergencyContact {
     id: string
     name: string
     phone: string
     relationship: string
     isTj: boolean
+}
+export interface ILinkPublisherToUser {
+    user_id: string
+    publisher_id: string
+    force?: boolean
+    
+} 
+export interface IUnlinkPublisherToUser {
+    publisher_id: string
 } 

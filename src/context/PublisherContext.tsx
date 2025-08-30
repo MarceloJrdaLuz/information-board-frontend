@@ -1,8 +1,8 @@
-import { showModalEmergencyContact } from "@/atoms/atom"
-import { ConsentRecordTypes, IEmergencyContact, IPublisherConsent } from "@/entities/types"
+import { showConfirmForceModal, showModalEmergencyContact } from "@/atoms/atom"
+import { ConsentRecordTypes, IEmergencyContact, ILinkPublisherToUser, IPublisherConsent, IUnlinkPublisherToUser } from "@/entities/types"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
 import { toast } from "react-toastify"
 import { useSubmitContext } from "./SubmitFormContext"
@@ -24,6 +24,14 @@ type PublisherContextTypes = {
         phone?: string,
         emergencyContact_id?: string | undefined
     ) => Promise<any>
+    linkPublisherToUser: ({
+        user_id,
+        publisher_id,
+        force
+    }: ILinkPublisherToUser) => Promise<any>
+    unlinkPublisherToUser: ({
+        publisher_id
+    }: IUnlinkPublisherToUser) => Promise<any>
     createEmergencyContact: ({
         name,
         phone,
@@ -92,6 +100,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
     const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
     const modal = useSetAtom(showModalEmergencyContact)
+    const [modalLinkForce, setModalLinkForce] = useAtom(showConfirmForceModal)
 
 
     async function createPublisher(
@@ -321,7 +330,6 @@ function PublisherProvider(props: PublisherContextProviderProps) {
     async function createEmergencyContact(
         { name, phone, relationship, isTj, congregation_id }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }
     ) {
-        console.log({ name, phone, relationship, isTj, congregation_id })
         await api.post('/emergencyContact', {
             name,
             phone,
@@ -337,9 +345,45 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
+    async function linkPublisherToUser(
+        { user_id, publisher_id, force }: ILinkPublisherToUser
+    ) {
+        await api.patch(`/users/${user_id}/link-publisher`, {
+            publisher_id,
+            force
+        }).then(res => {
+            setModalLinkForce(false)
+            handleSubmitSuccess(messageSuccessSubmit.linkPublisherToUserSuccess)
+        }).catch(err => {
+            if (err.response && err.response.status === 409) {
+                if (err.response.data.message === "User and Publisher are already linked.") {
+                    setModalLinkForce(false)
+                    toast.success("Usuário e publicador já vinculados.")
+                    return
+                } else {
+                    setModalLinkForce(true)
+                    toast.error("Ocorreu algum conflito, confirmar a substituição!")
+                    return
+                }
+            }
+            console.log(err)
+            toast.error(messageErrorsSubmit.default)
+            return
+        })
+    }
+
+    async function unlinkPublisherToUser({ publisher_id }: IUnlinkPublisherToUser) {
+        await api.patch(`/publisher/${publisher_id}/unlink-publisher`).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.unLinkPublisherToUserSuccess)
+        }).catch(err => {
+            console.log(err)
+            toast.error(messageErrorsSubmit.default)
+        })
+    }
+
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, createEmergencyContact
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, createEmergencyContact, linkPublisherToUser, unlinkPublisherToUser
         }}>
             {props.children}
         </PublisherContext.Provider>
@@ -357,3 +401,4 @@ function usePublisherContext(): PublisherContextTypes {
 }
 
 export { PublisherProvider, usePublisherContext }
+

@@ -1,3 +1,4 @@
+import { IReports } from '@/entities/types'
 import moment from 'moment'
 require('moment/locale/pt-br')
 
@@ -56,7 +57,7 @@ export function getMonthsByYear(year: string): { months: string[] } {
     let currentMonth = currentSeptember.clone()
     while (currentMonth.isSameOrAfter(previousSeptember) || currentMonth.isSame(previousSeptember, 'month')) {
         if (currentMonth.isBefore(currentSeptember)) {
-            monthsOfYear.push(currentMonth.format('MMMM YYYY'))
+            monthsOfYear.push(currentMonth.format('MMMM YYYY').replace(/^\w/, c => c.toUpperCase()))
         }
         currentMonth.subtract(1, 'month')
     }
@@ -113,4 +114,26 @@ export function getMonthsPast(yearService: string): string[] {
         monthPointer.add(1, 'month') // Incrementa para o próximo mês
     }
     return months
+}
+
+export function filterReportsByServiceYear(
+  reports: IReports[],
+  year: string
+): IReports[] {
+  // meses válidos para o ciclo (ex: ["setembro 2023", "outubro 2023", ..., "agosto 2024"])
+  const validMonths = getMonthsByYear(year).months.map(m =>
+    m.toLowerCase()
+  )
+
+  // cria um set p/ lookup rápido
+  const validSet = new Set(validMonths)
+
+  return reports.filter(report => {
+    // supondo que `report.month` venha tipo "setembro 2023"
+    const reportMonth = report.month.toLowerCase().trim()
+
+    console.log(reportMonth)
+
+    return validSet.has(reportMonth)
+  })
 }
