@@ -17,12 +17,10 @@ const SubmitFormContext = createContext({} as SubmitFormContextTypes)
 
 function SubmitFormProvider(props: SubmitFormContextProviderProps) {
 
-    const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
     const [, setDisabled] = useAtom(buttonDisabled)
     const [, setResetFormValue] = useAtom(resetForm)
     const [, setSuccessFormSendValue] = useAtom(successFormSend)
     const [, setErrorFormSendValue] = useAtom(errorFormSend)
-
 
     const handleSubmitError = async (messageError: string, redirectTo?: string) => {
         toast.error(messageError, {autoClose: 3000})
@@ -33,7 +31,7 @@ function SubmitFormProvider(props: SubmitFormContextProviderProps) {
             setDisabled(false)
             setErrorFormSendValue(false)
             redirectTo && Router.push(redirectTo)
-        }, 4000)
+        }, 1000)
     }
 
     const handleSubmitSuccess = async ( messageSuccess: string, redirectTo?: string) => {
@@ -47,7 +45,7 @@ function SubmitFormProvider(props: SubmitFormContextProviderProps) {
             setDisabled(false)
             setResetFormValue(false)
             redirectTo && Router.push(redirectTo)
-        }, 4000)
+        }, 1000)
     }
 
 

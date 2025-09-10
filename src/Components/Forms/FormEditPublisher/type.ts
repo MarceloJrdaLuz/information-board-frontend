@@ -1,5 +1,5 @@
 export type FormValues = {
-    fullName: string
+    fullName?: string
     nickname?: string
     address?: string
     phone?: string
