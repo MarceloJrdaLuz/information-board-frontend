@@ -1,14 +1,36 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { api } from "@/services/api"
 import { ICongregation } from "@/entities/types"
-import { useAuthContext } from "./AuthContext"
 import { useFetch } from "@/hooks/useFetch"
-import { useSubmitContext } from "./SubmitFormContext"
+import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { useAuthContext } from "./AuthContext"
+import { useSubmitContext } from "./SubmitFormContext"
+
+interface ICreateCongregation {
+    name: string
+    number: string
+    circuit: string
+    city: string
+    dayMeetingPublic?: string
+    dayMeetingLifeAndMinistary?: string
+    hourMeetingLifeAndMinistary?: string
+    hourMeetingPublic?: string
+}
+
+type IUpdateCongregation = Partial<ICreateCongregation>
 
 type CongregationContextTypes = {
-    createCongregation: (name: string, number: string, circuit: string, city: string) => Promise<any>
-    updateCongregation: (body: ICongregation) => Promise<any>
+    createCongregation: ({
+        name,
+        number,
+        circuit,
+        city,
+        dayMeetingPublic,
+        dayMeetingLifeAndMinistary,
+        hourMeetingLifeAndMinistary,
+        hourMeetingPublic
+    }: ICreateCongregation) => Promise<any>
+    updateCongregation: (congregation_id: string, body: IUpdateCongregation) => Promise<any>
     uploadedFile: File | null
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>
     congregationCreated: ICongregation | undefined
@@ -59,13 +81,17 @@ function CongregationProvider(props: CongregationContextProviderProps) {
         setCongregation(data)
     }, [data, congregation])
 
-    async function createCongregation(name: string, number: string, circuit: string, city: string) {
+    async function createCongregation({ name, number, circuit, city, dayMeetingLifeAndMinistary, dayMeetingPublic, hourMeetingLifeAndMinistary, hourMeetingPublic }: ICreateCongregation) {
         const formData = new FormData()
 
         formData.set('name', name)
-        formData.set('number', number)
+        formData.set('number', number ?? "")
         formData.set('circuit', circuit)
         formData.set('city', city)
+        formData.set('dayMeetingLifeAndMinistary', dayMeetingLifeAndMinistary ?? "")
+        formData.set('dayMeetingPublic', dayMeetingPublic ?? "")
+        formData.set('hourMeetingLifeAndMinistary', hourMeetingLifeAndMinistary ?? "")
+        formData.set('hourMeetingPublic', hourMeetingPublic ?? "")
 
         if (uploadedFile) {
             formData.set('image', uploadedFile)
@@ -89,9 +115,7 @@ function CongregationProvider(props: CongregationContextProviderProps) {
         })
     }
 
-    async function updateCongregation(body: ICongregation) {
-
-        const congregation_id = body.id
+    async function updateCongregation(congregation_id: string, body: IUpdateCongregation) {
 
         await api.put(`/congregation/${congregation_id}`, body).then(suc => {
             mutate()

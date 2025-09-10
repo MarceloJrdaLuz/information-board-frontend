@@ -7,6 +7,22 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useStat
 import { toast } from "react-toastify"
 import { useSubmitContext } from "./SubmitFormContext"
 
+export interface IPayloadUpdatePublisher {
+    fullName?: string,
+    gender?: string,
+    hope?: string,
+    privileges?: string[],
+    nickname?: string,
+    dateImmersed?: Date,
+    birthDate?: Date,
+    pioneerMonths?: string[],
+    situation?: string,
+    startPioneer?: Date,
+    address?: string,
+    phone?: string,
+    emergencyContact_id?: string | undefined
+}
+
 type PublisherContextTypes = {
     createPublisher: (
         fullName: string,
@@ -40,21 +56,8 @@ type PublisherContextTypes = {
         congregation_id
     }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }) => Promise<any>
     updatePublisher: (
-        id: string,
-        fullName: string,
-        congregation_id: string,
-        gender: string,
-        hope?: string,
-        privileges?: string[],
-        nickname?: string,
-        dateImmersed?: Date,
-        birthDate?: Date,
-        pioneerMonths?: string[],
-        situation?: string,
-        startPioneer?: Date,
-        address?: string,
-        phone?: string,
-        emergencyContact_id?: string | undefined
+        publisher_id: string,
+        payload: IPayloadUpdatePublisher
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
@@ -119,8 +122,6 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         phone?: string,
         emergencyContact_id?: string
     ) {
-        console.log(emergencyContact_id)
-
         await api.post('/publisher', {
             fullName,
             nickname,
@@ -150,38 +151,10 @@ function PublisherProvider(props: PublisherContextProviderProps) {
     }
 
     async function updatePublisher(
-        id: string,
-        fullName: string,
-        congregation_id: string,
-        gender: string,
-        hope?: string,
-        privileges?: string[],
-        nickname?: string,
-        dateImmersed?: Date,
-        birthDate?: Date,
-        pioneerMonths?: string[],
-        situation?: string,
-        startPioneer?: Date,
-        address?: string,
-        phone?: string,
-        emergencyContact_id?: string
+        publisher_id: string,
+        payload: IPayloadUpdatePublisher
     ) {
-        await api.put(`/publisher/${id}`, {
-            fullName,
-            congregation_id,
-            gender,
-            hope,
-            privileges,
-            nickname,
-            dateImmersed,
-            birthDate,
-            pioneerMonths,
-            situation,
-            startPioneer,
-            address,
-            phone,
-            emergencyContact_id
-        }).then(res => {
+        await api.put(`/publisher/${publisher_id}`, payload).then(res => {
             handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
         }).catch(err => {
             const { response: { data: { message } } } = err

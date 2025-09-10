@@ -1,3 +1,4 @@
+import { checkbox } from '@material-tailwind/react'
 import React from 'react'
 
 interface ICheckboxMultiple {
@@ -10,6 +11,9 @@ interface ICheckboxMultiple {
 }
 
 export default function CheckboxMultiple(props: ICheckboxMultiple) {
+  console.log("options", props.options)
+console.log("checkedOptions", props.checkedOptions)
+
   const handleCheckboxChange = (selectedOption: string) => {
     const isChecked = props.checkedOptions?.includes(selectedOption) || false
     let updatedOptions: string[]

@@ -14,6 +14,7 @@ import Button from '@/Components/Button'
 import Dropdown from '@/Components/Dropdown'
 import { useAtomValue } from 'jotai'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { FormValues } from './types'
 
 export default function FormUpdateCongregation() {
     const { congregation: congregationUser, updateCongregation, setUploadedFile, uploadedFile } = useCongregationContext()
@@ -42,14 +43,13 @@ export default function FormUpdateCongregation() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
-    function onSubmit(data: ICongregation) {
+    function onSubmit(data: FormValues) {
         const {
             dayMeetingLifeAndMinistary: dayMeetingLifeAndMinistaryUpdated, hourMeetingLifeAndMinistary, dayMeetingPublic: dayMeetingPublicUpdated,
             hourMeetingPublic, name, city, circuit
         } = data
 
         const updateCongregationBody = {
-            id: congregationUser?.id,
             name,
             city,
             circuit,
@@ -59,7 +59,7 @@ export default function FormUpdateCongregation() {
             dayMeetingPublic: dayMeetingPublicUpdated ?? dayMeetingPublic,
         }
 
-        toast.promise(updateCongregation(updateCongregationBody), {
+        toast.promise(updateCongregation(congregationUser?.id ?? "", updateCongregationBody), {
             pending: "Atualizando congregação"
         })
         reset()
@@ -116,7 +116,7 @@ export default function FormUpdateCongregation() {
 
                     <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 
-                    
+
                     <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')
                     }}

@@ -206,6 +206,54 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
+                {(isAdminCongregation) &&
+                    <NavBar.ListOptions
+                        key={"submenuArranjoOradores"}
+                        showList={openSubMenu === 'arranjo-oradores'}
+                        onClick={() => toggleSubMenu('arranjo-oradores')}
+                        title="Arranjo de oradores"
+                        icon={PublicMeetingIcon}
+                    >
+                        <NavBar.Options
+                            title="Oradores"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/oradores`)
+                            }}
+                            icon={LifeAndMinistry}
+                            active={props.pageActive === 'oradores'}
+                        />
+
+                        <NavBar.Options
+                            title="Congregações"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/congregacoes`)
+                            }}
+                            icon={PublicMeetingIcon}
+                            active={props.pageActive === 'congregacoes'}
+                        />
+                        <NavBar.Options
+                            title="Discursos"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/discursos`)
+                            }}
+                            icon={PublicMeetingIcon}
+                            active={props.pageActive === 'discursos'}
+                        />
+                        <NavBar.Options
+                            title="Hospitalidade"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/grupos-hospitalidade`)
+                            }}
+                            icon={PublicMeetingIcon}
+                            active={props.pageActive === 'grupos-hospitalidade'}
+                        />
+                    </NavBar.ListOptions>
+                }
+
                 {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuPregacao"}

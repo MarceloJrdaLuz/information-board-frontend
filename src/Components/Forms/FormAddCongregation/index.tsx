@@ -1,32 +1,35 @@
 import * as yup from 'yup'
 
-import { yupResolver } from '@hookform/resolvers/yup'
-import { toast } from 'react-toastify'
-import FormStyle from '../FormStyle'
-import { useForm } from 'react-hook-form'
-import { ICongregation } from '@/entities/types'
-import { useCongregationContext } from '@/context/CongregationContext'
-import Router from 'next/router'
-import Input from '@/Components/Input'
-import InputError from '@/Components/InputError'
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import CardCongregation from '@/Components/CardCongregation'
+import Input from '@/Components/Input'
+import InputError from '@/Components/InputError'
+import { useCongregationContext } from '@/context/CongregationContext'
+import { CongregationTypeEnum, ICongregation } from '@/entities/types'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
-import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
-
-
-
+import Router from 'next/router'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import FormStyle from '../FormStyle'
+import CheckboxUnique from '@/Components/CheckBoxUnique'
+import { useState } from 'react'
+import { FormValues } from './types'
 
 export default function FormAddCongregation() {
     const {
         createCongregation, setUploadedFile,
-        showCongregationCreated, setShowCongregationCreated,
-        congregationCreated, setModalNewCongregation
+        showCongregationCreated,
+        congregationCreated
     } = useCongregationContext()
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
+
+    const [congregationTypeCheckboxSelected, setCongregationTypeCheckboxSelected] = useState<CongregationTypeEnum>(CongregationTypeEnum.SYSTEM)
+    const optionsCheckboxCongregationType = useState<string[]>(Object.values(CongregationTypeEnum))
 
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
@@ -44,9 +47,14 @@ export default function FormAddCongregation() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
-    function onSubmit(data: ICongregation) {
-        const { name, number, circuit, city, } = data
-        toast.promise(createCongregation(name, number!, circuit, city), {
+    function onSubmit(data: FormValues) {
+        const payload = {
+            name: data.name ?? "",
+            number: data.number ?? "",
+            circuit: data.circuit ?? "",
+            city: data.city ?? "",
+        }
+        toast.promise(createCongregation(payload), {
             pending: "Criando nova congregação..."
         })
     }
@@ -57,6 +65,17 @@ export default function FormAddCongregation() {
 
     function onError(error: any) {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
+    }
+
+    const handleCheckboxCongregationType = (selectedItems: string) => {
+        switch (selectedItems) {
+            case "auxiliary":
+                setCongregationTypeCheckboxSelected(CongregationTypeEnum.AUXILIARY)
+                break;
+            default:
+                setCongregationTypeCheckboxSelected(CongregationTypeEnum.SYSTEM)
+                break;
+        }
     }
 
     return !showCongregationCreated ? (
@@ -88,6 +107,10 @@ export default function FormAddCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={congregationTypeCheckboxSelected} label="Tipo" options={optionsCheckboxCongregationType[0]} handleCheckboxChange={(selectedItems) => handleCheckboxCongregationType(selectedItems)} />
+                    </div>
+
                     <input className="text-sm text-grey-500
             file:mr-5 file:py-3 file:px-10
             file:rounded-full file:border-0
@@ -103,12 +126,17 @@ export default function FormAddCongregation() {
         </section>
     ) : (
         <section className='flex flex-col  justify-center items-center transition ease-out'>
-            {congregationCreated && <CardCongregation name={congregationCreated.name}
-                number={congregationCreated.number}
-                circuit={congregationCreated.circuit}
-                city={congregationCreated.city}
-                image_url={congregationCreated.image_url ?? ""}
-            />}
+            {congregationCreated &&
+                <CardCongregation
+                    id={congregationCreated.id}
+                    name={congregationCreated.name}
+                    number={congregationCreated.number}
+                    circuit={congregationCreated.circuit}
+                    city={congregationCreated.city}
+                    image_url={congregationCreated.image_url ?? ""}
+                    type={congregationCreated.type}
+                />
+            }
             <span className='text-primary-200 hover:underline cursor-pointer' onClick={() => Router.push('/congregacoes')}>Voltar a todas as congregações</span>
         </section>
     )

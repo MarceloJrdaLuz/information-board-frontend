@@ -44,7 +44,7 @@ export default function ListCongregations() {
             ) : (
                 <ul className="flex w-full h-fit flex-wrap justify-center">
                     {congregations?.map(congregation => (
-                        <CardCongregation key={congregation.number}
+                        <CardCongregation id={congregation.id} key={congregation.number}
                             name={congregation.name} number={congregation.number}
                             circuit={congregation.circuit} city={congregation.city}
                             image_url={congregation.image_url} />

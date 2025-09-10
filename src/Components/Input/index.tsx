@@ -16,7 +16,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   return (
     <div
       className={`input-component ${props.readOnly ? "focus-within:outline border-none" : "outline"
-        } relative flex items-center rounded-lg border-[2px] ${invalid === "invalido"
+        } relative flex items-center rounded-lg border-[1px] ${invalid === "invalido"
           ? "border-red-400 mb-1"
           : "border-blue-gray-200"
         } focus-within:border-primary-100 focus-within:border-2 outline-0 my-3 w-full h-full m-auto ${className}`}

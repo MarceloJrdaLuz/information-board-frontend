@@ -59,9 +59,18 @@ export interface PermissionType {
     created_at: string,
     updated_at: string
 }
+export interface IHospitalityGroup {
+    id: string
+    name: string
+    congregation: ICongregation
+    host: IPublisher | null
+    next_reception: string | null
+    position: number | null
+    members: IPublisher[]
+}
 
 export interface ICongregation {
-    id?: string
+    id: string
     name: string
     number?: string
     city: string
@@ -72,6 +81,8 @@ export interface ICongregation {
     hourMeetingLifeAndMinistary?: string,
     dayMeetingPublic?: string,
     hourMeetingPublic?: string
+    type?: CongregationTypeEnum
+    creatorCongregation?: ICongregation
 }
 
 export interface ICongregationUpdate {
@@ -195,6 +206,11 @@ export enum MidweekDays {
     SEXTA = "Sexta-feira"
 }
 
+export enum CongregationTypeEnum {
+    SYSTEM = "system",
+    AUXILIARY = "auxiliary",
+}
+
 export enum EndweekDays {
     SEXTA = "Sexta-feira",
     SABADO = "Sábado",
@@ -220,7 +236,12 @@ export enum Privileges {
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
     AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
-    MISSIONARIOEMCAMPO = 'Missionário em Campo'
+    MISSIONARIOEMCAMPO = 'Missionário em Campo',
+    ORADOR = "Orador",
+    LEITOR = "Leitor",
+    PRESIDENTE = "Presidente",
+    INDICADOR = "Indicador",
+    MICROFONEVOLANTE = "Microfone Volante"
 }
 
 export enum PrivilegesMinistry {
@@ -329,8 +350,25 @@ export interface ILinkPublisherToUser {
     user_id: string
     publisher_id: string
     force?: boolean
-    
-} 
+
+}
 export interface IUnlinkPublisherToUser {
     publisher_id: string
-} 
+}
+
+export interface ITalk {
+    id: string
+    number: number
+    title: string
+}
+
+export interface ISpeaker {
+    id: string
+    fullName: string
+    phone?: string
+    address?: string
+    originCongregation: ICongregation
+    publisher?: IPublisher
+    talks?: ITalk[]
+}
+

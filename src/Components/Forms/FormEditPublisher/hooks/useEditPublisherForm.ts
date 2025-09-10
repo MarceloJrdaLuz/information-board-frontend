@@ -1,11 +1,11 @@
 import {
-    genderOptions,
-    hopeOptions,
-    pioneerOptions,
-    privilegeOptions,
-    situationOptions,
+  genderOptions,
+  hopeOptions,
+  pioneerOptions,
+  privilegeOptions,
+  situationOptions,
 } from "@/constants/publisherOptions"
-import { usePublisherContext } from "@/context/PublisherContext"
+import { IPayloadUpdatePublisher, usePublisherContext } from "@/context/PublisherContext"
 import { IPublisher, Privileges } from "@/entities/types"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
@@ -109,24 +109,25 @@ export function useEditPublisherForm(id: string) {
   }
 
   // ---------------- Submit ----------------
-  const onSubmit = (formData: FormValues) => {
+  const onSubmit = (data: FormValues) => {
+    const { address, emergencyContact_id, fullName, nickname, phone } = data
+    const payload: IPayloadUpdatePublisher = {
+      fullName,
+      address,
+      birthDate: birthDate ?? undefined,
+      dateImmersed: immersedDate ?? undefined,
+      emergencyContact_id,
+      gender: genderCheckboxSelected,
+      hope: hopeCheckboxSelected,
+      nickname,
+      phone,
+      pioneerMonths: auxPioneerMonthsSelected,
+      privileges: allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
+      situation: situationPublisherCheckboxSelected,
+      startPioneer: startPioneer ?? undefined
+    }
     toast.promise(
-      updatePublisher(
-        id,
-        formData.fullName,
-        publisherToUpdate?.congregation?.id ?? "",
-        genderCheckboxSelected,
-        hopeCheckboxSelected,
-        allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
-        formData.nickname,
-        immersedDate ?? undefined,
-        birthDate ?? undefined,
-        auxPioneerMonthsSelected,
-        situationPublisherCheckboxSelected,
-        startPioneer ?? undefined,
-        formData.address,
-        formData.phone
-      ),
+      updatePublisher(publisherToUpdate?.id ?? "", payload),
       { pending: "Atualizando publicador" }
     )
   }
@@ -140,6 +141,7 @@ export function useEditPublisherForm(id: string) {
     handlers,
     onSubmit,
     onError,
+    setYearService,
     // options que a view precisa
     options: {
       genderOptions,
@@ -148,7 +150,7 @@ export function useEditPublisherForm(id: string) {
       privilegeOptions,
       pioneerOptions,
       optionsPioneerMonthsServiceYearActual,
-      optionsPioneerMonthsLastServiceYear,
+      optionsPioneerMonthsLastServiceYear
     },
     values: {
       birthDate,
@@ -160,6 +162,7 @@ export function useEditPublisherForm(id: string) {
       privilegeCheckboxSelected,
       situationPublisherCheckboxSelected,
       auxPioneerMonthsSelected,
+      yearService
     },
   }
 }
