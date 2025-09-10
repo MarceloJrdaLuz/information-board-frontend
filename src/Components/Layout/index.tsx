@@ -206,7 +206,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {(isAdminCongregation) &&
+                {/* {(isAdminCongregation) &&
                     <NavBar.ListOptions
                         key={"submenuArranjoOradores"}
                         showList={openSubMenu === 'arranjo-oradores'}
@@ -252,7 +252,7 @@ export default function Layout(props: LayoutProps) {
                             active={props.pageActive === 'grupos-hospitalidade'}
                         />
                     </NavBar.ListOptions>
-                }
+                } */}
 
                 {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions
