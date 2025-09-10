@@ -1,1 +1,0 @@
-yarn migration:generate 
