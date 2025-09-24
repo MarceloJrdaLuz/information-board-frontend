@@ -26,7 +26,7 @@ export default function AtribuirFuncoes() {
     }, [setPageActive])
 
     return (
-        <Layout pageActive="/funcoes/atribuir">
+        <Layout pageActive="/administracao/funcoes/atribuir">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex m-10 justify-center items-center">

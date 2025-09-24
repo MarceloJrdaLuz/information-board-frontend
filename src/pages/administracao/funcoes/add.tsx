@@ -23,7 +23,7 @@ export default function AddFuncao() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }]
+            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/administracao/funcoes' }]
             return updatedCrumbs
         })
 
