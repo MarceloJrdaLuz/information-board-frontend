@@ -51,14 +51,14 @@ export default function Funcoes() {
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
                         <Button
                             onClick={() => {
-                                Router.push('/funcoes/add')
+                                Router.push('/administracao/funcoes/add')
                             }}
                             className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
                             <FunctionSquareIcon />
                             <span className="text-primary-200 font-semibold">Criar função</span>
                         </Button>
                         {roles && (
-                            <ListItems onDelete={(item_id) => { handleDelete(item_id) }} items={roles} label="Funções" path="funcoes" />
+                            <ListItems onDelete={(item_id) => { handleDelete(item_id) }} items={roles} label="Funções" path="/administracao/funcoes" />
                         )}
                     </div>
                 </section>
