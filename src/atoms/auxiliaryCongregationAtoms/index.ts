@@ -3,6 +3,8 @@ import { atom } from "jotai"
 import { api } from "@/services/api"
 import { toast } from "react-toastify"
 import { CreateAuxiliaryCongregationPayload, UpdateAuxiliaryCongregationPayload } from "./types"
+import { handleSubmitSuccessAtom } from "../handleSubmitAtom"
+import { messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 export const createAuxiliaryCongregationAtom = atom(
   null, // valor inicial → write-only atom
@@ -21,7 +23,7 @@ export const createAuxiliaryCongregationAtom = atom(
         toast.error("Já existe uma congregação com esse número.")
       } else if (message?.includes("Unauthorized to create a system congregation")) {
         toast.error("Você não tem autorização para mudar esse tipo de congregação")
-      }  else {
+      } else {
         console.error(err)
         toast.error("Erro ao criar orador.")
       }
@@ -34,9 +36,11 @@ export const updateAuxiliaryCongregationAtom = atom(
   null, // valor inicial → write-only atom
   async (_get, _set, congregation_id: string, payload: UpdateAuxiliaryCongregationPayload) => {
     try {
-    const res = await api.patch( `/auxiliaryCongregation/${congregation_id}`, payload)
-
-      toast.success("Congregação atualizada com sucesso!")
+      const res = await api.patch(`/auxiliaryCongregation/${congregation_id}`, payload)
+       _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Congregação atualizada com sucesso!",
+        redirectTo: "/arranjo-oradores/congregacoes"
+      })
       return res.data
     } catch (err: any) {
       const message = err?.response?.data?.message

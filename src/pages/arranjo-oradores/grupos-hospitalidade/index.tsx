@@ -100,7 +100,7 @@ export default function HospitalityGroupsPage() {
                                                 <span className="text-sm flex w-fit justify-start p-4 text-primary-200 font-semibold">Membros do grupo:</span>
                                                 <div className="flex flex-col flex-wrap mt-4">
                                                     {hospitalityGroup.members && hospitalityGroup.members.length > 0 ? hospitalityGroup.members.map(h => (
-                                                        <div key={hospitalityGroup.id} className="text-sm flex flex-col w-fit flex-wrap justify-start text-primary-200 font-semibold">
+                                                        <div key={h.id} className="text-sm flex flex-col w-fit flex-wrap justify-start text-primary-200 font-semibold">
                                                             <span className="text-sm font-semi-bold text-typography-100">{h.fullName}</span>
                                                         </div>
                                                     )) : (

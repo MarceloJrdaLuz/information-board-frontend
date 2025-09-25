@@ -4,32 +4,44 @@ import { ConfirmDeleteModal } from "../ConfirmDeleteModal";
 import Router from "next/router";
 import { IListItemsProps } from "./types";
 
-export function ListGeneric<T extends { id: string }>({ items, onDelete, renderItem, path, onUpdate }: IListItemsProps<T>) {
+export function ListGeneric<T extends { id: string }>({
+  items,
+  onDelete,
+  renderItem,
+  path,
+  onUpdate,
+}: IListItemsProps<T>) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center mt-5 gap-2">
-      {items?.map(item => (
+    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 w-full">
+      {items?.map((item) => (
         <li
           key={item.id}
-          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 w-full"
+          className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 flex flex-col"
         >
-          <div className="flex flex-col justify-between w-full p-4 md:p-6">
-            <div className="flex flex-1 justify-between flex-wrap">{renderItem(item)}</div>
-            <div className="flex gap-2 mt-4">
-              <Button size="sm" className="w-fit" outline onClick={() => {
+          {/* Conteúdo principal */}
+          <div className="flex-1 p-5">{renderItem(item)}</div>
+
+          {/* Ações */}
+          <div className="flex gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+            <Button
+              size="sm"
+              className="w-fit"
+              outline
+              onClick={() => {
                 onUpdate?.(item)
                 Router.push(`${path}/edit/${item.id}`)
-              }}>
-                <EditIcon className="mr-1 w-4" /> Editar
-              </Button>
-              <ConfirmDeleteModal
-                onDelete={() => onDelete(item.id)}
-                button={
-                  <Button size="sm" outline className="text-red-500 w-fit">
-                    <Trash className="mr-1 w-4" /> Excluir
-                  </Button>
-                }
-              />
-            </div>
+              }}
+            >
+              <EditIcon className="mr-1 w-4" /> Editar
+            </Button>
+            <ConfirmDeleteModal
+              onDelete={() => onDelete(item.id)}
+              button={
+                <Button size="sm" outline className="text-red-500 w-fit">
+                  <Trash className="mr-1 w-4" /> Excluir
+                </Button>
+              }
+            />
           </div>
         </li>
       ))}

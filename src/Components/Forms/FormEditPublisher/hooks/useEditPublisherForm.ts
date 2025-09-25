@@ -3,6 +3,7 @@ import {
   hopeOptions,
   pioneerOptions,
   privilegeOptions,
+  additionalsPrivilegeOptions,
   situationOptions,
 } from "@/constants/publisherOptions"
 import { IPayloadUpdatePublisher, usePublisherContext } from "@/context/PublisherContext"
@@ -25,6 +26,7 @@ export function useEditPublisherForm(id: string) {
   const [publisherToUpdate, setPublisherToUpdate] = useState<IPublisher>()
   const [isFormChanged, setIsFormChanged] = useState(false)
   const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>("")
+  const [additionalsPrivilegeCheckboxSelected, setAdditionalsPrivilegeCheckboxSelected] = useState<string[]>([])
   const [privilegeCheckboxSelected, setPrivilegeCheckboxSelected] = useState("")
   const [auxPioneerMonthsSelected, setAuxPioneerMonthsSelected] = useState<string[]>([])
   const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>("")
@@ -61,7 +63,7 @@ export function useEditPublisherForm(id: string) {
     if (data) {
       const isPrivilege = data.privileges.filter(p => privilegeOptions.includes(p as Privileges))
       const isPioneer = data.privileges.filter(p => pioneerOptions.includes(p as Privileges))
-
+      // const isAditionalsPrivileges = data.privileges.filter(p => privilegeOptions.includes(p as Privileges))
       setPublisherToUpdate(data)
       setGenderCheckboxSelected(data.gender)
       setSituationPublisherCheckboxSelected(data.situation)
@@ -87,8 +89,11 @@ export function useEditPublisherForm(id: string) {
     const updatedPrivileges: string[] = []
     if (pioneerCheckboxSelected) updatedPrivileges.push(pioneerCheckboxSelected)
     if (privilegeCheckboxSelected) updatedPrivileges.push(privilegeCheckboxSelected)
+    if (additionalsPrivilegeCheckboxSelected.length > 0) {
+      updatedPrivileges.push(...additionalsPrivilegeCheckboxSelected)
+    }
     setAllPrivileges(updatedPrivileges)
-  }, [pioneerCheckboxSelected, privilegeCheckboxSelected])
+  }, [pioneerCheckboxSelected, privilegeCheckboxSelected, additionalsPrivilegeCheckboxSelected])
 
   useEffect(() => {
     // simplificação: usar react-hook-form isDirty poderia substituir isso
@@ -102,6 +107,7 @@ export function useEditPublisherForm(id: string) {
     handleCheckboxPioneer: setPioneerCheckboxSelected,
     handleCheckboxSituationPublisher: setSituationPublisherCheckboxSelected,
     handleCheckboxPrivileges: setPrivilegeCheckboxSelected,
+    handleCheckboxAdditionalPrivileges: setAdditionalsPrivilegeCheckboxSelected,
     handleBirthDateChange: setBirthDate,
     handleAuxPioneerMonths: setAuxPioneerMonthsSelected,
     handleImmersedDateChange: setImmersedDate,
@@ -126,10 +132,11 @@ export function useEditPublisherForm(id: string) {
       situation: situationPublisherCheckboxSelected,
       startPioneer: startPioneer ?? undefined
     }
-    toast.promise(
-      updatePublisher(publisherToUpdate?.id ?? "", payload),
-      { pending: "Atualizando publicador" }
-    )
+    console.log(payload)
+    // toast.promise(
+    //   updatePublisher(publisherToUpdate?.id ?? "", payload),
+    //   { pending: "Atualizando publicador" }
+    // )
   }
 
   const onError = () => toast.error("Aconteceu algum erro! Confira todos os campos.")
@@ -148,6 +155,7 @@ export function useEditPublisherForm(id: string) {
       hopeOptions,
       situationOptions,
       privilegeOptions,
+      additionalsPrivilegeOptions,
       pioneerOptions,
       optionsPioneerMonthsServiceYearActual,
       optionsPioneerMonthsLastServiceYear
@@ -162,7 +170,8 @@ export function useEditPublisherForm(id: string) {
       privilegeCheckboxSelected,
       situationPublisherCheckboxSelected,
       auxPioneerMonthsSelected,
-      yearService
+      yearService,
+      additionalsPrivilegeCheckboxSelected
     },
   }
 }

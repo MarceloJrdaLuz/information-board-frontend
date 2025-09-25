@@ -116,36 +116,24 @@ export default function SpeakersPage() {
                                 path="/arranjo-oradores/oradores"
                                 label="do Orador"
                                 renderItem={(speaker) => (
-                                    <div className="flex flex-col">
-                                        <div className="flex justify-between flex-wrap">
-                                            <div className="text-sm flex flex-col  w-fit justify-start p-4 text-primary-200 font-semibold">
-                                                Nome do orador:
-                                                <span className="text-sm font-semi-bold text-typography-100">{speaker.fullName}</span>
-                                            </div>
-                                            <div className="text-sm flex flex-col w-fit justify-start  p-4 text-primary-200 font-semibold">
-                                                Telefone:
-                                                <span className="text-sm font-semi-bold text-typography-100">{speaker.phone ? `${speaker.phone}` : "Não Cadastrado"}</span>
-                                            </div>
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start  p-4 text-primary-200 font-semibold">
-                                                Congregação:
-                                                <span className="text-sm font-semi-bold text-typography-100">{speaker.originCongregation.name}</span>
-                                            </div>
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start p-4 text-primary-200 font-semibold">
-                                                Endereço:
-                                                <span className="text-sm font-semi-bold text-typography-100">{speaker.address ? `${speaker.address}` : "Não Cadastrado"}</span>
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="text-sm flex w-fit flex-wrap justify-start p-4 text-primary-200 font-semibold">
-                                                Discursos preparados:
-                                                <span className="text-sm font-semi-bold text-typography-100 ml-2">
-                                                    {speaker.talks?.map(talk => talk.number).join(", ")}
-                                                </span>
+                                    <div className="flex flex-col gap-3">
+                                        <h3 className="text-lg font-semibold text-gray-800">{speaker.fullName}</h3>
 
+                                        <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                📞 <span>{speaker.phone || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                🏠 <span>{speaker.address || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                ⛪ <span>{speaker.originCongregation.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                🎤 <span>{speaker.talks?.map((t) => t.number).join(", ") || "Nenhum discurso"}</span>
                                             </div>
                                         </div>
                                     </div>
-
                                 )}
                             />
                         )

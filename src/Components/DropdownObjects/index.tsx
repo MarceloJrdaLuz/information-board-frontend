@@ -1,27 +1,30 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { XSquareIcon } from 'lucide-react'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
 interface IDropdown<T> {
-  title: string | undefined
-  items: T[] // Use o tipo genérico T para os itens
-  selectedItem: T | null // Use o tipo genérico T para o item selecionado
+  classname?: string
+  title: string
+  items: T[]
+  selectedItem: T | null
   handleChange: (item: T | null) => void
   border?: boolean
   full?: boolean
   position?: 'right' | 'left'
   textVisible?: boolean
   textAlign?: 'right' | 'left' | 'center'
-  labelKey?: keyof T // Chave para determinar a propriedade a ser usada como rótulo
-  labelKeySecondary?: keyof T // Chave para determinar a propriedade a ser usada como rótulo
+  emptyMessage?: string
+  labelKey?: keyof T
+  labelKeySecondary?: keyof T
 }
 
 export default function DropdownObject<T>(props: IDropdown<T>) {
-  const { items, selectedItem } = props
+  const { items, selectedItem, emptyMessage, title } = props
 
   const getLabel = (item: T): string => {
     if (props.labelKey && item[props.labelKey]) {
@@ -29,26 +32,40 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
     }
     return String(item)
   }
+
   const getLabelSecondary = (item: T): string => {
     if (props.labelKeySecondary && item[props.labelKeySecondary]) {
       return String(item[props.labelKeySecondary])
     }
-    return String("")
+    return ''
   }
 
   return (
-    <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
+    <Menu as="div" className={`relative ${props.full ? 'w-full' : 'inline-block'} ${props.classname}`}>
       <div>
-        <Menu.Button className={`inline-flex w-full justify-${props.textAlign ? `${props.textAlign}` : `center`} rounded-md  bg-transparent border px-3 md:px-4 py-2 font-medium text-gray-700  hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${props.border ? "border border-blue-gray-200" : "border-none"}`}>
-          <span className={`${!props.textVisible && 'hidden'} sm:flex`}>
-            {selectedItem ? (
-              <>
-                <span className='pr-2'>{getLabel(selectedItem)}</span>
-                <span>{getLabelSecondary(selectedItem) !== "" && getLabelSecondary(selectedItem)}</span>
-              </>
-            ) : props.title}
-          </span>
-          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5" aria-hidden="true" />
+        <Menu.Button
+          className="w-full flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+        >
+          {/* Sempre mostrar o título */}
+          <div className="flex justify-between items-center w-full">
+            <div className="flex flex-col truncate text-left">
+              <span className="text-gray-400 text-xs">{title}</span>
+              <span className="truncate">{selectedItem ? getLabel(selectedItem) : 'Selecione...'}</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+              {selectedItem && (
+                <span
+                  role='button'
+                  onClick={(e) => { e.stopPropagation(); props.handleChange(null) }}
+                  className="p-1 rounded hover:bg-gray-100"
+                >
+                  <XSquareIcon className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                </span>
+              )}
+            </div>
+          </div>
         </Menu.Button>
       </div>
 
@@ -61,24 +78,34 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}>
+        <Menu.Items
+          className={`absolute ${props.position}-0 z-50 mt-2 w-64 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-80 overflow-auto thin-scrollbar`}
+        >
           <div className="py-1">
-            {items.map((item, index) => (
-              <Menu.Item key={index}>
-                {({ active }) => (
-                  <span
-                    onClick={() => props.handleChange(item)}
-                    className={classNames(
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block px-4 py-2 text-sm'
-                    )}
-                  >
-                    <span className='pr-2'>{getLabel(item)}</span>
-                    <span>{getLabelSecondary(item) !== "" && getLabelSecondary(item)}</span>
-                  </span>
-                )}
-              </Menu.Item>
-            ))}
+            {items.length === 0 ? (
+              emptyMessage ? (
+                <span className="block px-4 py-2 text-sm text-gray-400 italic">{emptyMessage}</span>
+              ) : null
+            ) : (
+              items.map((item, index) => (
+                <Menu.Item key={index}>
+                  {({ active }) => (
+                    <span
+                      onClick={() => props.handleChange(item)}
+                      className={classNames(
+                        active ? 'bg-primary-50 text-primary-700' : 'text-gray-700',
+                        'flex flex-col px-4 py-2 text-sm cursor-pointer rounded-md'
+                      )}
+                    >
+                      <span>{getLabel(item)}</span>
+                      {getLabelSecondary(item) && (
+                        <span className="text-xs text-gray-400">{getLabelSecondary(item)}</span>
+                      )}
+                    </span>
+                  )}
+                </Menu.Item>
+              ))
+            )}
           </div>
         </Menu.Items>
       </Transition>

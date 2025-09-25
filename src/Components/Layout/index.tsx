@@ -3,7 +3,7 @@ import { NavBar } from "../NavBar"
 import { LayoutProps } from "./types"
 import { useEffect, useState } from "react"
 import { useAuthContext } from "@/context/AuthContext"
-import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon, HomeIcon, FileTextIcon } from 'lucide-react'
+import { UsersIcon, SquareStackIcon, CalendarDaysIcon, CalculatorIcon, FunctionSquareIcon, HomeIcon, FileTextIcon, UtensilsIcon } from 'lucide-react'
 import SalonIcon from "../Icons/SalonIcon"
 import PreachingIcon from "../Icons/PreachingIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
@@ -24,6 +24,11 @@ import { useAtom } from "jotai"
 import { openSubMenuAtom } from "@/atoms/atom"
 import EmergencyContactIcon from "../Icons/PhoneContactIcon"
 import MyReportsIcon from "../Icons/MyReportsIcon"
+import CalendarMicIcon from "../Icons/CalendarMicIcon"
+import TalkIcon from "../Icons/TalksIcon"
+import SpeakerIcon from "../Icons/SpeakerIcon"
+import ExternalTalkIcon from "../Icons/ExternalTalkIcon"
+import HospitalityIcon from "../Icons/HospitalityIcon"
 
 export default function Layout(props: LayoutProps) {
 
@@ -206,7 +211,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {/* {(isAdminCongregation) &&
+                {(isAdminCongregation) &&
                     <NavBar.ListOptions
                         key={"submenuArranjoOradores"}
                         showList={openSubMenu === 'arranjo-oradores'}
@@ -215,12 +220,30 @@ export default function Layout(props: LayoutProps) {
                         icon={PublicMeetingIcon}
                     >
                         <NavBar.Options
+                            title="Programação"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/programacao`)
+                            }}
+                            icon={CalendarMicIcon}
+                            active={props.pageActive === 'programacao'}
+                        />
+                        <NavBar.Options
+                            title="Saída de oradores"
+                            onClick={() => {
+                                setIsMenuOpen(!isMenuOpen)
+                                Router.push(`/arranjo-oradores/saida-oradores`)
+                            }}
+                            icon={ExternalTalkIcon}
+                            active={props.pageActive === 'saida-oradores'}
+                        />
+                        <NavBar.Options
                             title="Oradores"
                             onClick={() => {
                                 setIsMenuOpen(!isMenuOpen)
                                 Router.push(`/arranjo-oradores/oradores`)
                             }}
-                            icon={LifeAndMinistry}
+                            icon={SpeakerIcon}
                             active={props.pageActive === 'oradores'}
                         />
 
@@ -230,7 +253,7 @@ export default function Layout(props: LayoutProps) {
                                 setIsMenuOpen(!isMenuOpen)
                                 Router.push(`/arranjo-oradores/congregacoes`)
                             }}
-                            icon={PublicMeetingIcon}
+                            icon={SalonIcon}
                             active={props.pageActive === 'congregacoes'}
                         />
                         <NavBar.Options
@@ -239,7 +262,7 @@ export default function Layout(props: LayoutProps) {
                                 setIsMenuOpen(!isMenuOpen)
                                 Router.push(`/arranjo-oradores/discursos`)
                             }}
-                            icon={PublicMeetingIcon}
+                            icon={TalkIcon}
                             active={props.pageActive === 'discursos'}
                         />
                         <NavBar.Options
@@ -248,11 +271,11 @@ export default function Layout(props: LayoutProps) {
                                 setIsMenuOpen(!isMenuOpen)
                                 Router.push(`/arranjo-oradores/grupos-hospitalidade`)
                             }}
-                            icon={PublicMeetingIcon}
+                            icon={UtensilsIcon}
                             active={props.pageActive === 'grupos-hospitalidade'}
                         />
                     </NavBar.ListOptions>
-                } */}
+                }
 
                 {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                     <NavBar.ListOptions

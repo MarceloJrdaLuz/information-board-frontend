@@ -20,12 +20,17 @@ import { Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { useEditPublisherForm } from './hooks/useEditPublisherForm'
+import { useAuthContext } from '@/context/AuthContext'
 
 export interface IUpdatePublisher {
     id: string
 }
 
 export default function FormEditPublisher(props: IUpdatePublisher) {
+    const { roleContains } = useAuthContext()
+    const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
+    const isPublisherManager = roleContains('PUBLISHERS_MANAGER')
+    const hasPermission = isAdminCongregation || isPublisherManager
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { linkPublisherToUser, unlinkPublisherToUser } = usePublisherContext()
@@ -39,7 +44,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         values,
         onSubmit,
         onError,
-    } = useEditPublisherForm(props.id) 
+    } = useEditPublisherForm(props.id)
 
     const [modalConfirmForce, setModalConfirmeForce] = useAtom(showConfirmForceModal)
     const dataSuccess = useAtomValue(successFormSend)
@@ -50,10 +55,10 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(data?.emergencyContact?.id || null)
     const [selectedUser, setSelectedUser] = useState<string | null>(data?.user?.id ?? null)
 
-    const fetchEmergencyContactDataConfig = congregation_id ? `/emergencyContacts/${congregation_id}` : ''
+    const fetchEmergencyContactDataConfig = hasPermission && congregation_id ? `/emergencyContacts/${congregation_id}` : ""
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
 
-    const fetchUsersCongregation = congregation_id ? `/users/${congregation_id}` : ''
+    const fetchUsersCongregation = hasPermission && congregation_id ? `/users/${congregation_id}` : ''
     const { data: usersData } = useFetch<UserTypes[]>(fetchUsersCongregation)
 
     function handleLinkPublisherToUser(force: boolean = false) {
@@ -86,45 +91,54 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className="w-full h-fit flex-col justify-center items-center">
                     <div className="my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200">Atualizar publicador</div>
+                    {hasPermission && (
+                        <>
+                            <Input type="text" placeholder="Nome completo" registro={{ ...register('fullName') }} invalid={errors?.fullName?.message ? 'invalido' : ''} />
+                            {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
 
-                    <Input type="text" placeholder="Nome completo" registro={{ ...register('fullName') }} invalid={errors?.fullName?.message ? 'invalido' : ''} />
-                    {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
+                            <Input type="text" placeholder="Apelido" registro={{ ...register('nickname') }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
+                            <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
+                            <Controller name="phone" control={control} render={({ field }) => <Input type="tel" placeholder="Telefone" mask="(99) 99999-9999" {...field} />} />
+                            {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
-                    <Input type="text" placeholder="Apelido" registro={{ ...register('nickname') }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
-                    <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
-                    <Controller name="phone" control={control} render={({ field }) => <Input type="tel" placeholder="Telefone" mask="(99) 99999-9999" {...field} />} />
-                    {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
+                            <div className='border border-gray-300 my-4 p-4'>
+                                <CheckboxUnique visibleLabel checked={values.genderCheckboxSelected} label="Gênero" options={options.genderOptions} handleCheckboxChange={handlers.handleCheckboxGender} />
+                            </div>
+                            <div className='border border-gray-300 my-4 p-4'>
+                                <CheckboxUnique visibleLabel checked={values.hopeCheckboxSelected} label="Esperança" options={options.hopeOptions} handleCheckboxChange={handlers.handleCheckboxHope} />
+                            </div>
+                            <div className='border border-gray-300 my-4 p-4'>
+                                <CheckboxUnique visibleLabel checked={values.situationPublisherCheckboxSelected} label="Situação do publicador" options={options.situationOptions} handleCheckboxChange={handlers.handleCheckboxSituationPublisher} />
+                            </div>
+                            {values.situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
 
-                    <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={values.genderCheckboxSelected} label="Gênero" options={options.genderOptions} handleCheckboxChange={handlers.handleCheckboxGender} />
-                    </div>
-                    <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={values.hopeCheckboxSelected} label="Esperança" options={options.hopeOptions} handleCheckboxChange={handlers.handleCheckboxHope} />
-                    </div>
-                    <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={values.situationPublisherCheckboxSelected} label="Situação do publicador" options={options.situationOptions} handleCheckboxChange={handlers.handleCheckboxSituationPublisher} />
-                    </div>
-                    {values.situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
+                                {<CheckboxUnique visibleLabel checked={values.pioneerCheckboxSelected} label="Pioneiro" options={options.pioneerOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
 
-                        {<CheckboxUnique visibleLabel checked={values.pioneerCheckboxSelected} label="Pioneiro" options={options.pioneerOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
+                                {values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
+                                    (
+                                        <>
+                                            <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${values.yearService}`} visibleLabel options={options.optionsPioneerMonthsServiceYearActual} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
 
-                        {values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
-                            (
-                                <>
-                                    <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${values.yearService}`} visibleLabel options={options.optionsPioneerMonthsServiceYearActual} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
+                                            <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(values.yearService) - 1}`} visibleLabel options={options.optionsPioneerMonthsLastServiceYear} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
+                                        </>
 
-                                    <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(values.yearService) - 1}`} visibleLabel options={options.optionsPioneerMonthsLastServiceYear} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
-                                </>
+                                    )
+                                }
 
-                            )
-                        }
+                                {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={values.startPioneer} />}
+                            </div>
+                            }
+                        </>
+                    )}
 
-                        {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={values.startPioneer} />}
-                    </div>}
+                    {values.situationPublisherCheckboxSelected === Situation.ATIVO && values.genderCheckboxSelected === 'Masculino' && (
+                        <div className='border border-gray-300 my-4 p-4'>
+                            <CheckboxUnique visibleLabel checked={values.privilegeCheckboxSelected} label="Privilégio" options={options.privilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
 
-                    {values.situationPublisherCheckboxSelected === Situation.ATIVO && values.genderCheckboxSelected === 'Masculino' && <div className='border border-gray-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={values.privilegeCheckboxSelected} label="Privilégio" options={options.privilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
-                    </div>}
+                            <CheckboxMultiple visibleLabel checkedOptions={values.additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={options.additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
+                        </div>
+                    )
+                    }
 
                     <div className='border border-gray-300 my-4 p-4'>
                         <div className='flex justify-between items-center'>
@@ -149,39 +163,41 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         )}
                     </div>
 
-                    <div className='border border-gray-300 my-4 p-4'>
-                        <span className='my-2 font-semibold text-gray-900 '>Vincular publicador a usuário</span>
-                        <div className='flex flex-col w-full items-start justify-start my-4 gap-5'>
-                            <DropdownObject<UserTypes>
-                                title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
-                                textVisible
-                                items={usersData ?? []}
-                                selectedItem={usersData && usersData.find(c => c.id === selectedUser) || null}
-                                handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
-                                labelKey="fullName"
-                            />
-                            <ConfirmLinkForceModal button={
+                    {hasPermission &&
+                        (<div className='border border-gray-300 my-4 p-4'>
+                            <span className='my-2 font-semibold text-gray-900 '>Vincular publicador a usuário</span>
+                            <div className='flex flex-col w-full items-start justify-start my-4 gap-5'>
+                                <DropdownObject<UserTypes>
+                                    title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                    textVisible
+                                    items={usersData ?? []}
+                                    selectedItem={usersData && usersData.find(c => c.id === selectedUser) || null}
+                                    handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
+                                    labelKey="fullName"
+                                />
+                                <ConfirmLinkForceModal button={
+                                    <Button
+                                        type='button'
+                                        onClick={() => { handleLinkPublisherToUser() }}
+                                        className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                        <UserLinkIcon />
+                                        <span className="text-primary-200 font-semibold">Vincular publicador</span>
+                                    </Button>
+                                }
+                                    onDelete={() => handleConfirmForceLink()}
+                                    message='Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?'
+                                    canOpen={modalConfirmForce}
+                                />
                                 <Button
                                     type='button'
-                                    onClick={() => { handleLinkPublisherToUser() }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    onClick={() => { handleUnLinkPublisherToUser() }}
+                                    className="bg-white text-red-500 p-3 border-gray-300 rounded-none hover:opacity-80">
                                     <UserLinkIcon />
-                                    <span className="text-primary-200 font-semibold">Vincular publicador</span>
+                                    <span className="text-primary-200 font-semibold">Desvincular publicador</span>
                                 </Button>
-                            }
-                                onDelete={() => handleConfirmForceLink()}
-                                message='Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?'
-                                canOpen={modalConfirmForce}
-                            />
-                            <Button
-                                type='button'
-                                onClick={() => { handleUnLinkPublisherToUser() }}
-                                className="bg-white text-red-500 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <UserLinkIcon />
-                                <span className="text-primary-200 font-semibold">Desvincular publicador</span>
-                            </Button>
-                        </div>
-                    </div>
+                            </div>
+                        </div>)
+                    }
 
                     <div className='flex justify-center items-center m-auto w-11/12 h-12 my-[5%]'>
                         <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar publicador</Button>

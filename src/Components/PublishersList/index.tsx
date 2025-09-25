@@ -19,7 +19,6 @@ import FilterPrivileges from "../FilterPrivileges"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import CheckboxBoolean from "../CheckboxBoolean"
-import UserLinkIcon from "../Icons/UserLinkIcon"
 
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()
@@ -225,7 +224,7 @@ export default function PublisherList() {
                             </div>
                             <div className="flex">
                                 <div className="gap-1 flex">
-                                    {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
+                                    {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION")) &&
                                         <Button
                                             className="w-30"
                                             onClick={() => Router.push(`/congregacao/publicadores/edit/${publisher.id}`)}
@@ -234,7 +233,7 @@ export default function PublisherList() {
                                             <EditIcon />
                                             Editar
                                         </Button>}
-                                    {roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
+                                    {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION")) &&
                                         <ConfirmDeleteModal
                                             onDelete={() => onDelete(`${publisher.id}`)}
                                             button={<Button

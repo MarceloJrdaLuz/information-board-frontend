@@ -1,17 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditPermission from "@/Components/Forms/FormEditPermission"
 import FormEditSpeaker from "@/Components/Forms/FormEditSpeaker"
 import Layout from "@/Components/Layout"
-import TalksBoard from "@/Components/TalksBoard"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect } from "react"
-import { FormProvider, useForm } from 'react-hook-form'
 
 export default function EditPermissionPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
