@@ -17,6 +17,10 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import "moment/locale/pt-br"
+import ExternalTalksSkeleton from "@/Components/ExternalTalksSkeleton"
+import { GetServerSideProps } from "next"
+import { getAPIClient } from "@/services/axios"
+import { parseCookies } from "nookies"
 
 export default function ExternalTalksPage() {
     moment.defineLocale("pt-br", null)
@@ -114,42 +118,79 @@ export default function ExternalTalksPage() {
         <Layout pageActive="saida-oradores" >
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-
-                <div className="flex justify-between my-4 p-4">
-                    <Button
-                        className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                        onClick={() => setMonthOffset((m) => m - 1)}>
-                        ◀ {prevMonthLabel}
-                    </Button>
-                    <Button
-                        className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                        onClick={() => setMonthOffset((m) => m + 1)}>
-                        {nextMonthLabel} ▶
-                    </Button>
-                </div>
-
-
-                {saturdays.map((date) => {
-                    const talksForDate = externalTalks.filter(
-                        (t) => t.date === moment(date).format("YYYY-MM-DD")
-                    )
-                    return (
-                        <div key={`${date}`} className="p-4">
-                            <ExternalTalkRow
-                                key={date.toISOString()}
-                                date={date}
-                                externalTalks={talksForDate}
-                                speakers={speakers}
-                                congregations={congregations}
-                                talks={talks}
-                                onAddExternalTalk={handleAddExternalTalk}
-                                onUpdateStatus={handleUpdateStatus}
-                            />
+                {!data ? (
+                    <ExternalTalksSkeleton />
+                ) : (
+                    <>
+                        <div className="flex justify-between my-4 p-4">
+                            <Button
+                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                onClick={() => setMonthOffset((m) => m - 1)}>
+                                ◀ {prevMonthLabel}
+                            </Button>
+                            <Button
+                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                onClick={() => setMonthOffset((m) => m + 1)}>
+                                {nextMonthLabel} ▶
+                            </Button>
                         </div>
-                    )
-                })}
+
+
+                        {saturdays.map((date) => {
+                            const talksForDate = externalTalks.filter(
+                                (t) => t.date === moment(date).format("YYYY-MM-DD")
+                            )
+                            return (
+                                <div key={`${date}`} className="p-4">
+                                    <ExternalTalkRow
+                                        key={date.toISOString()}
+                                        date={date}
+                                        externalTalks={talksForDate}
+                                        speakers={speakers}
+                                        congregations={congregations}
+                                        talks={talks}
+                                        onAddExternalTalk={handleAddExternalTalk}
+                                        onUpdateStatus={handleUpdateStatus}
+                                    />
+                                </div>
+                            )
+                        })}
+                    </>
+                )}
+
 
             </ContentDashboard>
         </Layout>
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+
+    const apiClient = getAPIClient(ctx)
+    const { ['quadro-token']: token } = parseCookies(ctx)
+
+    if (!token) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {}
+    }
 }

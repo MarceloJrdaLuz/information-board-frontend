@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import Input from "@/Components/Input"
@@ -7,6 +8,7 @@ import Layout from "@/Components/Layout"
 import ScheduleRow from "@/Components/ScheduleRow"
 import SpeakerFilters from "@/Components/SpeakerFilters"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
+import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
     chairmansAtom,
@@ -22,12 +24,15 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { IExternalTalk } from "@/entities/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/entities/weekendSchedule"
 import { useFetch } from "@/hooks/useFetch"
+import { getAPIClient } from "@/services/axios"
 import { getSaturdays } from "@/utils/dateUtil"
 import { Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"; // importa o idioma
+import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
+import { parseCookies } from "nookies"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -71,10 +76,10 @@ export default function WeekendSchedulePage() {
 
         const target = moment(dateParam, "YYYY-MM-DD", true)
         if (!target.isValid()) {
-            
+
             const alt = moment(dateParam)
             if (!alt.isValid()) return
-            
+
             const monthDiffAlt =
                 (alt.year() - moment().year()) * 12 + (alt.month() - moment().month())
             setMonthOffset(monthDiffAlt)
@@ -199,7 +204,7 @@ export default function WeekendSchedulePage() {
                     <WeekendMeeting schedules={filteredSchedules} />
                 </Document>
             }
-            fileName={"S-13.pdf"}
+            fileName={"Reunião do fim de semana.pdf"}
         >
             {({ blob, url, loading, error }) => {
                 return loading ? "" :
@@ -226,50 +231,54 @@ export default function WeekendSchedulePage() {
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
                 <section className="flex flex-wrap w-full h-full p-5">
-                    <div className="w-full p-4 space-y-4">
-                        <div className="sticky top-0 bg-white border-b shadow-sm z-10 p-4 rounded-xl flex flex-col  gap-3">
-                            <SpeakerFilters />
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    onClick={() => setMonthOffset((m) => m - 1)}
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                >
-                                    ◀ {prevMonthLabel}
+                    {!data ? (
+                        <WeekendScheduleSkeleton />
+                    ) : (
+                        <>
+                            <div className="w-full p-4 space-y-4">
+                                <div className="sticky top-0 bg-white border-b shadow-sm z-10 p-4 rounded-xl flex flex-col  gap-3">
+                                    <SpeakerFilters />
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            onClick={() => setMonthOffset((m) => m - 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                        >
+                                            ◀ {prevMonthLabel}
+                                        </Button>
+
+                                        <Button
+                                            onClick={() => setMonthOffset((m) => m + 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                        >
+                                            {nextMonthLabel} ▶
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <Button className="w-full" onClick={handleSave}>
+                                    Salvar todas
                                 </Button>
 
-                                <Button
-                                    onClick={() => setMonthOffset((m) => m + 1)}
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                >
-                                    {nextMonthLabel} ▶
-                                </Button>
-                            </div>
-                        </div>
-
-                        <Button className="w-full" onClick={handleSave}>
-                            Salvar todas
-                        </Button>
-
-                        <div className="flex flex-wrap gap-3 items-center bg-gray-50 border rounded-xl p-4 shadow-sm mt-4">
-                            {isClient && <PdfLinkComponent />}
-                            <div className="flex flex-1 gap-3">
-                                <Input
-                                    className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
-                                    type="date"
-                                    value={startDatePdfGenerate}
-                                    onChange={(e) => setStartDatePdfGenerate(e.target.value)}
-                                />
-                                <Input
-                                    className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
-                                    type="date"
-                                    value={endDatePdfGenerate}
-                                    onChange={(e) => setEndDatePdfGenerate(e.target.value)}
-                                />
-                            </div>
-                        </div>
+                                <div className="flex flex-wrap gap-3 items-center bg-gray-50 border rounded-xl p-4 shadow-sm mt-4">
+                                    {isClient && <PdfLinkComponent />}
+                                    <div className="flex flex-1 gap-3">
+                                        <Input
+                                            className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
+                                            type="date"
+                                            value={startDatePdfGenerate}
+                                            onChange={(e) => setStartDatePdfGenerate(e.target.value)}
+                                        />   
+                                        <Input
+                                            className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
+                                            type="date"
+                                            value={endDatePdfGenerate}
+                                            onChange={(e) => setEndDatePdfGenerate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
 
 
-                        {/* {isClient &&
+                                {/* {isClient &&
                             <div className="w-screen h-[90vh] ">
                                 <PDFViewer style={{ width: "100%", height: "90vh" }}>
                                     <Document>
@@ -279,21 +288,56 @@ export default function WeekendSchedulePage() {
 
                             </div>
                         } */}
-                        <div className="space-y-4 mt-6">
-                            {saturdays.map((d) => {
-                                const externalForDate = (externalData ?? []).filter((t) =>
-                                    moment(t.date).isSame(d, "day")
-                                )
-                                return (
-                                    <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm p-4">
-                                        <ScheduleRow date={d} externalTalks={externalForDate} />
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                </section>
-            </ContentDashboard>
-        </Layout>
+                                <div className="space-y-4 mt-6">
+                                    {saturdays.map((d) => {
+                                        const externalForDate = (externalData ?? []).filter((t) =>
+                                            moment(t.date).isSame(d, "day")
+                                        )
+                                        return (
+                                            <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm p-4">
+                                                <ScheduleRow date={d} externalTalks={externalForDate} />
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </>
+                    )
+                    }
+
+                </section >
+            </ContentDashboard >
+        </Layout >
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+
+    const apiClient = getAPIClient(ctx)
+    const { ['quadro-token']: token } = parseCookies(ctx)
+
+    if (!token) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    const { ['user-roles']: userRoles } = parseCookies(ctx)
+    const userRolesParse: string[] = JSON.parse(userRoles)
+
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
+        return {
+            redirect: {
+                destination: '/dashboard',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {}
+    }
 }

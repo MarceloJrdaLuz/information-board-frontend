@@ -63,7 +63,9 @@ export function useEditPublisherForm(id: string) {
     if (data) {
       const isPrivilege = data.privileges.filter(p => privilegeOptions.includes(p as Privileges))
       const isPioneer = data.privileges.filter(p => pioneerOptions.includes(p as Privileges))
-      // const isAditionalsPrivileges = data.privileges.filter(p => privilegeOptions.includes(p as Privileges))
+      const isAditionalsPrivileges = data.privileges.filter(p => additionalsPrivilegeOptions.includes(p as Privileges))
+
+      setAdditionalsPrivilegeCheckboxSelected(isAditionalsPrivileges)
       setPublisherToUpdate(data)
       setGenderCheckboxSelected(data.gender)
       setSituationPublisherCheckboxSelected(data.situation)
@@ -96,7 +98,6 @@ export function useEditPublisherForm(id: string) {
   }, [pioneerCheckboxSelected, privilegeCheckboxSelected, additionalsPrivilegeCheckboxSelected])
 
   useEffect(() => {
-    // simplificação: usar react-hook-form isDirty poderia substituir isso
     setIsFormChanged(formMethods.formState.isDirty)
   }, [formMethods.formState.isDirty])
 
@@ -132,11 +133,10 @@ export function useEditPublisherForm(id: string) {
       situation: situationPublisherCheckboxSelected,
       startPioneer: startPioneer ?? undefined
     }
-    console.log(payload)
-    // toast.promise(
-    //   updatePublisher(publisherToUpdate?.id ?? "", payload),
-    //   { pending: "Atualizando publicador" }
-    // )
+    toast.promise(
+      updatePublisher(publisherToUpdate?.id ?? "", payload),
+      { pending: "Atualizando publicador" }
+    )
   }
 
   const onError = () => toast.error("Aconteceu algum erro! Confira todos os campos.")

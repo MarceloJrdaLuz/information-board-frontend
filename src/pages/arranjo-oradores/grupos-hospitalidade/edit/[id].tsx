@@ -1,18 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditHospitalityGroup from "@/Components/Forms/FormEditHospitalityGroup"
-import FormEditPermission from "@/Components/Forms/FormEditPermission"
-import FormEditSpeaker from "@/Components/Forms/FormEditSpeaker"
 import Layout from "@/Components/Layout"
-import TalksBoard from "@/Components/TalksBoard"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect } from "react"
-import { FormProvider, useForm } from 'react-hook-form'
 
 export default function EditHospitalityGroupPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -66,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

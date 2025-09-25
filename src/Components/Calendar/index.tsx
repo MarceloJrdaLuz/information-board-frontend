@@ -27,9 +27,9 @@ export default function Calendar({ handleDateChange, selectedDate, minDate, labe
                     text-black appearance-none placeholder-transparent focus:outline-none  rounded-xl bg-transparent read-only:bg-gray-300 read-only:rounded-lg font-sans font-normal text-left border-[2px] border-blue-gray-200`}
                     selected={selectedDate}
                     onChange={handleDateChange}
-                    dateFormat="dd/MM/yyyy" // Formato da data
-                    minDate={minDate} // Defina uma data mínima (ou outra data de sua escolha)
-                // Você pode adicionar outras props para personalizar o comportamento do DatePicker
+                    dateFormat="dd/MM/yyyy" 
+                    minDate={minDate} 
+           
                 />
             </div>
             {/* {selectedDate && (
