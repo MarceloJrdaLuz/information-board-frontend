@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues, SpeakerFormData } from './type'
 import { selectedSpeakerAtom, updateSpeakerAtom } from '@/atoms/speakerAtoms'
+import DropdownMulti from '@/Components/DropdownMulti'
 
 
 export default function FormEditSpeaker() {
@@ -30,7 +31,6 @@ export default function FormEditSpeaker() {
     const { data: speakerFormData } = useFetch<SpeakerFormData>(`/form-data?form=speaker`)
 
     const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(false)
-    const [talksListShow, setTalksListShow] = useState<boolean>(false)
     const [selectedTalks, setSelectedTalks] = useState<ITalk[] | null>(selectedSpeaker?.talks ?? null)
     const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)
     const [selectedSpeakerCongregation, setSelectedSpeakerCongregation] = useState<ICongregation | null>(selectedSpeaker?.originCongregation ?? null)
@@ -157,10 +157,22 @@ export default function FormEditSpeaker() {
 
                     <div className='border border-gray-300 my-4 p-4'>
                         <div className='flex flex-1 justify-between items-center'>
-                            <span className='my-2 font-semibold text-gray-900' onClick={() => setTalksListShow(!talksListShow)}>Selecionar discursos</span>
-                            <button type="button" className={`w-6 h-6 mr-4 flex justify-center items-center ${talksListShow && 'rotate-180'}`} onClick={() => setTalksListShow(!talksListShow)}><ChevronDownIcon /> </button>
+                            <span className='my-2 font-semibold text-gray-900'>Selecionar discursos</span>
                         </div>
-                        {talksListShow && <TalksBoard initialSelected={selectedSpeaker?.talks} talks={speakerFormData?.talks ?? []} onSelectionChange={(talks) => setSelectedTalks(talks)} />}
+                        <DropdownMulti<ITalk>
+                            title="Selecione os discursos"
+                            items={speakerFormData?.talks ?? []}
+                            selectedItems={selectedTalks ?? []}
+                            handleChange={setSelectedTalks}
+                            border
+                            full
+                            position="left"
+                            textAlign="left"
+                            labelKey="number"
+                            labelKeySecondary='title'
+                            textVisible
+                            searchable
+                        />
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
