@@ -211,7 +211,7 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {(isAdminCongregation) &&
+                {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuArranjoOradores"}
                         showList={openSubMenu === 'arranjo-oradores'}
@@ -318,7 +318,8 @@ export default function Layout(props: LayoutProps) {
                     roleContains('TERRITORIES_MANAGER') ||
                     roleContains('ASSISTANCE_MANAGER') ||
                     roleContains('ASSISTANCE_VIEWER') ||
-                    roleContains('TERRITORIES_VIEWER')) &&
+                    roleContains('TERRITORIES_VIEWER') ||
+                    roleContains('TALK_MANAGER')) &&
                     <NavBar.ListOptions
                         key={"submenuCongregação"}
                         showList={openSubMenu === 'congregacao'}
@@ -328,7 +329,8 @@ export default function Layout(props: LayoutProps) {
                     >
                         {(isAdminCongregation ||
                             roleContains('PUBLISHERS_MANAGER') ||
-                            roleContains('PUBLISHERS_VIEWER')) &&
+                            roleContains('PUBLISHERS_VIEWER') ||
+                            roleContains('TALK_MANAGER')) &&
                             <NavBar.Options
                                 title="Publicadores"
                                 onClick={() => {
