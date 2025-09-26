@@ -1,6 +1,5 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
-import Calendar from "@/Components/Calendar"
 import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import Input from "@/Components/Input"
@@ -26,7 +25,8 @@ import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithE
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { getSaturdays } from "@/utils/dateUtil"
-import { Document, PDFDownloadLink } from "@react-pdf/renderer"
+import { Card, CardBody, CardHeader, Option, Select } from "@material-tailwind/react"
+import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"; // importa o idioma
@@ -35,7 +35,6 @@ import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
-import { mutate } from "swr"
 
 export default function WeekendSchedulePage() {
     moment.defineLocale("pt-br", null)
@@ -61,6 +60,8 @@ export default function WeekendSchedulePage() {
     const [startDatePdfGenerate, setStartDatePdfGenerate] = useState<string>("")
     const [endDatePdfGenerate, setEndDatePdfGenerate] = useState<string>("")
     const baseDate = moment().add(monthOffset, "months")
+    const [pdfScale, setPdfScale] = useState(1); // 1 = normal, 0.8 = 80%, etc.
+    const [showPdfPreview, setShowPdfPreview] = useState(false); // controle de visualização
 
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
@@ -203,23 +204,21 @@ export default function WeekendSchedulePage() {
         <PDFDownloadLink
             document={
                 <Document>
-                    <WeekendMeeting schedules={filteredSchedules} />
+                    <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
                 </Document>
             }
             fileName={"Reunião do fim de semana.pdf"}
         >
-            {({ blob, url, loading, error }) => {
-                return loading ? "" :
-                    <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
-                        <PdfIcon />
-                        <span className="text-primary-200 font-semibold">
-                            Gerar PDF
-                        </span>
-                    </Button>
-            }
-            }
+            {({ loading }) => (
+                <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                    <PdfIcon />
+                    <span className="text-primary-200 font-semibold">
+                        {loading ? "Gerando PDF..." : "Baixar PDF"}
+                    </span>
+                </Button>
+            )}
         </PDFDownloadLink>
-    )
+    );
 
     const filteredSchedules = weekendScheduleWithExternalTalks.filter(s => {
         const schedDate = new Date(s.date).getTime()
@@ -261,38 +260,54 @@ export default function WeekendSchedulePage() {
                                 </div>
 
 
-                                <div className="flex flex-wrap gap-3 items-center bg-gray-50 border rounded-xl p-4 shadow-sm mt-4">
-                                    {isClient && <PdfLinkComponent />}
-                                    <div className="flex flex-1 gap-3 flex-wrap">
+                                <Card className="w-full p-4">
+                                    <CardBody className="flex flex-wrap gap-4 items-center">
                                         <Input
                                             placeholder="Data inicial"
-                                            className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
                                             type="date"
                                             value={startDatePdfGenerate}
                                             onChange={(e) => setStartDatePdfGenerate(e.target.value)}
+                                            className="flex-1"
                                         />
                                         <Input
                                             placeholder="Data final"
-                                            className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
                                             type="date"
                                             value={endDatePdfGenerate}
                                             onChange={(e) => setEndDatePdfGenerate(e.target.value)}
                                             min={startDatePdfGenerate || undefined}
+                                            className="flex-1"
                                         />
+                                        <div className="flex-1">
+                                            <Select
+                                                label="Escala do PDF"
+                                                value={pdfScale.toString()}
+                                                onChange={(value) => setPdfScale(Number(value))}
+                                            >
+                                                <Option value="1">100%</Option>
+                                                <Option value="0.9">90%</Option>
+                                                <Option value="0.8">80%</Option>
+                                                <Option value="0.7">70%</Option>
+                                            </Select>
+                                        </div>
+                                        <Button
+                                            onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                            className="px-4 py-2 rounded-lg border shadow"
+                                        >
+                                            {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                        </Button>
+                                        {isClient && <PdfLinkComponent />}
+                                    </CardBody>
+                                </Card>
+                                {showPdfPreview && (
+                                    <div className="w-full h-[80vh] mt-4 border rounded-lg overflow-hidden">
+                                        <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                            <Document>
+                                                <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
+                                            </Document>
+                                        </PDFViewer>
                                     </div>
-                                </div>
+                                )}
 
-
-                                {/* {isClient &&
-                            <div className="w-screen h-[90vh] ">
-                                <PDFViewer style={{ width: "100%", height: "90vh" }}>
-                                    <Document>
-                                        <WeekendMeeting schedules={filteredSchedules ?? []} />
-                                    </Document>
-                                </PDFViewer>
-
-                            </div>
-                        } */}
                                 <div className="space-y-4 mt-6">
                                     {saturdays.map((d) => {
                                         const externalForDate = (externalData ?? []).filter((t) =>
