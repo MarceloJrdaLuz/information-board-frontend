@@ -18,12 +18,31 @@ interface IDropdownMulti<T> {
   textAlign?: "right" | "left" | "center"
   labelKey?: keyof T
   labelKeySecondary?: keyof T
+  searchable?: boolean   
 }
 
 export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
-  const { items, selectedItems } = props
+  const { items, selectedItems, searchable } = props
   const [open, setOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredItems, setFilteredItems] = useState(items)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredItems(items)
+    } else {
+      const filtered = items.filter((item) => {
+        const label = getLabel(item).toLowerCase()
+        const secondary = getLabelSecondary(item).toLowerCase()
+        return (
+          label.includes(searchQuery.toLowerCase()) ||
+          secondary.includes(searchQuery.toLowerCase())
+        )
+      })
+      setFilteredItems(filtered)
+    }
+  }, [searchQuery, items])
 
   const getLabel = (item: T): string => {
     if (props.labelKey && item[props.labelKey]) {
@@ -40,20 +59,29 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
   }
 
   const isSelected = (item: T) =>
-    selectedItems.some((selected) => JSON.stringify(selected) === JSON.stringify(item))
+    selectedItems.some(
+      (selected) => JSON.stringify(selected) === JSON.stringify(item)
+    )
 
   const toggleSelect = (item: T) => {
     if (isSelected(item)) {
-      props.handleChange(selectedItems.filter((selected) => JSON.stringify(selected) !== JSON.stringify(item)))
+      props.handleChange(
+        selectedItems.filter(
+          (selected) => JSON.stringify(selected) !== JSON.stringify(item)
+        )
+      )
     } else {
       props.handleChange([...selectedItems, item])
     }
   }
 
-  // 👉 Fecha ao clicar fora
+  // Fecha ao clicar fora
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setOpen(false)
       }
     }
@@ -68,7 +96,11 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
   }, [open])
 
   return (
-    <Menu as="div" ref={dropdownRef} className={`relative inline-block text-left ${props.full && "w-full"}`}>
+    <Menu
+      as="div"
+      ref={dropdownRef}
+      className={`relative inline-block text-left ${props.full && "w-full"}`}
+    >
       <div>
         <Menu.Button
           onClick={() => setOpen(!open)}
@@ -103,17 +135,31 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
           }-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}
         >
           <div className="py-1">
-            {items.map((item, index) => (
+            {searchable && (
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full px-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:ring-indigo-400"
+                placeholder="Pesquisar..."
+              />
+            )}
+            {filteredItems.map((item, index) => (
               <div
                 key={index}
                 onClick={() => toggleSelect(item)}
                 className={classNames(
-                  "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 hover:text-gray-900",
-                  isSelected(item) ? "font-medium text-indigo-600" : "text-gray-700"
+                  "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 hover:text-gray-900",
+                  isSelected(item)
+                    ? "font-medium text-primary-200"
+                    : "text-gray-700"
                 )}
               >
-                {isSelected(item) && <CheckIcon className="w-4 h-4 mr-2 text-indigo-500" />}
-                {!isSelected(item) && <span className="w-4 h-4 mr-2 border rounded-sm"></span>}
+                {isSelected(item) ? (
+                  <CheckIcon className="flex-shrink-0 w-5 h-5 text-primary-200" />
+                ) : (
+                  <span className="flex-shrink-0 w-5 h-5 border rounded-sm"></span>
+                )}
                 <span className="pr-2">{getLabel(item)}</span>
                 <span>{getLabelSecondary(item) !== "" && getLabelSecondary(item)}</span>
               </div>

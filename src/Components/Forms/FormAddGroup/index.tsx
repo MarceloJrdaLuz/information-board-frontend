@@ -1,24 +1,24 @@
 import * as yup from 'yup'
 
+import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import Button from '@/Components/Button'
+import Dropdown from '@/Components/Dropdown'
+import DropdownObject from '@/Components/DropdownObjects'
+import Input from '@/Components/Input'
+import InputError from '@/Components/InputError'
+import { useAuthContext } from '@/context/AuthContext'
+import { useSubmitContext } from '@/context/SubmitFormContext'
+import { IPublisher } from '@/entities/types'
+import { sortArrayByProperty } from '@/functions/sortObjects'
+import { useFetch } from '@/hooks/useFetch'
+import { api } from '@/services/api'
+import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
-import { api } from '@/services/api'
-import { IPublisher } from '@/entities/types'
-import { useFetch } from '@/hooks/useFetch'
-import { useAuthContext } from '@/context/AuthContext'
-import DropdownObject from '@/Components/DropdownObjects'
-import Dropdown from '@/Components/Dropdown'
-import InputError from '@/Components/InputError'
-import Input from '@/Components/Input'
-import Button from '@/Components/Button'
-import { useAtomValue } from 'jotai'
-import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
-import { useSubmitContext } from '@/context/SubmitFormContext'
-import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
-import { sortArrayByProperty } from '@/functions/sortObjects'
 
 export interface IGroup {
     id: string
@@ -141,6 +141,7 @@ export default function FormAddGroup() {
                                 textVisible
                                 full
                                 textAlign='left'
+                                searchable
                             />
                         )}
                     </div>

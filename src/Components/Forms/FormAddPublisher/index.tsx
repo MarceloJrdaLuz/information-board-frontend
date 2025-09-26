@@ -118,12 +118,18 @@ export default function FormAddPublisher() {
         setAllPrivileges(updatePrivileges)
     }, [pioneerCheckboxSelected, privilegeCheckboxSelected])
 
-    const esquemaValidacao = yup.object({
+    const validationSchema = yup.object({
         fullName: yup.string().required(),
         nickname: yup.string(),
         phone: yup
             .string()
-            .matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido')
+            .nullable()
+            .notRequired()
+            .test('is-valid-phone', 'Telefone inválido', value => {
+                if (!value) return true; // aceita vazio
+                return /^\(\d{2}\) \d{5}-\d{4}$/.test(value); // valida formato se preenchido
+            })
+
     })
 
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
@@ -132,7 +138,7 @@ export default function FormAddPublisher() {
             nickname: '',
             address: '',
             phone: ''
-        }, resolver: yupResolver(esquemaValidacao)
+        }, resolver: yupResolver(validationSchema)
     })
 
     function onSubmit(data: FormValues) {
@@ -255,6 +261,7 @@ export default function FormAddPublisher() {
                             selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
                             handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
                             labelKey="name"
+                            searchable
                         />
 
                         <p onClick={() => setModalEmergencyContactShow(true)} className='cursor-pointer'>

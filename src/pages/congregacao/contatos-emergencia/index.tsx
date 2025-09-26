@@ -80,28 +80,28 @@ export default function EmergencyContacts() {
                                 <span className="text-primary-200 font-semibold">Criar contato</span>
                             </Button>
                         </div>
-                        {emergencyContacts && <ListGeneric
-                            onDelete={(item_id) => handleDelete(item_id)}
-                            items={emergencyContacts}
-                            path="/congregacao/contatos-emergencia"
-                            label="do contato"
-                            renderItem={(contact) => (
-                                <>
-                                    <div className="flex flex-col w-full md:w-1/2 justify-start  p-4 text-primary-200 font-semibold">
-                                        Nome do contato:
-                                        <span className="font-semi-bold text-typography-100">{contact.name}</span>
+                        {emergencyContacts &&
+                            <ListGeneric
+                                onDelete={(item_id) => handleDelete(item_id)}
+                                items={emergencyContacts}
+                                path="/congregacao/contatos-emergencia"
+                                label="do contato"
+                                renderItem={(contact) => (
+                                    <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-semibold text-gray-800">{contact.name}</h3>
+
+                                        <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                📞 <span>{contact.phone || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                ✅ <span>É TJ? {contact.isTj ? "Sim" : "Não"}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col w-full md:w-1/2 justify-start  p-4 text-primary-200 font-semibold">
-                                        Telefone:
-                                        <span className="font-semi-bold text-typography-100">{contact.phone}</span>
-                                    </div>
-                                    <div className="flex flex-col w-full md:w-1/2 flex-wrap justify-start  p-4 text-primary-200 font-semibold">
-                                        É TJ?:
-                                        <span className="font-semi-bold text-typography-100">{contact.isTj ? "Sim" : "Não"}</span>
-                                    </div>
-                                </>
-                            )}
-                        />}
+                                )}
+                            />
+                        }
                     </div>
                 </section>
             </ContentDashboard>

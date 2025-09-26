@@ -21,6 +21,7 @@ export default function SpeakerFilters() {
           border
           emptyMessage="Nenhuma congregação"
           textVisible
+          searchable
         />
       </div>
       <div className="flex-1 min-w-[150px] max-w-full">
@@ -34,6 +35,7 @@ export default function SpeakerFilters() {
           border
           emptyMessage="Nenhum discurso"
           textVisible
+          searchable
         />
       </div>
     </div>

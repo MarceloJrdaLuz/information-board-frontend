@@ -63,27 +63,18 @@ export default function TalksBoard({ talks, onSelectionChange, initialSelected =
             open={isOpen}
             handler={() => setOpenTalk(isOpen ? null : talk.id)}
           >
-            <PopoverHandler
-              onMouseDown={() => handlePressStart(talk)}
-              onMouseUp={() => handlePressEnd(talk)}
-              onMouseLeave={() => handlePressEnd(talk)}
-              onTouchStart={() => handlePressStart(talk)}
-              onTouchEnd={() => handlePressEnd(talk)}
-            >
-              <Button
-                className={`cursor-pointer border rounded-lg w-10 h-10  md:w-14 md:h-14 flex items-center justify-center text-sm md:text-lg font-bold transition
-                  ${isSelected
-                    ? "bg-primary-200 text-white border-primary-300"
-                    : "bg-white text-primary-200 border-gray-200 hover:bg-gray-50"
-                  }`}
-              >
-                {talk.number}
-              </Button>
-            </PopoverHandler>
 
-            <PopoverContent className="max-w-xs text-sm text-gray-800 bg-white shadow-lg p-3 rounded-lg">
-              {talk.title}
-            </PopoverContent>
+            <Button
+              onClick={() => toggleTalkSelection(talk)}
+            >
+              {talk.number}
+            </Button>
+            <Popover>
+              <PopoverHandler>
+                <Button>Detalhes</Button>
+              </PopoverHandler>
+              <PopoverContent>{talk.title}</PopoverContent>
+            </Popover>
           </Popover>
         )
       })}

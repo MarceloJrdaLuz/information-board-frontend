@@ -8,6 +8,7 @@ import DropdownObject from '@/Components/DropdownObjects'
 import UserLinkIcon from '@/Components/Icons/UserLinkIcon'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
+import { useAuthContext } from '@/context/AuthContext'
 import { useCongregationContext } from '@/context/CongregationContext'
 import { usePublisherContext } from '@/context/PublisherContext'
 import { IEmergencyContact, Privileges, Situation, UserTypes } from '@/entities/types'
@@ -19,10 +20,8 @@ import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import { useEditPublisherForm } from './hooks/useEditPublisherForm'
-import { useAuthContext } from '@/context/AuthContext'
-import { set } from 'lodash'
 import FormEditPublisherSkeleton from './FormEditPublisherSkeleton'
+import { useEditPublisherForm } from './hooks/useEditPublisherForm'
 
 export interface IUpdatePublisher {
     id: string
@@ -170,6 +169,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
                                         labelKey="name"
                                         labelKeySecondary='phone'
+                                        searchable
                                     />
                                     <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
                                         <Button type='button' className='w-fit'><span><PlusIcon className='bg-white rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
@@ -189,6 +189,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         selectedItem={usersData && usersData.find(c => c.id === selectedUser) || null}
                                         handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
                                         labelKey="fullName"
+                                        searchable
                                     />
                                     <ConfirmLinkForceModal button={
                                         <Button

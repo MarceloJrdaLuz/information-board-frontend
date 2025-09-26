@@ -3,15 +3,14 @@ import * as yup from 'yup'
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import CheckboxBoolean from '@/Components/CheckboxBoolean'
+import DropdownMulti from '@/Components/DropdownMulti'
 import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import TalksBoard from '@/Components/TalksBoard'
 import { ICongregation, IPublisher, ITalk } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { ChevronDownIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -26,7 +25,6 @@ export default function FormAddSpeaker() {
     const { data: speakerFormData } = useFetch<SpeakerFormData>(`/form-data?form=speaker`)
 
     const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(false)
-    const [talksListShow, setTalksListShow] = useState<boolean>(false)
     const [selectedTalks, setSelectedTalks] = useState<ITalk[] | null>(null)
     const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)
     const [selectedSpeakerCongregation, setSelectedSpeakerCongregation] = useState<ICongregation | null>(null)
@@ -35,21 +33,6 @@ export default function FormAddSpeaker() {
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
-
-    const schemaValidation = yup.object({
-        fullName: yup.string().when('speakerIsPublisher', {
-            is: false,
-            then: (schema) => schema.required('Campo obrigatório'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        phone: yup.string().when('speakerIsPublisher', {
-            is: false,
-            then: (schema) => schema.matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        address: yup.string().notRequired()
-    })
-
 
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
         defaultValues: {
@@ -67,7 +50,6 @@ export default function FormAddSpeaker() {
     })
 
     function onSubmit(data: FormValues) {
-        console.log(data)
         const congregationId = !speakerIsPublisher
             ? selectedSpeakerCongregation?.id
             : selectedPublisher?.congregation.id
@@ -79,7 +61,7 @@ export default function FormAddSpeaker() {
         const publisherId = speakerIsPublisher ? selectedPublisher?.id : ""
         const talk_ids = selectedTalks?.map(talk => talk.id)
         toast.promise(createSpeaker({
-           fullName: !speakerIsPublisher ? data.fullName : selectedPublisher?.fullName ?? '',
+            fullName: !speakerIsPublisher ? data.fullName : selectedPublisher?.fullName ?? '',
             originCongregation_id: congregationId,
             publisher_id: publisherId,
             address: !speakerIsPublisher ? data.address : selectedPublisher?.address,
@@ -119,6 +101,7 @@ export default function FormAddSpeaker() {
                                 textVisible
                                 full
                                 textAlign='left'
+                                searchable
                             />
                         </div>
                     )}
@@ -158,15 +141,28 @@ export default function FormAddSpeaker() {
                             textVisible
                             full
                             textAlign='left'
+                            searchable
                         />
                     </>}
 
                     <div className='border border-gray-300 my-4 p-4'>
                         <div className='flex flex-1 justify-between items-center'>
-                            <span className='my-2 font-semibold text-gray-900' onClick={() => setTalksListShow(!talksListShow)}>Selecionar discursos</span>
-                            <button type="button" className={`w-6 h-6 mr-4 flex justify-center items-center ${talksListShow && 'rotate-180'}`} onClick={() => setTalksListShow(!talksListShow)}><ChevronDownIcon /> </button>
+                            <span className='my-2 font-semibold text-gray-900'>Selecionar discursos</span>
                         </div>
-                        {talksListShow && <TalksBoard talks={speakerFormData?.talks ?? []} onSelectionChange={(talks) => setSelectedTalks(talks)} />}
+                        <DropdownMulti<ITalk>
+                            title="Selecione os discursos"
+                            items={speakerFormData?.talks ?? []}
+                            selectedItems={selectedTalks ?? []}
+                            handleChange={setSelectedTalks}
+                            border
+                            full
+                            position="left"
+                            textAlign="left"
+                            labelKey="number"
+                            labelKeySecondary='title'
+                            textVisible
+                            searchable
+                        />
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>

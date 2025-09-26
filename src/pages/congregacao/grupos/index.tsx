@@ -9,7 +9,7 @@ import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
-import { IGroup, IRole } from "@/entities/types"
+import { IGroup } from "@/entities/types"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
@@ -82,15 +82,17 @@ export default function Grupos() {
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
-                        <Button
-                            onClick={() => {
-                                Router.push('/congregacao/grupos/add')
-                            }}
-                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                            <GroupIcon />
-                            <span className="text-primary-200 font-semibold">Criar grupo</span>
-                        </Button>
+                        <div className="flex flex-col">
+                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
+                            <Button
+                                onClick={() => {
+                                    Router.push('/congregacao/grupos/add')
+                                }}
+                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                <GroupIcon />
+                                <span className="text-primary-200 font-semibold">Criar grupo</span>
+                            </Button>
+                        </div>
                         {groups && groups.length > 0 ? (
                             <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
                         )

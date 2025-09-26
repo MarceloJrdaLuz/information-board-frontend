@@ -107,6 +107,7 @@ export default function MudarDirigente() {
                                         textVisible
                                         full
                                         textAlign='left'
+                                        searchable
                                     />
                                 )}
                             </div>

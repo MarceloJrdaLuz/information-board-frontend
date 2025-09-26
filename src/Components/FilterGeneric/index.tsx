@@ -8,6 +8,7 @@ import {
 import { ListFilterIcon } from "lucide-react"
 import Button from "../Button"
 import CheckboxUniqueObject from "../CheckBoxUniqueObject"
+import { formatNameCongregation } from "@/utils/formatCongregationName"
 
 interface IFIlterSpeakersCongregationProps {
     handleCheckboxChange: (selectedCongregationId: string) => void
@@ -31,10 +32,10 @@ export default function FilterSpeakersCongregation({ handleCheckboxChange, check
                     <span>Congregação / Cidade</span>
                     <CheckboxUniqueObject
                         options={[
-                            { value: "", label: "Todas as congregações" }, // <-- aqui
+                            { value: "", label: "Todas as congregações" }, 
                             ...congregations.map(c => ({
                                 value: c.id,
-                                label: `${c.name} / ${c.city}`,
+                                label: formatNameCongregation(c.name, c.city),
                             }))
                         ]}
                         label="Congregação"

@@ -1,6 +1,7 @@
-import { IExternalTalk } from "@/entities/externalTalks";
 import { IWeekendScheduleWithExternalTalks } from "@/entities/weekendSchedule";
+import { formatNameCongregation } from "@/utils/formatCongregationName";
 import { Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import moment from "moment";
 
 const styles = StyleSheet.create({
     page: {
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
 });
 
 const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = moment(dateString, "YYYY-MM-DD").toDate();
     const day = date.getDate().toString().padStart(2, "0"); // "06"
     const monthNames = [
         "JANEIRO",
@@ -110,6 +111,7 @@ const formatDate = (dateString: string) => {
 export interface IWeekendSchedulesPdfProps {
     schedules: IWeekendScheduleWithExternalTalks[]
 }
+
 
 export default function WeekendMeeting({ schedules }: IWeekendSchedulesPdfProps) {
     return (
@@ -146,8 +148,14 @@ export default function WeekendMeeting({ schedules }: IWeekendSchedulesPdfProps)
                         }
                         {(schedule.speaker || schedule.manualSpeaker) &&
                             <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <Text style={styles.textLine}>{schedule.speaker ? schedule.speaker?.fullName : schedule.manualSpeaker ?? ""}</Text>
-                                {schedule.speaker?.originCongregation && <Text style={styles.textLine}>{`(${schedule.speaker?.originCongregation?.name ?? ""} ${schedule.speaker?.originCongregation?.name !== schedule.speaker?.originCongregation?.city ? schedule.speaker?.originCongregation.city : ""})`}</Text>}
+                                <Text style={styles.textLine}>{schedule.speaker ? schedule.speaker?.fullName : schedule.manualSpeaker ?? ""}
+
+                                </Text>
+                                {schedule.speaker?.originCongregation && (
+                                    <Text style={styles.textLine}>
+                                        {formatNameCongregation(schedule.speaker.originCongregation.name, schedule.speaker.originCongregation.city)}
+                                    </Text>
+                                )}
                             </View>}
                     </View>
                     {(schedule.watchTowerStudyTitle || schedule.reader) &&

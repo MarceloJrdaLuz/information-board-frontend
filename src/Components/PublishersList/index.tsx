@@ -184,45 +184,84 @@ export default function PublisherList() {
                                 )}
                             </div>
 
-                            <div className="flex flex-wrap w-full mt-4 text-sm sm:text-base">
-                                {publisher.nickname && <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Apelido:</span> {publisher.nickname}</p>}
-                                <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Esperança:</span> {publisher.hope}</p>
-                                <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Data do Batismo:</span> {publisher.dateImmersed ? moment(publisher.dateImmersed?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                                <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Data de Nascimento:</span> {publisher.birthDate ? moment(publisher.birthDate?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>
-                                {(publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) || publisher.privileges.includes(Privileges.PIONEIROREGULAR)) && <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Início como Pioneiro:</span> {publisher.startPioneer ? moment(publisher.startPioneer?.toString()).format('DD-MM-YYYY') : "Não informado"}</p>}
-                                <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Telefone:</span> {publisher.phone ? publisher.phone : "Não informado"}</p>
-                                <p className="p-4 font-semibold text-typography-100"><span className="text-primary-200 font-bold">Endereço:</span> {publisher.address ? publisher.address : "Não informado"}</p>
-                                <div className='w-full m-2 border-t border-gray-300 my-4 p-2'>
-                                    <span className="text-primary-200 font-semibold text-base sm:text-lg">Contato de emergência</span>
-                                    {publisher.emergencyContact ? (
-                                        <>
-                                            <div className="flex flex-wrap justify-between text-typography-100">
-                                                <div className="flex flex-col p-4">
-                                                    <span className="text-primary-200 font-bold">Nome:</span>
-                                                    <span>{publisher.emergencyContact?.name}</span>
-                                                </div>
-                                                <div className="flex flex-col p-4">
-                                                    <span className="text-primary-200 font-bold">Telefone:</span>
-                                                    <span>{publisher.emergencyContact?.phone}</span>
-                                                </div>
-                                                <div className="flex flex-col p-4">
-                                                    <span className="text-primary-200 font-bold">Relacionamento:</span>
-                                                    <span>{publisher.emergencyContact?.relationship}</span>
-                                                </div>
-                                                <div className="flex flex-col p-4">
-                                                    <span className="text-primary-200 font-bold">É TJ?:</span>
-                                                    <span>{publisher.emergencyContact?.isTj ? "Sim" : "Não"}</span>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="flex justify-center py-2">
-                                            <span className="text-typography-100">Nenhum contato de emergência adicionado!</span>
+                            <div className="flex flex-col w-full gap-4 mt-4">
+                                {/* Apelido */}
+                                {publisher.nickname && (
+                                    <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                        <span className="text-xl">🏷️</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-primary-200 font-semibold text-sm">Apelido</span>
+                                            <span className="text-typography-100 font-medium">{publisher.nickname}</span>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Esperança */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <span className="text-xl">⭐</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-primary-200 font-semibold text-sm">Esperança</span>
+                                        <span className="text-typography-100 font-medium">{publisher.hope}</span>
+                                    </div>
+                                </div>
+
+                                {/* Data do Batismo */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <span className="text-xl">📅</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-primary-200 font-semibold text-sm">Data do Batismo</span>
+                                        <span className="text-typography-100 font-medium">{publisher.dateImmersed ? moment(publisher.dateImmersed).format('DD-MM-YYYY') : "Não informado"}</span>
+                                    </div>
+                                </div>
+
+                                {/* Data de Nascimento */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <span className="text-xl">📅</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-primary-200 font-semibold text-sm">Data de Nascimento</span>
+                                        <span className="text-typography-100 font-medium">{publisher.birthDate ? moment(publisher.birthDate).format('DD-MM-YYYY') : "Não informado"}</span>
+                                    </div>
+                                </div>
+
+                                {/* Telefone */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <span className="text-xl">📞</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-primary-200 font-semibold text-sm">Telefone</span>
+                                        <span className="text-typography-100 font-medium">{publisher.phone || "Não informado"}</span>
+                                    </div>
+                                </div>
+
+                                {/* Endereço */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <span className="text-xl">🏠</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-primary-200 font-semibold text-sm">Endereço</span>
+                                        <span className="text-typography-100 font-medium">{publisher.address || "Não informado"}</span>
+                                    </div>
+                                </div>
+
+                                {/* Contato de emergência */}
+                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex flex-col gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xl">☎️</span>
+                                        <span className="text-primary-200 font-semibold text-sm">Contato de emergência</span>
+                                    </div>
+                                    {publisher.emergencyContact ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-typography-100">
+                                            <div><span className="font-semibold text-primary-200 text-sm">Nome:</span> {publisher.emergencyContact.name}</div>
+                                            <div><span className="font-semibold text-primary-200 text-sm">Telefone:</span> {publisher.emergencyContact.phone}</div>
+                                            <div><span className="font-semibold text-primary-200 text-sm">Relacionamento:</span> {publisher.emergencyContact.relationship}</div>
+                                            <div><span className="font-semibold text-primary-200 text-sm">É TJ?:</span> {publisher.emergencyContact.isTj ? "Sim" : "Não"}</div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-typography-100 mt-2">Nenhum contato de emergência adicionado!</div>
                                     )}
                                 </div>
                             </div>
-                            <div className="flex">
+
+
+                            <div className="flex mt-2">
                                 <div className="gap-1 flex">
                                     {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION")) &&
                                         <Button

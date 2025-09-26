@@ -86,7 +86,7 @@ export default function FormAddHospitalityGroup() {
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo grupo</div>
 
-                    <Input type="text" placeholder="Nome completo" registro={{
+                    <Input type="text" placeholder="Nome do grupo" registro={{
                         ...register('name',
                             { required: "Campo obrigatório" })
                     }}
@@ -103,6 +103,7 @@ export default function FormAddHospitalityGroup() {
                         textVisible
                         full
                         textAlign='left'
+                        searchable
                     />
 
                     <div className='mt-3'>
@@ -117,6 +118,7 @@ export default function FormAddHospitalityGroup() {
                             textAlign="left"
                             labelKey="fullName"
                             textVisible
+                            searchable
                         />
                     </div>
 

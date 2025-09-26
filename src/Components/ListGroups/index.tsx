@@ -8,52 +8,44 @@ import { Trash } from "lucide-react"
 
 function ListGroups({ items, label, onDelete }: IListItemsProps) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
+    <ul className="flex w-full flex-wrap justify-center mt-5 gap-4">
       {items?.map(item => (
         <li
-          className={`flex flex-col flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
           key={item.id}
+          className="flex flex-col gap-3 p-4 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow w-full md:w-10/12 cursor-pointer"
         >
-          <div className="flex flex-col sm:flex-row w-full justify-between sm:items-center p-6 text-primary-200 font-semibold">
-            <div className="py-6">
-              <span>Nome do {label}:</span>
-              <span className="font-normal ml-5">{item.name}</span>
+          <h3 className="text-lg font-semibold text-gray-800 capitalize">{label} Nº {item.number}</h3>
+
+          <div className="flex flex-col gap-2 text-gray-600">
+            <div className="flex items-center gap-2">
+              🏷 <span>Nome do {label}: {item.name}</span>
             </div>
-            <div className="py-6">
-              <span className="text-primary-200 font-semibold mr-5">Número do grupo</span>
-              <span>{item.number}</span>
+            <div className="flex items-center gap-2">
+              👤 <span>Dirigente: {item.groupOverseers?.fullName ?? "Sem dirigente"}</span>
             </div>
           </div>
-          <div className="flex  flex-wrap w-full justify-between items-center px-6 pb-6 text-primary-200 font-semibold">
-            <div className="w-60">
-              <span className="mr-5">Dirigente:</span>
-              <span className="font-normal ">{item.groupOverseers?.fullName ?? "Sem dirigente"}</span>
-            </div>
-            <div className="flex  mt-4  max-h-10">
-              <div className="gap-1 flex">
-                <Button
-                className="w-30"
-                  onClick={() => Router.push({
-                    pathname: `/congregacao/grupos/${item.id}/add-publicadores`,
-                    query: { group_number: `${item.number}` }
-                  })}
-                  outline
-                >
-                  <EditIcon />
-                  Editar
+
+          <div className="flex gap-2 mt-2">
+            <Button
+              className="flex items-center gap-1"
+              onClick={() =>
+                Router.push({
+                  pathname: `/congregacao/grupos/${item.id}/add-publicadores`,
+                  query: { group_number: `${item.number}` },
+                })
+              }
+              outline
+            >
+              <EditIcon /> Editar
+            </Button>
+            <ConfirmDeleteModal
+              onDelete={() => onDelete(`${item.id}`)}
+              button={
+                <Button outline className="flex items-center gap-1 text-red-400">
+                  <Trash /> Excluir
                 </Button>
-                <ConfirmDeleteModal
-                  onDelete={() => onDelete(`${item.id}`)}
-                  button={<Button
-                    outline
-                    className="text-red-400 w-30"
-                  >
-                    <Trash />
-                    Excluir
-                  </Button>}
-                />
-              </div>
-            </div>
+              }
+            />
           </div>
         </li>
       ))}

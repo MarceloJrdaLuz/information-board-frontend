@@ -100,6 +100,7 @@ export default function FormEditHospitalityGroup() {
                         textVisible
                         full
                         textAlign='left'
+                        searchable
                     />
 
                     <div className='mt-3'>
@@ -114,6 +115,7 @@ export default function FormEditHospitalityGroup() {
                             textAlign="left"
                             labelKey="fullName"
                             textVisible
+                            searchable
                         />
                     </div>
 

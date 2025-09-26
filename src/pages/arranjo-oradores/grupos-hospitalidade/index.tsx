@@ -81,40 +81,32 @@ export default function HospitalityGroupsPage() {
                         {hospitalityGroups && hospitalityGroups.length > 0 ? (
                             <ListGeneric
                                 onDelete={(item_id) => handleDelete(item_id)}
-                                onUpdate={(hospitalityGroup) => setHospitalityGroupUpdate(hospitalityGroup)}
+                                onUpdate={(group) => setHospitalityGroupUpdate(group)}
                                 items={hospitalityGroups}
                                 path="/arranjo-oradores/grupos-hospitalidade"
                                 label="do grupo"
-                                renderItem={(hospitalityGroup) => (
-                                    <div className="flex flex-col flex-1">
-                                        <div className="flex justify-between flex-wrap">
-                                            <div className="text-sm flex flex-col  w-fit justify-start p-4 text-primary-200 font-semibold">
-                                                Nome do grupo:
-                                                <span className="text-sm font-semi-bold text-typography-100">{hospitalityGroup.name}</span>
+                                renderItem={(group) => (
+                                    <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-semibold text-gray-800">{group.name}</h3>
+
+                                        <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                🏠 <span>{group.host?.fullName || "Nenhum anfitrião"}</span>
                                             </div>
-                                            <div className="text-sm flex flex-col w-fit justify-start  p-4 text-primary-200 font-semibold">
-                                                Anfitrião:
-                                                <span className="text-sm font-semi-bold text-typography-100">{hospitalityGroup.host?.fullName ? `${hospitalityGroup.host.fullName}` : "Não Cadastrado"}</span>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <span className="text-sm flex w-fit justify-start p-4 text-primary-200 font-semibold">Membros do grupo:</span>
-                                                <div className="flex flex-col flex-wrap mt-4">
-                                                    {hospitalityGroup.members && hospitalityGroup.members.length > 0 ? hospitalityGroup.members.map(h => (
-                                                        <div key={h.id} className="text-sm flex flex-col w-fit flex-wrap justify-start text-primary-200 font-semibold">
-                                                            <span className="text-sm font-semi-bold text-typography-100">{h.fullName}</span>
-                                                        </div>
-                                                    )) : (
-                                                        <div className="text-sm flex flex-col w-fit flex-wrap justify-start text-primary-200 font-semibold">
-                                                            <span className="text-sm font-semi-bold text-typography-100">Nenhum membro adicionado</span>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            <div className="flex flex-col gap-1">
+                                                👥 <span>Membros:</span>
+                                                {group.members && group.members.length > 0
+                                                    ? group.members.map((m) => (
+                                                        <span key={m.id} className="ml-4 text-gray-700">{m.fullName}</span>
+                                                    ))
+                                                    : <span className="ml-4 text-gray-700">Nenhum membro adicionado</span>
+                                                }
                                             </div>
                                         </div>
                                     </div>
-
                                 )}
                             />
+
                         )
                             : (
                                 <>

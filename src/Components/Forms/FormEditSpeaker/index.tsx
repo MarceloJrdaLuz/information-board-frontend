@@ -35,21 +35,6 @@ export default function FormEditSpeaker() {
     const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)
     const [selectedSpeakerCongregation, setSelectedSpeakerCongregation] = useState<ICongregation | null>(selectedSpeaker?.originCongregation ?? null)
 
-    const schemaValidation = yup.object({
-        fullName: yup.string().when('speakerIsPublisher', {
-            is: false,
-            then: (schema) => schema.required('Campo obrigatório'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        phone: yup.string().when('speakerIsPublisher', {
-            is: false,
-            then: (schema) => schema.matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido'),
-            otherwise: (schema) => schema.notRequired()
-        }),
-        address: yup.string().notRequired()
-    })
-
-
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
         defaultValues: {
             fullName: selectedSpeaker?.fullName ?? "",
@@ -60,7 +45,14 @@ export default function FormEditSpeaker() {
             ? yup.object({}) // nada required se for publisher
             : yup.object({
                 fullName: yup.string().required('Campo obrigatório'),
-                phone: yup.string().matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido'),
+                phone: yup
+                    .string()
+                    .nullable()
+                    .notRequired()
+                    .test('is-valid-phone', 'Telefone inválido', value => {
+                        if (!value) return true; // aceita vazio
+                        return /^\(\d{2}\) \d{5}-\d{4}$/.test(value); // valida formato se preenchido
+                    }),
                 address: yup.string().notRequired()
             }))
     })
@@ -119,6 +111,7 @@ export default function FormEditSpeaker() {
                                 textVisible
                                 full
                                 textAlign='left'
+                                searchable
                             />
                         </div>
                     )}
@@ -158,6 +151,7 @@ export default function FormEditSpeaker() {
                             textVisible
                             full
                             textAlign='left'
+                            searchable
                         />
                     </>}
 

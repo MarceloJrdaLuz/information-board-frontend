@@ -35,6 +35,7 @@ import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import { mutate } from "swr"
 
 export default function WeekendSchedulePage() {
     moment.defineLocale("pt-br", null)
@@ -107,7 +108,7 @@ export default function WeekendSchedulePage() {
 
     const externalData = useMemo(() => rawExternalData ?? [], [rawExternalData])
 
-    const { data } = useFetch<IWeekendScheduleFormData>(`/form-data?form=weekendSchedule`)
+    const { data, mutate } = useFetch<IWeekendScheduleFormData>(`/form-data?form=weekendSchedule`)
 
     useEffect(() => {
         if (data || externalData) {
@@ -191,6 +192,7 @@ export default function WeekendSchedulePage() {
                     { pending: "Criando novas programações..." }
                 )
             }
+            mutate()
         } catch (err) {
             console.error(err)
             toast.error("Erro ao salvar a programação.")
@@ -237,8 +239,7 @@ export default function WeekendSchedulePage() {
                         <>
                             <div className="w-full p-4 space-y-4">
                                 <div className="sticky top-0 bg-white border-b shadow-sm z-10 p-4 rounded-xl flex flex-col  gap-3">
-                                    <SpeakerFilters />
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex justify-between items-center gap-2">
                                         <Button
                                             onClick={() => setMonthOffset((m) => m - 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize"
@@ -253,26 +254,30 @@ export default function WeekendSchedulePage() {
                                             {nextMonthLabel} ▶
                                         </Button>
                                     </div>
+                                    <SpeakerFilters />
+                                    <Button className="w-full" onClick={handleSave}>
+                                        Salvar todas
+                                    </Button>
                                 </div>
 
-                                <Button className="w-full" onClick={handleSave}>
-                                    Salvar todas
-                                </Button>
 
                                 <div className="flex flex-wrap gap-3 items-center bg-gray-50 border rounded-xl p-4 shadow-sm mt-4">
                                     {isClient && <PdfLinkComponent />}
-                                    <div className="flex flex-1 gap-3">
+                                    <div className="flex flex-1 gap-3 flex-wrap">
                                         <Input
+                                            placeholder="Data inicial"
                                             className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
                                             type="date"
                                             value={startDatePdfGenerate}
                                             onChange={(e) => setStartDatePdfGenerate(e.target.value)}
-                                        />   
+                                        />
                                         <Input
+                                            placeholder="Data final"
                                             className="cursor-pointer flex-1 rounded-lg border-gray-300 shadow-sm"
                                             type="date"
                                             value={endDatePdfGenerate}
                                             onChange={(e) => setEndDatePdfGenerate(e.target.value)}
+                                            min={startDatePdfGenerate || undefined}
                                         />
                                     </div>
                                 </div>

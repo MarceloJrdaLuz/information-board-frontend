@@ -83,21 +83,18 @@ export default function TalksPage() {
                                 path="/arranjo-oradores/discursos"
                                 label="do Discurso"
                                 renderItem={(talk) => (
-                                    <div className="flex">
-                                        <div className="flex justify-between">
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start  p-4 text-primary-200 font-semibold">
-                                                Nº:
-                                                <span className="text-sm font-semi-bold text-typography-100">{talk.number}</span>
-                                            </div>
-                                            <div className="text-sm flex flex-col  w-fit justify-start p-4 text-primary-200 font-semibold">
-                                                Tema:
-                                                <span className="text-sm font-semi-bold text-typography-100">{talk.title}</span>
+                                    <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-semibold text-gray-800">Discurso Nº {talk.number}</h3>
+
+                                        <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                🎯 <span>{talk.title || "Sem título"}</span>
                                             </div>
                                         </div>
                                     </div>
-
                                 )}
                             />
+
                         )
                             : (
                                 <>
@@ -129,7 +126,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-   if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
         return {
             redirect: {
                 destination: '/dashboard',

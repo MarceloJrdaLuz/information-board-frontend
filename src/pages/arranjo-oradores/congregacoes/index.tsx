@@ -60,16 +60,20 @@ export default function AuxiliaryCongregationsPage() {
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full  p-5 ">
-                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Congregações</h1>
-                    <Button
-                        onClick={() => {
-                            Router.push('/arranjo-oradores/congregacoes/add')
-                        }}
-                        className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                        <SalonIcon />
-                        <span className="text-primary-200 font-semibold">Criar congregação</span>
-                    </Button>
-                    <div>
+                    <div className="flex flex-col w-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">
+                            Congregações
+                        </h1>
+                        <Button
+                            onClick={() => {
+                                Router.push('/arranjo-oradores/congregacoes/add')
+                            }}
+                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                            <SalonIcon />
+                            <span className="text-primary-200 font-semibold">Criar congregação</span>
+                        </Button>
+                    </div>
+                    <div className="flex justify-center items-center w-full mt-5">
                         {congregations && congregations.length > 0 ? (
                             <ListGeneric
                                 onDelete={(item_id) => handleDelete(item_id)}
@@ -78,37 +82,27 @@ export default function AuxiliaryCongregationsPage() {
                                 path="/arranjo-oradores/congregacoes"
                                 label="da Congregação"
                                 renderItem={(congregation) => (
-                                    <div className="flex flex-col">
-                                        <div className="flex justify-between flex-wrap">
-                                            <div className="text-sm flex flex-col  w-fit justify-start p-4 text-primary-200 font-semibold">
-                                                Nome da congregação:
-                                                <span className="text-sm font-semi-bold text-typography-100">{congregation.name}</span>
+                                    <div className="flex flex-col gap-3">
+                                        <h3 className="text-lg font-semibold text-gray-800">{congregation.name}</h3>
+
+                                        <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                🏙️ <span>{congregation.city || "Não cadastrada"}</span>
                                             </div>
-                                            <div className="text-sm flex flex-col w-fit justify-start  p-4 text-primary-200 font-semibold">
-                                                Cidade:
-                                                <span className="text-sm font-semi-bold text-typography-100">{congregation.city}</span>
+                                            <div className="flex items-center gap-2">
+                                                🔄 <span>{congregation.circuit || "Não cadastrado"}</span>
                                             </div>
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start p-4 text-primary-200 font-semibold">
-                                                Circuito:
-                                                <span className="text-sm font-semi-bold text-typography-100">{congregation.circuit}</span>
+                                            <div className="flex items-center gap-2">
+                                                📅 <span>{congregation.dayMeetingPublic || "Não cadastrado"}</span>
                                             </div>
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start p-4 text-primary-200 font-semibold">
-                                                Dia da reunião:
-                                                <span className="text-sm font-semi-bold text-typography-100">{congregation.dayMeetingPublic ?? "Não cadastrado"}</span>
-                                            </div>
-                                            <div className="text-sm flex flex-col w-fit flex-wrap justify-start p-4 text-primary-200 font-semibold">
-                                                Horário da reunião:
-                                                <span className="text-sm font-semi-bold text-typography-100">
-                                                    {congregation.hourMeetingPublic
-                                                        ? congregation.hourMeetingPublic.slice(0, 5) // pega só HH:mm
-                                                        : "Não cadastrado"}
-                                                </span>
+                                            <div className="flex items-center gap-2">
+                                                ⏰ <span>{congregation.hourMeetingPublic ? congregation.hourMeetingPublic.slice(0, 5) : "Não cadastrado"}</span>
                                             </div>
                                         </div>
                                     </div>
-
                                 )}
                             />
+
                         )
                             : (
                                 <>

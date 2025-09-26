@@ -42,7 +42,7 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
         },
     })
 
-    const esquemaValidacao = yup.object({
+    const validationSchema = yup.object({
         name: yup.string().required(),
         phone: yup.string().required(),
         relationship: yup.string().required(),
@@ -57,7 +57,7 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
 
 
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm<FormValues>({
-        resolver: yupResolver(esquemaValidacao)
+        resolver: yupResolver(validationSchema)
     })
 
     useEffect(() => {

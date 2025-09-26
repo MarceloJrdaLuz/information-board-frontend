@@ -23,7 +23,6 @@ import { toast } from "react-toastify"
 
 export default function SpeakersPage() {
     const { congregation } = useCongregationContext()
-    const congregation_id = congregation?.id
     const deleteSpeaker = useSetAtom(deleteSpeakerAtom)
     const setSpeakerUpdate = useSetAtom(selectedSpeakerAtom)
 

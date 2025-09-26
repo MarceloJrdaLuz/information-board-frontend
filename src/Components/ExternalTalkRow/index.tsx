@@ -9,7 +9,7 @@ import { externalTalkStatusMap } from "@/utils/statusMap"
 import CheckboxBoolean from "../CheckboxBoolean"
 import moment from "moment"
 import Dropdown from "../Dropdown"
-import { Calendar, Clock, Book } from "lucide-react"
+import { Calendar, Clock, Book, CalendarDays, MapPin, Building } from "lucide-react"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -146,28 +146,40 @@ export default function ExternalTalkRow({
             border
             full
             emptyMessage="Nenhuma congregação"
+            searchable
           />
 
           {selectedCongregation && (
             <div className="mt-2 p-3 rounded-lg border bg-gray-50 shadow-sm">
               <h4 className="font-semibold text-gray-800 mb-2">Detalhes da congregação</h4>
               <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-                <div>
-                  <span className="font-medium">Congregação:</span>{" "}
-                  {selectedCongregation.name}
+                <div className="flex items-center gap-2">
+                  <Building size={14} className="text-gray-400" />
+                  <span>
+                    <span className="font-medium">Congregação:</span> {selectedCongregation.name}
+                  </span>
                 </div>
-                <div>
-                  <span className="font-medium">Cidade:</span> {selectedCongregation.city}
+                <div className="flex items-center gap-2">
+                  <MapPin size={14} className="text-gray-400" />
+                  <span>
+                    <span className="font-medium">Cidade:</span> {selectedCongregation.city}
+                  </span>
                 </div>
-                <div>
-                  <span className="font-medium">Dia da reunião:</span>{" "}
-                  {selectedCongregation.dayMeetingPublic}
+                <div className="flex items-center gap-2">
+                  <CalendarDays size={14} className="text-gray-400" />
+                  <span>
+                    <span className="font-medium">Dia da reunião:</span> {selectedCongregation.dayMeetingPublic}
+                  </span>
                 </div>
-                <div>
-                  <span className="font-medium">Horário:</span>{" "}
-                  {moment(selectedCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
+                <div className="flex items-center gap-2">
+                  <Clock size={14} className="text-gray-400" />
+                  <span>
+                    <span className="font-medium">Horário:</span>{" "}
+                    {moment(selectedCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
+                  </span>
                 </div>
               </div>
+
             </div>
           )}
 
@@ -181,6 +193,7 @@ export default function ExternalTalkRow({
             border
             full
             emptyMessage="Nenhum orador"
+            searchable
           />
 
           <CheckboxBoolean
@@ -190,17 +203,24 @@ export default function ExternalTalkRow({
           />
 
           {!manualTalkShow && (
-            <DropdownObject
+            <DropdownObject<ITalk>
               textVisible
               title="Tema"
-              items={[{ id: "", title: "Nenhum" }, ...filteredTalks]}
-              selectedItem={filteredTalks?.find((t) => t.id === newTalkId) || null}
+              items={[{ id: "", number: 0, title: "Nenhum" } as ITalk, ...filteredTalks]}
+              selectedItem={
+                newTalkId === ""
+                  ? { id: "", number: 0, title: "Nenhum" } as ITalk
+                  : filteredTalks.find((t) => t.id === newTalkId) || null
+              }
               handleChange={(item) => setNewTalkId(item?.id || "")}
-              labelKey="title"
+              labelKey="number"
+              labelKeySecondary="title"
               border
               full
               emptyMessage="Nenhum tema"
+              searchable
             />
+
           )}
 
           {manualTalkShow && (

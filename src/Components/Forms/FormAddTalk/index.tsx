@@ -1,23 +1,16 @@
 import * as yup from 'yup'
 
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { createTalkAtom } from '@/atoms/talksAtoms'
 import Button from '@/Components/Button'
-import CheckboxBoolean from '@/Components/CheckboxBoolean'
-import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import TalksBoard from '@/Components/TalksBoard'
-import { ICongregation, IPublisher, ITalk } from '@/entities/types'
-import { useFetch } from '@/hooks/useFetch'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { ChevronDownIcon } from 'lucide-react'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-import { createTalkAtom } from '@/atoms/talksAtoms'
 
 
 export default function FormAddTalk() {
@@ -41,7 +34,6 @@ export default function FormAddTalk() {
     })
 
     function onSubmit(data: FormValues) {
-        console.log(data)
         toast.promise(createTalk({
             number: data.number,
             title: data.title

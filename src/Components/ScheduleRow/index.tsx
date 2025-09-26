@@ -32,7 +32,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const dateStr = date.toISOString().split("T")[0]
   const current = schedules[dateStr] || { date: dateStr }
 
-  const optionsSpecial = ["Presidente", "Orador", "Tema", "Leitor", "Hospitalidade", "Orador manual", "Tema manual"]
+  const optionsSpecial = ["Presidente", "Orador", "Tema", "Leitor", "Orador manual", "Tema manual"]
 
   useEffect(() => {
     const options: string[] = []
@@ -252,6 +252,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           border
           full
           emptyMessage="Nenhum presidente"
+          searchable
         />
       }
 
@@ -266,6 +267,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           border
           full
           emptyMessage="Nenhum orador"
+          searchable
         />
       }
 
@@ -277,9 +279,11 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
           handleChange={item => handleChange("talk_id", item)}
           labelKey="displayLabel"
+          labelKeySecondary="number"
           border
           full
           emptyMessage="Nenhum tema"
+          searchable
         />
       }
 
@@ -294,6 +298,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           border
           full
           emptyMessage="Nenhum leitor"
+          searchable
         />
       }
 
