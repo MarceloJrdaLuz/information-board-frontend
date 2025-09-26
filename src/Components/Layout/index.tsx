@@ -211,7 +211,10 @@ export default function Layout(props: LayoutProps) {
                     </NavBar.ListOptions>
                 }
 
-                {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
+                {(isAdminCongregation ||
+                    roleContains('TALK_MANAGER') ||
+                    roleContains('ADMIN'))
+                    &&
                     <NavBar.ListOptions
                         key={"submenuArranjoOradores"}
                         showList={openSubMenu === 'arranjo-oradores'}
@@ -219,61 +222,68 @@ export default function Layout(props: LayoutProps) {
                         title="Arranjo de oradores"
                         icon={PublicMeetingIcon}
                     >
-                        <NavBar.Options
-                            title="Programação"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/programacao`)
-                            }}
-                            icon={CalendarMicIcon}
-                            active={props.pageActive === 'programacao'}
-                        />
-                        <NavBar.Options
-                            title="Saída de oradores"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/saida-oradores`)
-                            }}
-                            icon={ExternalTalkIcon}
-                            active={props.pageActive === 'saida-oradores'}
-                        />
-                        <NavBar.Options
-                            title="Oradores"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/oradores`)
-                            }}
-                            icon={SpeakerIcon}
-                            active={props.pageActive === 'oradores'}
-                        />
+                        {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
+                            <>
+                                <NavBar.Options
+                                    title="Programação"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/arranjo-oradores/programacao`)
+                                    }}
+                                    icon={CalendarMicIcon}
+                                    active={props.pageActive === 'programacao'}
+                                />
+                                <NavBar.Options
+                                    title="Saída de oradores"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/arranjo-oradores/saida-oradores`)
+                                    }}
+                                    icon={ExternalTalkIcon}
+                                    active={props.pageActive === 'saida-oradores'}
+                                />
+                                <NavBar.Options
+                                    title="Oradores"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/arranjo-oradores/oradores`)
+                                    }}
+                                    icon={SpeakerIcon}
+                                    active={props.pageActive === 'oradores'}
+                                />
 
-                        <NavBar.Options
-                            title="Congregações"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/congregacoes`)
-                            }}
-                            icon={SalonIcon}
-                            active={props.pageActive === 'congregacoes'}
-                        />
-                        <NavBar.Options
-                            title="Discursos"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/discursos`)
-                            }}
-                            icon={TalkIcon}
-                            active={props.pageActive === 'discursos'}
-                        />
-                        <NavBar.Options
-                            title="Hospitalidade"
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
-                                Router.push(`/arranjo-oradores/grupos-hospitalidade`)
-                            }}
-                            icon={UtensilsIcon}
-                            active={props.pageActive === 'grupos-hospitalidade'}
-                        />
+                                <NavBar.Options
+                                    title="Congregações"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/arranjo-oradores/congregacoes`)
+                                    }}
+                                    icon={SalonIcon}
+                                    active={props.pageActive === 'congregacoes'}
+                                />
+                                <NavBar.Options
+                                    title="Hospitalidade"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/arranjo-oradores/grupos-hospitalidade`)
+                                    }}
+                                    icon={UtensilsIcon}
+                                    active={props.pageActive === 'grupos-hospitalidade'}
+                                />
+                            </>
+                        }
+                        {(isAdmin ||
+                            isAdminCongregation ||
+                            roleContains('TALK_MANAGER')) &&
+                            <NavBar.Options
+                                title="Discursos"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push(`/arranjo-oradores/discursos`)
+                                }}
+                                icon={TalkIcon}
+                                active={props.pageActive === 'discursos'}
+                            />}
                     </NavBar.ListOptions>
                 }
 

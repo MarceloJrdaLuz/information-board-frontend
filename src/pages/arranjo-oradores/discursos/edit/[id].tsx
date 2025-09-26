@@ -36,9 +36,9 @@ export default function EditTalkPage() {
         <Layout pageActive="discursos">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                    <section className="flex justify-center">
-                        <FormEditTalk />
-                    </section>
+                <section className="flex justify-center">
+                    <FormEditTalk />
+                </section>
             </ContentDashboard>
         </Layout>
     )
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-   if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
+    if (!userRolesParse.includes('ADMIN')) {
         return {
             redirect: {
                 destination: '/dashboard',

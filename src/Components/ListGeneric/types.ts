@@ -5,4 +5,7 @@ export interface IListItemsProps<T> {
   onDelete: (id: string) => void
   renderItem: (item: T) => React.ReactNode
   onUpdate?: (item: T) => void
+  showActions?: boolean        
+  showEdit?: boolean           
+  showDelete?: boolean
 }

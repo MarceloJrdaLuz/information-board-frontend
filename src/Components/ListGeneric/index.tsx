@@ -10,6 +10,9 @@ export function ListGeneric<T extends { id: string }>({
   renderItem,
   path,
   onUpdate,
+  showActions = true,
+  showEdit = true,
+  showDelete = true
 }: IListItemsProps<T>) {
   return (
     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 w-full">
@@ -22,27 +25,34 @@ export function ListGeneric<T extends { id: string }>({
           <div className="flex-1 p-5">{renderItem(item)}</div>
 
           {/* Ações */}
-          <div className="flex gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-            <Button
-              size="sm"
-              className="w-fit"
-              outline
-              onClick={() => {
-                onUpdate?.(item)
-                Router.push(`${path}/edit/${item.id}`)
-              }}
-            >
-              <EditIcon className="mr-1 w-4" /> Editar
-            </Button>
-            <ConfirmDeleteModal
-              onDelete={() => onDelete(item.id)}
-              button={
-                <Button size="sm" outline className="text-red-500 w-fit">
-                  <Trash className="mr-1 w-4" /> Excluir
+          {showActions && (showEdit || showDelete) && (
+            <div className="flex gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+              {showEdit && (
+                <Button
+                  size="sm"
+                  className="w-fit"
+                  outline
+                  onClick={() => {
+                    onUpdate?.(item)
+                    Router.push(`${path}/edit/${item.id}`)
+                  }}
+                >
+                  <EditIcon className="mr-1 w-4" /> Editar
                 </Button>
-              }
-            />
-          </div>
+              )}
+
+              {showDelete && (
+                <ConfirmDeleteModal
+                  onDelete={() => onDelete(item.id)}
+                  button={
+                    <Button size="sm" outline className="text-red-500 w-fit">
+                      <Trash className="mr-1 w-4" /> Excluir
+                    </Button>
+                  }
+                />
+              )}
+            </div>
+          )}
         </li>
       ))}
     </ul>

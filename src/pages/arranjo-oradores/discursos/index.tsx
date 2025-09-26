@@ -9,6 +9,7 @@ import { ListGeneric } from "@/Components/ListGeneric"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteTalkAtom, selectedTalkAtom } from "@/atoms/talksAtoms"
+import { useAuthContext } from "@/context/AuthContext"
 import { ITalk } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
@@ -20,6 +21,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
 export default function TalksPage() {
+    const { roleContains } = useAuthContext()
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     useEffect(() => {
@@ -65,18 +67,21 @@ export default function TalksPage() {
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Discursos</h1>
                         <div className="flex flex-1 justify-start">
-                            <Button
-                                onClick={() => {
-                                    Router.push('/arranjo-oradores/discursos/add')
-                                }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <GroupIcon />
-                                <span className="text-primary-200 font-semibold">Criar discurso</span>
-                            </Button>
+                            {roleContains('ADMIN') &&
+                                <Button
+                                    onClick={() => {
+                                        Router.push('/arranjo-oradores/discursos/add')
+                                    }}
+                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    <GroupIcon />
+                                    <span className="text-primary-200 font-semibold">Criar discurso</span>
+                                </Button>
+                            }
                         </div>
 
                         {talks && talks.length > 0 ? (
                             <ListGeneric
+                                showActions={!roleContains('ADMIN') ? false : true}
                                 onDelete={(item_id) => handleDelete(item_id)}
                                 onUpdate={(talk) => setTalkUpdate(talk)}
                                 items={talks}
@@ -126,7 +131,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['user-roles']: userRoles } = parseCookies(ctx)
     const userRolesParse: string[] = JSON.parse(userRoles)
 
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
+    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER') && !userRolesParse.includes('ADMIN')) {
         return {
             redirect: {
                 destination: '/dashboard',
