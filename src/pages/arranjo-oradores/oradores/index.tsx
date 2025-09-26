@@ -126,7 +126,7 @@ export default function SpeakersPage() {
                                                 🏠 <span>{speaker.address || "Não cadastrado"}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                ⛪ <span>{speaker.originCongregation.name}</span>
+                                                🏬 <span>{speaker.originCongregation.name}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 🎤 <span>{speaker.talks?.map((t) => t.number).join(", ") || "Nenhum discurso"}</span>
