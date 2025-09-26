@@ -5,7 +5,7 @@ import moment from "moment";
 
 export interface IWeekendSchedulesPdfProps {
     schedules: IWeekendScheduleWithExternalTalks[];
-    scale?: number; 
+    scale?: number;
 }
 
 const formatDate = (dateString: string) => {
@@ -22,13 +22,13 @@ const formatDate = (dateString: string) => {
 export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedulesPdfProps) {
     const styles = StyleSheet.create({
         page: {
-            padding: 25 * scale,
+            padding: 20 * scale,
             fontSize: 11 * scale,
             flexDirection: "column",
             fontFamily: "Helvetica",
         },
         header: {
-            fontSize: 16 * scale,
+            fontSize: 20 * scale,
             textAlign: "center",
             marginBottom: 15 * scale,
             fontFamily: "Helvetica-Bold",
@@ -72,7 +72,6 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
         },
         watchtowerBox: {
             borderTop: 1,
-            borderBottom: 1,
             borderColor: "#AEAAAA",
             display: "flex",
             flexDirection: "row",
@@ -114,7 +113,7 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                     ]}>
                         {schedule.isSpecial && <Text style={styles.textLine}>{schedule.specialName}</Text>}
                         <Text style={styles.textLine}>
-                            {schedule.chairman && `Presidente: ${schedule.chairman?.fullName}`}
+                            {schedule.chairman && `Presidente: ${schedule.chairman?.nickname ? schedule.chairman?.nickname : schedule.chairman?.fullName}`}
                         </Text>
                     </View>
 
@@ -147,7 +146,7 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                     </View>
 
                     {(schedule.watchTowerStudyTitle || schedule.reader) && (
-                        <View style={styles.watchtowerBox}>
+                        <View style={[styles.watchtowerBox, schedule.externalTalks && schedule.externalTalks.length > 0 ? { borderBottomWidth: 1 } : { borderBottomWidth: 0 }]}>
                             <View>
                                 <Text style={styles.sectionWatchtowerTitle}>ESTUDO DE A SENTINELA</Text>
                                 <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 12 * scale, maxWidth: "65%" }}>
@@ -156,7 +155,7 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                             </View>
                             <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                                 <Text style={styles.textLine}>
-                                    Leitor: {schedule.reader?.fullName}
+                                    Leitor: {schedule.reader?.nickname ? schedule.reader?.nickname : schedule.reader?.fullName}
                                 </Text>
                             </View>
                         </View>

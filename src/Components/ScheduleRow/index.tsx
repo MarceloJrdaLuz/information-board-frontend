@@ -12,6 +12,7 @@ import Link from "next/link"
 import { externalTalkStatusMap } from "@/utils/statusMap"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 
 interface ScheduleRowProps {
   date: Date
@@ -24,7 +25,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const chairmans = useAtomValue(chairmansAtom)
   const speakers = useAtomValue(speakersAtom)
   const talks = useAtomValue(talksAtom)
-  const hospitalityGroups = useAtomValue(hospitalityGroupsAtom)
   const [filterCongregation] = useAtom(speakerFilterCongregationAtom)
   const [filterTalk] = useAtom(speakerFilterTalkAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
@@ -127,7 +127,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       if (!updatedOptions.includes("Leitor")) updated.reader_id = undefined
       if (!updatedOptions.includes("Orador manual")) updated.manualSpeaker = ""
       if (!updatedOptions.includes("Tema manual")) updated.manualTalk = ""
-      if (!updatedOptions.includes("Nome do evento")) updated.specialName = ""
       if (updatedOptions.includes("Orador manual")) updated.speaker_id = undefined
       if (updatedOptions.includes("Tema manual")) updated.talk_id = undefined
 
@@ -184,6 +183,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     const selectedTalk = talks?.find(t => t.id === current.talk_id)
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
+
+ 
 
   const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
@@ -278,8 +279,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           items={talkOptions ?? []}
           selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
           handleChange={item => handleChange("talk_id", item)}
-          labelKey="displayLabel"
-          labelKeySecondary="number"
+          labelKey="number"
+          labelKeySecondary="displayLabel"
           border
           full
           emptyMessage="Nenhum tema"

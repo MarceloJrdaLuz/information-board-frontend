@@ -22,6 +22,7 @@ import {
 import { useCongregationContext } from "@/context/CongregationContext"
 import { IExternalTalk } from "@/entities/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/entities/weekendSchedule"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { getSaturdays } from "@/utils/dateUtil"
@@ -101,9 +102,12 @@ export default function WeekendSchedulePage() {
     const startDate = saturdays.length > 0 ? moment(saturdays[0]).format("YYYY-MM-DD") : null
     const endDate = saturdays.length > 0 ? moment(saturdays.at(-1)).format("YYYY-MM-DD") : null
 
+    const effectiveStart = startDatePdfGenerate || startDate
+    const effectiveEnd = endDatePdfGenerate || endDate
+
     const { data: rawExternalData } = useFetch<IExternalTalk[]>(
-        congregation_id && startDate && endDate
-            ? `/congregation/${congregation_id}/externalTalks/period?start=${startDate}&end=${endDate}`
+        congregation_id && effectiveStart && effectiveEnd
+            ? `/congregation/${congregation_id}/externalTalks/period?start=${effectiveStart}&end=${effectiveEnd}`
             : ""
     )
 

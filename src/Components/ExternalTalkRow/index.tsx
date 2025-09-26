@@ -143,6 +143,7 @@ export default function ExternalTalkRow({
               setSelectedCongregation(item)
             }}
             labelKey="name"
+            labelKeySecondary="city"
             border
             full
             emptyMessage="Nenhuma congregação"
@@ -232,7 +233,7 @@ export default function ExternalTalkRow({
           )}
 
           <Button
-            className="w-full bg-primary-600 text-white hover:bg-primary-700"
+            className="w-full bg-primary-200 hover:bg-primary-100 "
             onClick={() => {
               if (!newSpeakerId && !newManualTalk) return
               onAddExternalTalk({
