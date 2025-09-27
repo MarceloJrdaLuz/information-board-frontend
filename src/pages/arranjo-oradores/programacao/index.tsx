@@ -26,9 +26,11 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { getSaturdays } from "@/utils/dateUtil"
+import { AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/20/solid"
 import { Card, CardBody, CardHeader, Option, Select } from "@material-tailwind/react"
 import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import moment from "moment"
 import "moment/locale/pt-br"; // importa o idioma
 import { GetServerSideProps } from "next"
@@ -61,8 +63,9 @@ export default function WeekendSchedulePage() {
     const [startDatePdfGenerate, setStartDatePdfGenerate] = useState<string>("")
     const [endDatePdfGenerate, setEndDatePdfGenerate] = useState<string>("")
     const baseDate = moment().add(monthOffset, "months")
-    const [pdfScale, setPdfScale] = useState(1); // 1 = normal, 0.8 = 80%, etc.
-    const [showPdfPreview, setShowPdfPreview] = useState(false); // controle de visualização
+    const [pdfScale, setPdfScale] = useState(1);
+    const [showPdfPreview, setShowPdfPreview] = useState(false);
+    const [showFilters, setShowFilters] = useState(true);
 
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
@@ -235,34 +238,56 @@ export default function WeekendSchedulePage() {
         <Layout pageActive="programacao">
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
-                <section className="flex flex-wrap w-full h-full p-5">
+                <section className="flex flex-wrap w-full h-full p-4 relative">
                     {!data ? (
                         <WeekendScheduleSkeleton />
                     ) : (
                         <>
-                            <div className="w-full p-4 space-y-4">
-                                <div className="sticky top-0 bg-white border-b shadow-sm z-10 p-4 rounded-xl flex flex-col  gap-3">
-                                    <div className="flex justify-between items-center gap-2">
-                                        <Button
-                                            onClick={() => setMonthOffset((m) => m - 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                            <div className="w-full space-y-4">
+                                <div className="sticky top-0 z-20">
+                                    <div className="md:hidden flex justify-center bg-white border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
+                                        <button
+                                            onClick={() => setShowFilters((o) => !o)}
+                                            className="flex items-center gap-2 text-sm text-gray-600"
                                         >
-                                            ◀ {prevMonthLabel}
-                                        </Button>
+                                            {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                        </button>
+                                    </div>
 
-                                        <Button
-                                            onClick={() => setMonthOffset((m) => m + 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                        >
-                                            {nextMonthLabel} ▶
+                                    {/* Painel */}
+                                    <div
+                                        className={`
+          bg-white border-b shadow-sm p-4 rounded-xl flex flex-col md:gap-4
+          transition-all duration-300 overflow-hidden
+          ${showFilters ? "max-h-screen" : "max-h-0 md:max-h-screen"}
+          ${showFilters ? "opacity-100" : "opacity-0 md:opacity-100"}
+          ${showFilters ? "p-4" : "p-0 md:p-4"}
+          md:opacity-100 md:max-h-screen
+        `}
+                                    >
+                                        <div className="flex justify-between items-center gap-2">
+                                            <Button
+                                                onClick={() => setMonthOffset((m) => m - 1)}
+                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                            >
+                                                ◀ {prevMonthLabel}
+                                            </Button>
+
+                                            <Button
+                                                onClick={() => setMonthOffset((m) => m + 1)}
+                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                            >
+                                                {nextMonthLabel} ▶
+                                            </Button>
+                                        </div>
+
+                                        <SpeakerFilters />
+
+                                        <Button className="w-full" onClick={handleSave}>
+                                            Salvar todas
                                         </Button>
                                     </div>
-                                    <SpeakerFilters />
-                                    <Button className="w-full" onClick={handleSave}>
-                                        Salvar todas
-                                    </Button>
                                 </div>
-
 
                                 <Card className="w-full p-4">
                                     <CardBody className="flex flex-wrap gap-4 items-center">

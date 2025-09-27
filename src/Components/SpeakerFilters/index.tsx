@@ -12,7 +12,7 @@ export default function SpeakerFilters() {
   const sortedCongregations = sortArrayByProperty(congregations || [], "name")
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 w-full p-4 bg-white rounded-xl">
+    <div className="flex flex-col sm:flex-row gap-1 md:gap-4 w-full p-4 bg-white rounded-xl">
       <div className="flex-1 min-w-[150px] max-w-full">
         <DropdownObject
           classname="bg-white rounded-xl w-full"

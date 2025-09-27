@@ -184,7 +184,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
 
- 
+
 
   const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
@@ -311,23 +311,46 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       />
 
       {externalTalks.length > 0 && (
-        <div className="mt-4 border-t pt-2 space-y-2">
-          <h3 className="font-semibold">Discursos Externos</h3>
-          {externalTalks.map(et => (
-            <div key={et.id} className="p-2 border rounded bg-yellow-50 ">
-              <div className="flex justify-between items-center">
-                <span>{et.speaker?.fullName || et.manualTalk}</span> → <span>{et.destinationCongregation.name}</span>
-                <span className="ml-2 text-sm text-gray-600">{externalTalkStatusMap[et.status]}</span>
+        <div className="mt-6 space-y-3">
+          <h3 className="font-semibold text-gray-800">Discursos Externos</h3>
+          {externalTalks.map((et) => (
+            <div
+              key={et.id}
+              className={`
+          flex items-center justify-between p-3 rounded-lg border shadow-sm bg-white
+          ${et.status === "confirmed" ? "border-l-4 border-green-500" : ""}
+          ${et.status === "pending" ? "border-l-4 border-yellow-500" : ""}
+          ${et.status === "canceled" ? "border-l-4 border-red-500" : ""}
+        `}
+            >
+              {/* Orador + Congregação */}
+              <div className="flex flex-col">
+                <span className="font-medium text-gray-800">
+                  {et.speaker?.fullName || et.manualTalk}
+                </span>
+                <span className="text-sm text-gray-600">
+                  {et.destinationCongregation.name === et.destinationCongregation.city ?
+                    et.destinationCongregation.name :
+                    `${et.destinationCongregation.name} - ${et.destinationCongregation.city}`
+                  }
+                </span>
               </div>
-              <Link
-                href={{
-                  pathname: "/arranjo-oradores/saida-oradores",
-                  query: { date: et.date }
-                }}
-                className="ml-4 text-primary-200 hover:underline"
-              >
-                Ver / Editar
-              </Link>
+
+              {/* Status + Ação */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500">
+                  {externalTalkStatusMap[et.status]}
+                </span>
+                <Link
+                  href={{
+                    pathname: "/arranjo-oradores/saida-oradores",
+                    query: { date: et.date },
+                  }}
+                  className="text-sm text-primary-200 hover:underline"
+                >
+                  Ver / Editar
+                </Link>
+              </div>
             </div>
           ))}
         </div>
