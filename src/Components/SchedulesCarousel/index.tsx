@@ -69,7 +69,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                       </p>
                       {item.talk && (
                         <p className="font-medium text-gray-800">
-                          {item.talk.number} – {item.talk.title}
+                          {`${item.talk.number ? `${item.talk.number} - ${item.talk.title}` : `${item.talk.title}`}`}
                         </p>
                       )}
                       {item.speaker && (
