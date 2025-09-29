@@ -22,7 +22,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
   }, [schedules])
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {/* Botões de navegação */}
       <div className="flex justify-between items-center mb-4">
         <button

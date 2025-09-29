@@ -1,3 +1,4 @@
+'use-client'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Button from '@/Components/Button'
@@ -20,6 +21,8 @@ import { domainUrl } from '@/atoms/atom'
 import { useFetch } from '@/hooks/useFetch'
 import PdfViewer from '@/Components/PdfViewer'
 import Spiner from '@/Components/Spiner'
+import { IPublicSchedule } from '@/entities/weekendSchedule'
+import SchedulesCarousel from '@/Components/SchedulesCarousel'
 
 export default function Designacoes() {
   const router = useRouter()
@@ -40,6 +43,13 @@ export default function Designacoes() {
 
   const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
   const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+
+  const fetchConfigWeekendSchedulesData = number && congregation?.id
+    ? `/congregation/${congregation.id}/weekendSchedules/public`
+    : ""
+
+  const { data: schedules } = useFetch<Record<string, IPublicSchedule[]>>(fetchConfigWeekendSchedulesData)
+
 
   useEffect(() => {
     if (congregation) {
@@ -143,7 +153,9 @@ export default function Designacoes() {
             <Button
               className="w-full"
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
-            ><LifeAndMinistryIcon />Vida e Ministério</Button>
+            >
+              <LifeAndMinistryIcon /> Vida e Ministério
+            </Button>
             {lifeAndMinistryOptionsShow && (
               documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                 {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
@@ -156,9 +168,7 @@ export default function Designacoes() {
                 ))}
               </div>) : (
                 <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-              )
-            )
-            }
+              ))}
             {lifeAndMinistryOptionsShow &&
               <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
                 {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
@@ -190,14 +200,25 @@ export default function Designacoes() {
             {publicOptionsShow && (
               documents ? (
                 <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                  {publicOptionsShow && documentsPublicFilter && documentsPublicFilter.length > 0 ? documentsPublicFilter?.map(document => (
-                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                      <Button
-                        onClick={() => { handleButtonClick(document.url) }}
-                        className="w-full"
-                      >{removeMimeType(document.fileName)}</Button>
-                    </div>
-                  )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
+                  {documentsPublicFilter && documentsPublicFilter.length > 0 ? (
+                    documentsPublicFilter.map(document => (
+                      <div
+                        className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`}
+                        key={document.id}
+                      >
+                        <Button
+                          onClick={() => { handleButtonClick(document.url) }}
+                          className="w-full"
+                        >
+                          {removeMimeType(document.fileName)}
+                        </Button>
+                      </div>
+                    ))
+                  ) : schedules && Object.keys(schedules).length > 0 ? (
+                    <SchedulesCarousel schedules={schedules} />
+                  ) : (
+                    <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />
+                  )}
                 </div>
               ) : (
                 <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
