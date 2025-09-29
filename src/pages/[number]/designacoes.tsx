@@ -37,7 +37,8 @@ export default function Designacoes() {
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
   const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
   const [congregationData, setCongregationData] = useState<ICongregation>()
-  const [showSchedules, setShowSchedules] = useState(false) // <-- NOVO ESTADO
+  const [showSchedules, setShowSchedules] = useState(false)
+  const [pdfShow, setPdfShow] = useState(false)
 
   const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
   const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
@@ -107,6 +108,7 @@ export default function Designacoes() {
 
   function handleButtonClick(url: string) {
     setPdfUrl(url)
+    setPdfShow(true)
   }
 
   function handleOpenSchedules() {
@@ -210,7 +212,7 @@ export default function Designacoes() {
         </div>
       </LayoutPrincipal>
 
-      {pdfUrl && (
+      {pdfShow && (
         <PdfViewer url={pdfUrl} setPdfShow={() => setPdfUrl('')} />
       )}
     </div>
