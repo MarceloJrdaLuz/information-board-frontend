@@ -1,6 +1,21 @@
 import { IExternalTalk } from "./externalTalks"
 import { IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "./types"
 
+export interface IPublicSchedule {
+  id: string
+  date: string
+  month: string
+  isCurrentWeek: boolean
+  isSpecial?: boolean
+  specialName?: string
+  chairman?: { name: string }
+  reader?: { name: string }
+  speaker?: { name: string; congregation?: string }
+  talk?: { title: string; number: number }
+  watchTowerStudyTitle?: string
+}
+
+
 export interface IWeekendSchedule {
   id?: string
   date: string

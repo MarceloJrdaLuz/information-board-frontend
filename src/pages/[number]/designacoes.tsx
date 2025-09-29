@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import Image from 'next/image'
-import Button from '@/Components/Button'
-import { ChevronsLeftIcon } from 'lucide-react'
-import LayoutPrincipal from '@/Components/LayoutPrincipal'
-import { useAtomValue } from 'jotai'
-import { usePublicDocumentsContext } from '@/context/PublicDocumentsContext'
-import { Categories, ICongregation, IDocument } from '@/entities/types'
-import DateConverter, { meses } from '@/functions/meses'
-import { removeMimeType } from '@/functions/removeMimeType'
-import { threeMonths } from '@/functions/threeMonths'
-import { useRouter } from 'next/router'
+import { domainUrl } from "@/atoms/atom"
+import Button from "@/Components/Button"
+import HeadComponent from "@/Components/HeadComponent"
+import LifeAndMinistryIcon from "@/Components/Icons/LifeAndMinistryIcon"
+import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
+import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import NotFoundDocument from "@/Components/NotFoundDocument"
+import PdfViewer from "@/Components/PdfViewer"
+import SchedulesCarousel from "@/Components/SchedulesCarousel"
+import { SchedulesSkeleton } from "@/Components/ScheduleSkeleton"
+import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
+import { Categories, ICongregation, IDocument } from "@/entities/types"
+import { IPublicSchedule } from "@/entities/weekendSchedule"
+import DateConverter, { meses } from "@/functions/meses"
+import { removeMimeType } from "@/functions/removeMimeType"
+import { threeMonths } from "@/functions/threeMonths"
+import { useFetch } from "@/hooks/useFetch"
+import { useAtomValue } from "jotai"
+import { ChevronsLeftIcon } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 import iconDesignacoes from '../../../public/images/designacoes-gray.png'
-import HeadComponent from '@/Components/HeadComponent'
-import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
-import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon'
-import NotFoundDocument from '@/Components/NotFoundDocument'
-import dynamic from 'next/dynamic'
-import { domainUrl } from '@/atoms/atom'
-import { useFetch } from '@/hooks/useFetch'
-import PdfViewer from '@/Components/PdfViewer'
-import Spiner from '@/Components/Spiner'
 
 export default function Designacoes() {
   const router = useRouter()
@@ -28,18 +29,20 @@ export default function Designacoes() {
 
   const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
-  const [pdfShow, setPdfShow] = useState(false)
+  const [pdfUrl, setPdfUrl] = useState('')
   const [publicOptionsShow, setPublicOptionsShow] = useState(false)
   const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState('')
   const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
   const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
   const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
   const [congregationData, setCongregationData] = useState<ICongregation>()
+  const [showSchedules, setShowSchedules] = useState(false) // <-- NOVO ESTADO
 
   const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
   const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+  const fetchConfigWeekendSchedulesData = number ? `/congregation/${congregation?.id}/weekendSchedules/public` : ""
+  const { data: schedules } = useFetch<Record<string, IPublicSchedule[]>>(fetchConfigWeekendSchedulesData)
 
   useEffect(() => {
     if (congregation) {
@@ -47,6 +50,8 @@ export default function Designacoes() {
     }
   }, [congregation])
 
+  const hasPdfLifeAndMinistry = documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0
+  const hasPdfPublic = documentsPublicFilter && documentsPublicFilter.length > 0
 
   useEffect(() => {
     if (number) {
@@ -100,37 +105,23 @@ export default function Designacoes() {
     }
   }, [documentsLifeAndMinistryFilter])
 
-  useEffect(() => {
-    // Ordenar os documentos com base nos meses
-    const sortedDocuments = documentsLifeAndMinistryFilterMonths?.sort(compareDocumentsByMonth)
-    // Faça o que você precisa com os documentos ordenados aqui
-  }, [documentsLifeAndMinistryFilterMonths])
-
   function handleButtonClick(url: string) {
     setPdfUrl(url)
-    setPdfShow(true)
   }
 
-  function compareDocumentsByMonth(a: IDocument, b: IDocument) {
-    const monthA = meses.indexOf(a.fileName.split(".")[0])
-    const monthB = meses.indexOf(b.fileName.split(".")[0])
-
-    if (monthA < monthB) {
-      return -1
-    } else if (monthA > monthB) {
-      return 1
-    } else {
-      return 0
-    }
+  function handleOpenSchedules() {
+    setShowSchedules(true)
   }
 
-  return !pdfShow ? (
-    <div className=" flex flex-col h-screen w-screen bg-gray-200">
+  function handleCloseSchedules() {
+    setShowSchedules(false)
+  }
+
+  return (
+    <div className="flex flex-col h-screen w-screen bg-gray-200">
       <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
       <LayoutPrincipal
-        image={
-          <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
-        }
+        image={<Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />}
         congregationName={congregationData?.name ?? ""}
         circuit={congregationData?.circuit ?? ""}
         textoHeader="Designações Semanais"
@@ -139,82 +130,89 @@ export default function Designacoes() {
         className='bg-designacoes bg-center bg-cover'
       >
         <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
-          <div>
-            <Button
-              className="w-full"
-              onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
-            ><LifeAndMinistryIcon />Vida e Ministério</Button>
-            {lifeAndMinistryOptionsShow && (
-              documents ?  (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-              {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
-                <div className="flex-1 " key={document.id}>
-                  <Button
-                    className="w-full"
-                    onClick={() => { handleButtonClick(document.url) }}
-                  >{removeMimeType(document.fileName)}</Button>
+
+          {/* Se mostrar o carrossel, esconde os botões */}
+          {showSchedules ? (
+            <div>
+              {schedules ? <SchedulesCarousel schedules={schedules} /> : <SchedulesSkeleton />}
+
+              <Button
+                onClick={handleCloseSchedules}
+                className="w-1/2 mx-auto mt-4"
+              >
+                <ChevronsLeftIcon /> Voltar
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* VIDA E MINISTÉRIO */}
+              <Button
+                className="w-full"
+                onClick={() => setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow)}
+              >
+                <LifeAndMinistryIcon /> Vida e Ministério
+              </Button>
+
+              {lifeAndMinistryOptionsShow && (
+                <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
+                  {hasPdfLifeAndMinistry
+                    ? documentsLifeAndMinistryFilterMonths?.map(doc => (
+                      <div className="flex-1" key={doc.id}>
+                        <Button className="w-full" onClick={() => handleButtonClick(doc.url)}>
+                          {removeMimeType(doc.fileName)}
+                        </Button>
+                      </div>
+                    ))
+                    : <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
                 </div>
-              ))}
-            </div>) : (
-              <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-            )
-            )
-             }
-            {lifeAndMinistryOptionsShow &&
-              <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
-                  <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                    <Button
-                      onClick={() => { handleButtonClick(document.url) }}
-                      className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
-                  </div>
-                ))}
-              </div>}
+              )}
 
-            {!lifeAndMinistryOptionsShow ? (
-              <>
-                {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
-              </>
-            ) : (
-              <>
-                {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length < 1 && documentsOthersFilter && documentsOthersFilter.length < 1 && <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
-              </>
-            )}
+              {/* REUNIÃO PÚBLICA */}
+              <Button
+                onClick={() => setPublicOptionsShow(!publicOptionsShow)}
+                className="w-full"
+              >
+                <PublicMeetingIcon /> Reunião Pública
+              </Button>
 
-          </div>
-          <div>
-            <Button
-              onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
-              className="w-full"
-            ><PublicMeetingIcon />Reunião Pública
-            </Button>
-            {publicOptionsShow && (
-              documents ? (
-                <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                  {publicOptionsShow && documentsPublicFilter && documentsPublicFilter.length > 0 ? documentsPublicFilter?.map(document => (
-                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                      <Button
-                        onClick={() => { handleButtonClick(document.url) }}
-                        className="w-full"
-                      >{removeMimeType(document.fileName)}</Button>
+              {publicOptionsShow && (
+                <div className="w-full my-2">
+                  {hasPdfPublic ? (
+                    <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                      {documentsPublicFilter?.map(doc => (
+                        <div className="flex-1 min-w-[120px]" key={doc.id}>
+                          <Button className="w-full" onClick={() => handleButtonClick(doc.url)}>
+                            {removeMimeType(doc.fileName)}
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  )) : <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />}
+                  ) : schedules ? (
+                    <div className="flex justify-center">
+                      <Button onClick={handleOpenSchedules}>
+                        Ver Programação Semanal
+                      </Button>
+                    </div>
+                  ) : (
+                    <SchedulesSkeleton />
+                  )}
                 </div>
-              ) : (
-                <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-              )
-            )}
-            {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
-          </div>
-          <Button
-            onClick={() => router.push(`/${number}`)}
-            className="w-1/2 mx-auto"
-          ><ChevronsLeftIcon />Voltar</Button>
+              )}
+
+              <Button
+                onClick={() => router.push(`/${number}`)}
+                className="w-1/2 mx-auto mt-4"
+              >
+                <ChevronsLeftIcon /> Voltar
+              </Button>
+            </>
+          )}
         </div>
       </LayoutPrincipal>
+
+      {pdfUrl && (
+        <PdfViewer url={pdfUrl} setPdfShow={() => setPdfUrl('')} />
+      )}
     </div>
-  ) : (
-    <>
-      <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
-    </>
   )
 }

@@ -184,8 +184,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
 
-
-
   const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
   const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName")
