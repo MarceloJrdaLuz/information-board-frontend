@@ -143,18 +143,18 @@ export default function PublisherList() {
                             <button className={`w-6 h-6 mr-4 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
                         </div>
                         <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-white' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
-                            <div className="h-fit ">
+                            <div className="flex flex-wrap gap-2">
                                 {publisher.privileges.map(privilege => {
                                     if (privilege === Privileges.PIONEIROAUXILIAR) {
                                         if (isAuxPioneerMonthNow(publisher)) {
                                             return (
-                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
                                                     {privilege}
                                                 </span>
                                             )
                                         } else {
                                             return (
-                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
                                                     {Privileges.PUBLICADOR}
                                                 </span>
                                             ) // Não exibe "Pioneiro Auxiliar" se não for o mês atual
@@ -162,7 +162,7 @@ export default function PublisherList() {
                                     } else if ((privilege === Privileges.PIONEIROREGULAR || privilege === Privileges.AUXILIARINDETERMINADO)) {
                                         if (isPioneerNow(publisher, new Date())) {
                                             return (
-                                                <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
                                                     {privilege}
                                                 </span>
                                             )
@@ -171,14 +171,14 @@ export default function PublisherList() {
                                         }
                                     } else {
                                         return (
-                                            <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                            <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
                                                 {privilege}
                                             </span>
                                         )
                                     }
                                 })}
                                 {publisher.situation !== Situation.ATIVO && (
-                                    <span className="bg-[#74706d] mr-2 h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + publisher.situation}`}>
+                                    <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + publisher.situation}`}>
                                         {publisher.situation}
                                     </span>
                                 )}

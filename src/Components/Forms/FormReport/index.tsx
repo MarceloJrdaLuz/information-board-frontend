@@ -22,6 +22,7 @@ import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import moment from "moment"
 import 'moment/locale/pt-br'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { IPayloadCreateReport } from "@/entities/reports"
 
 interface IRelatorioFormProps {
     congregationNumber: string
@@ -55,10 +56,38 @@ export default function FormReport(props: IRelatorioFormProps) {
 
         if (publisher) {
             const parse: IPublisherList[] = JSON.parse(publisher)
-            setConsentRecords(parse)
-            setDeviceId(parse[0].deviceId)
+
+            // Corrigir registros antigos sem id
+            if (data) {
+                const updated = parse.map(consentRecord => {
+
+                    if (!consentRecord.id) {
+                        const match = data.find(
+                            pub =>
+                                pub.fullName === consentRecord.fullName &&
+                                pub.nickname === consentRecord.nickname &&
+                                pub.congregation_id === consentRecord.congregation_id
+                        )
+                        if (match) {
+                            return { ...consentRecord, id: match.id }
+                        }
+                    }
+                    return consentRecord
+                })
+                // Atualiza no state e no localStorage
+                setConsentRecords(updated)
+                localStorage.setItem('publisher', JSON.stringify(updated))
+
+                if (updated[0]?.deviceId) {
+                    setDeviceId(updated[0].deviceId)
+                }
+            } else {
+                setConsentRecords(parse)
+                setDeviceId(parse[0].deviceId)
+            }
         }
-    }, [])
+    }, [data])
+
 
     useEffect(() => {
         const today = moment()
@@ -73,7 +102,7 @@ export default function FormReport(props: IRelatorioFormProps) {
         setPublisherToSend(option)
     }
 
-    const esquemaValidacao = yup.object({
+    const validationSchema = yup.object({
         month: yup.string().required(),
         hours: yup.number(),
         studies: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
@@ -87,7 +116,7 @@ export default function FormReport(props: IRelatorioFormProps) {
             studies: '',
             observations: ''
         },
-        resolver: yupResolver(esquemaValidacao)
+        resolver: yupResolver(validationSchema)
     })
 
     useEffect(() => {
@@ -97,13 +126,7 @@ export default function FormReport(props: IRelatorioFormProps) {
     const handleConsentRecordsCreate = async () => {
         setConsentAcceptedShow(false)
         if (publisherToSend) {
-            const publisherConsent = {
-                fullName: publisherToSend.fullName,
-                nickname: publisherToSend.nickname,
-                congregation_id: publisherToSend.congregation_id,
-                congregation_number: publisherToSend.congregation_number
-            }
-            createConsentRecord(publisherConsent, deviceId)
+            createConsentRecord(publisherToSend.id, deviceId)
         }
 
         if (submittedData) {
@@ -111,27 +134,25 @@ export default function FormReport(props: IRelatorioFormProps) {
         }
     }
 
-    function sendSubmit(data: FormValues) {
+    function sendSubmit({ hours, month, observations, studies }: FormValues) {
+
         if (publisherToSend !== undefined) {
-            if (data.hours !== null && data.hours <= 0 && !underAnHour) {
+            if (hours !== null && hours <= 0 && !underAnHour) {
                 setError('hours', {
                     type: 'min',
                 })
             } else {
+                const payload: IPayloadCreateReport = {
+                    publisher_id: publisherToSend?.id ?? "",
+                    hours: hours ?? 0,
+                    month,
+                    observations,
+                    studies: Number(studies),
+                    year
+                }
+
                 toast.promise(
-                    createReport(
-                        data.month,
-                        year,
-                        {
-                            fullName: publisherToSend.fullName,
-                            nickName: publisherToSend.nickname || '',
-                            congregation_id: publisherToSend.congregation_id,
-                            congregation_number: publisherToSend.congregation_number
-                        },
-                        data.hours ?? 0,
-                        Number(data.studies),
-                        data.observations
-                    ),
+                    createReport(payload),
                     {
                         pending: 'Autenticando...'
                     }
@@ -149,15 +170,12 @@ export default function FormReport(props: IRelatorioFormProps) {
         setSubmittedData(data)
 
         const filterPublisherConsent = consentRecords?.filter(consentRecord =>
-            consentRecord.fullName === publisherToSend?.fullName &&
-            consentRecord.congregation_id === publisherToSend?.congregation_id &&
-            consentRecord.nickname === publisherToSend?.nickname
+            consentRecord.id === publisherToSend?.id
         )
 
         if (filterPublisherConsent?.length) {
             const response = await api.post('/checkConsentRecords', {
-                fullName: filterPublisherConsent[0].fullName,
-                nickname: filterPublisherConsent[0].nickname,
+                publisher_id: filterPublisherConsent[0].id,
                 deviceId: filterPublisherConsent[0].deviceId,
                 consentDate: filterPublisherConsent[0].consentDate,
             })

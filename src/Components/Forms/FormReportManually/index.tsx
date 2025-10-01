@@ -18,6 +18,7 @@ import { useRouter } from "next/router"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
 import { Trash } from "lucide-react"
+import { IPayloadCreateReportManually } from "@/entities/reports"
 
 interface IRelatorioFormProps {
     report: IReports | null
@@ -27,7 +28,7 @@ interface IRelatorioFormProps {
 export default function FormReportManually({ report, publisher }: IRelatorioFormProps) {
     const { createReportManually, deleteReport } = usePublisherContext()
     const router = useRouter()
-    const { month, congregationId } = router.query
+    const { month } = router.query
     const monthParam = month as string
 
     const dataSuccess = useAtomValue(successFormSend)
@@ -37,7 +38,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     const [privilege, setPrivilege] = useState<string>(Privileges.PUBLICADOR)
     const optionsCheckboxPrivilege = useState<string[]>(Object.values(PrivilegesMinistry))
 
-    const esquemaValidacao = yup.object({
+    const validationSchema = yup.object({
         month: yup.string().required(),
         hours: yup.number(),
         studies: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
@@ -51,7 +52,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
             studies: "",
             observations: ""
         },
-        resolver: yupResolver(esquemaValidacao)
+        resolver: yupResolver(validationSchema)
     })
 
     useEffect(() => {
@@ -73,22 +74,22 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         })
     }
 
-    async function onSubmit(data: FormValues) {
-        const splitMonth = data.month.split(' ')
+    async function onSubmit({ hours, month, observations, studies }: FormValues) {
+        const splitMonth = month.split(' ')
+        const payload: IPayloadCreateReportManually = {
+            hours: hours ?? 0,
+            month: splitMonth[0],
+            year: splitMonth[1],
+            observations,
+            publisher: {
+                id: report?.publisher?.id ?? "",
+                privileges: [privilege]
+            },
+            studies: Number(studies)
+
+        }
         toast.promise(
-            createReportManually(
-                splitMonth[0],
-                splitMonth[1],
-                {
-                    fullName: report?.publisher.fullName ?? publisher?.fullName ?? "",
-                    nickName: report?.publisher.nickname ?? publisher?.nickname ?? "",
-                    congregation_id: report?.publisher.congregation.id ?? publisher?.congregation.id ?? "",
-                    privileges: [privilege]
-                },
-                data.hours ?? 0,
-                Number(data.studies),
-                data.observations
-            ),
+            createReportManually(payload),
             {
                 pending: 'Autenticando...'
             }
@@ -101,7 +102,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
 
     return (
         <section className="flex flex-col justify-center items-center">
-             <div className="w-full flex justify-end pr-6 max-w-[600px]">
+            <div className="w-full flex justify-end pr-6 max-w-[600px]">
                 {report && (
                     <ConfirmDeleteModal
                         onDelete={() => onDelete(`${report && report.id}`)}

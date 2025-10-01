@@ -22,6 +22,7 @@ import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
 import FormAddEmergencyContact from '../FormAddEmergencyContact'
 import DropdownObject from '@/Components/DropdownObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { IPayloadCreatePublisher } from '@/entities/publishers'
 
 
 export default function FormAddPublisher() {
@@ -141,23 +142,23 @@ export default function FormAddPublisher() {
         }, resolver: yupResolver(validationSchema)
     })
 
-    function onSubmit(data: FormValues) {
-        toast.promise(createPublisher(
-            data.fullName,
-            congregationUser?.id ?? "",
-            genderCheckboxSelected,
-            hopeCheckboxSelected,
-            allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
-            data.nickname,
-            immersedDate ?? undefined,
-            birthDate ?? undefined,
-            auxPioneerMonthsSelected,
-            situationPublisherCheckboxSelected ?? Situation.ATIVO,
-            startPioneer ?? undefined,
-            data.address,
-            data.phone,
-            selectedEmergencyContact ?? undefined
-        ), {
+    function onSubmit({ fullName, address, nickname, phone }: FormValues) {
+        const payload: IPayloadCreatePublisher = {
+            congregation_id: congregationUser?.id ?? "",
+            fullName,
+            gender: genderCheckboxSelected,
+            address,
+            birthDate: birthDate ?? undefined,
+            dateImmersed: immersedDate ?? undefined,
+            emergencyContact_id: selectedEmergencyContact ?? undefined,
+            hope: hopeCheckboxSelected,
+            nickname,
+            phone,
+            pioneerMonths: auxPioneerMonthsSelected,
+            privileges: allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
+            situation: situationPublisherCheckboxSelected ?? Situation.ATIVO
+        }
+        toast.promise(createPublisher(payload), {
             pending: 'Criando novo publicador',
         })
         reset()

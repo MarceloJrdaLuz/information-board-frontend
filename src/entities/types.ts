@@ -162,8 +162,9 @@ export interface IPublisher {
 }
 
 export interface IPublisherList {
+    id: string
     fullName: string
-    nickname: string
+    nickname?: string
     congregation_id: string
     congregation_number: string
     consentDate?: string
@@ -268,8 +269,9 @@ export enum TotalsFrom {
 }
 
 export interface IPublisherConsent {
+    id: string,
     fullName: string,
-    nickname: string,
+    nickname?: string,
     congregation_id: string
     congregation_number: string
 }

@@ -6,40 +6,27 @@ import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
 import { toast } from "react-toastify"
 import { useSubmitContext } from "./SubmitFormContext"
+import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/entities/reports"
+import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/entities/publishers"
 
-export interface IPayloadUpdatePublisher {
-    fullName?: string,
-    gender?: string,
-    hope?: string,
-    privileges?: string[],
-    nickname?: string,
-    dateImmersed?: Date,
-    birthDate?: Date,
-    pioneerMonths?: string[],
-    situation?: string,
-    startPioneer?: Date,
-    address?: string,
-    phone?: string,
-    emergencyContact_id?: string | undefined
-}
 
 type PublisherContextTypes = {
-    createPublisher: (
-        fullName: string,
-        congregation_id: string,
-        gender: string,
-        hope?: string,
-        privileges?: string[],
-        nickname?: string,
-        dateImmersed?: Date,
-        birthDate?: Date,
-        pioneerMonths?: string[],
-        situation?: string,
-        startPioneer?: Date,
-        address?: string,
-        phone?: string,
-        emergencyContact_id?: string | undefined
-    ) => Promise<any>
+    createPublisher: ({
+        congregation_id,
+        fullName,
+        gender,
+        address,
+        birthDate,
+        dateImmersed,
+        emergencyContact_id,
+        hope,
+        nickname,
+        phone,
+        pioneerMonths,
+        privileges,
+        situation,
+        startPioneer
+    }: IPayloadCreatePublisher) => Promise<any>
     linkPublisherToUser: ({
         user_id,
         publisher_id,
@@ -61,33 +48,9 @@ type PublisherContextTypes = {
     ) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
-    createReport: (
-        month: string,
-        year: string,
-        publisher: {
-            fullName: string,
-            nickName: string,
-            congregation_id: string
-            congregation_number: string
-        },
-        hours: number,
-        studies: number,
-        observations: string
-    ) => Promise<any>
-    createReportManually: (
-        month: string,
-        year: string,
-        publisher: {
-            fullName: string,
-            nickName: string,
-            privileges: string[]
-            congregation_id: string
-        },
-        hours: number,
-        studies: number,
-        observations: string
-    ) => Promise<any>
-    createConsentRecord: (publisher: IPublisherConsent, deviceId?: string) => Promise<any>
+    createReport: ({ hours, month, observations, publisher_id, studies, year }: IPayloadCreateReport) => Promise<any>
+    createReportManually: ({ hours, month, observations, publisher, studies, year }: IPayloadCreateReportManually) => Promise<any>
+    createConsentRecord: (publisher_id: string, deviceId?: string) => Promise<any>
     deletePublisher: (publisher_id: string) => Promise<any>
     deleteReport: (report_id: string) => Promise<any>
 }
@@ -106,22 +69,22 @@ function PublisherProvider(props: PublisherContextProviderProps) {
     const [modalLinkForce, setModalLinkForce] = useAtom(showConfirmForceModal)
 
 
-    async function createPublisher(
-        fullName: string,
-        congregation_id: string,
-        gender: string,
-        hope?: string,
-        privileges?: string[],
-        nickname?: string,
-        dateImmersed?: Date,
-        birthDate?: Date,
-        pioneerMonths?: string[],
-        situation?: string,
-        startPioneer?: Date,
-        address?: string,
-        phone?: string,
-        emergencyContact_id?: string
-    ) {
+    async function createPublisher({
+        congregation_id,
+        fullName,
+        gender,
+        address,
+        birthDate,
+        dateImmersed,
+        emergencyContact_id,
+        hope,
+        nickname,
+        phone,
+        pioneerMonths,
+        privileges,
+        situation,
+        startPioneer
+    }: IPayloadCreatePublisher) {
         await api.post('/publisher', {
             fullName,
             nickname,
@@ -167,23 +130,19 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
-    async function createReport(
-        month: string,
-        year: string,
-        publisher: {
-            fullName: string,
-            nickName: string,
-            congregation_id: string
-        },
-        hours: number,
-        studies: number,
-        observations: string
-    ) {
+    async function createReport({
+        publisher_id,
+        hours,
+        month,
+        observations,
+        studies,
+        year
+    }: IPayloadCreateReport) {
 
         await api.post('/report', {
             month,
             year,
-            publisher,
+            publisher_id,
             hours,
             studies,
             observations
@@ -197,20 +156,14 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     }
 
-    async function createReportManually(
-        month: string,
-        year: string,
-        publisher: {
-            fullName: string,
-            nickName: string,
-            privileges: string[]
-            congregation_id: string
-        },
-        hours: number,
-        studies: number,
-        observations: string
-    ) {
-
+    async function createReportManually({
+        hours,
+        month,
+        observations,
+        publisher,
+        studies,
+        year
+    }: IPayloadCreateReportManually) {
         await api.post('/reportManually', {
             month,
             year,
@@ -228,15 +181,9 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     }
 
-    async function createConsentRecord(publisher: IPublisherConsent, deviceId?: string) {
-
+    async function createConsentRecord(publisher_id: string, deviceId?: string) {
         await api.post<ConsentRecordTypes>('/consentRecord', {
-            publisher: {
-                fullName: publisher.fullName,
-                nickname: publisher.nickname,
-                congregation_id: publisher.congregation_id,
-                congregation_number: publisher.congregation_number
-            },
+            publisher_id,
             deviceId
         }).then(suc => {
             const { data: { deviceId, publisher, consentDate } } = suc
@@ -300,9 +247,14 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
-    async function createEmergencyContact(
-        { name, phone, relationship, isTj, congregation_id }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }
-    ) {
+    async function createEmergencyContact({
+        name,
+        phone,
+        relationship,
+        isTj,
+        congregation_id
+
+    }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }) {
         await api.post('/emergencyContact', {
             name,
             phone,

@@ -60,7 +60,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
         const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
         const filtered = parsedPublishers.filter(option => {
           const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-          const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
+          const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
           const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
           return fullNameMatch || nicknameMatch || congregationIdMatch
         })
@@ -70,7 +70,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
       // Caso contrário, filtrar com base no props.options
       const filtered = props.options.filter(option => {
         const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-        const nicknameMatch = option.nickname.toLowerCase().includes(query.toLowerCase())
+        const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
         const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
         return fullNameMatch || nicknameMatch || congregationIdMatch
       })
@@ -114,6 +114,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
                   <span
                     onClick={() => {
                       props.handleClick({
+                        id: option.id,
                         fullName: option.fullName,
                         nickname: option.nickname,
                         congregation_id: option.congregation_id, 
@@ -135,7 +136,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
           {publisherRecover && (
               <div className='flex justify-center items-center gap-2 p-1' onClick={() => {setAddPublisher(true)}}>
                 <span>{iconeAddPessoa("#178582")}</span>
-                <span>Adicionar mais um publicador</span>
+                <span className='text-gray-700 italic'>Adicionar mais um publicador</span>
               </div>
             )}
         </Menu.Items>
