@@ -71,6 +71,8 @@ export default function FormAddSpeaker() {
             pending: 'Criando novo orador',
         })
         reset()
+        setSelectedTalks(null)
+        setSelectedSpeakerCongregation(null)
     }
 
     function onError(error: any) {
@@ -137,6 +139,7 @@ export default function FormAddSpeaker() {
                             selectedItem={selectedSpeakerCongregation}
                             handleChange={setSelectedSpeakerCongregation}
                             labelKey="name"
+                            labelKeySecondary='city'
                             border
                             textVisible
                             full

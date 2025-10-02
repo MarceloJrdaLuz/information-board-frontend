@@ -244,7 +244,7 @@ export default function WeekendSchedulePage() {
                     ) : (
                         <>
                             <div className="w-full space-y-4">
-                                <div className="sticky top-0 z-20">
+                                <div className="sticky top-0 z-30">
                                     <div className="md:hidden flex justify-center bg-white border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
                                         <button
                                             onClick={() => setShowFilters((o) => !o)}
@@ -258,7 +258,7 @@ export default function WeekendSchedulePage() {
                                     <div
                                         className={`
           bg-white border-b shadow-sm p-4 rounded-xl flex flex-col md:gap-4
-          transition-all duration-300 overflow-hidden
+          transition-all duration-300 overflow-visible
           ${showFilters ? "max-h-screen" : "max-h-0 md:max-h-screen"}
           ${showFilters ? "opacity-100" : "opacity-0 md:opacity-100"}
           ${showFilters ? "p-4" : "p-0 md:p-4"}

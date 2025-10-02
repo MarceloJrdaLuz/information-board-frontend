@@ -213,7 +213,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       }
 
       {current.isSpecial &&
-        <div className="z-50">
+        <div>
           <Input
             value={current.specialName || ""}
             onChange={(e) => handleManualChange("specialName", e.target.value)}

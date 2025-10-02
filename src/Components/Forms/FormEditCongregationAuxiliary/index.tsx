@@ -35,7 +35,7 @@ export default function FormEditCongregationAuxiliary() {
         hourMeetingPublic: yup.string(),
     })
 
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
         defaultValues: {
             name: selectedAuxiliaryCongregation?.name,
             circuit: selectedAuxiliaryCongregation?.circuit,
@@ -57,6 +57,8 @@ export default function FormEditCongregationAuxiliary() {
         toast.promise(updateAuxiliaryCongregation(selectedAuxiliaryCongregation?.id ?? "", payload), {
             pending: "Criando nova congregação..."
         })
+        reset()
+        setDayMeetingPublic("")
     }
 
     function onError(error: any) {
@@ -109,7 +111,7 @@ export default function FormEditCongregationAuxiliary() {
                         handleCheckboxChange={handleCheckboxChange}
                     />
 
-                    <Input type="text" placeholder="Número da congregação (Real ou Fake)" registro={{
+                    <Input type="text" placeholder="Nº da congregação (Real ou Fake)" registro={{
                         ...register('number', { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.number?.message ? 'invalido' : ''} />
