@@ -146,6 +146,7 @@ export default function FormEditSpeaker() {
                             selectedItem={selectedSpeakerCongregation}
                             handleChange={setSelectedSpeakerCongregation}
                             labelKey="name"
+                            labelKeySecondary="city"
                             border
                             textVisible
                             full
