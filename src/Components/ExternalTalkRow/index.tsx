@@ -10,6 +10,7 @@ import CheckboxBoolean from "../CheckboxBoolean"
 import moment from "moment"
 import Dropdown from "../Dropdown"
 import { Calendar, Clock, Book, CalendarDays, MapPin, Building } from "lucide-react"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -36,6 +37,7 @@ export default function ExternalTalkRow({
   const [newTalkId, setNewTalkId] = useState<string>("")
   const [newManualTalk, setNewManualTalk] = useState<string>()
   const [manualTalkShow, setManualTalkShow] = useState<boolean>(false)
+  const sortedCongregations = sortArrayByProperty(congregations, "name")
 
   let filteredSpeakers = speakers
   if (newTalkId) {
@@ -136,8 +138,8 @@ export default function ExternalTalkRow({
           <DropdownObject
             textVisible
             title="Congregação de destino"
-            items={congregations}
-            selectedItem={congregations.find((c) => c.id === newCongregationId) || null}
+            items={sortedCongregations}
+            selectedItem={sortedCongregations.find((c) => c.id === newCongregationId) || null}
             handleChange={(item) => {
               setNewCongregationId(item?.id || "")
               setSelectedCongregation(item)

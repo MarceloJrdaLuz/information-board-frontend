@@ -9,6 +9,7 @@ import { ListFilterIcon } from "lucide-react"
 import Button from "../Button"
 import CheckboxUniqueObject from "../CheckBoxUniqueObject"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 
 interface IFIlterSpeakersCongregationProps {
     handleCheckboxChange: (selectedCongregationId: string) => void
@@ -18,6 +19,7 @@ interface IFIlterSpeakersCongregationProps {
 }
 
 export default function FilterSpeakersCongregation({ handleCheckboxChange, checkedOptions, onClick, congregations }: IFIlterSpeakersCongregationProps) {
+    const sortedCongregations = sortArrayByProperty(congregations, "name")
     return (
         <Popover placement="bottom-start">
             <PopoverHandler>
@@ -33,7 +35,7 @@ export default function FilterSpeakersCongregation({ handleCheckboxChange, check
                     <CheckboxUniqueObject
                         options={[
                             { value: "", label: "Todas as congregações" }, 
-                            ...congregations.map(c => ({
+                            ...sortedCongregations.map(c => ({
                                 value: c.id,
                                 label: formatNameCongregation(c.name, c.city),
                             }))

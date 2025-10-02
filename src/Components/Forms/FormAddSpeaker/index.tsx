@@ -17,12 +17,14 @@ import { toast } from 'react-toastify'
 import { createSpeakerAtom } from '../../../atoms/speakerAtoms'
 import FormStyle from '../FormStyle'
 import { FormValues, SpeakerFormData } from './type'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 
 export default function FormAddSpeaker() {
     const createSpeaker = useSetAtom(createSpeakerAtom)
 
     const { data: speakerFormData } = useFetch<SpeakerFormData>(`/form-data?form=speaker`)
+    const sortedCongregations = sortArrayByProperty(speakerFormData?.congregations ?? [], "name")
 
     const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(false)
     const [selectedTalks, setSelectedTalks] = useState<ITalk[] | null>(null)
@@ -135,7 +137,7 @@ export default function FormAddSpeaker() {
 
                         <DropdownObject<ICongregation>
                             title="Congregação"
-                            items={speakerFormData?.congregations ?? []}
+                            items={sortedCongregations}
                             selectedItem={selectedSpeakerCongregation}
                             handleChange={setSelectedSpeakerCongregation}
                             labelKey="name"

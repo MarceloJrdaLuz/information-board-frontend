@@ -21,7 +21,7 @@ export default function SpeakerFilters() {
           selectedItem={congregations?.find(c => c.id === filterCongregation) || null}
           handleChange={item => setFilterCongregation(item?.id || null)}
           labelKey="name"
-          labelKeySecondary="city"
+          labelKeySecondary={"city"}
           border
           emptyMessage="Nenhuma congregação"
           textVisible
@@ -29,7 +29,7 @@ export default function SpeakerFilters() {
         />
       </div>
       <div className="flex-1 min-w-[150px] max-w-full">
-        <DropdownObject
+        <DropdownObject 
           classname="bg-white rounded-xl w-full"
           title="Filtrar por tema"
           items={talks ?? []}

@@ -77,7 +77,13 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-col truncate text-left">
               <span className="text-gray-400 text-xs">{title}</span>
-              <span className="truncate">{selectedItem ? `${getLabel(selectedItem)} ${getLabelSecondary(selectedItem)}` : 'Selecione...'}</span>
+              <span className="truncate">
+                {selectedItem
+                  ? `${getLabel(selectedItem)}${getLabelSecondary(selectedItem) && getLabelSecondary(selectedItem) !== getLabel(selectedItem)
+                    ? " " + getLabelSecondary(selectedItem)
+                    : ""}`
+                  : "Selecione..."}
+              </span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -134,10 +140,15 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                         'flex items-center gap-3 px-4 py-2 text-sm cursor-pointer rounded-md'
                       )}
                     >
-                      <span>{getLabel(item)}</span>
-                      {getLabelSecondary(item) && (
-                        <span className="text-sm text-gray-400">{getLabelSecondary(item)}</span>
-                      )}
+                      <span>
+                        {getLabel(item)}
+                      </span>
+                      {getLabelSecondary(item) &&
+                        getLabelSecondary(item).trim() !== getLabel(item).trim() && (
+                          <span className="text-sm text-gray-400">
+                            {getLabelSecondary(item)}
+                          </span>
+                        )}
                     </span>
                   )}
                 </Menu.Item>

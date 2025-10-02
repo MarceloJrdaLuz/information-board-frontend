@@ -1,24 +1,23 @@
 import * as yup from 'yup'
 
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { selectedSpeakerAtom, updateSpeakerAtom } from '@/atoms/speakerAtoms'
 import Button from '@/Components/Button'
 import CheckboxBoolean from '@/Components/CheckboxBoolean'
+import DropdownMulti from '@/Components/DropdownMulti'
 import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import TalksBoard from '@/Components/TalksBoard'
 import { ICongregation, IPublisher, ITalk } from '@/entities/types'
 import { useFetch } from '@/hooks/useFetch'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { ChevronDownIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues, SpeakerFormData } from './type'
-import { selectedSpeakerAtom, updateSpeakerAtom } from '@/atoms/speakerAtoms'
-import DropdownMulti from '@/Components/DropdownMulti'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 
 export default function FormEditSpeaker() {
@@ -29,12 +28,12 @@ export default function FormEditSpeaker() {
     const selectedSpeaker = useAtomValue(selectedSpeakerAtom)
 
     const { data: speakerFormData } = useFetch<SpeakerFormData>(`/form-data?form=speaker`)
+    const sortedCongregations = sortArrayByProperty(speakerFormData?.congregations ?? [], "name")
 
     const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(false)
     const [selectedTalks, setSelectedTalks] = useState<ITalk[] | null>(selectedSpeaker?.talks ?? null)
     const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)
     const [selectedSpeakerCongregation, setSelectedSpeakerCongregation] = useState<ICongregation | null>(selectedSpeaker?.originCongregation ?? null)
-
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
         defaultValues: {
             fullName: selectedSpeaker?.fullName ?? "",
@@ -143,7 +142,7 @@ export default function FormEditSpeaker() {
 
                         <DropdownObject<ICongregation>
                             title="Congregação"
-                            items={speakerFormData?.congregations ?? []}
+                            items={sortedCongregations}
                             selectedItem={selectedSpeakerCongregation}
                             handleChange={setSelectedSpeakerCongregation}
                             labelKey="name"
