@@ -1,11 +1,11 @@
-import { useState, useRef } from "react"
+import { ITalk } from "@/types/types"
 import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverHandler,
+    Button,
+    Popover,
+    PopoverContent,
+    PopoverHandler,
 } from "@material-tailwind/react"
-import { ITalk } from "@/entities/types"
+import { useRef, useState } from "react"
 
 interface TalksBoardProps {
   talks: ITalk[]

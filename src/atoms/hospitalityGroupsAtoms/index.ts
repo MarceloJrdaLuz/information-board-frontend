@@ -1,5 +1,5 @@
-import { IHospitalityGroup } from "@/entities/types"
 import { api } from "@/services/api"
+import { IHospitalityGroup } from "@/types/types"
 import { atom } from "jotai"
 import { toast } from "react-toastify"
 import { CreateHospitalityGroupPayload, UpdateHospitalityGroupPayload } from "./types"

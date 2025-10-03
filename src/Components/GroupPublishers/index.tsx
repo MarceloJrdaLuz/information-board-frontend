@@ -1,6 +1,5 @@
 // PublisherItem.tsx
-import React from 'react'
-import { IPublisher } from '@/entities/types'
+import { IPublisher } from '@/types/types'
 import PublisherItem from '../PublishersItem'
 
 interface IGroupPublishersProps {

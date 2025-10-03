@@ -1,3 +1,4 @@
+import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import CleanIcon from "@/Components/Icons/CleanIcon"
 import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
@@ -7,15 +8,14 @@ import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import NoticesModal from "@/Components/NoticesModal"
 import { domainUrl } from "@/atoms/atom"
 import { useNoticesContext } from "@/context/NoticeContext"
-import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
+import { ICongregation, INotice } from "@/types/types"
 import { useAtomValue } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon } from "lucide-react"
 import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
-import Button from "@/Components/Button"
 
 export default function Home() {
     const router = useRouter()

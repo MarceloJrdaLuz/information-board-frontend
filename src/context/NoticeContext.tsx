@@ -1,10 +1,9 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { api } from "@/services/api"
-import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
-import { useSubmitContext } from "./SubmitFormContext"
-import { KeyedMutator } from "swr"
+import { api } from "@/services/api"
+import { ICongregation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type NoticesContextTypes = {
     createNotice: (

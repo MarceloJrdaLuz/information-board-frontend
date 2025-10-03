@@ -1,7 +1,6 @@
-import React from 'react'
-import { useAtom } from 'jotai'
 import { groupPublisherList, selectedPublishersAtom } from '@/atoms/atom'
-import { IPublisher } from '@/entities/types'
+import { IPublisher } from '@/types/types'
+import { useAtom } from 'jotai'
 
 interface IPublisherItemProps {
   publisher: IPublisher,

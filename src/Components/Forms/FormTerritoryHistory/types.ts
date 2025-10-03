@@ -1,4 +1,4 @@
-import { ITerritoryHistory } from "@/entities/territory"
+import { ITerritoryHistory } from "@/types/territory"
 
 export type FormValues = {
     caretaker: string

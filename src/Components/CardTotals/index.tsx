@@ -1,7 +1,6 @@
-import { IMonthsWithYear, ITotalsReports } from "@/entities/types"
-import React from 'react'
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { IMonthsWithYear, ITotalsReports } from "@/types/types"
+import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 
 interface S21Props {

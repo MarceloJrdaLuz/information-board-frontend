@@ -1,4 +1,4 @@
-import { IRecordWeekendSchedule } from "@/entities/weekendSchedule"
+import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
 import moment from "moment"
 
 export function buildOptions<T extends { id: string }>(

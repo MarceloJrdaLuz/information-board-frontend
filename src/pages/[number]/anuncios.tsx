@@ -1,8 +1,8 @@
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import Notices from "@/Components/Notices"
-import { ICongregation, INotice } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
+import { ICongregation, INotice } from "@/types/types"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 

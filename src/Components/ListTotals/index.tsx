@@ -1,4 +1,4 @@
-import { ITotalsReports } from "@/entities/types"
+import { ITotalsReports } from "@/types/types"
 
 interface IListTotalsProps {
     totals: ITotalsReports

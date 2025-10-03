@@ -1,4 +1,4 @@
-import { ICongregation, IPublisher, ITalk } from "@/entities/types"
+import { ICongregation, IPublisher, ITalk } from "@/types/types"
 
 export type FormValues = {
     fullName: string

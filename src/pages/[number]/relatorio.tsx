@@ -1,12 +1,12 @@
+import { domainUrl } from "@/atoms/atom"
+import FormReport from "@/Components/Forms/FormReport"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
-import FormReport from "@/Components/Forms/FormReport"
-import { ICongregation } from "@/entities/types"
-import { useAtomValue } from "jotai"
-import { domainUrl } from "@/atoms/atom"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
 import { useFetch } from "@/hooks/useFetch"
+import { ICongregation } from "@/types/types"
+import { useAtomValue } from "jotai"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
 export default function Relatorio() {
     const router = useRouter()

@@ -1,12 +1,12 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
-import { ICongregation, Profile, ResponseAuth, RolesType, UserTypes } from "../entities/types"
-import Router from 'next/router'
-import { api } from "@/services/api"
-import { deleteCookie, setCookie, getCookie } from "cookies-next"
-import { useSetAtom } from "jotai"
 import { domainUrl } from "@/atoms/atom"
-import { useSubmitContext } from "./SubmitFormContext"
+import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { deleteCookie, getCookie, setCookie } from "cookies-next"
+import { useSetAtom } from "jotai"
+import Router from 'next/router'
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
+import { ResponseAuth, UserTypes } from "../types/types"
+import { useSubmitContext } from "./SubmitFormContext"
 
 type AuthContextTypes = {
     authenticated: boolean

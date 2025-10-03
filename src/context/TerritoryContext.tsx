@@ -1,14 +1,14 @@
 import { atomTerritoryHistoryAction, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
-import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, DeleteTerritoryHistoryArgs, ITerritory, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/entities/territory"
+import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
+import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, DeleteTerritoryHistoryArgs, ITerritory, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/types/territory"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { mutate } from "swr"
 import { useAuthContext } from "./AuthContext"
 import { useSubmitContext } from "./SubmitFormContext"
-import { useFetch } from "@/hooks/useFetch"
 
 type TerritoryContextTypes = {
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>

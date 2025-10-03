@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useState } from 'react'
+import { iconeAddPessoa } from '@/assets/icons'
+import { sortArrayByProperty } from '@/functions/sortObjects'
+import { IPublisherList } from '@/types/types'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { IPublisherList } from '@/entities/types'
-import { iconeAddPessoa } from '@/assets/icons'
 import { useRouter } from 'next/router'
-import { sortArrayByProperty } from '@/functions/sortObjects'
+import { Fragment, useEffect, useState } from 'react'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')

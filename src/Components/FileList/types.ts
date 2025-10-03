@@ -1,4 +1,4 @@
-import { IDocument, IFile } from "@/entities/types"
+import { IFile } from "@/types/types"
 
 export interface IFileListProps {
     files?: IFile[] 

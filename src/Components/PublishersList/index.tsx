@@ -1,24 +1,24 @@
 import { useAuthContext } from "@/context/AuthContext"
-import { IPublisher, Privileges, Situation } from "@/entities/types"
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import avatarMale from '../../../public/images/avatar-male.png'
-import avatarFemale from '../../../public/images/avatar-female.png'
-import Router, { useRouter } from "next/router"
-import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon, Trash } from "lucide-react"
-import Button from "../Button"
-import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
-import EditIcon from "../Icons/EditIcon"
 import { usePublisherContext } from "@/context/PublisherContext"
-import { toast } from "react-toastify"
-import moment from "moment"
-import { sortArrayByProperty } from "@/functions/sortObjects"
 import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
-import FilterPrivileges from "../FilterPrivileges"
-import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
+import { sortArrayByProperty } from "@/functions/sortObjects"
+import { useFetch } from "@/hooks/useFetch"
+import { IPublisher, Privileges, Situation } from "@/types/types"
+import { ChevronDownIcon, Trash } from "lucide-react"
+import moment from "moment"
+import Image from "next/image"
+import Router, { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import avatarFemale from '../../../public/images/avatar-female.png'
+import avatarMale from '../../../public/images/avatar-male.png'
+import Button from "../Button"
 import CheckboxBoolean from "../CheckboxBoolean"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import FilterPrivileges from "../FilterPrivileges"
+import EditIcon from "../Icons/EditIcon"
+import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()

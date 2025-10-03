@@ -1,13 +1,13 @@
+import { Privileges } from "@/types/types"
 import {
-    Popover,
-    PopoverHandler,
-    PopoverContent,
     List,
+    Popover,
+    PopoverContent,
+    PopoverHandler,
 } from "@material-tailwind/react"
-import Button from "../Button"
 import { ListFilterIcon } from "lucide-react"
-import { Privileges } from "@/entities/types"
 import { useState } from "react"
+import Button from "../Button"
 import CheckboxMultiple from "../CheckBoxMultiple"
 
 interface IFIlterPrivilegesProps {

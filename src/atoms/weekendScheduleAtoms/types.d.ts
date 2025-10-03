@@ -1,4 +1,4 @@
-import { IWeekendSchedule } from "@/entities/weekendSchedule"
+import { IWeekendSchedule } from "@/types/weekendSchedule"
 
 export type CreateWeekendSchedulePayload = {
   schedules: IWeekendSchedule[]

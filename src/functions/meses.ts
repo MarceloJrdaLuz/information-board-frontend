@@ -1,4 +1,4 @@
-import { IReports } from '@/entities/types'
+import { IReports } from '@/types/types'
 import moment from 'moment'
 require('moment/locale/pt-br')
 

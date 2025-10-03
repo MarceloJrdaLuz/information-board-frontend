@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
-import { INoticesModalProps } from "./types"
-import { INotice } from "@/entities/types"
+import { INotice } from "@/types/types"
 import { ChevronRightIcon } from "@heroicons/react/20/solid"
 import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import { INoticesModalProps } from "./types"
 
 export default function NoticesModal(props: INoticesModalProps) {
     const router = useRouter()

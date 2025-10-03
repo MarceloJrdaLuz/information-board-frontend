@@ -1,22 +1,22 @@
+import { useSubmitContext } from "@/context/SubmitFormContext"
+import { api } from "@/services/api"
+import { UserTypes } from "@/types/types"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import {
     Card,
-    CardHeader,
     CardBody,
     CardFooter,
-    Typography,
+    CardHeader,
     Tooltip,
+    Typography,
 } from "@material-tailwind/react"
-import Image from "next/image"
-import avatar from '../../../public/images/avatar-male.png'
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import { CameraIcon, ZoomIn, ZoomOutIcon } from "lucide-react"
-import { api } from "@/services/api"
-import { useSubmitContext } from "@/context/SubmitFormContext"
-import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { toast } from "react-toastify"
-import { UserTypes } from "@/entities/types"
+import Image from "next/image"
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import AvatarEditor from "react-avatar-editor"
-import { useSwipeable, SwipeEventData } from 'react-swipeable'
+import { SwipeEventData, useSwipeable } from 'react-swipeable'
+import { toast } from "react-toastify"
+import avatar from '../../../public/images/avatar-male.png'
 import Button from "../Button"
 
 interface EditorRefType {

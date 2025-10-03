@@ -1,4 +1,4 @@
-import { Gender, Hope, Privileges, Situation } from '@/entities/types'
+import { Gender, Hope, Privileges, Situation } from '@/types/types'
 
 // Garante que é array de Gender e não string[]
 export const genderOptions: Gender[] = Object.values(Gender)

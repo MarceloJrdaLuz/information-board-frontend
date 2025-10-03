@@ -1,5 +1,5 @@
 import { IBreadCrumbs } from '@/Components/BreadCrumbs/types'
-import { IReports } from '@/entities/types'
+import { IReports } from '@/types/types'
 import { atom } from 'jotai'
 
 export const toogleMenu = atom(false)

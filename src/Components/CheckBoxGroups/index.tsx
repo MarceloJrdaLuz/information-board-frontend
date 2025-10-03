@@ -1,5 +1,4 @@
-import { IGroup } from '@/entities/types'
-import React from 'react'
+import { IGroup } from '@/types/types'
 
 interface ICheckboxGroupsProps {
   full?: boolean

@@ -1,6 +1,6 @@
-import { ICongregation } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
+import { ICongregation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useAuthContext } from "./AuthContext"

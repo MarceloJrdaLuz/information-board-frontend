@@ -1,5 +1,5 @@
-import { ICongregation, IDocument } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
+import { ICongregation, IDocument } from "@/types/types"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 
@@ -64,4 +64,4 @@ function usePublicDocumentsContext(): PublicDocumentsContextTypes {
     return context
 }
 
-export { PublicDocumentsProvider, usePublicDocumentsContext, }
+export { PublicDocumentsProvider, usePublicDocumentsContext }

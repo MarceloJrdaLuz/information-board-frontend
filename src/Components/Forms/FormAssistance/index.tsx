@@ -1,25 +1,23 @@
+import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
+import Button from "@/Components/Button"
+import Dropdown from "@/Components/Dropdown"
+import { useSubmitContext } from "@/context/SubmitFormContext"
+import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { obterUltimosMeses } from "@/functions/meses"
+import { useFetch } from "@/hooks/useFetch"
+import { api } from "@/services/api"
+import { IMeetingAssistance } from "@/types/types"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useAtomValue } from "jotai"
 import { useEffect, useState } from "react"
-import Input from "../../Input"
-import FormStyle from "../FormStyle"
-import InputError from "../../InputError"
-import { FormValues } from "./types"
+import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import * as yup from 'yup'
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from 'react-hook-form'
-import { useAtomValue } from "jotai"
-import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import { meses, obterUltimosMeses } from "@/functions/meses"
-import Dropdown from "@/Components/Dropdown"
-import Button from "@/Components/Button"
-import { api } from "@/services/api"
-import { useAuthContext } from "@/context/AuthContext"
-import { useSubmitContext } from "@/context/SubmitFormContext"
-import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
-import { useFetch } from "@/hooks/useFetch"
-import { IMeetingAssistance } from "@/entities/types"
-import Router from "next/router"
+import Input from "../../Input"
+import InputError from "../../InputError"
+import FormStyle from "../FormStyle"
+import { FormValues } from "./types"
 
 interface IFormAssistanceProps {
     congregation_id: string

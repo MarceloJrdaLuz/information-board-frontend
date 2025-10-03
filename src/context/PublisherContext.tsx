@@ -1,13 +1,13 @@
 import { showConfirmForceModal, showModalEmergencyContact } from "@/atoms/atom"
-import { ConsentRecordTypes, IEmergencyContact, ILinkPublisherToUser, IPublisherConsent, IUnlinkPublisherToUser } from "@/entities/types"
 import { api } from "@/services/api"
+import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/types/publishers"
+import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/types/reports"
+import { ConsentRecordTypes, IEmergencyContact, ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
 import { toast } from "react-toastify"
 import { useSubmitContext } from "./SubmitFormContext"
-import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/entities/reports"
-import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/entities/publishers"
 
 
 type PublisherContextTypes = {

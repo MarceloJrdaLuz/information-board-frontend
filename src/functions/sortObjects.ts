@@ -1,4 +1,4 @@
-import { ITerritoryHistory } from "@/entities/territory"
+import { ITerritoryHistory } from "@/types/territory"
 
 export function sortArrayByProperty<T>(array: T[], key: string): T[] {
   return [...array].sort((a, b) => {

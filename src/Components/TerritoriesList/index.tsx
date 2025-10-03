@@ -1,9 +1,9 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
-import { ITerritory } from "@/entities/territory"
 import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon, CircleIcon, FileClockIcon, InfoIcon, Trash } from "lucide-react"
+import { ITerritory } from "@/types/territory"
+import { ChevronDownIcon, CircleIcon, FileClockIcon, Trash } from "lucide-react"
 import moment from "moment"
 import Image from "next/image"
 import Router from "next/router"
@@ -11,10 +11,10 @@ import { useEffect, useState } from "react"
 import mapGeneric from '../../../public/images/mapGeneric.png'
 import Button from "../Button"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
+import EmptyState from "../EmptyState"
 import FullScreenImage from "../FullScreenImage"
 import EditIcon from "../Icons/EditIcon"
 import SkeletonTerritoriesList from "./skeletonTerritoriesList"
-import EmptyState from "../EmptyState"
 
 export default function TerritoriesList() {
     const { user, roleContains } = useAuthContext()

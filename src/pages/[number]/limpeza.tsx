@@ -1,20 +1,20 @@
+import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import NotFoundDocument from "@/Components/NotFoundDocument"
 import PdfViewer from "@/Components/PdfViewer"
+import Spiner from "@/Components/Spiner"
 import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
-import { Categories, ICongregation, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
+import { useFetch } from "@/hooks/useFetch"
+import { Categories, ICongregation, IDocument } from "@/types/types"
 import { useAtomValue } from "jotai"
+import { ChevronsLeftIcon } from "lucide-react"
+import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconClean from '../../../public/images/limpeza-gray.png'
-import Image from "next/image"
-import Button from "@/Components/Button"
-import { ChevronsLeftIcon } from "lucide-react"
-import NotFoundDocument from "@/Components/NotFoundDocument"
-import { useFetch } from "@/hooks/useFetch"
-import Spiner from "@/Components/Spiner"
 
 export default function Limpeza() {
     const router = useRouter()

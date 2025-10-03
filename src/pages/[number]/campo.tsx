@@ -1,24 +1,22 @@
 import Button from "@/Components/Button"
-import ButtonHome from "@/Components/ButtonHome"
 import HeadComponent from "@/Components/HeadComponent"
 import PreachingIcon from "@/Components/Icons/PreachingIcon"
 import PublicPreachingIcon from "@/Components/Icons/PublicPreachingIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
+import NotFoundDocument from "@/Components/NotFoundDocument"
 import PdfViewer from "@/Components/PdfViewer"
+import Spiner from "@/Components/Spiner"
 import { domainUrl } from "@/atoms/atom"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
-import { Categories, CongregationTypes, ICongregation, IDocument } from "@/entities/types"
 import { removeMimeType } from "@/functions/removeMimeType"
-import { api } from "@/services/api"
+import { useFetch } from "@/hooks/useFetch"
+import { Categories, ICongregation, IDocument } from "@/types/types"
 import { useAtomValue } from "jotai"
 import { ChevronsLeftIcon } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
-import NotFoundDocument from "@/Components/NotFoundDocument"
-import { useFetch } from "@/hooks/useFetch"
-import Spiner from "@/Components/Spiner"
 
 export default function Campo() {
     const router = useRouter()

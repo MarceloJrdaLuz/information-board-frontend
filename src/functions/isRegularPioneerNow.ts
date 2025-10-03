@@ -1,4 +1,4 @@
-import { IPublisher } from "@/entities/types"
+import { IPublisher } from "@/types/types"
 import moment from "moment"
 require('moment/locale/pt-br')
 

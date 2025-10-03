@@ -1,23 +1,23 @@
 import {
-  additionalsPrivilegeOptions,
-  genderOptions,
-  hopeOptions,
-  pioneerOptions,
-  privilegeOptions,
-  situationOptions,
+    additionalsPrivilegeOptions,
+    genderOptions,
+    hopeOptions,
+    pioneerOptions,
+    privilegeOptions,
+    situationOptions,
 } from "@/constants/publisherOptions"
 import { usePublisherContext } from "@/context/PublisherContext"
-import { IPublisher, Privileges } from "@/entities/types"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
+import { IPayloadUpdatePublisher } from "@/types/publishers"
+import { IPublisher, Privileges } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { FormValues } from "../type"
 import { publisherEditSchema } from "../validations"
-import { IPayloadUpdatePublisher } from "@/entities/publishers"
 
 export function useEditPublisherForm(id: string) {
   const { updatePublisher } = usePublisherContext()

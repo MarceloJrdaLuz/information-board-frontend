@@ -1,22 +1,21 @@
-import { useAuthContext } from "@/context/AuthContext"
-import { IPublisher, IReports, Privileges, Situation } from "@/entities/types"
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import avatarMale from '../../../public/images/avatar-male.png'
-import avatarFemale from '../../../public/images/avatar-female.png'
-import  { useRouter } from "next/router"
-import { useFetch } from "@/hooks/useFetch"
-import { ChevronDownIcon, Trash } from "lucide-react"
-import { usePublisherContext } from "@/context/PublisherContext"
-import { sortArrayByProperty } from "@/functions/sortObjects"
-import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
-import FilterPrivileges from "../FilterPrivileges"
-import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
-import CheckboxBoolean from "../CheckboxBoolean"
-import { useAtom } from "jotai"
 import { reportsAtom } from "@/atoms/atom"
+import { useAuthContext } from "@/context/AuthContext"
+import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
+import { isPioneerNow } from "@/functions/isRegularPioneerNow"
+import { sortArrayByProperty } from "@/functions/sortObjects"
+import { useFetch } from "@/hooks/useFetch"
+import { IPublisher, IReports, Privileges, Situation } from "@/types/types"
+import { useAtom } from "jotai"
+import { ChevronDownIcon } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import avatarFemale from '../../../public/images/avatar-female.png'
+import avatarMale from '../../../public/images/avatar-male.png'
+import CheckboxBoolean from "../CheckboxBoolean"
+import FilterPrivileges from "../FilterPrivileges"
 import FormReportManually from "../Forms/FormReportManually"
+import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
 export default function PublisherListReports() {
     const { user } = useAuthContext()

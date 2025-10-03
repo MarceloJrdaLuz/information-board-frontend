@@ -1,13 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import { api } from "@/services/api"
-import { IDocument, IFile } from "@/entities/types"
 import { useFetch } from "@/hooks/useFetch"
-import { v4 as uuidv4 } from "uuid"
+import { api } from "@/services/api"
+import { IDocument, IFile } from "@/types/types"
+import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { filesize } from "filesize"
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { useCongregationContext } from "./CongregationContext"
 import { useSubmitContext } from "./SubmitFormContext"
-import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
@@ -180,4 +179,4 @@ function useDocumentsContext(): DocumentsContextTypes {
     return context
 }
 
-export { DocumentsProvider, useDocumentsContext, }
+export { DocumentsProvider, useDocumentsContext }

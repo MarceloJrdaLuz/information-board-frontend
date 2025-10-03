@@ -1,9 +1,9 @@
 "use client"
-import { useEffect, useState } from "react"
+import { IPublicSchedule } from "@/types/weekendSchedule"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { IPublicSchedule } from "@/entities/weekendSchedule"
 import moment from "moment"
 import "moment/locale/pt-br"
+import { useEffect, useState } from "react"
 moment.locale("pt-br")
 
 export type ScheduleResponse = Record<string, IPublicSchedule[]>

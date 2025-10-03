@@ -1,6 +1,6 @@
-import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/entities/types"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsPast } from "@/functions/meses"
+import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/types/types"
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import moment from "moment"
 

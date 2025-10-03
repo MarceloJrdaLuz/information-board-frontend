@@ -1,4 +1,3 @@
-import { IWeekendSchedule } from "@/entities/weekendSchedule"
 
 export type CreateExternalTalksPayload = {
   destinationCongregation_id: string

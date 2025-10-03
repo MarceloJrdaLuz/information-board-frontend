@@ -1,4 +1,6 @@
-import { ICongregation } from "@/entities/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
+import { ICongregation } from "@/types/types"
+import { formatNameCongregation } from "@/utils/formatCongregationName"
 import {
     List,
     Popover,
@@ -8,8 +10,6 @@ import {
 import { ListFilterIcon } from "lucide-react"
 import Button from "../Button"
 import CheckboxUniqueObject from "../CheckBoxUniqueObject"
-import { formatNameCongregation } from "@/utils/formatCongregationName"
-import { sortArrayByProperty } from "@/functions/sortObjects"
 
 interface IFIlterSpeakersCongregationProps {
     handleCheckboxChange: (selectedCongregationId: string) => void

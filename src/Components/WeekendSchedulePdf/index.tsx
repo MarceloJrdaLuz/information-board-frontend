@@ -1,4 +1,4 @@
-import { IWeekendScheduleWithExternalTalks } from "@/entities/weekendSchedule";
+import { IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
 import { Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import moment from "moment";

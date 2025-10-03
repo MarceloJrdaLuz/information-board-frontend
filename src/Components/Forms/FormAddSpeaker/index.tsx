@@ -7,8 +7,9 @@ import DropdownMulti from '@/Components/DropdownMulti'
 import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { ICongregation, IPublisher, ITalk } from '@/entities/types'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { ICongregation, IPublisher, ITalk } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
@@ -17,7 +18,6 @@ import { toast } from 'react-toastify'
 import { createSpeakerAtom } from '../../../atoms/speakerAtoms'
 import FormStyle from '../FormStyle'
 import { FormValues, SpeakerFormData } from './type'
-import { sortArrayByProperty } from '@/functions/sortObjects'
 
 
 export default function FormAddSpeaker() {

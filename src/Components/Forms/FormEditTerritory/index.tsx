@@ -1,12 +1,13 @@
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
+import Dropdown from '@/Components/Dropdown'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import TextArea from '@/Components/TextArea'
 import { API_ROUTES } from '@/constants/apiRoutes'
 import { useTerritoryContext } from '@/context/TerritoryContext'
-import { ITerritory } from '@/entities/territory'
 import { useFetch } from '@/hooks/useFetch'
+import { ITerritory } from '@/types/territory'
 import { useAtom, useAtomValue } from 'jotai'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -14,7 +15,6 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues, IUpdateTerritory } from './type'
-import Dropdown from '@/Components/Dropdown'
 
 
 

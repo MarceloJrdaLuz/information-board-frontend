@@ -8,9 +8,9 @@ import S13 from "@/Components/S13"
 import TerritoriesList from "@/Components/TerritoriesList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useTerritoryContext } from "@/context/TerritoryContext"
-import { ITerritoryWithHistories } from "@/entities/territory"
 import { getYearService } from "@/functions/meses"
 import { getAPIClient } from "@/services/axios"
+import { ITerritoryWithHistories } from "@/types/territory"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'

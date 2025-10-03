@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react"
-import Input from "../../Input"
-import FormStyle from "../FormStyle"
-import InputError from "../../InputError"
-import { FormValues } from "./types"
-import { toast } from 'react-toastify'
-import * as yup from 'yup'
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from 'react-hook-form'
-import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/entities/types"
-import { usePublisherContext } from "@/context/PublisherContext"
-import Button from "@/Components/Button"
-import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import 'moment/locale/pt-br'
-import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
-import { useRouter } from "next/router"
+import Button from "@/Components/Button"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
+import { usePublisherContext } from "@/context/PublisherContext"
+import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { IPayloadCreateReportManually } from "@/types/reports"
+import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/types/types"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useAtomValue } from "jotai"
 import { Trash } from "lucide-react"
-import { IPayloadCreateReportManually } from "@/entities/reports"
+import 'moment/locale/pt-br'
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import * as yup from 'yup'
+import Input from "../../Input"
+import InputError from "../../InputError"
+import FormStyle from "../FormStyle"
+import { FormValues } from "./types"
 
 interface IRelatorioFormProps {
     report: IReports | null
@@ -82,11 +82,10 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
             year: splitMonth[1],
             observations,
             publisher: {
-                id: report?.publisher?.id ?? "",
+                id: publisher?.id ?? "",
                 privileges: [privilege]
             },
             studies: Number(studies)
-
         }
         toast.promise(
             createReportManually(payload),

@@ -20,14 +20,12 @@ import {
     updateWeekendScheduleAtom
 } from "@/atoms/weekendScheduleAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { IExternalTalk } from "@/entities/externalTalks"
-import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/entities/weekendSchedule"
-import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
+import { IExternalTalk } from "@/types/externalTalks"
+import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { getSaturdays } from "@/utils/dateUtil"
-import { AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/20/solid"
-import { Card, CardBody, CardHeader, Option, Select } from "@material-tailwind/react"
+import { Card, CardBody, Option, Select } from "@material-tailwind/react"
 import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronDown, ChevronUp } from "lucide-react"
@@ -163,7 +161,7 @@ export default function WeekendSchedulePage() {
                 )
             setWeekendSchedules(weekendSchedulesByDate)
         }
-    }, [data])
+    }, [data, setChairmans, setReaders, setCongregations, setSpeakers, setTalks, setWeekendSchedules])
 
     useEffect(() => {
         setPageActive("Programação")

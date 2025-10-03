@@ -1,4 +1,4 @@
-import { EndweekDays, ICongregation } from "@/entities/types";
+import { EndweekDays } from "@/types/types";
 
 export type FormValues = {
     name: string

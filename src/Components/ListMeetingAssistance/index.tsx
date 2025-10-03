@@ -1,6 +1,6 @@
-import { IMeetingAssistance } from "@/entities/types"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear } from "@/functions/meses"
+import { IMeetingAssistance } from "@/types/types"
 import { useEffect, useMemo, useState } from "react"
 import SkeletonAssistanceList from "./skeletonAssistanceList"
 import { IListItemsProps } from "./types"

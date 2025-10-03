@@ -1,4 +1,4 @@
-import { ITotalsReports } from "@/entities/types"
+import { ITotalsReports } from "@/types/types"
 import { capitalizeFirstLetter } from "./isAuxPioneerMonthNow"
 
 export const normalizeTotalsReports = (data: ITotalsReports) => {

@@ -1,4 +1,4 @@
-import { IReports } from "@/entities/types"
+import { IReports } from "@/types/types"
 
 interface ReportTableProps {
   reports: IReports[] | undefined

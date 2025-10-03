@@ -1,17 +1,16 @@
-import {
-    Popover,
-    PopoverHandler,
-    PopoverContent,
-    List,
-} from "@material-tailwind/react"
-import Button from "../Button"
-import { IGroup } from "@/entities/types"
-import { useEffect, useState } from "react"
-import CheckboxMultiple from "../CheckBoxMultiple"
-import GroupIcon from "../Icons/GroupIcon"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
+import { IGroup } from "@/types/types"
+import {
+    List,
+    Popover,
+    PopoverContent,
+    PopoverHandler,
+} from "@material-tailwind/react"
+import { useEffect, useState } from "react"
+import Button from "../Button"
 import CheckboxGroups from "../CheckBoxGroups"
+import GroupIcon from "../Icons/GroupIcon"
 
 interface IFilterGroupsProps {
     handleCheckboxChange: (selectedOptions: string[]) => void

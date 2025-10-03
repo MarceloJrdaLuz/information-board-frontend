@@ -1,10 +1,10 @@
-import { ICongregation, IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "@/entities/types"
-import { IRecordWeekendSchedule, IWeekendSchedule } from "@/entities/weekendSchedule"
-import { atom } from "jotai"
-import { CreateWeekendSchedulePayload, UpdateWeekendSchedulePayload } from "./types"
 import { api } from "@/services/api"
+import { IExternalTalk } from "@/types/externalTalks"
+import { ICongregation, IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "@/types/types"
+import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
+import { atom } from "jotai"
 import { toast } from "react-toastify"
-import { IExternalTalk } from "@/entities/externalTalks"
+import { CreateWeekendSchedulePayload, UpdateWeekendSchedulePayload } from "./types"
 
 export const schedulesAtom = atom<Record<string, IRecordWeekendSchedule>>({})
 export const speakersAtom = atom<ISpeaker[] | null>(null)

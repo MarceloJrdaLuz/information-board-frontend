@@ -1,8 +1,8 @@
 // PublisherItem.tsx
-import React, { ReactNode, useEffect } from 'react'
+import { selectedPublishersToS21Atom } from '@/atoms/atom'
+import { IPublisher } from '@/types/types'
 import { useAtom } from 'jotai'
-import { selectedPublishersAtom, selectedPublishersToS21Atom } from '@/atoms/atom'
-import { IPublisher } from '@/entities/types'
+import { ReactNode } from 'react'
 
 interface IPublisherItemProps {
     publisher: IPublisher

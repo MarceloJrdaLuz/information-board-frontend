@@ -1,8 +1,7 @@
-import React from 'react'
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer'
-import { getMonthsByYear, } from "@/functions/meses"
-import { IMeetingAssistance } from "@/entities/types"
 import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
+import { getMonthsByYear, } from "@/functions/meses"
+import { IMeetingAssistance } from "@/types/types"
+import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 export interface S88Props {
     meetingAssistance?: IMeetingAssistance[]

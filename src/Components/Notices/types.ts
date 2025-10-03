@@ -1,4 +1,4 @@
-import { INotice } from "@/entities/types"
+import { INotice } from "@/types/types"
 
 export interface INoticesProps {
     notices: INotice[] | undefined

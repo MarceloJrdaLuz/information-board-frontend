@@ -1,5 +1,5 @@
-import { ITalk } from "@/entities/types"
-import { IRecordWeekendSchedule } from "@/entities/weekendSchedule"
+import { ITalk } from "@/types/types"
+import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
 import moment from "moment"
 
 export function buildTalkOptions(

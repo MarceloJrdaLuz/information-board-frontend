@@ -1,7 +1,7 @@
-import { IPublisher } from "@/entities/types"
 import { reduzirNome } from "@/functions/reduzirNome"
-import { FullNameShow } from "../FullNameShow"
+import { IPublisher } from "@/types/types"
 import { CheckSquareIcon, SquareIcon } from "lucide-react"
+import { FullNameShow } from "../FullNameShow"
 
 interface ModalRelatorioProps {
     month: string

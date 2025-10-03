@@ -1,11 +1,11 @@
 import { useCongregationContext } from "@/context/CongregationContext"
-import { ICongregation } from "@/entities/types"
 import { api } from "@/services/api"
-import {  useEffect, useState } from "react"
-import CardCongregation from "../CardCongregation"
-import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
+import { ICongregation } from "@/types/types"
 import { PlusIcon } from "lucide-react"
 import Router from "next/router"
+import { useEffect, useState } from "react"
+import CardCongregation from "../CardCongregation"
+import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
 
 
 export default function ListCongregations() {

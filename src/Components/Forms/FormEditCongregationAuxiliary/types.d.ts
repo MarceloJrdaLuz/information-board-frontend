@@ -1,4 +1,3 @@
-import { ICongregation } from "@/entities/types";
 
 export type FormValues = {
     name?: string

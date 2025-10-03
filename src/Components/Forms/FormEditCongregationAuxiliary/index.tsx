@@ -1,20 +1,19 @@
 import * as yup from 'yup'
 
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { selectedAuxiliaryCongregationAtom, updateAuxiliaryCongregationAtom } from '@/atoms/auxiliaryCongregationAtoms'
 import Button from '@/Components/Button'
+import CheckboxBoolean from '@/Components/CheckboxBoolean'
 import Dropdown from '@/Components/Dropdown'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useCongregationContext } from '@/context/CongregationContext'
-import { CongregationTypeEnum, EndweekDays, ICongregation } from '@/entities/types'
+import { EndweekDays } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
-import CheckboxBoolean from '@/Components/CheckboxBoolean'
-import { selectedAuxiliaryCongregationAtom, updateAuxiliaryCongregationAtom } from '@/atoms/auxiliaryCongregationAtoms'
 import { FormValues } from './types'
 
 export default function FormEditCongregationAuxiliary() {

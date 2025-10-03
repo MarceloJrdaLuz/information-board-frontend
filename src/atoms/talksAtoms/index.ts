@@ -1,8 +1,8 @@
-import { atom } from "jotai"
 import { api } from "@/services/api"
+import { ITalk } from "@/types/types"
+import { atom } from "jotai"
 import { toast } from "react-toastify"
 import { CreateTalkPayload, UpdateTalkPayload } from "./types"
-import { ITalk } from "@/entities/types"
 
 export const createTalkAtom = atom(
   null, // valor inicial → write-only atom

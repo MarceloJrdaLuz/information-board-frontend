@@ -1,15 +1,15 @@
+import { IPublisher } from "@/types/types"
 import {
-    Popover,
-    PopoverHandler,
-    PopoverContent,
     List,
     ListItem,
+    Popover,
+    PopoverContent,
+    PopoverHandler,
 } from "@material-tailwind/react"
-import Button from "../Button"
-import { ChevronDownIcon, CopyCheck, CopyIcon } from "lucide-react"
-import { IPublisher } from "@/entities/types"
 import clipboard from 'clipboard'
+import { ChevronDownIcon, CopyCheck, CopyIcon } from "lucide-react"
 import { useState } from "react"
+import Button from "../Button"
 
 interface IModalReportsModal {
     missingReportsNumber: number

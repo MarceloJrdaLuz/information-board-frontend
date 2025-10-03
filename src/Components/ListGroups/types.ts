@@ -1,4 +1,4 @@
-import { IGroup } from "@/entities/types"
+import { IGroup } from "@/types/types"
 
 export interface IListItemsProps {
     items: IGroup[]

@@ -1,5 +1,5 @@
-import { ITerritoryWithHistories } from '@/entities/territory'
 import { getYearService } from '@/functions/meses'
+import { ITerritoryWithHistories } from '@/types/territory'
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import moment from 'moment'
 import React from 'react'
