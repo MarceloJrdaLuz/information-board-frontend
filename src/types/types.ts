@@ -159,6 +159,7 @@ export interface IPublisher {
     phone?: string
     emergencyContact?: IEmergencyContact
     user?: UserTypes
+    hospitalityGroup?: IHospitalityGroup
 }
 
 export interface IPublisherList {

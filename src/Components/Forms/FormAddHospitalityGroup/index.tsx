@@ -1,4 +1,9 @@
 import * as yup from 'yup'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { toast } from 'react-toastify'
+import { useAtomValue, useSetAtom } from 'jotai'
 
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import { createHospitalityGroupAtom } from '@/atoms/hospitalityGroupsAtoms'
@@ -8,70 +13,70 @@ import DropdownMulti from '@/Components/DropdownMulti'
 import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useCongregationContext } from '@/context/CongregationContext'
-import { sortArrayByProperty } from '@/functions/sortObjects'
-import { useFetch } from '@/hooks/useFetch'
-import { IPublisher } from '@/types/types'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-
+import { useCongregationContext } from '@/context/CongregationContext'
+import { useFetch } from '@/hooks/useFetch'
+import { IPublisher, IHospitalityGroup } from '@/types/types'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 export default function FormAddHospitalityGroup() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
+
     const createHospitalityGroup = useSetAtom(createHospitalityGroupAtom)
-
-    const { data: getPublishers } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregation_id ?? ""}`)
-
-    const [selectedPublisherHost, setSelectedPublisherHost] = useState<IPublisher | null>(null)
-    const [selectedGroupMembers, setSelectedGroupMembers] = useState<IPublisher[]>()
-
-    const allPublishers = sortArrayByProperty(getPublishers ?? [], "fullName")
-
-    // lista de hosts (remove quem já é membro)
-    const hosts = allPublishers.filter(
-        p => !selectedGroupMembers?.some(m => m.id === p.id)
-    )
-
-    // lista de membros (remove quem já é host)
-    const members = allPublishers.filter(
-        p => p.id !== selectedPublisherHost?.id
-    )
-
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
+
+    // Buscando todos os publishers
+    const { data: getPublishers } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregation_id ?? ""}`)
+    const allPublishers = sortArrayByProperty(getPublishers ?? [], "fullName")
+
+    // Buscando todos os grupos existentes para filtrar hosts/membros já ocupados
+    const { data: hospitalityGroups } = useFetch<IHospitalityGroup[]>(`/congregation/${congregation_id ?? ""}/hospitalityGroups`)
+    
+    const occupiedPublisherIds = hospitalityGroups?.flatMap(group => [
+        ...(group.host?.id ? [group.host.id] : []),
+        ...(group.members?.map(m => m.id) ?? [])
+    ]) ?? []
+
+    const [selectedPublisherHost, setSelectedPublisherHost] = useState<IPublisher | null>(null)
+    const [selectedGroupMembers, setSelectedGroupMembers] = useState<IPublisher[]>([])
+
+    // Hosts disponíveis (não ocupados por nenhum grupo)
+    const hosts = allPublishers.filter(
+        p => !occupiedPublisherIds.includes(p.id)
+    )
+
+    // Membros disponíveis (não ocupados e não o host selecionado)
+    const members = allPublishers.filter(
+        p => !occupiedPublisherIds.includes(p.id) && p.id !== selectedPublisherHost?.id
+    )
 
     const schemaValidation = yup.object({
         name: yup.string().required()
     })
 
-
-    const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
-        defaultValues: {
-            name: '',
-        },
+    const { register, reset, handleSubmit, formState: { errors } } = useForm<FormValues>({
+        defaultValues: { name: '' },
         resolver: yupResolver(schemaValidation)
     })
 
     function onSubmit(data: FormValues) {
-        const publisherHost_id = selectedPublisherHost?.id
-        const member_ids = selectedGroupMembers?.map(m => m.id)
-
         const payload: CreateHospitalityGroupPayload = {
             name: data.name,
-            publisherHost_id: publisherHost_id,
-            member_ids
+            publisherHost_id: selectedPublisherHost?.id,
+            member_ids: selectedGroupMembers.map(m => m.id)
         }
+
         toast.promise(createHospitalityGroup(congregation_id ?? "", payload), {
             pending: 'Criando novo grupo de hospitalidade...',
         })
+
         reset()
+        setSelectedPublisherHost(null)
+        setSelectedGroupMembers([])
     }
 
     function onError(error: any) {
@@ -81,14 +86,17 @@ export default function FormAddHospitalityGroup() {
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo grupo</div>
+                <div className="w-full h-fit flex-col justify-center items-center">
+                    <div className="my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200">
+                        Novo grupo
+                    </div>
 
-                    <Input type="text" placeholder="Nome do grupo" registro={{
-                        ...register('name',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.name?.message ? 'invalido' : ''} />
+                    <Input
+                        type="text"
+                        placeholder="Nome do grupo"
+                        registro={{ ...register('name', { required: "Campo obrigatório" }) }}
+                        invalid={errors?.name?.message ? 'invalido' : ''}
+                    />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
                     <DropdownObject<IPublisher>
@@ -108,7 +116,7 @@ export default function FormAddHospitalityGroup() {
                         <DropdownMulti<IPublisher>
                             title="Selecione os membros"
                             items={members}
-                            selectedItems={selectedGroupMembers ?? []}
+                            selectedItems={selectedGroupMembers}
                             handleChange={setSelectedGroupMembers}
                             border
                             full
@@ -120,8 +128,10 @@ export default function FormAddHospitalityGroup() {
                         />
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Criar grupo</Button>
+                    <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">
+                        <Button error={dataError} disabled={disabled} success={dataSuccess} type='submit'>
+                            Criar grupo
+                        </Button>
                     </div>
                 </div>
             </FormStyle>

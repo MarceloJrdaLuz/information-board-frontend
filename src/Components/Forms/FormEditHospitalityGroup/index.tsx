@@ -34,14 +34,27 @@ export default function FormEditHospitalityGroup() {
 
     const allPublishers = sortArrayByProperty(getPublishers ?? [], "fullName")
 
-    // lista de hosts (remove quem já é membro)
     const hosts = allPublishers.filter(
-        p => !selectedGroupMembers?.some(m => m.id === p.id)
+        p =>
+            // não é membro do grupo atual
+            !selectedGroupMembers?.some(m => m.id === p.id) &&
+            // ou não é o host atual
+            p.id !== selectedPublisherHost?.id &&
+            // não está em outro grupo ou está neste grupo
+            (!p.hospitalityGroup || p.hospitalityGroup.id === selectedHospitalityGroup?.id)
     )
-    const members = allPublishers.map(p => {
-        const selected = selectedGroupMembers?.find(m => m.id === p.id)
-        return selected ?? p
-    }).filter(p => p.id !== selectedPublisherHost?.id)
+    
+    const members = allPublishers
+        .filter(p =>
+            // não é o host atual
+            p.id !== selectedPublisherHost?.id &&
+            // não está em outro grupo ou está neste grupo
+            (!p.hospitalityGroup || p.hospitalityGroup.id === selectedHospitalityGroup?.id)
+        )
+        .map(p => {
+            const selected = selectedGroupMembers?.find(m => m.id === p.id)
+            return selected ?? p
+        })
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)

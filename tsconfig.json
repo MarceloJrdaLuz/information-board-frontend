@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2015",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -20,6 +20,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/Components/NavBar/NavBarOptionIcon.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/Components/NavBar/NavBarOptionIcon.tsx", "src/types/hospitality/index.ts"],
   "exclude": ["node_modules"]
 }

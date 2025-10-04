@@ -7,7 +7,7 @@ interface ICheckbox {
 }
 
 export default function CheckboxBoolean(props: ICheckbox) {
-  const [checked, setChecked] = useState(props.checked || false)
+  const [checked, setChecked] = useState<boolean>(props.checked ?? false)
 
   useEffect(()=> {
     if (props.checked !== undefined) {
@@ -26,7 +26,7 @@ export default function CheckboxBoolean(props: ICheckbox) {
       </label>
       <input
         type="checkbox"
-        checked={checked}
+        checked={checked ?? false}
         onChange={(e) => handleCheckboxChange(e.target.checked)}
         className="w-4 h-4 cursor-pointer text-primary-200 bg-gray-100 border-gray-300 rounded focus:bg-primary-200 accent-primary-200  mr-2"
       />
