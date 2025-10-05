@@ -14,6 +14,8 @@ export interface IPublicSchedule {
   talk?: { title: string; number: number }
   watchTowerStudyTitle?: string
   externalTalks?: IExternalTalkPublic[]
+  hospitality: IHospitalityGroupPublic[]
+
 }
 
 export interface IExternalTalkPublic {
@@ -28,6 +30,14 @@ export interface IExternalTalkPublic {
   } | null
   manualTalk?: string | null
   destinationCongregation: string | null
+}
+
+export interface IHospitalityGroupPublic {
+  eventType: IHospitalityEventType
+  completed: boolean
+  group: string
+  host: string
+  members: string[]
 }
 export interface IWeekendSchedule {
   id?: string
