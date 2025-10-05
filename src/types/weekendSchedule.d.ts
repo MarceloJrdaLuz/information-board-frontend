@@ -13,9 +13,22 @@ export interface IPublicSchedule {
   speaker?: { name: string; congregation?: string }
   talk?: { title: string; number: number }
   watchTowerStudyTitle?: string
+  externalTalks?: IExternalTalkPublic[]
 }
 
-
+export interface IExternalTalkPublic {
+  id: string
+  date: string
+  speaker?: {
+    name: string
+  } | null
+  talk?: {
+    title: string
+    number: number
+  } | null
+  manualTalk?: string | null
+  destinationCongregation: string | null
+}
 export interface IWeekendSchedule {
   id?: string
   date: string
@@ -43,7 +56,7 @@ export interface IRecordWeekendSchedule {
   chairman_id?: string
   reader_id?: string
   hospitalityGroup_id?: string
-  isSpecial?: boolean 
+  isSpecial?: boolean
   specialName?: string
   manualTalk?: string
   manualSpeaker?: string

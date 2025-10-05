@@ -111,6 +111,32 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                     </span>
                   )}
                 </div>
+                {item.externalTalks && item.externalTalks.length > 0 && (
+                  <div className="mt-3 border-t m-6 border-gray-600">
+                    <p className="font-semibold text-sm text-gray-700 my-2">Oradores que saem:</p>
+                    <div className="space-y-2">
+                      {item.externalTalks.map(ext => (
+                        <div
+                          key={ext.id}
+                          className="flex items-start gap-2 p-2 rounded-md"
+                        >
+                          <div className="text-sm text-gray-700">
+                            <p className="font-medium">
+                              {ext.speaker?.name}
+                            </p>
+                            <p className="text-gray-600">
+                              {ext.talk?.number ? `${ext.talk.number} - ${ext.talk.title}` : ext.talk?.title}
+                              {ext.destinationCongregation && (
+                                <span className="italic text-gray-500"> ({ext.destinationCongregation})</span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
             ))}
           </div>
