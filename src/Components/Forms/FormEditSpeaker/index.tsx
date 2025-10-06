@@ -80,6 +80,7 @@ export default function FormEditSpeaker() {
             pending: 'Atualizando orador...',
         })
         reset()
+        
     }
 
     function onError(error: any) {

@@ -46,7 +46,14 @@ export default function FormAddSpeaker() {
             ? yup.object({}) // nada required se for publisher
             : yup.object({
                 fullName: yup.string().required('Campo obrigatório'),
-                phone: yup.string().matches(/^\(\d{2}\) \d{5}-\d{4}$/, 'Telefone inválido'),
+                phone: yup
+                    .string()
+                    .nullable()
+                    .notRequired()
+                    .test('is-valid-phone', 'Telefone inválido', value => {
+                        if (!value) return true; // aceita vazio
+                        return /^\(\d{2}\) \d{5}-\d{4}$/.test(value); // valida formato se preenchido
+                    }),
                 address: yup.string().notRequired()
             }))
     })
@@ -75,6 +82,8 @@ export default function FormAddSpeaker() {
         reset()
         setSelectedTalks(null)
         setSelectedSpeakerCongregation(null)
+        setSelectedPublisher(null)
+        setSpeakerIsPublisher(false)
     }
 
     function onError(error: any) {

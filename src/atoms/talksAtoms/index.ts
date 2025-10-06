@@ -9,7 +9,6 @@ export const createTalkAtom = atom(
   async (_get, _set, payload: CreateTalkPayload) => {
     try {
       const res = await api.post("/talk", payload)
-
       toast.success("Discurso criado com sucesso!")
       return res.data
     } catch (err: any) {

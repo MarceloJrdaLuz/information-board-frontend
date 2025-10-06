@@ -3,13 +3,13 @@ import { ISpeaker } from "@/types/types"
 import { atom } from "jotai"
 import { toast } from "react-toastify"
 import { CreateSpeakerPayload, UpdateSpeakerPayload } from "./types"
+import { handleSubmitSuccessAtom } from "../handleSubmitAtom"
 
 export const createSpeakerAtom = atom(
   null, // valor inicial → write-only atom
   async (_get, _set, payload: CreateSpeakerPayload) => {
     try {
       const res = await api.post("/speaker", payload)
-
       toast.success("Orador criado com sucesso!")
       return res.data
     } catch (err: any) {
@@ -32,10 +32,11 @@ export const updateSpeakerAtom = atom(
   null, // valor inicial → write-only atom
   async (_get, _set, speaker_id: string, payload: UpdateSpeakerPayload) => {
     try {
-      console.log(speaker_id)
-    const res = await api.patch( `/speaker/${speaker_id}`, payload)
-
-      toast.success("Orador atualizado com sucesso!")
+      const res = await api.patch(`/speaker/${speaker_id}`, payload)
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Orador atualizado com sucesso!",
+        redirectTo: "/arranjo-oradores/oradores", 
+      })
       return res.data
     } catch (err: any) {
       const message = err?.response?.data?.message
