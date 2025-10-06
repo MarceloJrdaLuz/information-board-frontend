@@ -90,7 +90,7 @@ export default function FormEditSpeaker() {
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo orador</div>
+                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar orador</div>
 
                     <CheckboxBoolean
                         checked={speakerIsPublisher}

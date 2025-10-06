@@ -91,6 +91,7 @@ export default function HospitalityWeekendPage() {
             setCreateHospitalityWeekend(congregation_id ?? "", { weekends: alteredWeekends }),
             { pending: "Salvando arranjos..." }
         );
+        mutate()
     };
 
     return (

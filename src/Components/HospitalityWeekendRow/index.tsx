@@ -180,7 +180,7 @@ export default function HospitalityRow({ date }: Props) {
 
             {selectedAssignment?.id && (
               <CheckboxBoolean
-                label="Lanche dado"
+                label="Confirmado"
                 checked={selectedAssignment.completed}
                 handleCheckboxChange={checked =>
                   onCompletedChange(selectedAssignment, checked)
