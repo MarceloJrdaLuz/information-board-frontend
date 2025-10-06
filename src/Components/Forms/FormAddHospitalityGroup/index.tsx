@@ -19,6 +19,7 @@ import { useCongregationContext } from '@/context/CongregationContext'
 import { useFetch } from '@/hooks/useFetch'
 import { IPublisher, IHospitalityGroup } from '@/types/types'
 import { sortArrayByProperty } from '@/functions/sortObjects'
+import { IFormDataHospitalityGroup } from '@/types/hospitality'
 
 export default function FormAddHospitalityGroup() {
     const { congregation } = useCongregationContext()
@@ -29,30 +30,36 @@ export default function FormAddHospitalityGroup() {
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
-    // Buscando todos os publishers
-    const { data: getPublishers } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregation_id ?? ""}`)
-    const allPublishers = sortArrayByProperty(getPublishers ?? [], "fullName")
-
-    // Buscando todos os grupos existentes para filtrar hosts/membros já ocupados
-    const { data: hospitalityGroups } = useFetch<IHospitalityGroup[]>(`/congregation/${congregation_id ?? ""}/hospitalityGroups`)
-    
-    const occupiedPublisherIds = hospitalityGroups?.flatMap(group => [
-        ...(group.host?.id ? [group.host.id] : []),
-        ...(group.members?.map(m => m.id) ?? [])
-    ]) ?? []
-
     const [selectedPublisherHost, setSelectedPublisherHost] = useState<IPublisher | null>(null)
     const [selectedGroupMembers, setSelectedGroupMembers] = useState<IPublisher[]>([])
+    const { data } = useFetch<IFormDataHospitalityGroup>(`/form-data?form=hospitalityGroup`)
 
-    // Hosts disponíveis (não ocupados por nenhum grupo)
-    const hosts = allPublishers.filter(
-        p => !occupiedPublisherIds.includes(p.id)
+    const publishersInGroups = new Set<string>()
+
+    data?.hospitalityGroups?.forEach(group => {
+        if (group.host) publishersInGroups.add(group.host.id)
+        group.members?.forEach((m: IPublisher) => publishersInGroups.add(m.id))
+    })
+
+    const allPublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
+    const hosts = allPublishers?.filter(p =>
+        // exclui quem já está em grupo 
+        !publishersInGroups.has(p.id) &&
+
+        // não pode ser membro já selecionado
+        !selectedGroupMembers?.some(m => m.id === p.id)
     )
 
-    // Membros disponíveis (não ocupados e não o host selecionado)
-    const members = allPublishers.filter(
-        p => !occupiedPublisherIds.includes(p.id) && p.id !== selectedPublisherHost?.id
-    )
+    const members = allPublishers.filter(p =>
+        // exclui o host atual
+        p.id !== selectedPublisherHost?.id &&
+
+        // exclui quem está em outro grupo que não é o atual
+        !publishersInGroups.has(p.id)
+    ).map(p => {
+        const selected = selectedGroupMembers?.find(m => m.id === p.id)
+        return selected ?? p
+    })
 
     const schemaValidation = yup.object({
         name: yup.string().required()

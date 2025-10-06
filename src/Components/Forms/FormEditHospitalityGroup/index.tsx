@@ -19,42 +19,46 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
+import { IFormDataHospitalityGroup } from '@/types/hospitality'
 
 
 export default function FormEditHospitalityGroup() {
-    const { congregation } = useCongregationContext()
-    const congregation_id = congregation?.id
     const updateHospitalityGroup = useSetAtom(updateHospitalityGroupAtom)
     const selectedHospitalityGroup = useAtomValue(selectedHospitalityGroupAtom)
 
-    const { data: getPublishers } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregation_id}`)
-
+    const { data } = useFetch<IFormDataHospitalityGroup>(`/form-data?form=hospitalityGroup`)
+    const publishersInGroups = new Set<string>()
     const [selectedPublisherHost, setSelectedPublisherHost] = useState<IPublisher | null>(selectedHospitalityGroup?.host ?? null)
     const [selectedGroupMembers, setSelectedGroupMembers] = useState<IPublisher[]>(selectedHospitalityGroup?.members ?? [])
 
-    const allPublishers = sortArrayByProperty(getPublishers ?? [], "fullName")
+    data?.hospitalityGroups?.forEach(group => {
+        if (group.host) publishersInGroups.add(group.host.id)
+        group.members?.forEach((m: IPublisher) => publishersInGroups.add(m.id))
+    })
 
-    const hosts = allPublishers.filter(
-        p =>
-            // não é membro do grupo atual
-            !selectedGroupMembers?.some(m => m.id === p.id) &&
-            // ou não é o host atual
-            p.id !== selectedPublisherHost?.id &&
-            // não está em outro grupo ou está neste grupo
-            (!p.hospitalityGroup || p.hospitalityGroup.id === selectedHospitalityGroup?.id)
+    const allPublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
+    const hosts = allPublishers?.filter(p =>
+        // exclui quem já está em grupo diferente do grupo atual
+        (!publishersInGroups.has(p.id) ||
+            p.id === selectedHospitalityGroup?.host?.id ||
+            selectedHospitalityGroup?.members?.some(m => m.id === p.id)) &&
+
+        // não pode ser membro já selecionado
+        !selectedGroupMembers?.some(m => m.id === p.id)
     )
-    
-    const members = allPublishers
-        .filter(p =>
-            // não é o host atual
-            p.id !== selectedPublisherHost?.id &&
-            // não está em outro grupo ou está neste grupo
-            (!p.hospitalityGroup || p.hospitalityGroup.id === selectedHospitalityGroup?.id)
-        )
-        .map(p => {
-            const selected = selectedGroupMembers?.find(m => m.id === p.id)
-            return selected ?? p
-        })
+
+    const members = allPublishers.filter(p =>
+        // exclui o host atual
+        p.id !== selectedPublisherHost?.id &&
+
+        // exclui quem está em outro grupo que não é o atual
+        (!publishersInGroups.has(p.id) ||
+            p.id === selectedHospitalityGroup?.host?.id ||
+            selectedHospitalityGroup?.members?.some(m => m.id === p.id))
+    ).map(p => {
+        const selected = selectedGroupMembers?.find(m => m.id === p.id)
+        return selected ?? p
+    })
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)

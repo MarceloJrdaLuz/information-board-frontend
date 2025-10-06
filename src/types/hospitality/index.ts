@@ -1,4 +1,4 @@
-import { IHospitalityGroup } from "../types"
+import { IHospitalityGroup, IPublisher } from "../types"
 
 export enum IHospitalityEventType {
   DINNER = "DINNER",     // Janta
@@ -32,4 +32,9 @@ export interface IRecordHospitalityAssignment {
   group_id: string
   group_host_fullName?: string
   group_host_nickname?: string
+}
+
+export interface IFormDataHospitalityGroup {
+  publishers: IPublisher[]
+  hospitalityGroups: IHospitalityGroup[]
 }
