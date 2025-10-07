@@ -16,7 +16,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { IHospitalityWeekend, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
 import { IHospitalityGroup } from "@/types/types"
-import { getSaturdays } from "@/utils/dateUtil"
+import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
@@ -32,7 +32,7 @@ export default function HospitalityWeekendPage() {
     const [crumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
-    const [saturdays, setSaturdays] = useState<Date[]>([])
+    const [dayWeekendMeeting, setDayWeekendMeeting] = useState<Date[]>([])
 
     const [weekends, setHospitalityWeekends] = useAtom(hospitalityWeekendsAtom)
     const setGroups = useSetAtom(hospitalityGroup)
@@ -76,8 +76,9 @@ export default function HospitalityWeekendPage() {
     }, [groups])
 
     useEffect(() => {
-        setSaturdays(getSaturdays(monthOffset))
-    }, [monthOffset])
+        if (!congregation?.dayMeetingPublic) return
+        setDayWeekendMeeting(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+    }, [monthOffset, congregation?.dayMeetingPublic])
 
     useEffect(() => {
         setPageActive("Hospitalidade")
@@ -128,7 +129,7 @@ export default function HospitalityWeekendPage() {
 
                             {/* Lista de sábados */}
                             <div className="space-y-4 pb-36">
-                                {saturdays.map((d) => (
+                                {dayWeekendMeeting.map((d) => (
                                     <div
                                         key={d.toISOString()}
                                         className="bg-white border rounded-xl shadow-sm p-4"

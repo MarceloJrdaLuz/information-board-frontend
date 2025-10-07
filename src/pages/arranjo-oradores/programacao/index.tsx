@@ -24,7 +24,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
-import { getSaturdays } from "@/utils/dateUtil"
+import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { Card, CardBody, Option, Select } from "@material-tailwind/react"
 import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
@@ -46,9 +46,10 @@ export default function WeekendSchedulePage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
-    const [saturdays, setSaturdays] = useState<Date[]>([])
+    const [dayWeekendMeeting, setDayWeekendMeeting] = useState<Date[]>([])
     const [weekendSchedules, setWeekendSchedules] = useAtom(schedulesAtom)
     const [isClient, setIsClient] = useState(false)
+
 
     const setTalks = useSetAtom(talksAtom)
     const setSpeakers = useSetAtom(speakersAtom)
@@ -97,11 +98,12 @@ export default function WeekendSchedulePage() {
     }, [router.isReady, date])
 
     useEffect(() => {
-        setSaturdays(getSaturdays(monthOffset))
-    }, [monthOffset])
+        if (!congregation?.dayMeetingPublic) return
+        setDayWeekendMeeting(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+    }, [monthOffset, congregation?.dayMeetingPublic])
 
-    const startDate = saturdays.length > 0 ? moment(saturdays[0]).format("YYYY-MM-DD") : null
-    const endDate = saturdays.length > 0 ? moment(saturdays.at(-1)).format("YYYY-MM-DD") : null
+    const startDate = dayWeekendMeeting.length > 0 ? moment(dayWeekendMeeting[0]).format("YYYY-MM-DD") : null
+    const endDate = dayWeekendMeeting.length > 0 ? moment(dayWeekendMeeting.at(-1)).format("YYYY-MM-DD") : null
 
     const effectiveStart = startDatePdfGenerate || startDate
     const effectiveEnd = endDatePdfGenerate || endDate
@@ -336,7 +338,7 @@ export default function WeekendSchedulePage() {
                                 )}
 
                                 <div className="space-y-4 mt-6 pb-36 h-fit">
-                                    {saturdays.map((d) => {
+                                    {dayWeekendMeeting.map((d) => {
                                         const externalForDate = (externalData ?? []).filter((t) =>
                                             moment(t.date).isSame(d, "day")
                                         )
