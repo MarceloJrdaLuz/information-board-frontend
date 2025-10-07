@@ -22,7 +22,7 @@ import { FormValues } from "./types"
 
 interface IRelatorioFormProps {
     report: IReports | null
-    publisher?: IPublisher | null
+    publisher: IPublisher | null
 }
 
 export default function FormReportManually({ report, publisher }: IRelatorioFormProps) {
@@ -74,6 +74,10 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         })
     }
 
+    useEffect(() => {
+        console.log(publisher)
+    }, [])
+
     async function onSubmit({ hours, month, observations, studies }: FormValues) {
         const splitMonth = month.split(' ')
         const payload: IPayloadCreateReportManually = {
@@ -87,12 +91,13 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
             },
             studies: Number(studies)
         }
-        toast.promise(
-            createReportManually(payload),
-            {
-                pending: 'Autenticando...'
-            }
-        )
+        console.log(publisher, payload)
+        // toast.promise(
+        //     createReportManually(payload),
+        //     {
+        //         pending: 'Autenticando...'
+        //     }
+        // )
     }
 
     function onError(error: any) {

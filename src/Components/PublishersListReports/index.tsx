@@ -156,7 +156,7 @@ export default function PublisherListReports() {
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${arrowClicked && selectedPublisher && selectedPublisher.id === publisher.id ? 'h-auto py-5 bg-white' : 'h-0'}`}>
                             <div>
-                            {reportFiltered?.publisher.id === publisher.id  ? <FormReportManually report={reportFiltered}/> : <FormReportManually report={null} publisher={selectedPublisher}/> }
+                            {reportFiltered?.publisher.id === publisher.id  ? <FormReportManually publisher={publisher} report={reportFiltered}/> : <FormReportManually report={null} publisher={selectedPublisher}/> }
                             </div>
                         </div>
                     </li>

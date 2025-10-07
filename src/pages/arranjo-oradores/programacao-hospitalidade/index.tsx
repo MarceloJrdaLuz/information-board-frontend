@@ -127,7 +127,7 @@ export default function HospitalityWeekendPage() {
                             </div>
 
                             {/* Lista de sábados */}
-                            <div className="space-y-4">
+                            <div className="space-y-4 pb-36">
                                 {saturdays.map((d) => (
                                     <div
                                         key={d.toISOString()}

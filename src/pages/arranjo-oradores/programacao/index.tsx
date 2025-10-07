@@ -335,7 +335,7 @@ export default function WeekendSchedulePage() {
                                     </div>
                                 )}
 
-                                <div className="space-y-4 mt-6">
+                                <div className="space-y-4 mt-6 pb-36 h-fit">
                                     {saturdays.map((d) => {
                                         const externalForDate = (externalData ?? []).filter((t) =>
                                             moment(t.date).isSame(d, "day")
