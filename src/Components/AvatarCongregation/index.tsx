@@ -22,6 +22,13 @@ export default function AvatarCongregation({ loading }: AvatarCongregationProps)
                 }
 
                 break
+            case "Ir para área pública":
+                const route = `${congregationUser?.number}`
+
+                // Check if the current route is the target route
+                if (Router.asPath !== `/${route}`) {
+                    Router.push(`/${route}`)
+                }
 
             default:
                 break
@@ -44,7 +51,7 @@ export default function AvatarCongregation({ loading }: AvatarCongregationProps)
             </div>
             <div >
                 {congregationUser &&
-                    <Dropdown handleClick={(option) => handleClick(option)} options={['Informações da congregação']} title={`Congregação: ${congregationUser?.name} (${congregationUser?.number})`}
+                    <Dropdown handleClick={(option) => handleClick(option)} options={['Informações da congregação', 'Ir para área pública']} title={`Congregação: ${congregationUser?.name} (${congregationUser?.number})`}
                     />
                 }
             </div>
