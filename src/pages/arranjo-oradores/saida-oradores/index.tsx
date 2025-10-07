@@ -12,7 +12,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IExternalTalkFormData } from "@/types/weekendSchedule"
-import { getSaturdays } from "@/utils/dateUtil"
+import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
@@ -33,7 +33,7 @@ export default function ExternalTalksPage() {
     const setUpdateStatusExternalTalk = useSetAtom(updateStatusExternalTalkAtom)
 
     const [monthOffset, setMonthOffset] = useState(0)
-    const [saturdays, setSaturdays] = useState<Date[]>([])
+    const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
 
 
     const baseDate = moment().add(monthOffset, "months")
@@ -74,10 +74,10 @@ export default function ExternalTalksPage() {
         }
     }, [router.isReady, date])
 
-    // atualiza sábados conforme mês
     useEffect(() => {
-        setSaturdays(getSaturdays(monthOffset))
-    }, [monthOffset])
+        if (!congregation?.dayMeetingPublic) return
+        setWeekendMeetingDay(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+    }, [monthOffset, congregation?.dayMeetingPublic])
 
     const handleAddExternalTalk = async (talk: Partial<IExternalTalk>) => {
         const payload: CreateExternalTalksPayload = {
@@ -136,7 +136,7 @@ export default function ExternalTalksPage() {
                         </div>
 
 
-                        {saturdays.map((date) => {
+                        {weekendMeetingDay.map((date) => {
                             const talksForDate = externalTalks.filter(
                                 (t) => t.date === moment(date).format("YYYY-MM-DD")
                             )

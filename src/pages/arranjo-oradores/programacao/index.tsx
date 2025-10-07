@@ -46,7 +46,7 @@ export default function WeekendSchedulePage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
-    const [dayWeekendMeeting, setDayWeekendMeeting] = useState<Date[]>([])
+    const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
     const [weekendSchedules, setWeekendSchedules] = useAtom(schedulesAtom)
     const [isClient, setIsClient] = useState(false)
 
@@ -99,11 +99,11 @@ export default function WeekendSchedulePage() {
 
     useEffect(() => {
         if (!congregation?.dayMeetingPublic) return
-        setDayWeekendMeeting(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+        setWeekendMeetingDay(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
     }, [monthOffset, congregation?.dayMeetingPublic])
 
-    const startDate = dayWeekendMeeting.length > 0 ? moment(dayWeekendMeeting[0]).format("YYYY-MM-DD") : null
-    const endDate = dayWeekendMeeting.length > 0 ? moment(dayWeekendMeeting.at(-1)).format("YYYY-MM-DD") : null
+    const startDate = weekendMeetingDay.length > 0 ? moment(weekendMeetingDay[0]).format("YYYY-MM-DD") : null
+    const endDate = weekendMeetingDay.length > 0 ? moment(weekendMeetingDay.at(-1)).format("YYYY-MM-DD") : null
 
     const effectiveStart = startDatePdfGenerate || startDate
     const effectiveEnd = endDatePdfGenerate || endDate
@@ -338,7 +338,7 @@ export default function WeekendSchedulePage() {
                                 )}
 
                                 <div className="space-y-4 mt-6 pb-36 h-fit">
-                                    {dayWeekendMeeting.map((d) => {
+                                    {weekendMeetingDay.map((d) => {
                                         const externalForDate = (externalData ?? []).filter((t) =>
                                             moment(t.date).isSame(d, "day")
                                         )

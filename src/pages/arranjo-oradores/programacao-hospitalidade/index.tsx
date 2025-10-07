@@ -32,7 +32,7 @@ export default function HospitalityWeekendPage() {
     const [crumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
-    const [dayWeekendMeeting, setDayWeekendMeeting] = useState<Date[]>([])
+    const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
 
     const [weekends, setHospitalityWeekends] = useAtom(hospitalityWeekendsAtom)
     const setGroups = useSetAtom(hospitalityGroup)
@@ -77,7 +77,7 @@ export default function HospitalityWeekendPage() {
 
     useEffect(() => {
         if (!congregation?.dayMeetingPublic) return
-        setDayWeekendMeeting(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+        setWeekendMeetingDay(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
     }, [monthOffset, congregation?.dayMeetingPublic])
 
     useEffect(() => {
@@ -129,7 +129,7 @@ export default function HospitalityWeekendPage() {
 
                             {/* Lista de sábados */}
                             <div className="space-y-4 pb-36">
-                                {dayWeekendMeeting.map((d) => (
+                                {weekendMeetingDay.map((d) => (
                                     <div
                                         key={d.toISOString()}
                                         className="bg-white border rounded-xl shadow-sm p-4"
