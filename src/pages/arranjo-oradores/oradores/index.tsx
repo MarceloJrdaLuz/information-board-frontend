@@ -197,7 +197,9 @@ export default function SpeakersPage() {
                                                 🏬 <span>{speaker.originCongregation.name}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                🎤 <span>{speaker.talks?.map((t) => t.number).join(", ") || "Nenhum discurso"}</span>
+                                                🎤 <span>{speaker.talks?.map((t) => t.number)
+                                                    .sort((a, b) => Number(a) - Number(b))
+                                                    .join(", ") || "Nenhum discurso"}</span>
                                             </div>
                                         </div>
                                     </div>
