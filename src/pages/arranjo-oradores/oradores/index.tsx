@@ -2,11 +2,13 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
-import FilterSpeakersCongregation from "@/Components/FilterGeneric"
+import FilterSpeakersCongregation from "@/Components/FilterSpeakersCongregation"
 import GroupIcon from "@/Components/Icons/GroupIcon"
+import PdfIcon from "@/Components/Icons/PdfIcon"
 import Layout from "@/Components/Layout"
 import { ListGeneric } from "@/Components/ListGeneric"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import SpeakersListPdf from "@/Components/SpeakerListPdf"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteSpeakerAtom, selectedSpeakerAtom } from "@/atoms/speakerAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -14,6 +16,8 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { ICongregation, ISpeaker } from "@/types/types"
+import { formatNameCongregation } from "@/utils/formatCongregationName"
+import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import { GetServerSideProps } from "next"
 import Router from "next/router"
@@ -29,7 +33,9 @@ export default function SpeakersPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [speakers, setSpeakers] = useState<ISpeaker[]>()
-    const [filteredByCongregationId, setFilteredByCongregationId] = useState("")
+    const [filteredByCongregation, setFilteredByCongregation] = useState<ICongregation | null>(null)
+    const [speakerCongregationName, setSpeakerCongregationName] = useState("")
+    const [showPreview, setShowPreview] = useState(false);
 
     const { data: getSpeakers, mutate } = useFetch<ISpeaker[]>("/speakers")
 
@@ -50,18 +56,24 @@ export default function SpeakersPage() {
     useEffect(() => {
         if (!getSpeakers) return
 
-        if (filteredByCongregationId) {
+        if (filteredByCongregation) {
             const filteredSpeakersByCongregation = getSpeakers.filter(
-                s => s.originCongregation.id === filteredByCongregationId
+                (s) => s.originCongregation.id === filteredByCongregation.id
             )
             setSpeakers(filteredSpeakersByCongregation)
+            setSpeakerCongregationName(formatNameCongregation(filteredByCongregation.name, filteredByCongregation.city))
         } else {
             // sem filtro → mostra todos
-            const sort = sortArrayByProperty(getSpeakers, "fullname")
+            const sort = sortArrayByProperty(getSpeakers, "fullName")
             setSpeakers(sort)
+            setSpeakerCongregationName("Todas as congregações")
         }
-    }, [filteredByCongregationId, getSpeakers])
+    }, [filteredByCongregation, getSpeakers])
 
+
+    const handleSpeakersCongregation = (item: ICongregation | null) => {
+        setFilteredByCongregation(item)
+    }
 
     useEffect(() => {
         setPageActive('Oradores')
@@ -84,6 +96,29 @@ export default function SpeakersPage() {
         )
     }
 
+    const PdfLinkComponent = () => (
+        <PDFDownloadLink
+            document={
+                <Document>
+                    <SpeakersListPdf
+                        speakers={speakers ?? []}
+                        congregationName={speakerCongregationName}
+                    />
+                </Document>
+            }
+            fileName={`Oradores_${speakerCongregationName || "congregacao"}.pdf`}
+        >
+            {({ loading }) => (
+                <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                    <PdfIcon />
+                    <span className="text-primary-200 font-semibold">
+                        {loading ? "Gerando PDF..." : "Lista de oradores"}
+                    </span>
+                </Button>
+            )}
+        </PDFDownloadLink>
+    );
+
     return (
         <Layout pageActive="oradores">
             <ContentDashboard>
@@ -102,10 +137,43 @@ export default function SpeakersPage() {
                             </Button>
                         </div>
 
-                        <FilterSpeakersCongregation
-                            checkedOptions={filteredByCongregationId}
-                            handleCheckboxChange={(item) => setFilteredByCongregationId(item)}
-                            congregations={congregationsForFilter ?? []} />
+                        <div className="flex justify-between my-4">
+                            <FilterSpeakersCongregation
+                                checkedOptions={filteredByCongregation?.id ?? ""}
+                                handleCheckboxChange={(item) => handleSpeakersCongregation(item)}
+                                congregations={congregationsForFilter ?? []}
+                            />
+                            <div className="flex flex-wrap justify-end gap-3">
+                                <Button
+                                    onClick={() => setShowPreview(!showPreview)}
+                                    className="px-4 py-2 rounded-lg border shadow"
+                                >
+                                    {showPreview ? "Fechar pré-visualização" : "Visualizar lista"}
+                                </Button>
+                                {speakers && <PdfLinkComponent />}
+                                {showPreview && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                        <div className="bg-white w-[90%] h-[90%] p-4 rounded relative">
+                                            <button
+                                                onClick={() => setShowPreview(false)}
+                                                className="absolute top-2 right-2 text-gray-600 hover:text-black"
+                                            >
+                                                ✕
+                                            </button>
+                                            <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                                <Document>
+                                                    <SpeakersListPdf
+                                                        speakers={speakers ?? []}
+                                                        congregationName={speakerCongregationName}
+                                                    />
+                                                </Document>
+                                            </PDFViewer>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
 
                         {speakers && speakers.length > 0 ? (
                             <ListGeneric

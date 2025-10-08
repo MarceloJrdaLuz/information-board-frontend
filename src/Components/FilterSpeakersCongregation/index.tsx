@@ -12,7 +12,7 @@ import Button from "../Button"
 import CheckboxUniqueObject from "../CheckBoxUniqueObject"
 
 interface IFIlterSpeakersCongregationProps {
-    handleCheckboxChange: (selectedCongregationId: string) => void
+    handleCheckboxChange: (selectedCongregationId: ICongregation | null) => void
     onClick?: () => void
     checkedOptions?: string
     congregations: ICongregation[]
@@ -34,15 +34,24 @@ export default function FilterSpeakersCongregation({ handleCheckboxChange, check
                     <span>Congregação / Cidade</span>
                     <CheckboxUniqueObject
                         options={[
-                            { value: "", label: "Todas as congregações" }, 
-                            ...sortedCongregations.map(c => ({
+                            { value: "", label: "Todas as congregações" },
+                            ...sortedCongregations.map((c) => ({
                                 value: c.id,
                                 label: formatNameCongregation(c.name, c.city),
-                            }))
+                            })),
                         ]}
                         label="Congregação"
                         checked={checkedOptions}
-                        handleCheckboxChange={(selected) => { handleCheckboxChange(selected) }}
+                        handleCheckboxChange={(selectedId) => {
+                            if (!selectedId) {
+                                handleCheckboxChange(null)
+                            } else {
+                                const selectedCongregation = sortedCongregations.find(
+                                    (c) => c.id === selectedId
+                                )
+                                handleCheckboxChange(selectedCongregation || null)
+                            }
+                        }}
                     />
                 </List>
             </PopoverContent>
