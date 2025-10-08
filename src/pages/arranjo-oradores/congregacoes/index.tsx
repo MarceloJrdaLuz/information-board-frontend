@@ -8,6 +8,7 @@ import { ListGeneric } from "@/Components/ListGeneric"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteAuxiliaryCongregationAtom, selectedAuxiliaryCongregationAtom } from "@/atoms/auxiliaryCongregationAtoms"
+import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { getAPIClient } from "@/services/axios"
 import { ICongregation } from "@/types/types"
@@ -39,7 +40,7 @@ export default function AuxiliaryCongregationsPage() {
 
     function handleDelete(congregation_id: string) {
         toast.promise(deleteAuxiliaryCongregation(congregation_id), {
-            pending: 'Excluindo congreegação...',
+            pending: 'Excluindo congregação...',
         })
         mutate()
     }
@@ -77,7 +78,7 @@ export default function AuxiliaryCongregationsPage() {
                             <ListGeneric
                                 onDelete={(item_id) => handleDelete(item_id)}
                                 onUpdate={(congregation) => setAuxiliaryCongregationUpdate(congregation)}
-                                items={congregations}
+                                items={sortArrayByProperty(congregations, "name")}
                                 path="/arranjo-oradores/congregacoes"
                                 label="da Congregação"
                                 renderItem={(congregation) => (
@@ -85,17 +86,20 @@ export default function AuxiliaryCongregationsPage() {
                                         <h3 className="text-lg font-semibold text-gray-800">{congregation.name}</h3>
 
                                         <div className="text-sm text-gray-600 flex flex-col gap-2">
-                                            <div className="flex items-center gap-2">
+                                            <div title="Cidade" className="flex items-center gap-2">
                                                 🏙️ <span>{congregation.city || "Não cadastrada"}</span>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div title="Circuito" className="flex items-center gap-2">
                                                 🔄 <span>{congregation.circuit || "Não cadastrado"}</span>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div title="Dia da reunião" className="flex items-center gap-2">
                                                 📅 <span>{congregation.dayMeetingPublic || "Não cadastrado"}</span>
                                             </div>
-                                            <div className="flex items-center gap-2">
+                                            <div title="Horário da reunião" className="flex items-center gap-2">
                                                 ⏰ <span>{congregation.hourMeetingPublic ? congregation.hourMeetingPublic.slice(0, 5) : "Não cadastrado"}</span>
+                                            </div>
+                                            <div title="Oradores" className="flex items-center gap-2">
+                                                🎤 <span>{congregation.speakers?.length}</span>
                                             </div>
                                         </div>
                                     </div>

@@ -83,6 +83,7 @@ export interface ICongregation {
     hourMeetingPublic?: string
     type?: CongregationTypeEnum
     creatorCongregation?: ICongregation
+    speakers?: ISpeaker[]
 }
 
 export interface ICongregationUpdate {
