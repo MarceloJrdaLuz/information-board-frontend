@@ -10,14 +10,12 @@ export const createAuxiliaryCongregationAtom = atom(
   async (_get, _set, payload: CreateAuxiliaryCongregationPayload) => {
     try {
       const res = await api.post("/auxiliaryCongregations", payload)
-
       toast.success("Congregação criada com sucesso!")
       return res.data
     } catch (err: any) {
       const message = err?.response?.data?.message
-
-      if (message === "Publisher does not belong to the same congregation as the congregation") {
-        toast.error("O publicador não pertence à mesma congregação.")
+      if (message.includes("congregation with name")) {
+        toast.error("Já existe uma congregação com esse nome nessa cidade")
       } else if (message?.includes("already exists")) {
         toast.error("Já existe uma congregação com esse número.")
       } else if (message?.includes("Unauthorized to create a system congregation")) {
@@ -36,7 +34,7 @@ export const updateAuxiliaryCongregationAtom = atom(
   async (_get, _set, congregation_id: string, payload: UpdateAuxiliaryCongregationPayload) => {
     try {
       const res = await api.patch(`/auxiliaryCongregation/${congregation_id}`, payload)
-       _set(handleSubmitSuccessAtom, {
+      _set(handleSubmitSuccessAtom, {
         messageSuccess: "Congregação atualizada com sucesso!",
         redirectTo: "/arranjo-oradores/congregacoes"
       })
@@ -50,6 +48,8 @@ export const updateAuxiliaryCongregationAtom = atom(
         toast.error("Congregação não encontrada")
       } else if (message?.includes("Unauthorized to create a system congregation")) {
         toast.error("Você não tem autorização para mudar esse tipo de congregação")
+      } else if (message.includes("congregation with name")) {
+        toast.error("Já existe uma congregação com esse nome nessa cidade")
       } else {
         console.error(err)
         toast.error("Erro ao atualizar a congregação.")
