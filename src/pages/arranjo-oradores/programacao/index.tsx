@@ -257,12 +257,10 @@ export default function WeekendSchedulePage() {
                                     {/* Painel */}
                                     <div
                                         className={`
-          bg-white border-b shadow-sm p-4 rounded-xl flex flex-col md:gap-4
-          transition-all duration-300 overflow-visible
-          ${showFilters ? "max-h-screen" : "max-h-0 md:max-h-screen"}
-          ${showFilters ? "opacity-100" : "opacity-0 md:opacity-100"}
-          ${showFilters ? "p-4" : "p-0 md:p-4"}
-          md:opacity-100 md:max-h-screen
+           bg-white border-b shadow-sm rounded-xl flex flex-col md:gap-4
+    transition-all duration-300 overflow-visible
+    ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
+    md:opacity-100 md:max-h-screen md:pointer-events-auto
         `}
                                     >
                                         <div className="flex justify-between items-center gap-2">
