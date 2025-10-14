@@ -116,11 +116,11 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                 {item.externalTalks && item.externalTalks.length > 0 && (
                   <div className="mt-3 border-t m-6 border-gray-600">
                     <p className="font-semibold text-sm text-gray-700 my-2">Oradores que saem:</p>
-                    <div className="space-y-2">
+                    <div className="flex justify-center space-y-2">
                       {item.externalTalks.map(ext => (
                         <div
                           key={ext.id}
-                          className="flex items-start gap-2 p-2 rounded-md"
+                          className="flex gap-2 p-2 rounded-md"
                         >
                           <div className="text-sm text-gray-700">
                             <p className="font-medium">

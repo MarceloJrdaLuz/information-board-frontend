@@ -1,5 +1,5 @@
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { createExternalAtom, updateStatusExternalTalkAtom } from "@/atoms/externalTalksAtoms"
+import { createExternalAtom, deleteExternalTalkAtom, updateStatusExternalTalkAtom } from "@/atoms/externalTalksAtoms"
 import { CreateExternalTalksPayload } from "@/atoms/externalTalksAtoms/types"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
@@ -31,6 +31,7 @@ export default function ExternalTalksPage() {
 
     const setCreateExternalTalk = useSetAtom(createExternalAtom)
     const setUpdateStatusExternalTalk = useSetAtom(updateStatusExternalTalkAtom)
+    const setDeleteExternalTalk = useSetAtom(deleteExternalTalkAtom)
 
     const [monthOffset, setMonthOffset] = useState(0)
     const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
@@ -109,6 +110,16 @@ export default function ExternalTalksPage() {
         mutate()
     }
 
+    const handleDelete = async (
+        externalTalk_id: string,
+    ) => {
+        await toast.promise(
+            setDeleteExternalTalk(externalTalk_id),
+            { pending: "Excluindo discurso fora..." }
+        )
+        mutate()
+    }
+
     const externalTalks = data?.externalTalks ?? []
     const speakers = data?.speakers ?? []
     const congregations = data?.congregations ?? []
@@ -151,6 +162,7 @@ export default function ExternalTalksPage() {
                                         talks={talks}
                                         onAddExternalTalk={handleAddExternalTalk}
                                         onUpdateStatus={handleUpdateStatus}
+                                        onDelete={handleDelete}
                                     />
                                 </div>
                             )

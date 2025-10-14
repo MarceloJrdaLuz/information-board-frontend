@@ -3,7 +3,7 @@ import { IExternalTalk } from "@/types/externalTalks"
 import { ICongregation, ISpeaker, ITalk } from "@/types/types"
 import { externalTalkStatusMap } from "@/utils/statusMap"
 import { format } from "date-fns"
-import { Book, Building, Calendar, CalendarDays, Clock, MapPin } from "lucide-react"
+import { Book, Building, Calendar, CalendarDays, Clock, MapPin, Trash } from "lucide-react"
 import moment from "moment"
 import { useState } from "react"
 import Button from "../Button"
@@ -11,6 +11,7 @@ import CheckboxBoolean from "../CheckboxBoolean"
 import Dropdown from "../Dropdown"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -20,6 +21,7 @@ interface ExternalTalkRowProps {
   talks?: ITalk[]
   onAddExternalTalk: (talk: Partial<IExternalTalk>) => void
   onUpdateStatus: (externalTalk_id: string, status: IExternalTalk["status"]) => void
+  onDelete: (externalTalk_id: string) => void
 }
 
 export default function ExternalTalkRow({
@@ -30,6 +32,7 @@ export default function ExternalTalkRow({
   congregations,
   onAddExternalTalk,
   onUpdateStatus,
+  onDelete
 }: ExternalTalkRowProps) {
   const [newSpeakerId, setNewSpeakerId] = useState<string>("")
   const [newCongregationId, setNewCongregationId] = useState<string>("")
@@ -112,7 +115,7 @@ export default function ExternalTalkRow({
               </div>
 
               {/* Dropdown de status */}
-              <div className="ml-4">
+              <div className="flex flex-col gap-3 items-end">
                 <Dropdown
                   title="Status"
                   textVisible
@@ -122,6 +125,15 @@ export default function ExternalTalkRow({
                     onUpdateStatus(t.id, option as IExternalTalk["status"])
                   }}
                   border
+                />
+
+                <ConfirmDeleteModal
+                  onDelete={() => onDelete(t.id)}
+                  button={
+                    <Button size="sm" outline className="text-red-500 w-fit">
+                      <Trash className="mr-1 w-4" /> Excluir
+                    </Button>
+                  }
                 />
               </div>
             </div>

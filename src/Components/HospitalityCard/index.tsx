@@ -16,9 +16,9 @@ export function HospitalityCard({ item }: { item: IPublicSchedule }) {
             </div>
 
             {open && (
-                <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-wrap justify-between lg:justify-around gap-4">
                     {item.hospitality?.map((hosp, idx) => (
-                        <div key={idx} className="flex flex-col bg-gray-50 rounded-lg p-3 shadow-sm">
+                        <div key={idx} className="flex flex-col w-full lg:w-fit bg-gray-50 rounded-lg p-3 shadow-sm">
                             <p className="text-sm font-semibold text-gray-800 border-b border-gray-300 pb-1 mb-2">
                                 {hosp.eventType === "DINNER" && "🍽️ Jantar"}
                                 {hosp.eventType === "LUNCH" && "🥗 Almoço"}
@@ -26,7 +26,7 @@ export function HospitalityCard({ item }: { item: IPublicSchedule }) {
                             </p>
 
                             {/* Anfitrião */}
-                            <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
+                            <div className="flex gap-2 text-sm text-gray-700 mb-1">
                                 <UserIcon size={16} className="text-gray-500" />
                                 <span className="font-medium">{hosp.host}</span>
                             </div>

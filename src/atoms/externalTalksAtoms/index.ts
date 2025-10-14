@@ -15,11 +15,6 @@ export const createExternalAtom = atom(
     } catch (err: any) {
       const message = err?.response?.data?.message
 
-      // if (message?.includes("already exists")) {
-      //   toast.error("Já existe um programa pra umas das semanas")
-      // } else {
-      //   console.error(err)
-      // }
       toast.error("Erro ao criar a programação.")
       throw err
     }
@@ -37,11 +32,6 @@ export const updateExternalTalkAtom = atom(
     } catch (err: any) {
       const message = err?.response?.data?.message
 
-      // if (message === "A talk with this number already exists") {
-      //   toast.error("Já existe um discurso com esse número")
-      // } else {
-      //   console.error(err)
-      // }
       toast.error("Erro ao atualizar o discurso.")
       throw err
     }
@@ -59,12 +49,29 @@ export const updateStatusExternalTalkAtom = atom(
     } catch (err: any) {
       const message = err?.response?.data?.message
 
-      // if (message === "A talk with this number already exists") {
-      //   toast.error("Já existe um discurso com esse número")
-      // } else {
-      //   console.error(err)
-      // }
       toast.error("Erro ao atualizar o status do discurso.")
+      throw err
+    }
+  }
+)
+
+export const deleteExternalTalkAtom = atom(
+  null,
+  async (_get, _set, externalTalk_id: string) => {
+    try {
+      await api.delete(`/externalTalk/${externalTalk_id}`)
+
+      toast.success("Discurso excluído com sucesso!")
+      return true
+    } catch (err: any) {
+      const message = err?.response?.data?.message
+
+      if (message === "ExternalTalk not found") {
+        toast.error("Discurso fora não encontrado.")
+      } else {
+        console.error(err)
+        toast.error("Erro ao excluir o discurso fora.")
+      }
       throw err
     }
   }

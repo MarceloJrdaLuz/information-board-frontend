@@ -109,12 +109,6 @@ export default function Designacoes() {
     }
   }, [documentsLifeAndMinistryFilter])
 
-  useEffect(() => {
-    // Ordenar os documentos com base nos meses
-    const sortedDocuments = documentsLifeAndMinistryFilterMonths?.sort(compareDocumentsByMonth)
-    // Faça o que você precisa com os documentos ordenados aqui
-  }, [documentsLifeAndMinistryFilterMonths])
-
   function handleButtonClick(url: string) {
     setPdfUrl(url)
     setPdfShow(true)
