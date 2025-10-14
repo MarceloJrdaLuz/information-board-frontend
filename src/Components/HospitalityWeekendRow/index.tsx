@@ -17,9 +17,18 @@ import {
 import { IHospitalityGroup } from "@/types/types"
 import CheckboxBoolean from "../CheckboxBoolean"
 import DropdownObject from "../DropdownObjects"
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber"
+import { MessageCircle } from "lucide-react"
+import { hospitalityMap } from "@/utils/hospitalityMap"
+import WhatsAppIcon from "../Icons/WhatsAppIcon"
 
 interface Props {
   date: Date
+}
+
+interface IWhatsAppLink {
+  link: string
+  destinationName: string
 }
 
 const EVENT_TYPES: { key: IHospitalityEventType; label: string }[] = [
@@ -35,6 +44,11 @@ export default function HospitalityRow({ date }: Props) {
     (v: any) => void
   ]
   const updateAssignmentStatus = useSetAtom(updateAssignmentStatusAtom)
+  const [whatsappLinks, setWhatsappLinks] = useState<Record<IHospitalityEventType, IWhatsAppLink[]>>({
+    [IHospitalityEventType.HOSTING]: [],
+    [IHospitalityEventType.LUNCH]: [],
+    [IHospitalityEventType.DINNER]: [],
+  })
 
   const dateKey = moment(date).format("YYYY-MM-DD")
   const weekend =
@@ -73,6 +87,64 @@ export default function HospitalityRow({ date }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekend.assignments])
+
+  useEffect(() => {
+    if (!weekend?.assignments?.length) return
+
+    setWhatsappLinks(prevLinks => {
+      // Criamos uma cópia dos links atuais
+      const updatedLinks = { ...prevLinks }
+
+      let changed = false
+
+      weekend.assignments
+        .filter(a => a.completed && a.group_id)
+        .forEach(assignment => {
+          const group = groups.find(g => g.id === assignment.group_id)
+          if (!group) return
+
+          // Só gera novamente se ainda não existe link pra esse evento
+          if (updatedLinks[assignment.eventType]?.length) return
+
+          const message = `Olá irmão!\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
+            .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
+            .join(", ")
+            }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${moment(
+              date
+            ).format("DD/MM/YYYY")}*.\n\n O orador já confirmou.`
+          const encodedMessage = encodeURIComponent(message)
+
+          const links: IWhatsAppLink[] = []
+
+          if (group.host?.phone) {
+            links.push({
+              link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
+                group.host.phone
+              )}&text=${encodedMessage}`,
+              destinationName: `${group.host.fullName || group.host.nickname || "Host"} (Host)`,
+            })
+          }
+
+          group.members
+            .filter(m => m.phone)
+            .forEach(m => {
+              links.push({
+                link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
+                  m.phone!
+                )}&text=${encodedMessage}`,
+                destinationName: m.fullName || "Contato",
+              })
+            })
+
+          updatedLinks[assignment.eventType] = links
+          changed = true
+        })
+
+      // Só atualiza o estado se houver realmente algo novo
+      return changed ? updatedLinks : prevLinks
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups, weekend.date])
 
   // toggle checkbox → adiciona ou remove assignment
   function onEventToggle(eventType: IHospitalityEventType, enabled: boolean) {
@@ -131,10 +203,53 @@ export default function HospitalityRow({ date }: Props) {
     setWeekends({ ...(weekends ?? {}), [dateKey]: updatedWeekend })
     setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
     updateAssignmentStatus({ assignment_id: assignment.id, completed })
+
+    if (completed && assignment.group_id) {
+      const group = groups.find(g => g.id === assignment.group_id)
+      if (group) {
+        const message = `Olá irmão!\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
+          .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
+          .join(", ")
+          }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${moment(
+            date
+          ).format("DD/MM/YYYY")}*.\n\n O orador já confirmou.`
+        const encodedMessage = encodeURIComponent(message)
+
+        const links: IWhatsAppLink[] = []
+
+        // ✅ Adiciona o host primeiro (se tiver telefone)
+        if (group.host?.phone) {
+          links.push({
+            link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
+              group.host.phone
+            )}&text=${encodedMessage}`,
+            destinationName: `${group.host.fullName || group.host.nickname || "Host"} (Host)`,
+          })
+        }
+
+        // ✅ Adiciona os membros depois
+        group.members
+          .filter(m => m.phone)
+          .forEach(m => {
+            links.push({
+              link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
+                m.phone!
+              )}&text=${encodedMessage}`,
+              destinationName: m.fullName || "Contato",
+            })
+          })
+
+        // ✅ Atualiza apenas os links do evento correspondente
+        setWhatsappLinks(prev => ({ ...prev, [assignment.eventType]: links }))
+      }
+    } else {
+      // ❌ Se desmarcar, limpa só os links desse evento
+      setWhatsappLinks(prev => ({ ...prev, [assignment.eventType]: [] }))
+    }
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-start">
+    <div className="flex flex-col  gap-4 items-start">
       {/* Data + checkboxes */}
       <div className="w-full font-semibold">
         {moment(date).format("DD/MM/YYYY")}
@@ -162,7 +277,8 @@ export default function HospitalityRow({ date }: Props) {
         const selectedGroupId = selectedAssignment?.group_id ?? ""
 
         return (
-          <div key={ev.key} className="flex flex-col gap-1 w-full">
+          <div key={ev.key} className="flex flex-col gap-1 w-full border rounded-lg p-6 border-gray-200">
+
             <DropdownObject
               textVisible
               title={ev.label}
@@ -187,6 +303,23 @@ export default function HospitalityRow({ date }: Props) {
                 }
               />
             )}
+            {whatsappLinks[ev.key]?.length > 0 && (
+              <div className="mt-3 flex flex-col gap-2">
+                {whatsappLinks[ev.key].map((item, i) => (
+                  <a
+                    key={i}
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
+                  >
+                    <WhatsAppIcon w="20" h="20"/>
+                    <span>{item.destinationName}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+
           </div>
         )
       })}
