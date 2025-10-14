@@ -167,24 +167,38 @@ export default function HospitalityRow({ date }: Props) {
     setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
   }
 
-  // seleciona grupo → só altera esse evento, mantém os outros
   function onGroupChange(eventType: IHospitalityEventType, group: IHospitalityGroup | null) {
-    let updatedAssignments = [...(weekend.assignments ?? [])]
-    const idx = updatedAssignments.findIndex(a => a.eventType === eventType)
+  let updatedAssignments = [...(weekend.assignments ?? [])]
+  const idx = updatedAssignments.findIndex(a => a.eventType === eventType)
 
-    if (idx >= 0 && group) {
+  if (idx >= 0) {
+    if (group) {
       updatedAssignments[idx] = {
         ...updatedAssignments[idx],
         group_id: group.id,
         group_host_fullName: group.host?.fullName,
         group_host_nickname: group.host?.nickname,
       }
+    } else {
+      // Limpa o grupo e o status
+      updatedAssignments[idx] = {
+        ...updatedAssignments[idx],
+        group_id: "",
+        group_host_fullName: "",
+        group_host_nickname: "",
+        completed: false,
+      }
+      
+      // Limpa os links de WhatsApp desse evento
+      setWhatsappLinks(prev => ({ ...prev, [eventType]: [] }))
     }
-
-    const updatedWeekend = { ...weekend, assignments: updatedAssignments }
-    setWeekends({ ...(weekends ?? {}), [dateKey]: updatedWeekend })
-    setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
   }
+
+  const updatedWeekend = { ...weekend, assignments: updatedAssignments }
+  setWeekends({ ...(weekends ?? {}), [dateKey]: updatedWeekend })
+  setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
+}
+
 
   function onCompletedChange(
     assignment: IRecordHospitalityAssignment,
