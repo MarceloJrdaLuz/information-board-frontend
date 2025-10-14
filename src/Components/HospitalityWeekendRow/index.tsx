@@ -121,7 +121,7 @@ export default function HospitalityRow({ date }: Props) {
               link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                 group.host.phone
               )}&text=${encodedMessage}`,
-              destinationName: `${group.host.fullName || group.host.nickname || "Host"} (Host)`,
+              destinationName: `${group.host.fullName || group.host.nickname || "Anfitrião"} (Anfitrião)`,
             })
           }
 
@@ -223,7 +223,7 @@ export default function HospitalityRow({ date }: Props) {
             link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
               group.host.phone
             )}&text=${encodedMessage}`,
-            destinationName: `${group.host.fullName || group.host.nickname || "Host"} (Host)`,
+            destinationName: `${group.host.fullName || group.host.nickname || "Anfitrião"} (Anfitrião)`,
           })
         }
 
