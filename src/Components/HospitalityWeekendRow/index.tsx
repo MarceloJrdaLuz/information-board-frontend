@@ -106,7 +106,7 @@ export default function HospitalityRow({ date }: Props) {
           // Só gera novamente se ainda não existe link pra esse evento
           if (updatedLinks[assignment.eventType]?.length) return
 
-          const message = `Olá irmão!\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
+          const message = `Olá, tudo bem?\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
             .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
             .join(", ")
             }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${moment(
@@ -207,7 +207,7 @@ export default function HospitalityRow({ date }: Props) {
     if (completed && assignment.group_id) {
       const group = groups.find(g => g.id === assignment.group_id)
       if (group) {
-        const message = `Olá irmão!\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
+        const message = `Olá!\n\n Gostaria de lembrar que o grupo de vocês: *${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName}*, *${group.members
           .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
           .join(", ")
           }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${moment(
