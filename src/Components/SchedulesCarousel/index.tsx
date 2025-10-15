@@ -56,6 +56,13 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                   {moment(item.date, "YYYY-MM-DD").format("dddd, DD/MM")}
                 </div>
 
+                {/* Evento Especial */}
+                {item.specialName && (
+                  <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-white px-4 py-2 text-center font-semibold text-sm flex items-center justify-center gap-2">
+                    <span>{item.specialName}</span>
+                  </div>
+                )}
+
                 <div className="p-4 space-y-4">
                   {/* Presidente */}
                   {item.chairman && (
