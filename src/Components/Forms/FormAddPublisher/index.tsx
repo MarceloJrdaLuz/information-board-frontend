@@ -23,6 +23,9 @@ import { toast } from 'react-toastify'
 import FormAddEmergencyContact from '../FormAddEmergencyContact'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
+import Router from 'next/router'
+import { ChevronDownIcon, PlusIcon } from 'lucide-react'
+import { additionalsPrivilegeOptions } from '@/constants/publisherOptions'
 
 
 export default function FormAddPublisher() {
@@ -34,6 +37,10 @@ export default function FormAddPublisher() {
     const fetchEmergencyContactDataConfig = congregationUser ? `/emergencyContacts/${congregationUser?.id}` : ''
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
     const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(null);
+    const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
+    const [additionalsPrivilegeCheckboxSelected, setAdditionalsPrivilegeCheckboxSelected] = useState<string[]>([])
+
+
 
     const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>('')
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
@@ -76,48 +83,28 @@ export default function FormAddPublisher() {
     const optionsPioneerMonthsServiceYearActual = useState([...normalizeMonths(serviceYearActual)])
     const optionsPioneerMonthsLastServiceYear = useState([...normalizeMonths(lastServiceYear)])
 
-    const handleCheckboxGender = (selectedItems: string) => {
-        setGenderCheckboxSelected(selectedItems)
-    }
-
-    const handleCheckboxHope = (selectedItems: string) => {
-        setHopeCheckboxSelected(selectedItems)
-    }
-
-    const handleCheckboxPrivileges = (selectedItem: string) => {
-        setPrivilegeCheckboxSelected(selectedItem)
-    }
-
-    const handleCheckboxPioneer = (selectedItem: string) => {
-        setPioneerCheckboxSelected(selectedItem)
-    }
-
-    const handleBirthDateChange = (date: Date) => {
-        setBirthDate(date)
-    }
-
-    const handleImmersedDateChange = (date: Date) => {
-        setImmersedDate(date)
-    }
-
-    const handleAuxPioneerMonths = (selectedItems: string[]) => {
-        setAuxPioneerMonthsSelected(selectedItems)
-    }
-
-    const handleStartPioneerDateChange = (date: Date) => {
-        setStartPioneer(date)
-    }
-
-    const handleCheckboxSituationPublisher = (selectedItems: string) => {
-        setSituationPublisherCheckboxSelected(selectedItems)
+    const handlers = {
+        handleCheckboxAdditionalPrivileges: setAdditionalsPrivilegeCheckboxSelected,
+        handleCheckboxSituationPublisher: setSituationPublisherCheckboxSelected,
+        handleStartPioneerDateChange: setStartPioneer,
+        handleAuxPioneerMonths: setAuxPioneerMonthsSelected,
+        handleImmersedDateChange: setImmersedDate,
+        handleBirthDateChange: setBirthDate,
+        handleCheckboxPioneer: setPioneerCheckboxSelected,
+        handleCheckboxPrivileges: setPrivilegeCheckboxSelected,
+        handleCheckboxHope: setHopeCheckboxSelected,
+        handleCheckboxGender: setGenderCheckboxSelected
     }
 
     useEffect(() => {
-        const updatePrivileges = []
-        pioneerCheckboxSelected !== '' ? updatePrivileges.push(pioneerCheckboxSelected) : updatePrivileges.push(Privileges.PUBLICADOR)
-        privilegeCheckboxSelected !== '' && updatePrivileges.push(privilegeCheckboxSelected)
-        setAllPrivileges(updatePrivileges)
-    }, [pioneerCheckboxSelected, privilegeCheckboxSelected])
+        const updatedPrivileges: string[] = []
+        if (pioneerCheckboxSelected) updatedPrivileges.push(pioneerCheckboxSelected)
+        if (privilegeCheckboxSelected) updatedPrivileges.push(privilegeCheckboxSelected)
+        if (additionalsPrivilegeCheckboxSelected.length > 0) {
+            updatedPrivileges.push(...additionalsPrivilegeCheckboxSelected)
+        }
+        setAllPrivileges(updatedPrivileges)
+    }, [pioneerCheckboxSelected, privilegeCheckboxSelected, additionalsPrivilegeCheckboxSelected])
 
     const validationSchema = yup.object({
         fullName: yup.string().required(),
@@ -185,96 +172,105 @@ export default function FormAddPublisher() {
 
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
-            {modalEmergencyContactShow ? (
-                <FormAddEmergencyContact congregation_id={`${congregationUser?.id}`} />
-            ) : (
-                <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                    <div className={`w-full h-fit flex-col justify-center items-center`}>
-                        <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo publicador</div>
-                        <Input type="text" placeholder="Nome completo" registro={{
-                            ...register('fullName',
-                                { required: "Campo obrigatório" })
-                        }}
-                            invalid={errors?.fullName?.message ? 'invalido' : ''} />
-                        {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
+            <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
+                <div className={`w-full h-fit flex-col justify-center items-center`}>
+                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo publicador</div>
+                    <Input type="text" placeholder="Nome completo" registro={{
+                        ...register('fullName',
+                            { required: "Campo obrigatório" })
+                    }}
+                        invalid={errors?.fullName?.message ? 'invalido' : ''} />
+                    {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
 
-                        <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
-                        {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
+                    <Input type="text" placeholder="Apelido" registro={{ ...register('nickname', { required: "Campo obrigatório" }) }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
+                    {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
 
-                        <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
-                        {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
+                    <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
+                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
 
-                        <Controller
-                            name="phone"
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    type="tel"
-                                    placeholder="Telefone"
-                                    mask="(99) 99999-9999"
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
+                    <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                type="tel"
+                                placeholder="Telefone"
+                                mask="(99) 99999-9999"
+                                {...field}
+                            />
+                        )}
+                    />
+                    {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
-                        <div className='border border-gray-300 my-4 p-4'>
-                            <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handleCheckboxGender(selectedItems)} />
-                        </div>
-
-                        <div className='border border-gray-300 my-4 p-4'>
-                            <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handleCheckboxHope(selectedItems)} />
-                        </div>
-
-                        <div className='border border-gray-300 my-4 p-4'>
-                            <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handleCheckboxSituationPublisher(selectedItems)} />
-                        </div>
-
-                        {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
-                            {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handleCheckboxPioneer(selectedItems)} />}
-
-                            {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
-                                (
-                                    <>
-                                        <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
-                                        <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) - 1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handleAuxPioneerMonths(selectedItems)} />
-                                    </>
-
-                                )
-                            }
-
-                            {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handleStartPioneerDateChange} selectedDate={startPioneer} />}
-                        </div>}
-
-                        {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-gray-300 my-4 p-4'>
-                            <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handleCheckboxPrivileges(selectedItems)} />
-                        </div>}
-
-                        <div className='border border-gray-300 my-4 p-4'>
-                            <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handleBirthDateChange} selectedDate={birthDate} />
-
-                            <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handleImmersedDateChange} selectedDate={immersedDate} />
-                        </div>
-
-                        <DropdownObject<IEmergencyContact>
-                            title="Selecione um contato"
-                            items={existingContacts ?? []}
-                            selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
-                            handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
-                            labelKey="name"
-                            searchable
-                        />
-
-                        <p onClick={() => setModalEmergencyContactShow(true)} className='cursor-pointer'>
-                            Adicionar contato de emergência:
-                        </p>
-
-                        <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                            <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
-                        </div>
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxGender(selectedItems)} />
                     </div>
-                </FormStyle>
-            )}
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxHope(selectedItems)} />
+                    </div>
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxSituationPublisher(selectedItems)} />
+                    </div>
+
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
+                        {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
+
+                        {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
+                            (
+                                <>
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${yearService}`} visibleLabel options={optionsPioneerMonthsServiceYearActual[0]} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
+                                    <CheckboxMultiple checkedOptions={auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(yearService) - 1}`} visibleLabel options={optionsPioneerMonthsLastServiceYear[0]} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
+                                </>
+
+                            )
+                        }
+
+                        {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
+                    </div>}
+
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-gray-300 my-4 p-4'>
+                        <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
+                        <CheckboxMultiple visibleLabel checkedOptions={additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
+                    </div>}
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={birthDate} />
+
+                        <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handlers.handleImmersedDateChange} selectedDate={immersedDate} />
+                    </div>
+
+                    <div className='border border-gray-300 my-4 p-4'>
+                        <div className='flex justify-between items-center'>
+                            <span className='my-2 font-semibold text-gray-900 '>Contato de emergência</span>
+                            <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
+                        </div>
+
+                        {emergencyContactShow && (
+                            <>
+                                <DropdownObject<IEmergencyContact>
+                                    title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                    textVisible
+                                    items={existingContacts ?? []}
+                                    selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
+                                    handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
+                                    labelKey="name"
+                                    labelKeySecondary='phone'
+                                    searchable
+                                />
+                                <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
+                                    <Button type='button' className='w-fit'><span><PlusIcon className='bg-white rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                </span>
+                            </>
+                        )}
+                    </div>
+
+                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
+                        <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
+                    </div>
+                </div>
+            </FormStyle>
         </section>
     )
 }

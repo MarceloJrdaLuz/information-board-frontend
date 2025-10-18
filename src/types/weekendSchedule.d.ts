@@ -1,5 +1,5 @@
 import { IExternalTalk } from "./externalTalks"
-import { IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "./types"
+import { ICongregation, IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "./types"
 
 export interface IPublicSchedule {
   id: string
@@ -43,6 +43,7 @@ export interface IWeekendSchedule {
   id?: string
   date: string
   speaker?: ISpeaker
+  visitingCongregation?: ICongregation
   talk?: ITalk
   chairman?: IPublisher
   reader?: IPublisher
@@ -62,6 +63,7 @@ export interface IRecordWeekendSchedule {
   id?: string
   date: string
   speaker_id?: string
+  visitingCongregation_id?: string
   talk_id?: string
   chairman_id?: string
   reader_id?: string

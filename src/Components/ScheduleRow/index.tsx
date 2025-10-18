@@ -1,4 +1,4 @@
-import { chairmansAtom, readersAtom, schedulesAtom, speakerFilterCongregationAtom, speakerFilterTalkAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
+import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakerFilterCongregationAtom, speakerFilterTalkAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
@@ -24,7 +24,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const chairmans = useAtomValue(chairmansAtom)
   const speakers = useAtomValue(speakersAtom)
   const talks = useAtomValue(talksAtom)
-  const [filterCongregation] = useAtom(speakerFilterCongregationAtom)
+  const congregations = useAtomValue(congregationsAtom)
   const [filterTalk] = useAtom(speakerFilterTalkAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
   const [openConfirm, setOpenConfirm] = useState(false)
@@ -64,15 +64,23 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       const newValue = typeof value === "object" && value !== null ? value.id : value
 
       let updated: IRecordWeekendSchedule = { ...current, [field]: newValue, id: current.id }
-
-      // 🔹 Se mudou o orador, valida o tema
       if (field === "speaker_id") {
         const newSpeaker = speakers?.find(s => s.id === newValue)
         if (current.talk_id && !newSpeaker?.talks?.some(t => t.id === current.talk_id)) {
           updated.talk_id = undefined
         }
+
+        // Se o orador mudou, e não há visitingCongregation, define automaticamente
+        if (newSpeaker?.originCongregation?.id) {
+          updated.visitingCongregation_id = newSpeaker.originCongregation.id
+        }
       }
 
+      // 🔹 Se mudou a congregação visitante, reseta o orador e tema
+      if (field === "visitingCongregation_id") {
+        updated.speaker_id = undefined
+        updated.talk_id = undefined
+      }
       return {
         ...prev,
         [dateStr]: updated,
@@ -160,10 +168,17 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   }
 
   let filteredSpeakers = speakers?.filter(s => {
-    if (filterCongregation && s.originCongregation.id !== filterCongregation) return false
-    if (filterTalk && !s.talks?.some(t => t.id === filterTalk)) return false
-    return true
-  }) ?? []
+    // Oradores devem pertencer à congregação visitante
+    if (current.visitingCongregation_id && s.originCongregation.id !== current.visitingCongregation_id) return false;
+
+    // Se um tema já foi selecionado, filtra os oradores que têm esse tema
+    if (current.talk_id && !s.talks?.some(t => t.id === current.talk_id)) return false;
+
+    return true;
+  }) ?? [];
+
+
+
   if (current.speaker_id && !filteredSpeakers.some(s => s.id === current.speaker_id)) {
     const selectedSpeaker = speakers?.find(s => s.id === current.speaker_id)
     if (selectedSpeaker) filteredSpeakers = [selectedSpeaker, ...filteredSpeakers]
@@ -237,7 +252,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           }
         </div>
       }
-
       {/* Dropdowns */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Presidente"))) &&
         <DropdownObject
@@ -254,58 +268,86 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         />
       }
 
-      {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) &&
-        <DropdownObject
-          textVisible
-          title="Orador"
-          items={speakerOptions ?? []}
-          selectedItem={speakerOptions?.find(p => p.id === current.speaker_id) || null}
-          handleChange={item => handleChange("speaker_id", item)}
-          labelKey="displayLabel"
-          border
-          full
-          emptyMessage="Nenhum orador"
-          searchable
-        />
-      }
+      <div className='border border-gray-300 my-4 p-4'>
+        <div className='flex justify-between items-center flex-wrap gap-4'>
+          <span className='my-2 font-semibold text-gray-900 '>Orador</span>
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador"))) && (
+            <DropdownObject
+              textVisible
+              title="Congregação visitante"
+              items={congregations ?? []} // você precisa ter uma lista de congregações disponível (pode vir via atom)
+              selectedItem={congregations?.find(c => c.id === current.visitingCongregation_id) || null}
+              handleChange={item => handleChange("visitingCongregation_id", item)}
+              labelKey="name"
+              labelKeySecondary="city"
+              border
+              full
+              emptyMessage="Nenhuma congregação"
+              searchable
+            />
+          )}
 
-      {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) &&
-        <DropdownObject
-          textVisible
-          title="Tema"
-          items={talkOptions ?? []}
-          selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
-          handleChange={item => handleChange("talk_id", item)}
-          labelKey="number"
-          labelKeySecondary="displayLabel"
-          border
-          full
-          emptyMessage="Nenhum tema"
-          searchable
-        />
-      }
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) &&
+            <DropdownObject
+              textVisible
+              title="Orador"
+              items={speakerOptions ?? []}
+              selectedItem={speakerOptions?.find(p => p.id === current.speaker_id) || null}
+              handleChange={item => handleChange("speaker_id", item)}
+              labelKey="displayLabel"
+              border
+              full
+              emptyMessage="Nenhum orador"
+              searchable
+            />
+          }
 
-      {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Leitor"))) &&
-        <DropdownObject
-          textVisible
-          title="Leitor"
-          items={readerOptions ?? []}
-          selectedItem={readerOptions?.find(p => p.id === current.reader_id) || null}
-          handleChange={item => handleChange("reader_id", item)}
-          labelKey="displayLabel"
-          border
-          full
-          emptyMessage="Nenhum leitor"
-          searchable
-        />
-      }
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) &&
+            <DropdownObject
+              textVisible
+              title="Tema"
+              items={talkOptions ?? []}
+              selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
+              handleChange={item => handleChange("talk_id", item)}
+              labelKey="number"
+              labelKeySecondary="displayLabel"
+              border
+              full
+              emptyMessage="Nenhum tema"
+              searchable
+            />
+          }
+        </div>
+      </div>
 
-      <Input
-        value={current.watchTowerStudyTitle || ""}
-        onChange={(e) => handleManualChange("watchTowerStudyTitle", e.target.value)}
-        type="text"
-        placeholder="Tema do Estudo da Sentinela"
-      />
+      <div className='border border-gray-300 my-4 p-4'>
+        <div className='flex justify-between items-center flex-wrap gap-4'>
+          <span className='my-2 font-semibold text-gray-900 '>Sentinela</span>
+
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Leitor"))) &&
+            <DropdownObject
+              textVisible
+              title="Leitor"
+              items={readerOptions ?? []}
+              selectedItem={readerOptions?.find(p => p.id === current.reader_id) || null}
+              handleChange={item => handleChange("reader_id", item)}
+              labelKey="displayLabel"
+              border
+              full
+              emptyMessage="Nenhum leitor"
+              searchable
+            />
+          }
+
+          <Input
+            value={current.watchTowerStudyTitle || ""}
+            onChange={(e) => handleManualChange("watchTowerStudyTitle", e.target.value)}
+            type="text"
+            placeholder="Tema do Estudo da Sentinela"
+          />
+        </div>
+      </div>
+
 
       {externalTalks.length > 0 && (
         <div className="mt-6 space-y-3">

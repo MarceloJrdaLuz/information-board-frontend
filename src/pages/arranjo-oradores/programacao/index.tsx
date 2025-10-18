@@ -148,6 +148,7 @@ export default function WeekendSchedulePage() {
                             id: sched.id,
                             date: sched.date,
                             speaker_id: sched.speaker?.id,
+                            visitingCongregation_id: sched.visitingCongregation?.id,
                             talk_id: sched.talk?.id,
                             chairman_id: sched.chairman?.id,
                             reader_id: sched.reader?.id,
@@ -175,6 +176,7 @@ export default function WeekendSchedulePage() {
                 id: s.id,
                 date: s.date,
                 speaker_id: s.speaker_id,
+                visitingCongregation_id: s.visitingCongregation_id,
                 talk_id: s.talk_id,
                 chairman_id: s.chairman_id,
                 reader_id: s.reader_id,
@@ -278,8 +280,6 @@ export default function WeekendSchedulePage() {
                                                 {nextMonthLabel} ▶
                                             </Button>
                                         </div>
-
-                                        <SpeakerFilters />
 
                                         <Button className="w-full" onClick={handleSave}>
                                             Salvar todas

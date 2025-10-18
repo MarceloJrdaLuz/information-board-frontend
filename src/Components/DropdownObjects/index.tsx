@@ -46,26 +46,22 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
   }, [searchQuery, items])
 
   const getLabel = (item: T): string => {
-    // Se for o item "Nenhum"
-    if ((item as any).id === "" && (item as any).title === "Nenhum") {
-      return "Nenhum"
-    }
-
-    if (props.labelKey && item[props.labelKey]) {
-      return String(item[props.labelKey])
-    }
+    if ((item as any).id === "" && (item as any).title === "Nenhum") return "Nenhum"
+    if (props.labelKey && item[props.labelKey]) return String(item[props.labelKey])
     return String(item)
   }
 
-
   const getLabelSecondary = (item: T): string => {
-    if ((item as any).id === "" && (item as any).title === "Nenhum") {
-      return ""
-    }
-    if (props.labelKeySecondary && item[props.labelKeySecondary]) {
-      return String(item[props.labelKeySecondary])
-    }
+    if ((item as any).id === "" && (item as any).title === "Nenhum") return ""
+    if (props.labelKeySecondary && item[props.labelKeySecondary]) return String(item[props.labelKeySecondary])
     return ""
+  }
+
+  const getDisplayLabel = (item: T) => {
+    const label = getLabel(item)
+    const secondary = getLabelSecondary(item)
+    if (!secondary || secondary.trim() === label.trim()) return label
+    return `${label} - ${secondary}`
   }
 
   return (
@@ -78,11 +74,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
             <div className="flex flex-col truncate text-left">
               <span className="text-gray-400 text-xs">{title}</span>
               <span className="truncate">
-                {selectedItem
-                  ? `${getLabel(selectedItem)}${getLabelSecondary(selectedItem) && getLabelSecondary(selectedItem) !== getLabel(selectedItem)
-                    ? " " + getLabelSecondary(selectedItem)
-                    : ""}`
-                  : "Selecione..."}
+                {selectedItem ? getDisplayLabel(selectedItem) : "Selecione..."}
               </span>
             </div>
 
@@ -140,15 +132,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                         'flex items-center gap-3 px-4 py-2 text-sm cursor-pointer rounded-md'
                       )}
                     >
-                      <span>
-                        {getLabel(item)}
-                      </span>
-                      {getLabelSecondary(item) &&
-                        getLabelSecondary(item).trim() !== getLabel(item).trim() && (
-                          <span className="text-sm text-gray-400">
-                            {getLabelSecondary(item)}
-                          </span>
-                        )}
+                      <span>{getDisplayLabel(item)}</span>
                     </span>
                   )}
                 </Menu.Item>

@@ -1,6 +1,6 @@
 "use client"
 import { IPublicSchedule } from "@/types/weekendSchedule"
-import { CheckCircle2, ChevronLeft, ChevronRight, Clock, UserIcon, UsersIcon } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import moment from "moment"
 import "moment/locale/pt-br"
 import { useEffect, useState } from "react"
@@ -12,7 +12,6 @@ export type ScheduleResponse = Record<string, IPublicSchedule[]>
 export default function SchedulesCarousel({ schedules }: { schedules: ScheduleResponse }) {
   const months = Object.entries(schedules)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [hospitalityShow, setHospitalityShow] = useState(false)
 
   useEffect(() => {
     const currentMonthIndex = months.findIndex(([_, weeks]) =>
