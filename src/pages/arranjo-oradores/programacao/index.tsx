@@ -49,6 +49,8 @@ export default function WeekendSchedulePage() {
     const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
     const [weekendSchedules, setWeekendSchedules] = useAtom(schedulesAtom)
     const [isClient, setIsClient] = useState(false)
+    const [initialWeekendSchedules, setInitialWeekendSchedules] = useState<Record<string, IRecordWeekendSchedule>>({})
+
 
 
     const setTalks = useSetAtom(talksAtom)
@@ -163,6 +165,7 @@ export default function WeekendSchedulePage() {
                     {}
                 )
             setWeekendSchedules(weekendSchedulesByDate)
+            setInitialWeekendSchedules(weekendSchedulesByDate)
         }
     }, [data, setChairmans, setReaders, setCongregations, setSpeakers, setTalks, setWeekendSchedules])
 
@@ -170,29 +173,39 @@ export default function WeekendSchedulePage() {
         setPageActive("Programação")
     }, [setPageActive])
 
+    const hasChanges = (a: IRecordWeekendSchedule, b?: IRecordWeekendSchedule) => {
+        if (!b) return true // novo item
+        const fields: (keyof IRecordWeekendSchedule)[] = [
+            "speaker_id",
+            "visitingCongregation_id",
+            "talk_id",
+            "chairman_id",
+            "reader_id",
+            "isSpecial",
+            "manualSpeaker",
+            "manualTalk",
+            "specialName",
+            "watchTowerStudyTitle"
+        ]
+        return fields.some(f => a[f] !== b[f])
+    }
+
     const handleSave = async () => {
         try {
-            const allSchedules = Object.values(weekendSchedules).map((s) => ({
-                id: s.id,
-                date: s.date,
-                speaker_id: s.speaker_id,
-                visitingCongregation_id: s.visitingCongregation_id,
-                talk_id: s.talk_id,
-                chairman_id: s.chairman_id,
-                reader_id: s.reader_id,
-                isSpecial: s.isSpecial,
-                manualSpeaker: s.manualSpeaker,
-                manualTalk: s.manualTalk,
-                specialName: s.specialName,
-                watchTowerStudyTitle: s.watchTowerStudyTitle
-            }))
+            const allSchedules = Object.values(weekendSchedules)
+            const newSchedules = allSchedules.filter(s => !s.id)
+            const changedSchedules = allSchedules.filter(s =>
+                s.id && hasChanges(s, initialWeekendSchedules[s.date])
+            )
 
-            const newSchedules = allSchedules.filter((s) => !s.id)
-            const existingSchedules = allSchedules.filter((s) => s.id)
+            if (newSchedules.length === 0 && changedSchedules.length === 0) {
+                toast.info("Nenhuma alteração para salvar.")
+                return
+            }
 
-            if (existingSchedules.length > 0) {
-                await toast.promise(setUpdateWeekendSchedule({ schedules: existingSchedules }), {
-                    pending: "Atualizando programações existentes...",
+            if (changedSchedules.length > 0) {
+                await toast.promise(setUpdateWeekendSchedule({ schedules: changedSchedules }), {
+                    pending: "Atualizando programações alteradas..."
                 })
             }
 
@@ -202,12 +215,14 @@ export default function WeekendSchedulePage() {
                     { pending: "Criando novas programações..." }
                 )
             }
+
             mutate()
         } catch (err) {
             console.error(err)
             toast.error("Erro ao salvar a programação.")
         }
     }
+
 
     const PdfLinkComponent = () => (
         <PDFDownloadLink
