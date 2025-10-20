@@ -173,16 +173,68 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                     )}
 
                     {schedule.externalTalks && schedule.externalTalks.length > 0 && (
-                        <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", padding: 5 * scale, fontFamily: "Helvetica-BoldOblique" }}>
-                            <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "flex-end", width: "50%", color: "#595959", gap: 4 * scale }}>
-                                <Text style={{ fontSize: 12 * scale }}>Discurso em outra congregação:</Text>
-                                {schedule.externalTalks.map(talk => (
-                                    <View key={talk.id} style={styles.externalTalkBox}>
-                                        <View style={{ display: "flex", flexDirection: "row", gap: 6 * scale }}>
-                                            <Text>{`Nº - ${talk.talk?.number}`}</Text>
-                                            <Text>{talk.speaker?.fullName}</Text>
-                                            <Text>{`(${talk.destinationCongregation.name} ${talk.destinationCongregation.city !== talk.destinationCongregation.name ? talk.destinationCongregation.city : ""})`}</Text>
-                                        </View>
+                        <View
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                                padding: 5 * scale,
+                                fontFamily: "Helvetica-BoldOblique",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "flex-end",
+                                    justifyContent: "flex-end",
+                                    width: "60%",
+                                    color: "#595959",
+                                    gap: 6 * scale,
+                                }}
+                            >
+                                <Text style={{ fontSize: 12 * scale, textAlign: "right" }}>
+                                    Discurso em outra congregação:
+                                </Text>
+
+                                {schedule.externalTalks.map((et) => (
+                                    <View
+                                        key={et.id}
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "flex-end",
+                                            width: "100%",
+                                            textAlign: "right",
+                                        }}
+                                    >
+                                        {/* Nome e número do discurso */}
+                                        <Text
+                                            style={{
+                                                fontSize: 11 * scale,
+                                                flexShrink: 1,
+                                                textAlign: "right",
+                                            }}
+                                        >
+                                            {et.talk ? `Nº ${et.talk.number} - ` : ""}
+                                            {et.speaker?.fullName}
+                                        </Text>
+
+                                        {/* Congregação de destino */}
+                                        <Text
+                                            style={{
+                                                fontSize: 10 * scale,
+                                                color: "#444",
+                                                textAlign: "right",
+                                                marginTop: 1 * scale,
+                                            }}
+                                        >
+                                            {`(${et.destinationCongregation.name}${et.destinationCongregation.city !==
+                                                    et.destinationCongregation.name
+                                                    ? ` - ${et.destinationCongregation.city}`
+                                                    : ""
+                                                })`}
+                                        </Text>
                                     </View>
                                 ))}
                             </View>
