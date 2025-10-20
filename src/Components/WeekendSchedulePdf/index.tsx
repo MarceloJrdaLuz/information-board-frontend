@@ -229,11 +229,7 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                                                 marginTop: 1 * scale,
                                             }}
                                         >
-                                            {`(${et.destinationCongregation.name}${et.destinationCongregation.city !==
-                                                    et.destinationCongregation.name
-                                                    ? ` - ${et.destinationCongregation.city}`
-                                                    : ""
-                                                })`}
+                                            {formatNameCongregation(et.destinationCongregation.name, et.destinationCongregation.city)}
                                         </Text>
                                     </View>
                                 ))}
