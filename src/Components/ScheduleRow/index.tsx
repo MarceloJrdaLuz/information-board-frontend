@@ -226,32 +226,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         />
       }
 
-      {current.isSpecial &&
-        <div>
-          <Input
-            value={current.specialName || ""}
-            onChange={(e) => handleManualChange("specialName", e.target.value)}
-            type="text"
-            placeholder="Nome do evento"
-          />
-          {!checkedOptions.includes("Orador da lista") && checkedOptions.includes("Orador manual") &&
-            <Input
-              value={current.manualSpeaker || ""}
-              onChange={(e) => handleManualChange("manualSpeaker", e.target.value)}
-              type="text"
-              placeholder="Orador Manual"
-            />
-          }
-          {!checkedOptions.includes("Tema da lista") && checkedOptions.includes("Tema manual") &&
-            <Input
-              value={current.manualTalk || ""}
-              onChange={(e) => handleManualChange("manualTalk", e.target.value)}
-              type="text"
-              placeholder="Tema Manual"
-            />
-          }
-        </div>
-      }
       {/* Dropdowns */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Presidente"))) &&
         <DropdownObject
@@ -268,14 +242,16 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         />
       }
 
+      {/* 🔹 Box do Orador */}
       <div className='border border-gray-300 my-4 p-4'>
         <div className='flex justify-between items-center flex-wrap gap-4'>
-          <span className='my-2 font-semibold text-gray-900 '>Orador</span>
+          <span className='my-2 font-semibold text-gray-900'>Orador</span>
+
           {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador"))) && (
             <DropdownObject
               textVisible
               title="Congregação visitante"
-              items={congregations ?? []} // você precisa ter uma lista de congregações disponível (pode vir via atom)
+              items={congregations ?? []}
               selectedItem={congregations?.find(c => c.id === current.visitingCongregation_id) || null}
               handleChange={item => handleChange("visitingCongregation_id", item)}
               labelKey="name"
@@ -287,7 +263,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
             />
           )}
 
-          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) &&
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) && (
             <DropdownObject
               textVisible
               title="Orador"
@@ -300,9 +276,9 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               emptyMessage="Nenhum orador"
               searchable
             />
-          }
+          )}
 
-          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) &&
+          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) && (
             <DropdownObject
               textVisible
               title="Tema"
@@ -316,7 +292,32 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               emptyMessage="Nenhum tema"
               searchable
             />
-          }
+          )}
+
+          {/* 🔹 Campos manuais dentro da box de orador */}
+          <div className="w-full">
+            {current.isSpecial && checkedOptions.includes("Orador manual") && (
+              <Input
+                className="!my-0"
+                value={current.manualSpeaker || ""}
+                onChange={(e) => handleManualChange("manualSpeaker", e.target.value)}
+                type="text"
+                placeholder="Orador manual"
+              />
+            )}
+          </div>
+
+          <div className="w-full">
+            {current.isSpecial && checkedOptions.includes("Tema manual") && (
+              <Input
+                className="!my-0"
+                value={current.manualTalk || ""}
+                onChange={(e) => handleManualChange("manualTalk", e.target.value)}
+                type="text"
+                placeholder="Tema manual"
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -340,6 +341,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           }
 
           <Input
+            className="!my-0"
             value={current.watchTowerStudyTitle || ""}
             onChange={(e) => handleManualChange("watchTowerStudyTitle", e.target.value)}
             type="text"
@@ -351,7 +353,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
       {externalTalks.length > 0 && (
         <div className="mt-6 space-y-3">
-          <h3 className="font-semibold text-gray-800">Discursos Externos</h3>
+          <h3 className="font-semibold text-gray-800">Oradores que saem</h3>
           {externalTalks.map((et) => (
             <div
               key={et.id}

@@ -2,6 +2,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import { ConfirmRegisterReports } from "@/Components/ConfirmRegisterReports"
 import ContentDashboard from "@/Components/ContentDashboard"
+import FilterGroups from "@/Components/FilterGroups"
 import FilterPrivileges from "@/Components/FilterPrivileges"
 import Layout from "@/Components/Layout"
 import ListTotals from "@/Components/ListTotals"
@@ -67,6 +68,8 @@ export default function RelatorioMes() {
     const [monthAlreadyRegister, setMonthAlreadyRegister] = useState(false)
     const [totalsRecover, setTotalsRecover] = useState<ITotalsReports[]>()
     const [meetingAssistanceEndWeek, setMeetingAssistanceEndWeek] = useState(0)
+    const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
+
 
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
@@ -210,9 +213,6 @@ export default function RelatorioMes() {
         }
 
         if (reports) {
-            const reportsFiltered = reports.filter(report => (report.publisher.id === "b0c8aee6-1c4f-4c40-8dc7-6e41ad741085"
-
-            ))
             // Filter reports based on month and year
             const reportsFilteredByDate = reports.filter(report => (
                 report.month.toLocaleLowerCase() === monthSelected && report.year === yearSelected
@@ -285,18 +285,29 @@ export default function RelatorioMes() {
     useEffect(() => {
         if (publishers && reports) {
             const missingReports = publishers.filter(publisher => {
-                const relatorioEnviado = reports.some(
+                const hasSubmittedReport = reports.some(
                     report =>
                         report.publisher.id === publisher.id &&
                         report.month.toLowerCase() === monthSelected &&
                         report.year === yearSelected
                 )
-                return !relatorioEnviado
-            })
 
+                // Grupo selecionado
+                const belongsToGroup =
+                    groupSelecteds.length === 0 // nenhum grupo selecionado → todos
+                        ? true
+                        : publisher.group && groupSelecteds.includes(publisher.group.id)
+
+                return !hasSubmittedReport && belongsToGroup
+            })
             setMissingReports(missingReports)
+
         }
-    }, [monthSelected, yearSelected, publishers, reports])
+    }, [monthSelected, yearSelected, publishers, reports, groupSelecteds])
+
+    useEffect(() => {
+        console.log('Grupo selecionado:', groupSelecteds)
+    }, [groupSelecteds])
 
     useEffect(() => {
         if (missingReports) {
@@ -388,6 +399,9 @@ export default function RelatorioMes() {
                         <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
                         <div className="flex flex-1 justify-between mb-4 mx-4">
                             <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+
+                            <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={setGroupSelecteds} />
+
 
                             <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                 Totais

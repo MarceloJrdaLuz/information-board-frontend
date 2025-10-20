@@ -105,17 +105,26 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                 <View key={idx} style={styles.meetingBlock} wrap={false}>
                     <Text style={styles.meetingHeader}>{formatDate(schedule.date).toLocaleUpperCase()}</Text>
 
-                    <View style={[
-                        styles.chairmanRow,
-                        schedule.specialName
-                            ? { justifyContent: "space-between" }
-                            : { justifyContent: "flex-end" }
-                    ]}>
-                        {schedule.isSpecial && <Text style={styles.textLine}>{schedule.specialName}</Text>}
-                        <Text style={styles.textLine}>
-                            {schedule.chairman && `Presidente: ${schedule.chairman?.nickname ? schedule.chairman?.nickname : schedule.chairman?.fullName}`}
-                        </Text>
-                    </View>
+                    {schedule.isSpecial && schedule.specialName && (
+                        <View
+                            style={{
+                                paddingVertical: 4 * scale,
+                                paddingHorizontal: 6 * scale,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "#c18626",
+                                    fontFamily: "Helvetica-Bold",
+                                    fontSize: 12 * scale,
+                                    textAlign: "center",
+                                    textTransform: "uppercase",
+                                }}
+                            >
+                                {schedule.specialName}
+                            </Text>
+                        </View>
+                    )}
 
                     <View style={[
                         styles.talkBox,
@@ -153,11 +162,13 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                                     {schedule.watchTowerStudyTitle}
                                 </Text>
                             </View>
-                            <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                <Text style={styles.textLine}>
-                                    Leitor: {schedule.reader?.nickname ? schedule.reader?.nickname : schedule.reader?.fullName}
-                                </Text>
-                            </View>
+                            {schedule.reader && (
+                                <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                                    <Text style={styles.textLine}>
+                                        {`Leitor: ${schedule.reader.nickname || schedule.reader.fullName}`}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
                     )}
 

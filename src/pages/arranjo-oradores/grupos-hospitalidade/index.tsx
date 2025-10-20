@@ -67,7 +67,7 @@ export default function HospitalityGroupsPage() {
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de hospitalidade</h1>
-                        <div className="flex flex-1 justify-start">
+                        <div className="flex justify-between items-center mb-3">
                             <Button
                                 onClick={() => {
                                     Router.push('/arranjo-oradores/grupos-hospitalidade/add')
@@ -76,6 +76,7 @@ export default function HospitalityGroupsPage() {
                                 <GroupIcon />
                                 <span className="text-primary-200 font-semibold">Criar grupo</span>
                             </Button>
+                            {hospitalityGroups && <span className="text-sm text-gray-600">Total: {hospitalityGroups.length}</span>}
                         </div>
 
                         {hospitalityGroups && hospitalityGroups.length > 0 ? (

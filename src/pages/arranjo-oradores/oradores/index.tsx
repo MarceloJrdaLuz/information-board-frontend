@@ -126,7 +126,7 @@ export default function SpeakersPage() {
                 <section className="flex flex-wrap w-full h-full p-5 ">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Oradores</h1>
-                        <div className="flex flex-1 justify-start">
+                        <div className="flex justify-between items-center mb-3">
                             <Button
                                 onClick={() => {
                                     Router.push('/arranjo-oradores/oradores/add')
@@ -135,8 +135,8 @@ export default function SpeakersPage() {
                                 <GroupIcon />
                                 <span className="text-primary-200 font-semibold">Criar orador</span>
                             </Button>
+                            {speakers && <span className="text-sm text-gray-600">Total: {speakers.length}</span>}
                         </div>
-
                         <div className="flex justify-between my-4">
                             <FilterSpeakersCongregation
                                 checkedOptions={filteredByCongregation?.id ?? ""}
@@ -173,8 +173,6 @@ export default function SpeakersPage() {
                                 )}
                             </div>
                         </div>
-
-
                         {speakers && speakers.length > 0 ? (
                             <ListGeneric
                                 onDelete={(item_id) => handleDelete(item_id)}
@@ -185,7 +183,6 @@ export default function SpeakersPage() {
                                 renderItem={(speaker) => (
                                     <div className="flex flex-col gap-3">
                                         <h3 className="text-lg font-semibold text-gray-800">{speaker.fullName}</h3>
-
                                         <div className="text-sm text-gray-600 flex flex-col gap-2">
                                             <div className="flex items-center gap-2">
                                                 📞 <span>{speaker.phone || "Não cadastrado"}</span>
@@ -213,6 +210,7 @@ export default function SpeakersPage() {
                             )
                         }
                     </div>
+
                 </section>
             </ContentDashboard>
         </Layout>

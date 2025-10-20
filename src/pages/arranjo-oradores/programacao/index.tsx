@@ -341,7 +341,7 @@ export default function WeekendSchedulePage() {
                                     </CardBody>
                                 </Card>
                                 {showPdfPreview && (
-                                    <div className="w-full h-[80vh] mt-4 border rounded-lg overflow-hidden">
+                                    <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
                                         <PDFViewer style={{ width: "100%", height: "100%" }}>
                                             <Document>
                                                 <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
