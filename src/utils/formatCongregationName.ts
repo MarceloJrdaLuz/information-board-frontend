@@ -17,7 +17,7 @@ export function formatNameCongregation(name?: string, city?: string): string {
 
   // Se são diferentes, junta
   if (cleanName && cleanCity) {
-    return `(${cleanName} ${cleanCity})`;
+    return `(${cleanName} - ${cleanCity})`;
   }
 
   // Se só tem um definido
