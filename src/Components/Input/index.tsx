@@ -24,6 +24,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
       {mask ? (
         <InputMask
           mask={mask}
+          maskChar={null}
           {...rest}
           {...registro}
           inputRef={ref} // <- importante para integrar com react-hook-form
