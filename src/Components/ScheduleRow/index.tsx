@@ -225,13 +225,15 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         onChange={(e) => handleToggleSpecial(e.target.checked)}
       />
 
-      <Input
+      
+      {current.isSpecial &&
+        <>
+          <Input
         value={current.specialName || ""}
         onChange={(e) => handleManualChange("specialName", e.target.value)}
         type="text"
         placeholder="Nome do evento"
       />
-      {current.isSpecial &&
         <CheckboxMultiple
           label="Campos especiais"
           options={optionsSpecial}
@@ -240,6 +242,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           full
           visibleLabel
         />
+        </>
+        
       }
 
 
