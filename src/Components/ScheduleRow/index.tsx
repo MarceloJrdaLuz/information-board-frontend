@@ -119,9 +119,19 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const handleSpecialOptionChange = (newCheckedOptions: string[]) => {
     let updatedOptions = [...newCheckedOptions]
 
-    // Desmarca orador/tema padrão se manual selecionado
-    if (updatedOptions.includes("Orador manual")) updatedOptions = updatedOptions.filter(opt => opt !== "Orador")
-    if (updatedOptions.includes("Tema manual")) updatedOptions = updatedOptions.filter(opt => opt !== "Tema")
+    // Regras de exclusividade (funciona nos dois sentidos)
+    const toggleExclusive = (a: string, b: string) => {
+      // Se o usuário acabou de marcar 'a', remove 'b'
+      if (updatedOptions.includes(a) && updatedOptions.includes(b)) {
+        
+        const lastClicked = newCheckedOptions[newCheckedOptions.length - 1]
+        updatedOptions = updatedOptions.filter(opt => opt !== (lastClicked === a ? b : a))
+      }
+    }
+
+    toggleExclusive("Orador", "Orador manual")
+    toggleExclusive("Tema", "Tema manual")
+
     setCheckedOptions(updatedOptions)
 
     setSchedules(prev => {
@@ -215,6 +225,12 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         onChange={(e) => handleToggleSpecial(e.target.checked)}
       />
 
+      <Input
+        value={current.specialName || ""}
+        onChange={(e) => handleManualChange("specialName", e.target.value)}
+        type="text"
+        placeholder="Nome do evento"
+      />
       {current.isSpecial &&
         <CheckboxMultiple
           label="Campos especiais"
@@ -225,6 +241,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           visibleLabel
         />
       }
+
 
       {/* Dropdowns */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Presidente"))) &&
@@ -243,83 +260,84 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       }
 
       {/* 🔹 Box do Orador */}
-      <div className='border border-gray-300 my-4 p-4'>
-        <div className='flex justify-between items-center flex-wrap gap-4'>
-          <span className='my-2 font-semibold text-gray-900'>Orador</span>
+      {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") || checkedOptions.includes("Tema") || checkedOptions.includes("Tema manual") || checkedOptions.includes("Orador manual"))) &&
+        <div className='border border-gray-300 my-4 p-4'>
+          <div className='flex justify-between items-center flex-wrap gap-4'>
+            <span className='my-2 font-semibold text-gray-900'>Orador</span>
 
-          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador"))) && (
-            <DropdownObject
-              textVisible
-              title="Congregação visitante"
-              items={congregations ?? []}
-              selectedItem={congregations?.find(c => c.id === current.visitingCongregation_id) || null}
-              handleChange={item => handleChange("visitingCongregation_id", item)}
-              labelKey="name"
-              labelKeySecondary="city"
-              border
-              full
-              emptyMessage="Nenhuma congregação"
-              searchable
-            />
-          )}
-
-          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) && (
-            <DropdownObject
-              textVisible
-              title="Orador"
-              items={speakerOptions ?? []}
-              selectedItem={speakerOptions?.find(p => p.id === current.speaker_id) || null}
-              handleChange={item => handleChange("speaker_id", item)}
-              labelKey="displayLabel"
-              border
-              full
-              emptyMessage="Nenhum orador"
-              searchable
-            />
-          )}
-
-          {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) && (
-            <DropdownObject
-              textVisible
-              title="Tema"
-              items={talkOptions ?? []}
-              selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
-              handleChange={item => handleChange("talk_id", item)}
-              labelKey="number"
-              labelKeySecondary="displayLabel"
-              border
-              full
-              emptyMessage="Nenhum tema"
-              searchable
-            />
-          )}
-
-          {/* 🔹 Campos manuais dentro da box de orador */}
-          <div className="w-full">
-            {current.isSpecial && checkedOptions.includes("Orador manual") && (
-              <Input
-                className="!my-0"
-                value={current.manualSpeaker || ""}
-                onChange={(e) => handleManualChange("manualSpeaker", e.target.value)}
-                type="text"
-                placeholder="Orador manual"
+            {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador"))) && (
+              <DropdownObject
+                textVisible
+                title="Congregação visitante"
+                items={congregations ?? []}
+                selectedItem={congregations?.find(c => c.id === current.visitingCongregation_id) || null}
+                handleChange={item => handleChange("visitingCongregation_id", item)}
+                labelKey="name"
+                labelKeySecondary="city"
+                border
+                full
+                emptyMessage="Nenhuma congregação"
+                searchable
               />
             )}
-          </div>
 
-          <div className="w-full">
-            {current.isSpecial && checkedOptions.includes("Tema manual") && (
-              <Input
-                className="!my-0"
-                value={current.manualTalk || ""}
-                onChange={(e) => handleManualChange("manualTalk", e.target.value)}
-                type="text"
-                placeholder="Tema manual"
+            {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") && !checkedOptions.includes("Orador manual"))) && (
+              <DropdownObject
+                textVisible
+                title="Orador"
+                items={speakerOptions ?? []}
+                selectedItem={speakerOptions?.find(p => p.id === current.speaker_id) || null}
+                handleChange={item => handleChange("speaker_id", item)}
+                labelKey="displayLabel"
+                border
+                full
+                emptyMessage="Nenhum orador"
+                searchable
               />
             )}
+
+            {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Tema") && !checkedOptions.includes("Tema manual"))) && (
+              <DropdownObject
+                textVisible
+                title="Tema"
+                items={talkOptions ?? []}
+                selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
+                handleChange={item => handleChange("talk_id", item)}
+                labelKey="number"
+                labelKeySecondary="displayLabel"
+                border
+                full
+                emptyMessage="Nenhum tema"
+                searchable
+              />
+            )}
+
+            {/* 🔹 Campos manuais dentro da box de orador */}
+            <div className="w-full">
+              {current.isSpecial && checkedOptions.includes("Orador manual") && (
+                <Input
+                  className="!my-0"
+                  value={current.manualSpeaker || ""}
+                  onChange={(e) => handleManualChange("manualSpeaker", e.target.value)}
+                  type="text"
+                  placeholder="Orador manual"
+                />
+              )}
+            </div>
+
+            <div className="w-full">
+              {current.isSpecial && checkedOptions.includes("Tema manual") && (
+                <Input
+                  className="!my-0"
+                  value={current.manualTalk || ""}
+                  onChange={(e) => handleManualChange("manualTalk", e.target.value)}
+                  type="text"
+                  placeholder="Tema manual"
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </div>}
 
       <div className='border border-gray-300 my-4 p-4'>
         <div className='flex justify-between items-center flex-wrap gap-4'>
