@@ -356,7 +356,7 @@ export default function WeekendSchedulePage() {
                                             moment(t.date).isSame(d, "day")
                                         )
                                         return (
-                                            <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm p-4">
+                                            <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm">
                                                 <ScheduleRow date={d} externalTalks={externalForDate} />
                                             </div>
                                         )
