@@ -123,7 +123,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     const toggleExclusive = (a: string, b: string) => {
       // Se o usuário acabou de marcar 'a', remove 'b'
       if (updatedOptions.includes(a) && updatedOptions.includes(b)) {
-        
+
         const lastClicked = newCheckedOptions[newCheckedOptions.length - 1]
         updatedOptions = updatedOptions.filter(opt => opt !== (lastClicked === a ? b : a))
       }
@@ -207,6 +207,26 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     const selectedTalk = talks?.find(t => t.id === current.talk_id)
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
+  // 🔹 Verifica se deve aplicar as cores (somente se NÃO for evento especial)
+  let borderColor = "border-gray-300"
+
+  if (!current.isSpecial) {
+    const filledFieldsCount = [
+      current.visitingCongregation_id,
+      current.speaker_id,
+      current.talk_id
+    ].filter(Boolean).length
+
+    if (filledFieldsCount === 0) {
+      borderColor = "border-l-4 border-red-500"
+    } else if (filledFieldsCount < 3) {
+      borderColor = "border-l-4 border-yellow-500"
+    } else {
+      borderColor = "border-l-4 border-green-500"
+    }
+  }
+
+
 
   const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
@@ -214,7 +234,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const talkOptions = buildTalkOptions(filteredTalks, schedules)
 
   return (
-    <div className="border rounded-xl p-3 flex flex-col gap-2 bg-white">
+    <div className={`border-2 ${borderColor} rounded-xl p-3 flex flex-col gap-2 bg-white transition-colors duration-300`}>
       <h2 className="font-semibold">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
@@ -225,25 +245,25 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         onChange={(e) => handleToggleSpecial(e.target.checked)}
       />
 
-      
+
       {current.isSpecial &&
         <>
           <Input
-        value={current.specialName || ""}
-        onChange={(e) => handleManualChange("specialName", e.target.value)}
-        type="text"
-        placeholder="Nome do evento"
-      />
-        <CheckboxMultiple
-          label="Campos especiais"
-          options={optionsSpecial}
-          checkedOptions={checkedOptions}
-          handleCheckboxChange={handleSpecialOptionChange}
-          full
-          visibleLabel
-        />
+            value={current.specialName || ""}
+            onChange={(e) => handleManualChange("specialName", e.target.value)}
+            type="text"
+            placeholder="Nome do evento"
+          />
+          <CheckboxMultiple
+            label="Campos especiais"
+            options={optionsSpecial}
+            checkedOptions={checkedOptions}
+            handleCheckboxChange={handleSpecialOptionChange}
+            full
+            visibleLabel
+          />
         </>
-        
+
       }
 
 
