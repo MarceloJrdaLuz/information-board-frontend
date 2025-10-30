@@ -41,9 +41,9 @@ export default function ConsentModal({
                 </div>
 
                 {/* Conteúdo com scroll */}
-                <Dialog.Description className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed overflow-y-auto max-h-[60vh]">
+                <div className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed overflow-y-auto max-h-[60vh]">
                     <ReactMarkdown>{content}</ReactMarkdown>
-                </Dialog.Description>
+                </div>
                 <span>Para continuar usando o sistema, é necessário aceitar os termos de uso e a política de privacidade da congregação.</span>
 
                 <div className="mt-4 flex justify-end gap-2">

@@ -62,6 +62,7 @@ export default function Terms() {
                                 items={terms}
                                 onDelete={handleDelete}
                                 showEdit={false}
+                                showDelete={false}
                                 renderItem={(term) => (
                                     <div className="flex flex-col gap-3">
                                         <div className="flex justify-between items-start gap-3">
