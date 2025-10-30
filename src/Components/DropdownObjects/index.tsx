@@ -22,6 +22,7 @@ interface IDropdown<T> {
   labelKey?: keyof T
   labelKeySecondary?: keyof T
   searchable?: boolean
+  borderColor?: string
 }
 
 export default function DropdownObject<T>(props: IDropdown<T>) {
@@ -68,7 +69,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
     <Menu as="div" className={`relative ${props.full ? 'w-full' : 'inline-block'} ${props.classname}`}>
       <div>
         <Menu.Button
-          className="w-full flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className={`w-full flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
         >
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-col truncate text-left">
