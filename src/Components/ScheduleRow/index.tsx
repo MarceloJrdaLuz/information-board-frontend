@@ -207,8 +207,10 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     const selectedTalk = talks?.find(t => t.id === current.talk_id)
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
-  // 🔹 Verifica se deve aplicar as cores (somente se NÃO for evento especial)
-  let borderColor = "border-gray-300"
+  
+  let borderColorChairman = "border-gray-300"
+  let borderSpeakerColor = "border-gray-300"
+  let borderWhatchtowerColor = "border-gray-300"
 
   if (!current.isSpecial) {
     const filledFieldsCount = [
@@ -218,15 +220,36 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     ].filter(Boolean).length
 
     if (filledFieldsCount === 0) {
-      borderColor = "border-l-4 border-red-500"
+      borderSpeakerColor = "border-l-4 border-red-500"
     } else if (filledFieldsCount < 3) {
-      borderColor = "border-l-4 border-yellow-500"
+      borderSpeakerColor = "border-l-4 border-yellow-500"
     } else {
-      borderColor = "border-l-4 border-green-500"
+      borderSpeakerColor = "border-l-4 border-green-500"
     }
   }
 
+  if (!current.isSpecial) {
+    if (!current.chairman_id) {
+      borderColorChairman = "border-l-4 border-red-500"
+    } else {
+      borderColorChairman = "border-l-4 border-green-500"
+    }
+  }
 
+  if (!current.isSpecial) {
+    const filledFieldsCount = [
+      current.reader_id,
+      current.watchTowerStudyTitle,
+    ].filter(Boolean).length
+
+    if (filledFieldsCount === 0) {
+      borderWhatchtowerColor = "border-l-4 border-red-500"
+    } else if (filledFieldsCount < 3) {
+      borderWhatchtowerColor = "border-l-4 border-yellow-500"
+    } else {
+      borderWhatchtowerColor = "border-l-4 border-green-500"
+    }
+  }
 
   const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
@@ -234,7 +257,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const talkOptions = buildTalkOptions(filteredTalks, schedules)
 
   return (
-    <div className={`border-2 ${borderColor} rounded-xl p-3 flex flex-col gap-2 bg-white transition-colors duration-300`}>
+    <div className={`border-2  rounded-xl p-3 flex flex-col gap-2 bg-white transition-colors duration-300`}>
       <h2 className="font-semibold">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
@@ -244,7 +267,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         checked={!!current.isSpecial}
         onChange={(e) => handleToggleSpecial(e.target.checked)}
       />
-
 
       {current.isSpecial &&
         <>
@@ -266,26 +288,30 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
       }
 
-
       {/* Dropdowns */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Presidente"))) &&
-        <DropdownObject
-          textVisible
-          title="Presidente"
-          items={chairmanOptions ?? []}
-          selectedItem={chairmanOptions?.find(p => p.id === current.chairman_id) || null}
-          handleChange={item => handleChange("chairman_id", item)}
-          labelKey="displayLabel"
-          border
-          full
-          emptyMessage="Nenhum presidente"
-          searchable
-        />
+        <div className={`border ${borderColorChairman ?? "border-gray-300"} p-4`}>
+          <div className='flex justify-between items-center flex-wrap gap-4'>
+            <span className='my-2 font-semibold text-gray-900'>Presidente</span>
+            <DropdownObject
+              textVisible
+              title="Presidente"
+              items={chairmanOptions ?? []}
+              selectedItem={chairmanOptions?.find(p => p.id === current.chairman_id) || null}
+              handleChange={item => handleChange("chairman_id", item)}
+              labelKey="displayLabel"
+              border
+              full
+              emptyMessage="Nenhum presidente"
+              searchable
+            />
+          </div>
+        </div>
       }
 
       {/* 🔹 Box do Orador */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") || checkedOptions.includes("Tema") || checkedOptions.includes("Tema manual") || checkedOptions.includes("Orador manual"))) &&
-        <div className='border border-gray-300 my-4 p-4'>
+        <div className={`border ${borderSpeakerColor} my-4 p-4`}>
           <div className='flex justify-between items-center flex-wrap gap-4'>
             <span className='my-2 font-semibold text-gray-900'>Orador</span>
 
@@ -363,7 +389,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           </div>
         </div>}
 
-      <div className='border border-gray-300 my-4 p-4'>
+      <div className={`border ${borderWhatchtowerColor} my-4 p-4`}>
         <div className='flex justify-between items-center flex-wrap gap-4'>
           <span className='my-2 font-semibold text-gray-900 '>Sentinela</span>
 
