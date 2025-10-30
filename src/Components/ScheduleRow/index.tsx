@@ -207,7 +207,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     const selectedTalk = talks?.find(t => t.id === current.talk_id)
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
-  
+
   let borderColorChairman = "border-gray-300"
   let borderSpeakerColor = "border-gray-300"
   let borderWhatchtowerColor = "border-gray-300"
@@ -244,7 +244,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
     if (filledFieldsCount === 0) {
       borderWhatchtowerColor = "border-l-4 border-red-500"
-    } else if (filledFieldsCount < 3) {
+    } else if (filledFieldsCount < 2) {
       borderWhatchtowerColor = "border-l-4 border-yellow-500"
     } else {
       borderWhatchtowerColor = "border-l-4 border-green-500"
