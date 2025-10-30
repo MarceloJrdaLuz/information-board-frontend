@@ -14,7 +14,8 @@ interface LayoutPrincipalProps {
     congregationName: string
     circuit: string
     imageUrl?: string
-    justifyContent?: string
+    justifyContent?: string, 
+    nCong?: string
 }
 
 export default function LayoutPrincipal(props: LayoutPrincipalProps) {
@@ -29,7 +30,7 @@ export default function LayoutPrincipal(props: LayoutPrincipalProps) {
                 {props.children}
             </Conteudo>
 
-            <Footer ano={new Date().getFullYear()} nomeCongregacao={`Congregação ${props.congregationName} - ${props.circuit}`} aviso="Atenção: favor não compartilhar acesso ao site para outros que não pertencem à congregação" />
+            <Footer nCong={props.nCong} ano={new Date().getFullYear()} nomeCongregacao={`Congregação ${props.congregationName} - ${props.circuit}`} aviso="Atenção: favor não compartilhar acesso ao site para outros que não pertencem à congregação" />
         </div>
     )
 }

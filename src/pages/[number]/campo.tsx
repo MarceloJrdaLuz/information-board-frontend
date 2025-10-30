@@ -64,6 +64,7 @@ export default function Campo() {
         <div className=" flex flex-col h-screen w-screen bg-gray-200">
             <HeadComponent title="Designações de Campo" urlMiniatura={`${domain}/images/campo.png`} />
             <LayoutPrincipal
+                nCong={congregationData?.number}
                 image={
                     <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
                 }
@@ -77,22 +78,22 @@ export default function Campo() {
                         ><PreachingIcon /> Saídas de Campo</Button>
                         <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                             {fieldServiceOptionsShow && (
-                               documents ?  documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
-                                documentsFieldServiceFilter?.map(document => (
-                                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                        <Button
-                                            className="w-full"
-                                            onClick={() => { handleButtonClick(document.url) }}
-                                        >
-                                            {removeMimeType(document.fileName)}
-                                        </Button>
-                                    </div>
-                                ))
-                            ) : (
-                                <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
-                            )  : (
-                               <div className="w-full"><Spiner size="w-8 h-8"/></div>
-                            )
+                                documents ? documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
+                                    documentsFieldServiceFilter?.map(document => (
+                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                            <Button
+                                                className="w-full"
+                                                onClick={() => { handleButtonClick(document.url) }}
+                                            >
+                                                {removeMimeType(document.fileName)}
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
+                                ) : (
+                                    <div className="w-full"><Spiner size="w-8 h-8" /></div>
+                                )
                             )}
                         </div>
 
@@ -114,7 +115,7 @@ export default function Campo() {
                                         )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
                                     ) : (
                                         <div className="w-full">
-                                            <Spiner size="w-8 h-8"/>
+                                            <Spiner size="w-8 h-8" />
                                         </div>
                                     )
                                 )}

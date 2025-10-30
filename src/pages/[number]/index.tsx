@@ -62,7 +62,7 @@ export default function Home() {
         <div className=" flex flex-col h-screen w-screen bg-gray-200 overflow-auto">
             {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={number as string} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
-            <LayoutPrincipal image={(
+            <LayoutPrincipal nCong={congregationData?.number} image={(
                 congregationData?.image_url ? (
                     <Image src={congregationData?.image_url} alt="Foto do Salão do Reino" fill />
                 ) : (

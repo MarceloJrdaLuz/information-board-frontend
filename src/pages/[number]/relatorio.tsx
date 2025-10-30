@@ -27,7 +27,7 @@ export default function Relatorio() {
     return (
         <>
             <HeadComponent title="Relatório" urlMiniatura={`${domain}/images/relatorio.png`} />
-            <LayoutPrincipal congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
+            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
                 <FormReport congregationNumber={number as string} />
             </LayoutPrincipal>
         </>

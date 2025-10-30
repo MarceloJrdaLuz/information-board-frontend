@@ -131,6 +131,7 @@ export default function Designacoes() {
     <div className=" flex flex-col h-screen w-screen bg-gray-200">
       <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
       <LayoutPrincipal
+        nCong={congregationData?.number}
         image={
           <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
         }

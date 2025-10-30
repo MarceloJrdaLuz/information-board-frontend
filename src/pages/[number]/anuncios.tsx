@@ -41,7 +41,7 @@ export default function NoticesPage() {
     return (
         <>
             <HeadComponent title="Anuncios" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg" />
-            <LayoutPrincipal congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'h-[90vh]'} justifyContent="start">
+            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'h-[90vh]'} justifyContent="start">
                 <Notices notices={notices} congregationNumber={number as string} />
             </LayoutPrincipal>
         </>
