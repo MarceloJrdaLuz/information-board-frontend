@@ -1,8 +1,9 @@
 import { showConfirmForceModal, showModalEmergencyContact } from "@/atoms/atom"
 import { api } from "@/services/api"
+import { IConsentRecordTypes } from "@/types/consent"
 import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/types/reports"
-import { ConsentRecordTypes, IEmergencyContact, ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
+import { IEmergencyContact, ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
@@ -182,31 +183,33 @@ function PublisherProvider(props: PublisherContextProviderProps) {
     }
 
     async function createConsentRecord(publisher_id: string, deviceId?: string) {
-        await api.post<ConsentRecordTypes>('/consentRecord', {
+        await api.post<IConsentRecordTypes>('/consent/accept', {
             publisher_id,
-            deviceId
+            deviceId,
+            type: "publisher"
         }).then(suc => {
-            const { data: { deviceId, publisher, consentDate } } = suc
+            const { data: { deviceId, publisher, accepted_at } } = suc
             const storage = localStorage.getItem('publisher')
 
             let jsonSave = []
-
+        
             if (storage) {
                 const parse = JSON.parse(storage)
+                const filtered = parse.filter((p: any) => p.id !== publisher.id)
 
                 jsonSave = [
-                    ...parse,
+                    ...filtered,
                     {
                         ...publisher,
                         deviceId,
-                        consentDate
+                        accepted_at
                     }
                 ]
             } else {
                 jsonSave = [{
                     ...publisher,
                     deviceId,
-                    consentDate
+                    accepted_at
                 }]
             }
 

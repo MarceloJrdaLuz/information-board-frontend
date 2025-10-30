@@ -1,4 +1,3 @@
-import { Privileges } from "@/types/types"
 import {
     List,
     Popover,
@@ -9,6 +8,7 @@ import { ListFilterIcon } from "lucide-react"
 import { useState } from "react"
 import Button from "../Button"
 import CheckboxMultiple from "../CheckBoxMultiple"
+import { Privileges } from "@/types/types"
 
 interface IFIlterPrivilegesProps {
     handleCheckboxChange: (selectedOptions: string[]) => void

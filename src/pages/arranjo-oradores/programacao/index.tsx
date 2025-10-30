@@ -5,19 +5,18 @@ import PdfIcon from "@/Components/Icons/PdfIcon"
 import Input from "@/Components/Input"
 import Layout from "@/Components/Layout"
 import ScheduleRow from "@/Components/ScheduleRow"
-import SpeakerFilters from "@/Components/SpeakerFilters"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
-    chairmansAtom,
-    congregationsAtom,
-    createWeekendScheduleAtom,
-    readersAtom,
-    schedulesAtom,
-    speakersAtom,
-    talksAtom,
-    updateWeekendScheduleAtom
+  chairmansAtom,
+  congregationsAtom,
+  createWeekendScheduleAtom,
+  readersAtom,
+  schedulesAtom,
+  speakersAtom,
+  talksAtom,
+  updateWeekendScheduleAtom
 } from "@/atoms/weekendScheduleAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useFetch } from "@/hooks/useFetch"

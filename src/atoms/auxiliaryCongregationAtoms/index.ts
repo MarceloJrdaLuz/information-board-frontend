@@ -1,9 +1,9 @@
 import { api } from "@/services/api"
-import { ICongregation } from "@/types/types"
 import { atom } from "jotai"
 import { toast } from "react-toastify"
 import { handleSubmitSuccessAtom } from "../handleSubmitAtom"
 import { CreateAuxiliaryCongregationPayload, UpdateAuxiliaryCongregationPayload } from "./types"
+import { ICongregation } from "@/types/types"
 
 export const createAuxiliaryCongregationAtom = atom(
   null, // valor inicial → write-only atom

@@ -1,12 +1,13 @@
 import { useCongregationContext } from '@/context/CongregationContext';
 import { useFetch } from '@/hooks/useFetch';
-import { ICheckConsentCongregation, ITermOfUse } from '@/types/congregation';
 import { ReactNode, useEffect, useState } from 'react';
 import ConsentModal from '../ConsentModal';
 import { toast } from 'react-toastify';
 import { useSetAtom } from 'jotai';
 import { createConsentCongregationAtom } from '@/atoms/ConsentAtoms';
 import { useAuthContext } from '@/context/AuthContext';
+import { ICheckConsentCongregation } from '@/types/consent';
+import { ITermOfUse } from '@/types/termsofuse';
 
 interface ConsentWrapperProps {
     children: ReactNode;

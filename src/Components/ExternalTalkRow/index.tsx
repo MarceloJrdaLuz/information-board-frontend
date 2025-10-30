@@ -8,10 +8,10 @@ import moment from "moment"
 import { useState } from "react"
 import Button from "../Button"
 import CheckboxBoolean from "../CheckboxBoolean"
+import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import Dropdown from "../Dropdown"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
-import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 
 interface ExternalTalkRowProps {
   date: Date

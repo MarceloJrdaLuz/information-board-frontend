@@ -4,6 +4,7 @@ import { usePublisherContext } from "@/context/PublisherContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
+import { ICheckPublisherConsent } from "@/types/consent"
 import { IPayloadCreateReport } from "@/types/reports"
 import { IPublisherList } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -56,11 +57,9 @@ export default function FormReport(props: IRelatorioFormProps) {
 
         if (publisher) {
             const parse: IPublisherList[] = JSON.parse(publisher)
-
             // Corrigir registros antigos sem id
             if (data) {
                 const updated = parse.map(consentRecord => {
-
                     if (!consentRecord.id) {
                         const match = data.find(
                             pub =>
@@ -174,21 +173,18 @@ export default function FormReport(props: IRelatorioFormProps) {
         )
 
         if (filterPublisherConsent?.length) {
-            const response = await api.post('/checkConsentRecords', {
-                publisher_id: filterPublisherConsent[0].id,
-                deviceId: filterPublisherConsent[0].deviceId,
-                consentDate: filterPublisherConsent[0].consentDate,
-            })
+            const response = await api.get<ICheckPublisherConsent>(`/consent/check?publisher_id=${filterPublisherConsent[0].id}&type=publisher`)
 
             if (response.status === 200) {
-                sendSubmit(data)
-                return
+                if (response.data.hasAccepted && response.data.isLatestVersion) {
+                    sendSubmit(data)
+                    return
+                }
             } else {
                 setConsentAcceptedShow(true)
             }
         }
-        if (publisherToSend?.fullName) {
-
+        if (publisherToSend?.id) {
             setConsentAcceptedShow(true)
         }
     }

@@ -1,5 +1,4 @@
-import { ICongregation, ISpeaker, ITalk } from "./types"
-import { IWeekendSchedule } from "./weekendSchedule"
+import { ICongregation, ISpeaker, ITalk } from "../types"
 
 export interface IExternalTalk {
     id: string

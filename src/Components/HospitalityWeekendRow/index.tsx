@@ -9,18 +9,13 @@ import {
   updateAssignmentStatusAtom,
 } from "@/atoms/hospitalityWeekendScheduleAtoms"
 import { buildHospitalityOptions } from "@/functions/buildHospitalityGroupOptions"
-import {
-  IHospitalityEventType,
-  IRecordHospitalityAssignment,
-  IRecordHospitalityWeekend,
-} from "@/types/hospitality"
 import { IHospitalityGroup } from "@/types/types"
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber"
+import { hospitalityMap } from "@/utils/hospitalityMap"
 import CheckboxBoolean from "../CheckboxBoolean"
 import DropdownObject from "../DropdownObjects"
-import { formatPhoneNumber } from "@/utils/formatPhoneNumber"
-import { MessageCircle } from "lucide-react"
-import { hospitalityMap } from "@/utils/hospitalityMap"
 import WhatsAppIcon from "../Icons/WhatsAppIcon"
+import { IHospitalityEventType, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
 
 interface Props {
   date: Date

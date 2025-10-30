@@ -2,8 +2,8 @@ import { api } from "@/services/api"
 import { ISpeaker } from "@/types/types"
 import { atom } from "jotai"
 import { toast } from "react-toastify"
-import { CreateSpeakerPayload, UpdateSpeakerPayload } from "./types"
 import { handleSubmitSuccessAtom } from "../handleSubmitAtom"
+import { CreateSpeakerPayload, UpdateSpeakerPayload } from "./types"
 
 export const createSpeakerAtom = atom(
   null, // valor inicial → write-only atom

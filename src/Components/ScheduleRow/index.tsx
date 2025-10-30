@@ -1,4 +1,4 @@
-import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakerFilterCongregationAtom, speakerFilterTalkAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
+import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakerFilterTalkAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"

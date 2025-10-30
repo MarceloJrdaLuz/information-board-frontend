@@ -278,12 +278,6 @@ export interface IPublisherConsent {
     congregation_number: string
 }
 
-export interface ConsentRecordTypes {
-    id: string
-    publisher: IPublisherConsent
-    deviceId: string
-    consentDate: string
-}
 
 export interface CongregationTypes {
     id: string

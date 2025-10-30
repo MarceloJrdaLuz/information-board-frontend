@@ -1,6 +1,6 @@
-import { Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { ISpeaker } from "@/types/types";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
+import { Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 export interface ISpeakersListPdfProps {
     speakers: ISpeaker[];

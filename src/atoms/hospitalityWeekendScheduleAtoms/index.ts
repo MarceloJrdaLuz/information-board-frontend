@@ -1,7 +1,7 @@
-import { atom } from "jotai"
-import { IHospitalityWeekend, IRecordHospitalityWeekend } from "@/types/hospitality"
-import { IHospitalityGroup } from "@/types/types"
-import { api } from "@/services/api"
+import { api } from "@/services/api";
+import { IRecordHospitalityWeekend } from "@/types/hospitality";
+import { IHospitalityGroup } from "@/types/types";
+import { atom } from "jotai";
 import { toast } from "react-toastify";
 
 interface CreatePayload {

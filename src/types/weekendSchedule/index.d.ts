@@ -1,5 +1,5 @@
-import { IExternalTalk } from "./externalTalks"
-import { ICongregation, IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "./types"
+import { IExternalTalk } from "../externalTalks"
+import { ICongregation, IHospitalityGroup, IPublisher, ISpeaker, ITalk } from "../types"
 
 export interface IPublicSchedule {
   id: string

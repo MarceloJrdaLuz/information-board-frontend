@@ -8,9 +8,9 @@ import DropdownMulti from '@/Components/DropdownMulti'
 import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useCongregationContext } from '@/context/CongregationContext'
 import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { IFormDataHospitalityGroup } from '@/types/hospitality'
 import { IPublisher } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue, useSetAtom } from 'jotai'
@@ -19,7 +19,6 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-import { IFormDataHospitalityGroup } from '@/types/hospitality'
 
 
 export default function FormEditHospitalityGroup() {
