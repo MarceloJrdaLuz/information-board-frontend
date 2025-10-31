@@ -287,7 +287,7 @@ export default function PublisherList() {
 
                             </div>
                             <div className="flex justify-end my-5">
-                                <span className="flex text-gray-600 font-semibold">Atualizado em: {moment(publisher.updated_at).format("DD-MM-YYYY")}</span>
+                                <span className="flex text-gray-600 font-semibold text-xs">Atualizado em: {moment(publisher.updated_at).format("DD-MM-YYYY")}</span>
                             </div>
                         </div>
                     </li>
