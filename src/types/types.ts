@@ -161,6 +161,7 @@ export interface IPublisher {
     emergencyContact?: IEmergencyContact
     user?: UserTypes
     hospitalityGroup?: IHospitalityGroup
+    updated_at: string
 }
 
 export interface IPublisherList {

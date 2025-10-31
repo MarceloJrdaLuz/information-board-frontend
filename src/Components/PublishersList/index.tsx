@@ -261,7 +261,7 @@ export default function PublisherList() {
                             </div>
 
 
-                            <div className="flex mt-2">
+                            <div className="flex mt-5">
                                 <div className="gap-1 flex">
                                     {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION")) &&
                                         <Button
@@ -285,6 +285,9 @@ export default function PublisherList() {
                                         />}
                                 </div>
 
+                            </div>
+                            <div className="flex justify-end my-5">
+                                <span className="flex text-gray-600 font-semibold">Atualizado em: {moment(publisher.updated_at).format("DD-MM-YYYY")}</span>
                             </div>
                         </div>
                     </li>
