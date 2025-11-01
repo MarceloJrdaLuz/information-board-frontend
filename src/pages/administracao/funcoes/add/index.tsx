@@ -1,19 +1,19 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditHospitalityGroup from "@/Components/Forms/FormEditHospitalityGroup"
+import FormAddRole from "@/Components/Forms/FormAddRole"
 import Layout from "@/Components/Layout"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function EditHospitalityGroupPage() {
+export default function AddFuncao() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos de hospitalidade', link: '/arranjo-oradores/grupos-hospitalidade' }]
+            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/administracao/funcoes' }]
             return updatedCrumbs
         })
 
@@ -27,16 +27,16 @@ export default function EditHospitalityGroupPage() {
     }, [setCrumbs])
 
     useEffect(() => {
-        setPageActive('Editar grupo')
+        setPageActive('Nova função')
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="grupos-hospitalidade">
+        <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <Layout pageActive="funcoes">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                    <section className="flex justify-center">
-                        <FormEditHospitalityGroup />
+                    <section className="flex m-10 justify-center items-center">
+                        <FormAddRole />
                     </section>
                 </ContentDashboard>
             </Layout>

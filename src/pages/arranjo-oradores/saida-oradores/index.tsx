@@ -7,18 +7,16 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import ExternalTalkRow from "@/Components/ExternalTalkRow"
 import ExternalTalksSkeleton from "@/Components/ExternalTalksSkeleton"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IExternalTalkFormData } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -26,7 +24,7 @@ export default function ExternalTalksPage() {
     moment.defineLocale("pt-br", null)
     const router = useRouter()
     const { date } = router.query
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [crumbs, ] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const setCreateExternalTalk = useSetAtom(createExternalAtom)
@@ -36,11 +34,9 @@ export default function ExternalTalksPage() {
     const [monthOffset, setMonthOffset] = useState(0)
     const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
 
-
     const baseDate = moment().add(monthOffset, "months")
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
-
 
     useEffect(() => {
         setPageActive("Saída de oradores")
@@ -49,8 +45,10 @@ export default function ExternalTalksPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
 
-    const { data, mutate } = useFetch<IExternalTalkFormData>(
-        `/form-data?form=externalTalks`
+    const { data, mutate } = useAuthorizedFetch<IExternalTalkFormData>(
+        `/form-data?form=externalTalks`, {
+            allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+        }
     )
 
     // atualiza mês a partir da querystring
@@ -126,83 +124,54 @@ export default function ExternalTalksPage() {
     const talks = data?.talks ?? []
 
     return (
-        <Layout pageActive="saida-oradores" >
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                {!data ? (
-                    <ExternalTalksSkeleton />
-                ) : (
-                    <>
-                        <div className="flex justify-between my-4 p-4">
-                            <Button
-                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                onClick={() => setMonthOffset((m) => m - 1)}>
-                                ◀ {prevMonthLabel}
-                            </Button>
-                            <Button
-                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                onClick={() => setMonthOffset((m) => m + 1)}>
-                                {nextMonthLabel} ▶
-                            </Button>
-                        </div>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
+            <Layout pageActive="saida-oradores" >
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    {!data ? (
+                        <ExternalTalksSkeleton />
+                    ) : (
+                        <>
+                            <div className="flex justify-between my-4 p-4">
+                                <Button
+                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                    onClick={() => setMonthOffset((m) => m - 1)}>
+                                    ◀ {prevMonthLabel}
+                                </Button>
+                                <Button
+                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                    onClick={() => setMonthOffset((m) => m + 1)}>
+                                    {nextMonthLabel} ▶
+                                </Button>
+                            </div>
 
 
-                        {weekendMeetingDay.map((date) => {
-                            const talksForDate = externalTalks.filter(
-                                (t) => t.date === moment(date).format("YYYY-MM-DD")
-                            )
-                            return (
-                                <div key={`${date}`} className="p-4">
-                                    <ExternalTalkRow
-                                        key={date.toISOString()}
-                                        date={date}
-                                        externalTalks={talksForDate}
-                                        speakers={speakers}
-                                        congregations={congregations}
-                                        talks={talks}
-                                        onAddExternalTalk={handleAddExternalTalk}
-                                        onUpdateStatus={handleUpdateStatus}
-                                        onDelete={handleDelete}
-                                    />
-                                </div>
-                            )
-                        })}
-                    </>
-                )}
+                            {weekendMeetingDay.map((date) => {
+                                const talksForDate = externalTalks.filter(
+                                    (t) => t.date === moment(date).format("YYYY-MM-DD")
+                                )
+                                return (
+                                    <div key={`${date}`} className="p-4">
+                                        <ExternalTalkRow
+                                            key={date.toISOString()}
+                                            date={date}
+                                            externalTalks={talksForDate}
+                                            speakers={speakers}
+                                            congregations={congregations}
+                                            talks={talks}
+                                            onAddExternalTalk={handleAddExternalTalk}
+                                            onUpdateStatus={handleUpdateStatus}
+                                            onDelete={handleDelete}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </>
+                    )}
 
 
-            </ContentDashboard>
-        </Layout>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

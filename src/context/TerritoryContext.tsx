@@ -1,6 +1,6 @@
 import { atomTerritoryHistoryAction, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
-import { useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, DeleteTerritoryHistoryArgs, ITerritory, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/types/territory"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -43,13 +43,16 @@ const TerritoryContext = createContext({} as TerritoryContextTypes)
 
 function TerritoryProvider(props: TerritoryContextProviderProps) {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-    const { user } = useAuthContext()
+    const { user, roleContains } = useAuthContext()
     const [congregationId, setCongregationId] = useState<string | undefined>("")
     const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
     const [territoryHistoryToUpdateId, setTerritoryHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
     const [territoriesHistory, setTerritoriesHistory] = useState<ITerritoryHistory[] | undefined>()
     const [territories, setTerritories] = useState<ITerritory[] | undefined>()
-    const { data } = useFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "")
+    
+    const { data } = useAuthorizedFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "", {
+        allowedRoles: ["ADMIN_CONGREGATION","TERRITORIES_MANAGER" ]
+    })
 
     useEffect(() => {
         if (user?.congregation?.id) {

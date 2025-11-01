@@ -1,7 +1,6 @@
 import { domainUrl } from "@/atoms/atom"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { deleteCookie, getCookie, setCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import Router from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
@@ -47,14 +46,23 @@ function AuthProvider(props: AuthContextProviderProps) {
     }, [setDomainAtom])
 
     useEffect(() => {
-        const token = getCookie('quadro-token')
-
-        if (token) {
-            api.post('/recover-user-information').then(res => {
+        const recoverUser = async () => {
+            try {
+                const res = await api.post('/recover-user-information')
                 setUser(res.data)
-            })
-        }
+            } catch (err: any) {
+                if (err.response?.status === 401) {
+                    // usuário não autenticado
+                    setUser(null)
+                    Router.push('/login')
+                } else {
+                    console.error('Erro ao recuperar usuário:', err)
+                }
+            }
+        }   
+        recoverUser()
     }, [])
+
 
     useEffect(() => {
         const handleRouteChangeComplete = (url: string) => {
@@ -79,7 +87,7 @@ function AuthProvider(props: AuthContextProviderProps) {
             email,
             password
         }).then(res => {
-            const usuarioLogado = {
+            const userLogged = {
                 id: res.data.user.id,
                 email: res.data.user.email,
                 fullName: res.data.user.fullName,
@@ -89,23 +97,21 @@ function AuthProvider(props: AuthContextProviderProps) {
                 profile: res.data.user.profile
             }
 
-            const token = res.data.token
+            // const userRoles = res.data.user.roles.map(role => (
+            //     role.name
+            // ))
 
-            const userRoles = res.data.user.roles.map(role => (
-                role.name
-            ))
+            // setCookie('quadro-token', token, {
+            //     maxAge: 60 * 60 * 8,
+            // })
 
-            setCookie('quadro-token', token, {
-                maxAge: 60 * 60 * 8,
-            })
+            // setCookie('user-roles', JSON.stringify(userRoles), {
+            //     maxAge: 60 * 60 * 8,
+            // })
 
-            setCookie('user-roles', JSON.stringify(userRoles), {
-                maxAge: 60 * 60 * 8,
-            })
+            // api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
-            api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
-
-            setUser(usuarioLogado)
+            setUser(userLogged)
 
         }).catch(res => {
             setLoading(false)
@@ -117,16 +123,24 @@ function AuthProvider(props: AuthContextProviderProps) {
     }
 
     async function logout() {
-        deleteCookie('quadro-token', {
-            path: "/"
-        })
-        deleteCookie('user-roles', {
-            path: "/"
-        })
+        // deleteCookie('quadro-token', {
+        //     path: "/"
+        // })
+        // deleteCookie('user-roles', {
+        //     path: "/"
+        // })
 
-        setUser(null)
-        Router.push('/login')
+        // setUser(null)
+        // Router.push('/login')
+        try {
+            await api.post("/logout"); // backend vai limpar o cookie
+            setUser(null);
+            Router.push("/login");
+        } catch (err) {
+            console.error("Erro ao fazer logout", err);
+        }
     }
+
 
     async function signUp(email: string, password: string, fullName: string) {
         await api.post<ResponseAuth>('/user', {
@@ -134,7 +148,7 @@ function AuthProvider(props: AuthContextProviderProps) {
             password,
             fullName
         }).then(res => {
-            const usuarioLogado = {
+            const user = {
                 id: res.data.user.id,
                 email: res.data.user.email,
                 fullName: res.data.user.fullName,
@@ -142,22 +156,9 @@ function AuthProvider(props: AuthContextProviderProps) {
                 congregation: res.data.user.congregation,
                 profile: res.data.user.profile,
                 roles: res.data.user.roles,
-                token: res.data.token
             }
-
-            if (usuarioLogado.token) {
-                const token = res.data.token
-
-                setCookie('quadro-token', token, {
-                    maxAge: 60 * 60 * 8,
-                })
-
-                api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
-
-                setUser(usuarioLogado)
-
-                handleSubmitSuccess(messageSuccessSubmit.registerCreate, '/dashboard')
-            }
+            setUser(user)
+            handleSubmitSuccess(messageSuccessSubmit.registerCreate, '/dashboard')
         }).catch(res => {
             if (res.response.data.message === 'E-mail already exists') {
                 handleSubmitSuccess(messageErrorsSubmit.emailAlreadyExists, "/login")

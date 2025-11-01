@@ -22,7 +22,7 @@ function PublicDocumentsProvider(props: PublicDocumentsContextProviderProps) {
     const [documents, setDocuments] = useState<IDocument[]>()
 
     const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
-    const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
     useEffect(() => {
         if (congregationNumber) {

@@ -1,19 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import { IBreadCrumbs } from "@/Components/BreadCrumbs/types"
-import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Layout from "@/Components/Layout"
 import ListRelatorios from "@/Components/ListMonths"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect } from "react"
 
 export default function ListarRelatorios() {
-
     const router = useRouter()
     const { congregationId } = router.query
 
@@ -25,42 +20,13 @@ export default function ListarRelatorios() {
     }, [setPageActive])
 
     return (
-        <Layout pageActive="relatorios">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <ListRelatorios congregationId={congregationId as string} />    
-            </ContentDashboard>
-        </Layout>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
+            <Layout pageActive="relatorios">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <ListRelatorios congregationId={congregationId as string} />
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('REPORTS_MANAGER') && !userRolesParse.includes('REPORTS_VIEWER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

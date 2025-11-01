@@ -23,7 +23,7 @@ interface IFormAssistanceProps {
     congregation_id: string
 }
 
-export default function FormAssistencia({ congregation_id }: IFormAssistanceProps) {
+export default function FormAssistance({ congregation_id }: IFormAssistanceProps) {
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [monthWithYear, setMonthWithYear] = useState('')

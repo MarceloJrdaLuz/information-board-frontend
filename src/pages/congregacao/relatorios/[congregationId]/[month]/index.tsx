@@ -9,6 +9,7 @@ import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom, reportsAtom } from "@/atoms/atom"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
@@ -16,17 +17,14 @@ import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
 import { normalizeTotalsReports } from "@/functions/normalizeTotalsReports"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { getAPIClient } from "@/services/axios"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom } from "jotai"
 import { EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react"
 import moment from "moment"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { v4 } from "uuid"
@@ -39,9 +37,15 @@ export default function RelatorioMes() {
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
-    const { data } = useFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`)
-    const { data: getAssistance } = useFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`)
-    const { data: getTotals } = useFetch<ITotalsReports[]>(`/report/totals/${congregationId}`)
+    const { data } = useAuthorizedFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`, {
+        allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
+    })
+    const { data: getAssistance } = useAuthorizedFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`, {
+        allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
+    })
+    const { data: getTotals } = useAuthorizedFetch<ITotalsReports[]>(`/report/totals/${congregationId}`, {
+        allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
+    })
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
@@ -69,8 +73,6 @@ export default function RelatorioMes() {
     const [totalsRecover, setTotalsRecover] = useState<ITotalsReports[]>()
     const [meetingAssistanceEndWeek, setMeetingAssistanceEndWeek] = useState(0)
     const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
-
-
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
     const [dateFormat, setDateFormat] = useState<Date>()
@@ -91,11 +93,13 @@ export default function RelatorioMes() {
     }, [getTotals, monthSelected, yearSelected])
 
     useEffect(() => {
-        setPageActive(monthParam)
-        let dividirPalavra = monthParam.split(" ")
-        setMonthSelected(dividirPalavra[0])
-        setYearSelected(dividirPalavra[1])
-        setDateFormat(new Date(`${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${dividirPalavra[1]}`))
+        if (monthParam) {
+            setPageActive(monthParam)
+            let dividirPalavra = monthParam.split(" ")
+            setMonthSelected(dividirPalavra[0])
+            setYearSelected(dividirPalavra[1])
+            setDateFormat(new Date(`${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${dividirPalavra[1]}`))
+        }
     }, [monthParam, setPageActive])
 
     useEffect(() => {
@@ -306,10 +310,6 @@ export default function RelatorioMes() {
     }, [monthSelected, yearSelected, publishers, reports, groupSelecteds])
 
     useEffect(() => {
-        console.log('Grupo selecionado:', groupSelecteds)
-    }, [groupSelecteds])
-
-    useEffect(() => {
         if (missingReports) {
             const missingReportsCount = missingReports.length
             setMissingReportsCount(missingReportsCount)
@@ -391,129 +391,103 @@ export default function RelatorioMes() {
     }
 
     return (
-        <Layout pageActive="relatorios">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <>
-                    <section className="flex flex-col flex-wrap w-full">
-                        <div className="w-full h-full">
-                            <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">{`${monthParam.toLocaleUpperCase()}`}</h2>
-                            <div className="flex flex-1 justify-between mb-4">
-                                <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
-                                <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={setGroupSelecteds} />
-                                <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
-                                    Totais
-                                    {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}
-                                </span>
-                            </div>
-                            <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
-                            {totalsModalShow ? (
-                                <ul>
-                                    {<div className="px-5 py-0">
-                                        {monthAlreadyRegister &&
-                                            <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
-                                                <span className="h-full pr-1">
-                                                    <InfoIcon className="p-0.5 text-primary-200" />
-                                                </span>
-                                                {
-                                                    date > 20 ?
-                                                        <span>Este relatório já foi registrado. Como já passamos do dia 20, o relatório já deve ter sido registrado em Betel. Caso precise fazer alguma alteração, insira manualmente o relatório alterado. No mês seguinte nos totais do relatório enviado para Betel acrescente as diferenças.
-                                                        </span>
-                                                        :
-                                                        <span>Este relatório já foi registrado. Como ainda não é dia 20, o relatório enviado para Betel ainda pode ser alterado mesmo que já foi enviado. Nesse caso após as alterações, atualize o registro aqui e também o registro enviado para Betel.
-                                                        </span>
-                                                }
-                                            </div>
-                                        }
-                                        <ConfirmRegisterReports
-                                            onRegister={() => onSubmit()}
-                                            button={<Button
-                                                outline
-                                                className="text-red-400 w-30"
-                                            >
-                                                {!monthAlreadyRegister ? "Registrar" : "Atualizar"}
-                                            </Button>}
-                                        />
-                                    </div>
-                                    }
-                                    <div className="p-4 my-5 w-11/12 m-auto bg-white">
-                                        <li className="text-gray-700">Publicadores ativos</li>
-                                        <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
-                                        <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
-                                        <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
-                                    </div>
-                                    {totalsPublishers && <ListTotals key={"Totais de Publicadores"} totals={totalsPublishers} />}
-                                    {totalsAuxPioneers && <ListTotals key={"Totais de Pioneiros regulares"} totals={totalsAuxPioneers} />}
-                                    {totalsPioneers && <ListTotals key={"Totais de pioneiros auxiliares"} totals={totalsPioneers} />}
-                                    {totalsSpecialsPioneer && <ListTotals key={"Totais de P.E e M.C"} totals={totalsSpecialsPioneer} />}
-                                </ul>
-                            ) : reportsFiltered?.length > 0 ? (
-                                <ul className="flex flex-wrap justify-evenly relative">
-                                    <div className="flex w-full justify-center items-center mt-4">
-                                        <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
-                                            Inserir manualmente
-                                        </Button>
-                                    </div>
-                                    {reportsFiltered.length > 0 && reportsFiltered?.map(report =>
-                                        <ModalRelatorio
-                                            key={v4()}
-                                            publisher={report.publisher}
-                                            month={report.month}
-                                            year={report.year}
-                                            hours={
-                                                report.hours
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
+            <Layout pageActive="relatorios">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <>
+                        <section className="flex flex-col flex-wrap w-full">
+                            <div className="w-full h-full px-5">
+                                <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">
+                                    {monthParam ? monthParam.toLocaleUpperCase() : ""}
+                                </h2>
+                                <div className="flex flex-1 justify-between mb-4">
+                                    <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                                    <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={setGroupSelecteds} />
+                                    <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
+                                        Totais
+                                        {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}
+                                    </span>
+                                </div>
+                                <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
+                                {totalsModalShow ? (
+                                    <ul>
+                                        {<div className="px-5 py-0">
+                                            {monthAlreadyRegister &&
+                                                <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                                                    <span className="h-full pr-1">
+                                                        <InfoIcon className="p-0.5 text-primary-200" />
+                                                    </span>
+                                                    {
+                                                        date > 20 ?
+                                                            <span>Este relatório já foi registrado. Como já passamos do dia 20, o relatório já deve ter sido registrado em Betel. Caso precise fazer alguma alteração, insira manualmente o relatório alterado. No mês seguinte nos totais do relatório enviado para Betel acrescente as diferenças.
+                                                            </span>
+                                                            :
+                                                            <span>Este relatório já foi registrado. Como ainda não é dia 20, o relatório enviado para Betel ainda pode ser alterado mesmo que já foi enviado. Nesse caso após as alterações, atualize o registro aqui e também o registro enviado para Betel.
+                                                            </span>
+                                                    }
+                                                </div>
                                             }
-                                            studies={report.studies}
-                                            observations={report.observations}
-                                        />)}
-                                </ul>
-                            ) : missingReportsCount ? (
-                                <>
-                                    <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
-                                    <div className="flex w-full justify-center items-center mt-4">
-                                        <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
-                                            Inserir manualmente
-                                        </Button>
-                                    </div>
-                                </>
-                            ) : (
-                                renderSkeleton()
-                            )}
-                        </div>
+                                            <ConfirmRegisterReports
+                                                onRegister={() => onSubmit()}
+                                                button={<Button
+                                                    outline
+                                                    className="text-red-400 w-30"
+                                                >
+                                                    {!monthAlreadyRegister ? "Registrar" : "Atualizar"}
+                                                </Button>}
+                                            />
+                                        </div>
+                                        }
+                                        <div className="p-4 my-5 w-11/12 m-auto bg-white">
+                                            <li className="text-gray-700">Publicadores ativos</li>
+                                            <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
+                                            <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
+                                            <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
+                                        </div>
+                                        {totalsPublishers && <ListTotals key={"Totais de Publicadores"} totals={totalsPublishers} />}
+                                        {totalsAuxPioneers && <ListTotals key={"Totais de Pioneiros regulares"} totals={totalsAuxPioneers} />}
+                                        {totalsPioneers && <ListTotals key={"Totais de pioneiros auxiliares"} totals={totalsPioneers} />}
+                                        {totalsSpecialsPioneer && <ListTotals key={"Totais de P.E e M.C"} totals={totalsSpecialsPioneer} />}
+                                    </ul>
+                                ) : reportsFiltered?.length > 0 ? (
+                                    <ul className="flex flex-wrap justify-evenly relative">
+                                        <div className="flex w-full justify-center items-center mt-4">
+                                            <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
+                                                Inserir manualmente
+                                            </Button>
+                                        </div>
+                                        {reportsFiltered.length > 0 && reportsFiltered?.map(report =>
+                                            <ModalRelatorio
+                                                key={v4()}
+                                                publisher={report.publisher}
+                                                month={report.month}
+                                                year={report.year}
+                                                hours={
+                                                    report.hours
+                                                }
+                                                studies={report.studies}
+                                                observations={report.observations}
+                                            />)}
+                                    </ul>
+                                ) : missingReportsCount ? (
+                                    <>
+                                        <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
+                                        <div className="flex w-full justify-center items-center mt-4">
+                                            <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
+                                                Inserir manualmente
+                                            </Button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    renderSkeleton()
+                                )}
+                            </div>
 
-                    </section>
-                </>
-            </ContentDashboard>
-        </Layout>
+                        </section>
+                    </>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('REPORTS_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

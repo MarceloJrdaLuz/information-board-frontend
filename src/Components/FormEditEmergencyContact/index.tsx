@@ -19,7 +19,7 @@ import FormStyle from '../Forms/FormStyle'
 import { FormValues } from './type'
 
 export interface IEmergencyContactProps {
-    emergencyContact: string
+    emergencyContact: string, 
 }
 
 export default function FormEditEmergencyContact({ emergencyContact }: IEmergencyContactProps) {

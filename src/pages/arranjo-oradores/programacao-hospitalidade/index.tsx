@@ -3,6 +3,7 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import HospitalityRow from "@/Components/HospitalityWeekendRow"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
@@ -12,16 +13,13 @@ import {
     hospitalityWeekendsAtom,
 } from "@/atoms/hospitalityWeekendScheduleAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IHospitalityWeekend, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
 import { IHospitalityGroup } from "@/types/types"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
-import { GetServerSideProps } from "next"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -34,7 +32,7 @@ export default function HospitalityWeekendPage() {
     const [monthOffset, setMonthOffset] = useState<number>(0)
     const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
 
-    const [weekends, setHospitalityWeekends] = useAtom(hospitalityWeekendsAtom)
+    const [, setHospitalityWeekends] = useAtom(hospitalityWeekendsAtom)
     const setGroups = useSetAtom(hospitalityGroup)
 
     const setCreateHospitalityWeekend = useSetAtom(createHospitalityWeekendAtom)
@@ -44,8 +42,12 @@ export default function HospitalityWeekendPage() {
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
 
-    const { data, mutate } = useFetch<IHospitalityWeekend[]>(`congregation/${congregation_id ?? ""}/hospitality/weekends`)
-    const { data: groups } = useFetch<IHospitalityGroup[]>(`${congregation_id ? `congregation/${congregation_id}/hospitalityGroups` : ""}`)
+    const { data, mutate } = useAuthorizedFetch<IHospitalityWeekend[]>(`congregation/${congregation_id ?? ""}/hospitality/weekends`, {
+        allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+    })
+    const { data: groups } = useAuthorizedFetch<IHospitalityGroup[]>(`${congregation_id ? `congregation/${congregation_id}/hospitalityGroups` : ""}`, {
+        allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+    })
 
     useEffect(() => {
         if (!data) return;
@@ -96,85 +98,54 @@ export default function HospitalityWeekendPage() {
     };
 
     return (
-        <Layout pageActive="programacao-hospitalidade">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
-                <section className="flex flex-wrap w-full h-full p-4 relative">
-                    {!data ? (
-                        <WeekendScheduleSkeleton />
-                    ) : (
-                        <div className="w-full space-y-6">
-                            {/* Filtros e controles */}
-                            <div className="sticky top-0 z-30 bg-white p-4 rounded-xl shadow flex flex-col gap-4">
-                                <div className="flex justify-between items-center gap-2">
-                                    <Button
-                                        onClick={() => setMonthOffset((m) => m - 1)}
-                                        className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                    >
-                                        ◀ {prevMonthLabel}
-                                    </Button>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
+            <Layout pageActive="programacao-hospitalidade">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
+                    <section className="flex flex-wrap w-full h-full p-4 relative">
+                        {!data ? (
+                            <WeekendScheduleSkeleton />
+                        ) : (
+                            <div className="w-full space-y-6">
+                                {/* Filtros e controles */}
+                                <div className="sticky top-0 z-30 bg-white p-4 rounded-xl shadow flex flex-col gap-4">
+                                    <div className="flex justify-between items-center gap-2">
+                                        <Button
+                                            onClick={() => setMonthOffset((m) => m - 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                        >
+                                            ◀ {prevMonthLabel}
+                                        </Button>
 
-                                    <Button
-                                        onClick={() => setMonthOffset((m) => m + 1)}
-                                        className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                    >
-                                        {nextMonthLabel} ▶
+                                        <Button
+                                            onClick={() => setMonthOffset((m) => m + 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                        >
+                                            {nextMonthLabel} ▶
+                                        </Button>
+                                    </div>
+
+                                    <Button className="w-full" onClick={handleSave}>
+                                        Salvar todas
                                     </Button>
                                 </div>
 
-                                <Button className="w-full" onClick={handleSave}>
-                                    Salvar todas
-                                </Button>
+                                {/* Lista de sábados */}
+                                <div className="space-y-4 pb-36">
+                                    {weekendMeetingDay.map((d) => (
+                                        <div
+                                            key={d.toISOString()}
+                                            className="bg-white border rounded-xl shadow-sm p-4"
+                                        >
+                                            <HospitalityRow date={d} />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-
-                            {/* Lista de sábados */}
-                            <div className="space-y-4 pb-36">
-                                {weekendMeetingDay.map((d) => (
-                                    <div
-                                        key={d.toISOString()}
-                                        className="bg-white border rounded-xl shadow-sm p-4"
-                                    >
-                                        <HospitalityRow date={d} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </section>
-            </ContentDashboard>
-        </Layout>
+                        )}
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    const apiClient = getAPIClient(ctx)
-    const { ["quadro-token"]: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: "/login",
-                permanent: false,
-            },
-        }
-    }
-
-    const { ["user-roles"]: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (
-        !userRolesParse.includes("ADMIN_CONGREGATION") &&
-        !userRolesParse.includes("TALK_MANAGER")
-    ) {
-        return {
-            redirect: {
-                destination: "/dashboard",
-                permanent: false,
-            },
-        }
-    }
-
-    return {
-        props: {},
-    }
 }

@@ -6,11 +6,12 @@ import GroupIcon from "@/Components/Icons/GroupIcon"
 import Layout from "@/Components/Layout"
 import ListGroups from "@/Components/ListGroups"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch, useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { IGroup } from "@/types/types"
@@ -26,13 +27,14 @@ export default function Grupos() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [crumbs, ] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
 
     const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
-    const { data: getGroups, mutate } = useFetch<IGroup[]>(fetchConfig)
+    const { data: getGroups, mutate } = useAuthorizedFetch<IGroup[]>(fetchConfig, {
+        allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]
+    })
 
     useEffect(() => {
         if (getGroups) {
@@ -77,65 +79,36 @@ export default function Grupos() {
     }
 
     return (
-        <Layout pageActive="grupos">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <div className="w-full h-full">
-                        <div className="flex flex-col">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
-                            <Button
-                                onClick={() => {
-                                    Router.push('/congregacao/grupos/add')
-                                }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <GroupIcon />
-                                <span className="text-primary-200 font-semibold">Criar grupo</span>
-                            </Button>
-                        </div>
-                        {groups && groups.length > 0 ? (
-                            <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
-                        )
-                            : (
-                                <>
-                                    {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
-                                </>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]}>
+            <Layout pageActive="grupos">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <section className="flex flex-wrap w-full h-full p-5 ">
+                        <div className="w-full h-full">
+                            <div className="flex flex-col">
+                                <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
+                                <Button
+                                    onClick={() => {
+                                        Router.push('/congregacao/grupos/add')
+                                    }}
+                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    <GroupIcon />
+                                    <span className="text-primary-200 font-semibold">Criar grupo</span>
+                                </Button>
+                            </div>
+                            {groups && groups.length > 0 ? (
+                                <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
                             )
-                        }
-                    </div>
-                </section>
-            </ContentDashboard>
-        </Layout>
+                                : (
+                                    <>
+                                        {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
+                                    </>
+                                )
+                            }
+                        </div>
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('GROUPS_MANAGER') && !userRolesParse.includes('GROUPS_VIEWER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }
