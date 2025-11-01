@@ -64,7 +64,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                         const match = data.find(
                             pub =>
                                 pub.fullName === consentRecord.fullName &&
-                                pub.nickname === consentRecord.nickname &&
                                 pub.congregation_id === consentRecord.congregation_id
                         )
                         if (match) {
