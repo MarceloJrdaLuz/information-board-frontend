@@ -24,7 +24,7 @@ export default function Notices() {
 
     const fetchConfig = congregation_id ? `/notices/${congregation_id}` : ""
     const { data: notices, mutate } = useAuthorizedFetch<INotice[]>(fetchConfig, {
-        allowedRoles: ["ADMIN", "NOTICES_MANAGER"]
+        allowedRoles: ["ADMIN_CONGREGATION", "NOTICES_MANAGER"]
     })
 
     useEffect(() => {
@@ -32,7 +32,7 @@ export default function Notices() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN", "NOTICES_MANAGER"]}>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
             <Layout pageActive="anuncios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
