@@ -3,6 +3,7 @@ import NavBarOptions from "./NavBarOption"
 import NavBarLogo from "./NavBarLogo"
 import NavBarOptionIcon from "./NavBarOptionIcon"
 import NavBarListOptions from "./NavBarListOptions"
+import NavBarOptionSkeleton from "./NavBarOptionSkeleton"
 
 export const NavBar = {
     Root: NavBarRoot,
@@ -10,4 +11,5 @@ export const NavBar = {
     Options: NavBarOptions,
     Icon: NavBarOptionIcon,
     ListOptions: NavBarListOptions,
+    Skeleton: NavBarOptionSkeleton
 }

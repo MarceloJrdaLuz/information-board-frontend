@@ -1,7 +1,6 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { LayoutSkeleton } from "../Layout/skeleton"
 
 interface ProtectedRouteProps {
   allowedRoles?: string[]
@@ -36,7 +35,7 @@ export function ProtectedRoute({ allowedRoles = [], children }: ProtectedRoutePr
   }, [authResolved, user, allowedRoles, roleContains, router])
 
   if (loading || authorized === null) {
-    return <LayoutSkeleton />
+    return null
   }
 
   if (!authorized) return null
