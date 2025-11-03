@@ -12,17 +12,13 @@ import { useEffect, useState } from "react"
 export default function AtribuirFuncoes() {
     const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-
-    const { data: roles } = useAuthorizedFetch<IRole[]>('/roles', {
-        allowedRoles: ["ADMIN"]
-    })
-
+    
     useEffect(() => {
         setPageActive('Funções')
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
+        <ProtectedRoute allowedRoles={["ADMIN", "ADMIN_CONGREGATION"]}>
             <Layout pageActive="/administracao/funcoes/atribuir">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
