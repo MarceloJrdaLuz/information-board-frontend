@@ -14,7 +14,7 @@ import { useEffect, useState } from "react"
 
 export default function SaidasDeCampo() {
     const [category, setCategory] = useState<ICategory>()
-    const { uploadedFiles, setDocumentCategoryId } = useDocumentsContext()
+    const { uploadedFiles, setDocumentCategoryId, loading } = useDocumentsContext()
     const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -45,6 +45,8 @@ export default function SaidasDeCampo() {
         )
     }
 
+    const hasFiles = uploadedFiles && uploadedFiles.length > 0
+
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
             <Layout pageActive="saidasdecampo">
@@ -57,10 +59,14 @@ export default function SaidasDeCampo() {
                                     'application/pdf': []
                                 }} />
                             </div>
-                            {uploadedFiles && uploadedFiles.length > 0 ? (
+                            {loading ? (
+                                renderSkeleton()
+                            ) : hasFiles ? (
                                 <FileList files={uploadedFiles} />
                             ) : (
-                                renderSkeleton()
+                                <div className="w-full flex justify-center items-center py-10 text-gray-500">
+                                    Nenhum arquivo encontrado.
+                                </div>
                             )}
                         </div>
                     </section>

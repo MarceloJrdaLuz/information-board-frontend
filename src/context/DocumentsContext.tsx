@@ -14,6 +14,7 @@ type DocumentsContextTypes = {
     filterCategory: (category: string) => IFile[]
     deleteDocument: (document_id: string) => Promise<any>
     setDocumentCategoryId: React.Dispatch<string>
+    loading: boolean
 }
 
 type DocumentsContextProviderProps = {
@@ -30,6 +31,7 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
 
     const [documentCategoryId, setDocumentCategoryId] = useState("")
     const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])
+    const [loading, setLoading] = useState(true)
 
     const fetchConfig = congregation_id ? `/documents-congregation/${congregation_id}` : ""
     const { data, mutate } = useFetch<IDocument[]>(fetchConfig)
@@ -52,6 +54,7 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
             const filterDocumentsCategory = postFormatted.filter(file => file.category?.id === documentCategoryId)
 
             setUploadedFiles(filterDocumentsCategory)
+            setLoading(false)
         }
     }, [data, documentCategoryId])
 
@@ -162,7 +165,7 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
 
     return (
         <DocumentsContext.Provider value={{
-            filterCategory, deleteDocument, handleUpload, uploadedFiles, setDocumentCategoryId
+            filterCategory, deleteDocument, handleUpload, uploadedFiles, setDocumentCategoryId, loading
         }}>
             {props.children}
         </DocumentsContext.Provider>
