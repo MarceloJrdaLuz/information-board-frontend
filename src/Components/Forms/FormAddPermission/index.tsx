@@ -12,7 +12,6 @@ import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
 
 export default function FormAddPermission() {
-
     const { createPermission } = usePermissionsAndRolesContext()
     const resetFormValue = useAtomValue(resetForm)
     const dataSuccess = useAtomValue(successFormSend)

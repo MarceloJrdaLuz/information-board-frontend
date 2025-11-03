@@ -40,7 +40,7 @@ function NoticesProvider(props: NoticeContextProviderProps) {
     const [congregationId, setCongregationId] = useState<string | undefined>('')
 
     const fetchConfigCongregationData = congregationNumber ? `/congregation/${congregationNumber}` : ""
-    const { data: congregation, mutate } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 

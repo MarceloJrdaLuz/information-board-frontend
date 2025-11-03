@@ -1,7 +1,7 @@
 import { domainUrl } from "@/atoms/atom"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { deleteCookie, getCookie, setCookie } from "cookies-next"
+import { deleteCookie, setCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import Router from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
@@ -20,6 +20,7 @@ type AuthContextTypes = {
     loading: boolean
     setLoading: Dispatch<SetStateAction<boolean>>
     erroCadastro: boolean
+    authResolved: boolean
     setErroCadastro?: Dispatch<SetStateAction<boolean>>
     btnDisabled?: boolean
     setBtnDisabled?: Dispatch<SetStateAction<boolean>>
@@ -38,6 +39,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     const [loading, setLoading] = useState(false)
     const [erroCadastro, setErroCadastro] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [authResolved, setAuthResolved] = useState(false)
 
     const setDomainAtom = useSetAtom(domainUrl)
 
@@ -46,14 +48,19 @@ function AuthProvider(props: AuthContextProviderProps) {
         setDomainAtom(dominio)
     }, [setDomainAtom])
 
-    useEffect(() => {
-        const token = getCookie('quadro-token')
 
-        if (token) {
-            api.post('/recover-user-information').then(res => {
+    useEffect(() => {
+        const recoverUser = async () => {
+            try {
+                const res = await api.post('/recover-user-information')
                 setUser(res.data)
-            })
+            } catch (err: any) {
+                setUser(null)
+            } finally {
+                setAuthResolved(true) // sinaliza que a autenticação foi resolvida
+            }
         }
+        recoverUser()
     }, [])
 
     useEffect(() => {
@@ -99,10 +106,6 @@ function AuthProvider(props: AuthContextProviderProps) {
                 maxAge: 60 * 60 * 8,
             })
 
-            setCookie('user-roles', JSON.stringify(userRoles), {
-                maxAge: 60 * 60 * 8,
-            })
-
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
             setUser(usuarioLogado)
@@ -120,10 +123,6 @@ function AuthProvider(props: AuthContextProviderProps) {
         deleteCookie('quadro-token', {
             path: "/"
         })
-        deleteCookie('user-roles', {
-            path: "/"
-        })
-
         setUser(null)
         Router.push('/login')
     }
@@ -215,7 +214,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading
+            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading, authResolved
         }}>
             {props.children}
         </AuthContext.Provider>

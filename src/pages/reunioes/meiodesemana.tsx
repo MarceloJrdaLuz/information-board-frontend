@@ -3,25 +3,24 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import FileList from "@/Components/FileList"
 import SkeletonFileList from "@/Components/FileList/skeletonFileList"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import Upload from "@/Components/Upload"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useDocumentsContext } from "@/context/DocumentsContext"
-import { useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { Categories, ICategory } from "@/types/types"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 
 export default function MeioDeSemana() {
-
     const [category, setCategory] = useState<ICategory>()
-    const { uploadedFiles, setDocumentCategoryId } = useDocumentsContext()
-    const { data: categories } = useFetch<ICategory[]>('/categories')
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const { uploadedFiles, setDocumentCategoryId, loading } = useDocumentsContext()
+    const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
+    const { data: categories } = useAuthorizedFetch<ICategory[]>('/categories', {
+        allowedRoles: ["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]
+    })
     useEffect(() => {
         setPageActive('Meio de semana')
     }, [setPageActive])
@@ -44,57 +43,33 @@ export default function MeioDeSemana() {
             </ul>
         )
     }
+    const hasFiles = uploadedFiles && uploadedFiles.length > 0
 
     return (
-        <Layout pageActive="meiodesemana">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-wrap w-full h-full p-5">
-                    <div className="w-full h-full">
-                        <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
-                            <Upload acceptFiles={{
-                                'application/pdf': []
-                            }} />
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
+            <Layout pageActive="meiodesemana">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <section className="flex flex-wrap w-full h-full p-5">
+                        <div className="w-full h-full">
+                            <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
+                                <Upload acceptFiles={{
+                                    'application/pdf': []
+                                }} />
+                            </div>
+                           {loading ? (
+                                renderSkeleton()
+                            ) : hasFiles ? (
+                                <FileList files={uploadedFiles} />
+                            ) : (
+                                <div className="w-full flex justify-center items-center py-10 text-gray-500">
+                                    Nenhum arquivo encontrado.
+                                </div>
+                            )}
                         </div>
-                        {uploadedFiles && uploadedFiles.length > 0 ? (
-                            <FileList files={uploadedFiles} />
-                        ) : (
-                            renderSkeleton()
-                        )}
-                    </div>
-                </section>
-            </ContentDashboard>
-        </Layout>
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('DOCUMENTS_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

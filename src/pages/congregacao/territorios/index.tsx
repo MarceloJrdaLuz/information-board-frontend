@@ -4,29 +4,22 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import TerritoryIcon from "@/Components/Icons/TerritoryIcon"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import S13 from "@/Components/S13"
 import TerritoriesList from "@/Components/TerritoriesList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useTerritoryContext } from "@/context/TerritoryContext"
-import { getYearService } from "@/functions/meses"
-import { getAPIClient } from "@/services/axios"
 import { ITerritoryWithHistories } from "@/types/territory"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
-import { GetServerSideProps } from "next"
-import Router, { useRouter } from "next/router"
-import { parseCookies } from "nookies"
+import Router from "next/router"
 import { useEffect, useState } from "react"
 
 export default function Territory() {
-    const router = useRouter()
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [crumbs, ] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    const [isClient, setIsClient] = useState(false)
     const [pdfGenerating, setPdfGenerating] = useState(false)
-    const [yearService, setYearService] = useState(getYearService().toString())
-    const [yearServiceSelected, setYearServiceSelected] = useState(getYearService().toString())
     const { territoriesHistory } = useTerritoryContext()
     const [territoriesHistoryFilter, setTerritoriesHistoryFilter] = useState<ITerritoryWithHistories[]>([])
 
@@ -103,65 +96,36 @@ export default function Territory() {
     )
 
     return (
-        <Layout pageActive="territorios">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de territórios</h1>
-                    <Button
-                        onClick={() => {
-                            Router.push('/congregacao/territorios/add')
-                        }}
-                        className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                        <TerritoryIcon />
-                        <span className="text-primary-200 font-semibold">Adicionar território</span>
-                    </Button>
-                    <div className="w-full h-full my-5">
-                        <div className="w-full flex justify-end">
-                            {pdfGenerating && <PdfLinkComponent />}
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"]}>
+            <Layout pageActive="territorios">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <section className="flex flex-wrap w-full h-full p-5 ">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de territórios</h1>
+                        <Button
+                            onClick={() => {
+                                Router.push('/congregacao/territorios/add')
+                            }}
+                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                            <TerritoryIcon />
+                            <span className="text-primary-200 font-semibold">Adicionar território</span>
+                        </Button>
+                        <div className="w-full h-full my-5">
+                            <div className="w-full flex justify-end">
+                                {pdfGenerating && <PdfLinkComponent />}
+                            </div>
+                            <TerritoriesList />
                         </div>
-                        <TerritoriesList />
-                    </div>
-                    {/* <div className="w-screen">
+                        {/* <div className="w-screen">
                         {isClient && (
                             <PDFViewer>
                                 <S13 territoriesHistory={territoriesHistoryFilter ?? []} />
                             </PDFViewer>
                         )}
                     </div> */}
-                </section>
-            </ContentDashboard>
-        </Layout>
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TERRITORIES_MANAGER') && !userRolesParse.includes('TERRITORIES_VIEWER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

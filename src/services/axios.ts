@@ -6,9 +6,6 @@ export function getAPIClient(ctx?: any) {
 
     const { 'quadro-token': token } = parseCookies(ctx)
 
-    const deviceId = getCookie('deviceId')
-
-
     const api = axios.create({
         baseURL: process.env.NEXT_PUBLIC_API_BASE, 
     })

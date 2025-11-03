@@ -4,12 +4,9 @@ import InformationBoardImage from "@/Components/InformationBoardImage"
 import { domainUrl } from "@/atoms/atom"
 import { useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
-import { useRouter } from "next/router"
 import { parseCookies } from "nookies"
-import { useEffect } from "react"
 
 export default function Login() {
-    const router = useRouter()
     const domain = useAtomValue(domainUrl)
 
     return (
