@@ -19,11 +19,11 @@ import Input from "../../Input"
 import InputError from "../../InputError"
 import FormStyle from "../FormStyle"
 import { FormValues, ITerritoryHiistoryFormProps } from "./types"
+import { mutate } from "swr"
 
 
 export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHiistoryFormProps) {
     const { createTerritoryHistory, updateTerritoryHistory, deleteTerritoryHistory } = useTerritoryContext()
-    const { roleContains } = useAuthContext()
     const router = useRouter()
     const { territory_id } = router.query
     const dataSuccess = useAtomValue(successFormSend)
@@ -170,7 +170,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type="date"
-                        placeholder="Data da designação"
+                        placeholder={territoryHistory?.assignment_date ?? "Data da designação"}
                         registro={{
                             ...register('assignment_date')
                         }}
@@ -180,7 +180,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type="date"
-                        placeholder="Data da conclusão"
+                        placeholder={territoryHistory?.completion_date ?? "Data da conclusão"}
                         maxLength={50}
                         registro={{
                             ...register('completion_date')

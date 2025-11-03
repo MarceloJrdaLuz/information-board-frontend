@@ -33,15 +33,10 @@ export default function Layout(props: LayoutProps) {
 
     const router = useRouter()
 
-    const { authResolved, user: getUser, roleContains } = useAuthContext()
+    const { authResolved, user, roleContains } = useAuthContext()
     const [isHovering, setIsHovering] = useState(props.pageActive)
-    const [user, setUser] = useState(getUser)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
-    useEffect(() => {
-        console.log('authResolved:', authResolved)
-    }, [authResolved])
-
 
     useEffect(() => {
         const path = router.pathname
@@ -50,10 +45,6 @@ export default function Layout(props: LayoutProps) {
 
         setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
     }, [router.pathname, setOpenSubMenu])
-
-    // useEffect(() => {
-    //     setUser(getUser)
-    // }, [setUser, getUser])
 
     const toggleSubMenu = (menuKey: string) => {
         setOpenSubMenu((prev) => (prev === menuKey ? null : menuKey))

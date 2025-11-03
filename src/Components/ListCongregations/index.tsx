@@ -1,30 +1,16 @@
 import { useCongregationContext } from "@/context/CongregationContext"
-import { api } from "@/services/api"
 import { ICongregation } from "@/types/types"
 import { PlusIcon } from "lucide-react"
 import Router from "next/router"
-import { useEffect, useState } from "react"
 import CardCongregation from "../CardCongregation"
 import SkeletonCongregationCard from "../CardCongregation/skeletonCongregationCard"
 
+interface ListCongregationsProps {
+    congregations: ICongregation[]
+    isLoading: boolean
+}
 
-export default function ListCongregations() {
-    const [congregations, setCongregations] = useState<ICongregation[]>()
-    const [loading, setLoading] = useState(true)
-
-    const getCongregations = async () => {
-        await api.get('/congregations').then(res => {
-            const { data } = res
-            setCongregations([...data])
-            setLoading(false)
-        }).catch(err => console.log(err))
-    }
-
-    useEffect(() => {
-        setLoading(true)
-        getCongregations()
-    }, [])
-
+export default function ListCongregations({ congregations, isLoading }: ListCongregationsProps) {
     const { setShowCongregationCreated } = useCongregationContext()
 
     let skeletonCongregations = Array(6).fill(0)
@@ -39,7 +25,7 @@ export default function ListCongregations() {
 
     return (
         <>
-            {loading ? (
+            {isLoading ? (
                 renderSkeleton()
             ) : (
                 <ul className="flex w-full h-fit flex-wrap justify-center">

@@ -10,12 +10,13 @@ import FilterPrivileges from "@/Components/FilterPrivileges"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import Layout from "@/Components/Layout"
 import ModalHelp from "@/Components/ModalHelp"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import S21 from "@/Components/PublisherCard"
 import PublishersToGenerateS21 from "@/Components/PublishersToGenerateS21"
 import SkeletonPublishersList from "@/Components/PublishersToGenerateS21/skeletonPublishersList"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch, useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { getAPIClient } from "@/services/axios"
 import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/types/types"
@@ -33,15 +34,7 @@ export default function PublisherCard() {
     const { congregationId } = router.query
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-
-    const fetchConfig = congregationId ? `/publishers/congregationId/${congregationId}` : ""
-    const { data } = useFetch<IPublisher[]>(fetchConfig)
-
-    const fetchTotalsConfig = congregationId ? `/report/totals/${congregationId}` : ""
-    const { data: getTotals } = useFetch<ITotalsReports[]>(fetchTotalsConfig)
-
     const [selectedPublishersToS21, setSelectedPublishersToS21] = useAtom(selectedPublishersToS21Atom)
-
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [filterPublishers, setfilterPublishers] = useState<IPublisher[]>()
     const [reports, setReports] = useState<IReports[]>()
@@ -57,6 +50,16 @@ export default function PublisherCard() {
     const [totalsFrom, setTotalsFrom] = useState('')
     const [reportsTotalsFrom, setReportsTotalsFrom] = useState<ITotalsReports[]>()
     const [reportsTotalsFromFilter, setReportsTotalsFromFilter] = useState<ITotalsReports[]>()
+
+    const fetchConfig = congregationId ? `/publishers/congregationId/${congregationId}` : ""
+    const { data } = useAuthorizedFetch<IPublisher[]>(fetchConfig, {
+        allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
+    })
+
+    const fetchTotalsConfig = congregationId ? `/report/totals/${congregationId}` : ""
+    const { data: getTotals } = useAuthorizedFetch<ITotalsReports[]>(fetchTotalsConfig, {
+        allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
+    })
 
     useEffect(() => {
         setPageActive("Registros")
@@ -250,23 +253,24 @@ export default function PublisherCard() {
     )
 
     return (
-        <Layout pageActive="relatorios">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex flex-col justify-center items-center p-5">
-                    <div className="flex justify-between w-full mt-5 ">
-                        <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
-                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
-                    </div>
-                    {publishers && (
-                        <div className="w-full md:w-9/12">
-                            <div>
-                                {modalHelpShow &&
-                                    <ModalHelp
-                                        onClick={() => setModalHelpShow(false)}
-                                        title="Como gerar os registros de publicadores (S-21)"
-                                        text={
-                                            `  
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER"]}>
+            <Layout pageActive="relatorios">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <section className="flex flex-col justify-center items-center p-5">
+                        <div className="flex justify-between w-full mt-5 ">
+                            <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
+                            <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                        </div>
+                        {publishers && (
+                            <div className="w-full md:w-9/12">
+                                <div>
+                                    {modalHelpShow &&
+                                        <ModalHelp
+                                            onClick={() => setModalHelpShow(false)}
+                                            title="Como gerar os registros de publicadores (S-21)"
+                                            text={
+                                                `  
     Na lista abaixo aparece todos os publicadores da congregação por ordem alfabética. Por padrão nenhum deles vem selecionado.
                                             
     No botao de filtro você escolher para filtrar pelos privilégios. Ex: selecionando "Ancião" e "Servo", ele selecionará apenas os registros de anciãos e servos. Você também pode escolher um privilégio, e ainda acrescentar manualmente mais alguns publicadores clicando no nome deles na lista. Caso queira incluir todos os registros para gerar um Pdf com todos, no botão de filtros escolha a opção "Todos". Dessa forma todos os privilégios vão ser selecionados.
@@ -277,107 +281,77 @@ export default function PublisherCard() {
     
     Por padrão quando há mais de um publicador na selecão o Pdf ira com o nome padrão de "Registro de publicadores", e se for apenas um publicador selecionado o nome padrão será o nome completo do publicador selecionado.
     `} />}
-                            </div>
-                            <div className="flex justify-between items-center w-full mb-4">
-                                <div className="flex flex-col">
-                                    <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ?
-                                        <PdfLinkComponent />
-                                        :
-                                        (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
-                                            <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                                Preparar registros
-                                            </Button>)
-                                    }
                                 </div>
-                                <div className="flex gap-1">
-                                    <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
-
-                                    <FilterPrivileges includeOptionAll onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
-                                </div>
-                            </div>
-                            {publishers.length > 0 ? (
-                                <>
-                                    <div className="flex justify-between">
-                                        <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
-                                        <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
+                                <div className="flex justify-between items-center w-full mb-4">
+                                    <div className="flex flex-col">
+                                        <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+                                        {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ?
+                                            <PdfLinkComponent />
+                                            :
+                                            (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
+                                                <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                    Preparar registros
+                                                </Button>)
+                                        }
                                     </div>
-                                    {!totals ? publishers?.map(publisher => (
-                                        <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
-                                            {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
-                                                <div>
-                                                    {pdfGenerating ? (
-                                                        <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                                            Preparar registro
-                                                        </Button>
-                                                    ) : (
-                                                        <div className="px-2">
-                                                            <PdfLinkComponent />
-                                                        </div>
-                                                    )}
+                                    <div className="flex gap-1">
+                                        <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
 
-                                                </div>
-                                            }
-                                        </PublishersToGenerateS21>
-                                    )) : (
-                                        <ul>
-                                            {Object.values(TotalsFrom).map(ob => (
-                                                <li
-                                                    key={ob}
-                                                    onClick={() => {
-                                                        setPdfGenerating(false),
-                                                            setTotalsFrom(ob)
-                                                    }}
-                                                    className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
-                                                >
-                                                    <div className={`flex flex-col p-4 text-gray-700`}>
-                                                        <span>{ob}</span>
+                                        <FilterPrivileges includeOptionAll onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
+                                    </div>
+                                </div>
+                                {publishers.length > 0 ? (
+                                    <>
+                                        <div className="flex justify-between">
+                                            <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
+                                            <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
+                                        </div>
+                                        {!totals ? publishers?.map(publisher => (
+                                            <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
+                                                {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
+                                                    <div>
+                                                        {pdfGenerating ? (
+                                                            <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                                Preparar registro
+                                                            </Button>
+                                                        ) : (
+                                                            <div className="px-2">
+                                                                <PdfLinkComponent />
+                                                            </div>
+                                                        )}
+
                                                     </div>
+                                                }
+                                            </PublishersToGenerateS21>
+                                        )) : (
+                                            <ul>
+                                                {Object.values(TotalsFrom).map(ob => (
+                                                    <li
+                                                        key={ob}
+                                                        onClick={() => {
+                                                            setPdfGenerating(false),
+                                                                setTotalsFrom(ob)
+                                                        }}
+                                                        className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
+                                                    >
+                                                        <div className={`flex flex-col p-4 text-gray-700`}>
+                                                            <span>{ob}</span>
+                                                        </div>
 
-                                                </li>
+                                                    </li>
 
-                                            ))}
-                                        </ul>
-                                    )}
-                                </>
-                            ) : (
-                                renderSkeleton()
-                            )}
-                        </div>
-                    )}
-                </section>
-            </ContentDashboard>
-        </Layout>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </>
+                                ) : (
+                                    renderSkeleton()
+                                )}
+                            </div>
+                        )}
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('REPORTS_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

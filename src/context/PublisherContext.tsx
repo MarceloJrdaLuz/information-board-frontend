@@ -3,7 +3,7 @@ import { api } from "@/services/api"
 import { IConsentRecordTypes } from "@/types/consent"
 import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/types/reports"
-import { IEmergencyContact, ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
+import { ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
@@ -36,13 +36,6 @@ type PublisherContextTypes = {
     unlinkPublisherToUser: ({
         publisher_id
     }: IUnlinkPublisherToUser) => Promise<any>
-    createEmergencyContact: ({
-        name,
-        phone,
-        relationship,
-        isTj,
-        congregation_id
-    }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }) => Promise<any>
     updatePublisher: (
         publisher_id: string,
         payload: IPayloadUpdatePublisher
@@ -250,29 +243,6 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
-    async function createEmergencyContact({
-        name,
-        phone,
-        relationship,
-        isTj,
-        congregation_id
-
-    }: Omit<IEmergencyContact, 'id'> & { congregation_id: string }) {
-        await api.post('/emergencyContact', {
-            name,
-            phone,
-            relationship,
-            isTj,
-            congregation_id
-        }).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.emergencyContactCreate)
-            modal(false)
-        }).catch(err => {
-            console.log(err)
-            toast.error(messageErrorsSubmit.default)
-        })
-    }
-
     async function linkPublisherToUser(
         { user_id, publisher_id, force }: ILinkPublisherToUser
     ) {
@@ -311,7 +281,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
 
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, createEmergencyContact, linkPublisherToUser, unlinkPublisherToUser
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport,  linkPublisherToUser, unlinkPublisherToUser
         }}>
             {props.children}
         </PublisherContext.Provider>

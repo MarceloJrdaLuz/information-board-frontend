@@ -6,20 +6,21 @@ import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { usePublisherContext } from '@/context/PublisherContext'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
 import { XSquareIcon } from 'lucide-react'
 import Router from 'next/router'
+import { createEmergencyContactAtom } from '@/atoms/emergencyContactAtoms'
 
 interface FormAddEmergencyContactProps {
     congregation_id: string // ID da congregação para a qual o contato de emergência será adicionado
 }
 
 export default function FormAddEmergencyContact({ congregation_id }: FormAddEmergencyContactProps) {
-    const { createEmergencyContact } = usePublisherContext()
+    const  createEmergencyContact  = useSetAtom(createEmergencyContactAtom)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)

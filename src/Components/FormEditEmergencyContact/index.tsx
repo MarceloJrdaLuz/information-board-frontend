@@ -1,16 +1,14 @@
 import * as yup from 'yup'
 
 import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
+import { updateEmergencyContactAtom } from '@/atoms/emergencyContactAtoms'
 import Button from '@/Components/Button'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useSubmitContext } from '@/context/SubmitFormContext'
 import { useFetch } from '@/hooks/useFetch'
-import { api } from '@/services/api'
 import { IEmergencyContact } from '@/types/types'
-import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -24,8 +22,7 @@ export interface IEmergencyContactProps {
 
 export default function FormEditEmergencyContact({ emergencyContact }: IEmergencyContactProps) {
     const { data } = useFetch<IEmergencyContact>(`/emergencyContact/${emergencyContact}`)
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-
+    const updateEmergencyContact = useSetAtom(updateEmergencyContactAtom)
     const [emergencyContactToUpdate, setEmergencyContactToUpdate] = useState<IEmergencyContact>()
 
     const dataSuccess = useAtomValue(successFormSend)
@@ -96,25 +93,9 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
         }
     }, [watchedFormValues, initialFormValues, setDisabled])
 
-    async function updateEmergencyContact({ emergencyContact_id, name, phone, relationship, isTj }: { emergencyContact_id: string, name?: string, phone?: string, relationship?: string, isTj?: boolean }) {
-        await api.put(`/emergencyContact/${emergencyContact_id}`, {
-            name,
-            phone,
-            relationship,
-            isTj
-        }).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.emergencyContactUpdate, '/congregacao/contatos-emergencia')
-        }).catch(err => {
-            console.log(err)
-            const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
-        })
-    }
-
     const onSubmit = (data: FormValues) => {
         toast.promise(
-            updateEmergencyContact({
-                emergencyContact_id: emergencyContact,
+            updateEmergencyContact(emergencyContact, {
                 name: data.name,
                 phone: data.phone,
                 relationship: data.relationship,
@@ -173,7 +154,7 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
                     {errors?.isTj && <InputError type={errors.isTj.type} field="isTj" />}
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Categoria</Button>
+                        <Button disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Contato</Button>
                     </div>
                 </div>
             </FormStyle>

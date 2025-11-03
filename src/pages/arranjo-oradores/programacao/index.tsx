@@ -4,23 +4,23 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import Input from "@/Components/Input"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import ScheduleRow from "@/Components/ScheduleRow"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
-  chairmansAtom,
-  congregationsAtom,
-  createWeekendScheduleAtom,
-  readersAtom,
-  schedulesAtom,
-  speakersAtom,
-  talksAtom,
-  updateWeekendScheduleAtom
+    chairmansAtom,
+    congregationsAtom,
+    createWeekendScheduleAtom,
+    readersAtom,
+    schedulesAtom,
+    speakersAtom,
+    talksAtom,
+    updateWeekendScheduleAtom
 } from "@/atoms/weekendScheduleAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
@@ -30,9 +30,7 @@ import { useAtom, useSetAtom } from "jotai"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import moment from "moment"
 import "moment/locale/pt-br"; // importa o idioma
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -42,15 +40,13 @@ export default function WeekendSchedulePage() {
     const { date } = router.query
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
-    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
+    const [crumbs, ] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
     const [weekendMeetingDay, setWeekendMeetingDay] = useState<Date[]>([])
     const [weekendSchedules, setWeekendSchedules] = useAtom(schedulesAtom)
     const [isClient, setIsClient] = useState(false)
     const [initialWeekendSchedules, setInitialWeekendSchedules] = useState<Record<string, IRecordWeekendSchedule>>({})
-
-
 
     const setTalks = useSetAtom(talksAtom)
     const setSpeakers = useSetAtom(speakersAtom)
@@ -109,15 +105,18 @@ export default function WeekendSchedulePage() {
     const effectiveStart = startDatePdfGenerate || startDate
     const effectiveEnd = endDatePdfGenerate || endDate
 
-    const { data: rawExternalData } = useFetch<IExternalTalk[]>(
+    const { data: rawExternalData } = useAuthorizedFetch<IExternalTalk[]>(
         congregation_id && effectiveStart && effectiveEnd
             ? `/congregation/${congregation_id}/externalTalks/period?start=${effectiveStart}&end=${effectiveEnd}`
-            : ""
-    )
+            : "", {
+                allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+            })
 
     const externalData = useMemo(() => rawExternalData ?? [], [rawExternalData])
 
-    const { data, mutate } = useFetch<IWeekendScheduleFormData>(`/form-data?form=weekendSchedule`)
+    const { data, mutate } = useAuthorizedFetch<IWeekendScheduleFormData>(`/form-data?form=weekendSchedule`, {
+         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+    })
 
     useEffect(() => {
         if (data || externalData) {
@@ -251,154 +250,125 @@ export default function WeekendSchedulePage() {
     })
 
     return (
-        <Layout pageActive="programacao">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
-                <section className="flex flex-wrap w-full h-full p-4 relative">
-                    {!data ? (
-                        <WeekendScheduleSkeleton />
-                    ) : (
-                        <>
-                            <div className="w-full space-y-4">
-                                <div className="sticky top-0 z-30">
-                                    <div className="md:hidden flex justify-center bg-white border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
-                                        <button
-                                            onClick={() => setShowFilters((o) => !o)}
-                                            className="flex items-center gap-2 text-sm text-gray-600"
-                                        >
-                                            {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                        </button>
-                                    </div>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
+            <Layout pageActive="programacao">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
+                    <section className="flex flex-wrap w-full h-full p-4 relative">
+                        {!data ? (
+                            <WeekendScheduleSkeleton />
+                        ) : (
+                            <>
+                                <div className="w-full space-y-4">
+                                    <div className="sticky top-0 z-30">
+                                        <div className="md:hidden flex justify-center bg-white border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
+                                            <button
+                                                onClick={() => setShowFilters((o) => !o)}
+                                                className="flex items-center gap-2 text-sm text-gray-600"
+                                            >
+                                                {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                            </button>
+                                        </div>
 
-                                    {/* Painel */}
-                                    <div
-                                        className={`
+                                        {/* Painel */}
+                                        <div
+                                            className={`
            bg-white border-b shadow-sm rounded-xl flex flex-col md:gap-4
     transition-all duration-300 overflow-visible
     ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
     md:opacity-100 md:max-h-screen md:pointer-events-auto
         `}
-                                    >
-                                        <div className="flex justify-between items-center gap-2">
-                                            <Button
-                                                onClick={() => setMonthOffset((m) => m - 1)}
-                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                            >
-                                                ◀ {prevMonthLabel}
-                                            </Button>
-
-                                            <Button
-                                                onClick={() => setMonthOffset((m) => m + 1)}
-                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                            >
-                                                {nextMonthLabel} ▶
-                                            </Button>
-                                        </div>
-
-                                        <Button className="w-full" onClick={handleSave}>
-                                            Salvar todas
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <Card className="w-full p-4">
-                                    <CardBody className="flex flex-wrap gap-4 items-center">
-                                        <Input
-                                            placeholder="Data inicial"
-                                            type="date"
-                                            value={startDatePdfGenerate}
-                                            onChange={(e) => setStartDatePdfGenerate(e.target.value)}
-                                            className="flex-1"
-                                        />
-                                        <Input
-                                            placeholder="Data final"
-                                            type="date"
-                                            value={endDatePdfGenerate}
-                                            onChange={(e) => setEndDatePdfGenerate(e.target.value)}
-                                            min={startDatePdfGenerate || undefined}
-                                            className="flex-1"
-                                        />
-                                        <div className="flex-1">
-                                            <Select
-                                                label="Escala do PDF"
-                                                value={pdfScale.toString()}
-                                                onChange={(value) => setPdfScale(Number(value))}
-                                            >
-                                                <Option value="1">100%</Option>
-                                                <Option value="0.9">90%</Option>
-                                                <Option value="0.8">80%</Option>
-                                                <Option value="0.7">70%</Option>
-                                            </Select>
-                                        </div>
-                                        <Button
-                                            onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                            className="px-4 py-2 rounded-lg border shadow"
                                         >
-                                            {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
-                                        </Button>
-                                        {isClient && <PdfLinkComponent />}
-                                    </CardBody>
-                                </Card>
-                                {showPdfPreview && (
-                                    <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
-                                        <PDFViewer style={{ width: "100%", height: "100%" }}>
-                                            <Document>
-                                                <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
-                                            </Document>
-                                        </PDFViewer>
-                                    </div>
-                                )}
+                                            <div className="flex justify-between items-center gap-2">
+                                                <Button
+                                                    onClick={() => setMonthOffset((m) => m - 1)}
+                                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                                >
+                                                    ◀ {prevMonthLabel}
+                                                </Button>
 
-                                <div className="space-y-4 mt-6 pb-36 h-fit">
-                                    {weekendMeetingDay.map((d) => {
-                                        const externalForDate = (externalData ?? []).filter((t) =>
-                                            moment(t.date).isSame(d, "day")
-                                        )
-                                        return (
-                                            <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm">
-                                                <ScheduleRow date={d} externalTalks={externalForDate} />
+                                                <Button
+                                                    onClick={() => setMonthOffset((m) => m + 1)}
+                                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                                >
+                                                    {nextMonthLabel} ▶
+                                                </Button>
                                             </div>
-                                        )
-                                    })}
+
+                                            <Button className="w-full" onClick={handleSave}>
+                                                Salvar todas
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <Card className="w-full p-4">
+                                        <CardBody className="flex flex-wrap gap-4 items-center">
+                                            <Input
+                                                placeholder="Data inicial"
+                                                type="date"
+                                                value={startDatePdfGenerate}
+                                                onChange={(e) => setStartDatePdfGenerate(e.target.value)}
+                                                className="flex-1"
+                                            />
+                                            <Input
+                                                placeholder="Data final"
+                                                type="date"
+                                                value={endDatePdfGenerate}
+                                                onChange={(e) => setEndDatePdfGenerate(e.target.value)}
+                                                min={startDatePdfGenerate || undefined}
+                                                className="flex-1"
+                                            />
+                                            <div className="flex-1">
+                                                <Select
+                                                    label="Escala do PDF"
+                                                    value={pdfScale.toString()}
+                                                    onChange={(value) => setPdfScale(Number(value))}
+                                                >
+                                                    <Option value="1">100%</Option>
+                                                    <Option value="0.9">90%</Option>
+                                                    <Option value="0.8">80%</Option>
+                                                    <Option value="0.7">70%</Option>
+                                                </Select>
+                                            </div>
+                                            <Button
+                                                onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                                className="px-4 py-2 rounded-lg border shadow"
+                                            >
+                                                {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                            </Button>
+                                            {isClient && <PdfLinkComponent />}
+                                        </CardBody>
+                                    </Card>
+                                    {showPdfPreview && (
+                                        <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
+                                            <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                                <Document>
+                                                    <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
+                                                </Document>
+                                            </PDFViewer>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-4 mt-6 pb-36 h-fit">
+                                        {weekendMeetingDay.map((d) => {
+                                            const externalForDate = (externalData ?? []).filter((t) =>
+                                                moment(t.date).isSame(d, "day")
+                                            )
+                                            return (
+                                                <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm">
+                                                    <ScheduleRow date={d} externalTalks={externalForDate} />
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    )
-                    }
+                            </>
+                        )
+                        }
 
-                </section >
-            </ContentDashboard >
-        </Layout >
+                    </section >
+                </ContentDashboard >
+            </Layout >
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

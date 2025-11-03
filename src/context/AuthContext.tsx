@@ -106,10 +106,6 @@ function AuthProvider(props: AuthContextProviderProps) {
                 maxAge: 60 * 60 * 8,
             })
 
-            setCookie('user-roles', JSON.stringify(userRoles), {
-                maxAge: 60 * 60 * 8,
-            })
-
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
             setUser(usuarioLogado)
@@ -127,10 +123,6 @@ function AuthProvider(props: AuthContextProviderProps) {
         deleteCookie('quadro-token', {
             path: "/"
         })
-        deleteCookie('user-roles', {
-            path: "/"
-        })
-
         setUser(null)
         Router.push('/login')
     }

@@ -2,11 +2,9 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
 import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
-import { parseCookies } from "nookies"
 import { useEffect } from "react"
 
 export default function AddPublicadores() {
@@ -33,44 +31,15 @@ export default function AddPublicadores() {
     }, [setPageActive])
 
     return (
-        <Layout pageActive="publicadores">
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                <section className="flex justify-center">
-                    <FormAddPublisher />
-                </section>
-            </ContentDashboard>
-        </Layout>
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
+            <Layout pageActive="publicadores">
+                <ContentDashboard>
+                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <section className="flex justify-center">
+                        <FormAddPublisher />
+                    </section>
+                </ContentDashboard>
+            </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('PUBLISHERS_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }
