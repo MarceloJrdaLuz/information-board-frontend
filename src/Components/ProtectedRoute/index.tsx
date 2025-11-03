@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ allowedRoles = [], children }: ProtectedRouteProps) {
-  const { roleContains, loading, user, authResolved } = useAuthContext()
+  const { authResolved, roleContains, loading, user, } = useAuthContext()
   const router = useRouter()
   const [authorized, setAuthorized] = useState<boolean | null>(null)
 

@@ -26,18 +26,22 @@ import SpeakerIcon from "../Icons/SpeakerIcon"
 import TalkIcon from "../Icons/TalksIcon"
 import TerritoryIcon from "../Icons/TerritoryIcon"
 import { NavBar } from "../NavBar"
-import { LayoutProps } from "./types"
 import { ConsentCongregationWrapper } from "../wrappers/ConsentCongregationWrapper"
+import { LayoutProps } from "./types"
 
 export default function Layout(props: LayoutProps) {
 
     const router = useRouter()
 
-    const { user: getUser, roleContains, loading } = useAuthContext()
+    const { authResolved, user: getUser, roleContains } = useAuthContext()
     const [isHovering, setIsHovering] = useState(props.pageActive)
     const [user, setUser] = useState(getUser)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
+    useEffect(() => {
+        console.log('authResolved:', authResolved)
+    }, [authResolved])
+
 
     useEffect(() => {
         const path = router.pathname
@@ -47,9 +51,9 @@ export default function Layout(props: LayoutProps) {
         setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
     }, [router.pathname, setOpenSubMenu])
 
-    useEffect(() => {
-        setUser(getUser)
-    }, [setUser, getUser])
+    // useEffect(() => {
+    //     setUser(getUser)
+    // }, [setUser, getUser])
 
     const toggleSubMenu = (menuKey: string) => {
         setOpenSubMenu((prev) => (prev === menuKey ? null : menuKey))
@@ -61,13 +65,11 @@ export default function Layout(props: LayoutProps) {
 
     return (
         <main className={`flex w-screen h-screen max-h-full overflow-y-auto`}>
-            {loading ? (
-                <NavBar.Root>
+            <NavBar.Root>
+                {!authResolved ? (
                     <NavBar.Skeleton items={5} />
-                </NavBar.Root>
-            ) : (
-                <>
-                    <NavBar.Root>
+                ) : (
+                    <>
                         {/* <NavBar.Logo /> */}
                         <NavBar.Options
                             title="Início"
@@ -501,10 +503,10 @@ export default function Layout(props: LayoutProps) {
                             }
 
                         </ConsentCongregationWrapper>
-                    </NavBar.Root>
-                </>
-            )
-            }
+                    </>
+                )
+                }
+            </NavBar.Root>
             {props.children}
         </main >
     )

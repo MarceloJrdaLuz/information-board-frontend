@@ -1,7 +1,7 @@
 import { domainUrl } from "@/atoms/atom"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { deleteCookie, getCookie, setCookie } from "cookies-next"
+import { deleteCookie, setCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import Router from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
