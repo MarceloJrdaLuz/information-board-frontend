@@ -85,7 +85,7 @@ export default function MudarDirigente() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Mudar Dirigente"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
                         <div className="w-full h-full">
                             <div className="flex justify-between w-full">

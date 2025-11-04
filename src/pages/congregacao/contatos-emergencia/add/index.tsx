@@ -36,7 +36,7 @@ export default function AddEmergencyContact() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Contato"} />
                     <section className="flex m-10 justify-center items-center">
                         <FormAddEmergencyContact congregation_id={congregation_id ?? ""} />
                     </section>

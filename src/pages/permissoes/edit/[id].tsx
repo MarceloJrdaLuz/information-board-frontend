@@ -38,7 +38,7 @@ export default function EditPermission() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Permissão"} />
                     <FormProvider {...methods}>
                         <section className="flex justify-center">
                             <FormEditPermission permission_id={`${id}`} />

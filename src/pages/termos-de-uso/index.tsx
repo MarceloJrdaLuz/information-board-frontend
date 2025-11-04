@@ -32,7 +32,7 @@ export default function TermsOfUSe() {
   return (
     <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION"]}>
         <ContentDashboard>
-          <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+          <BreadCrumbs crumbs={crumbs} pageActive={"Termos de Uso"} />
           <section className="flex w-full h-full justify-center items-center">
             <div className="h-full">
               <div className="flex flex-col p-10 m-5 bg-white overflow-scroll">

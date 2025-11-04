@@ -31,9 +31,9 @@ export default function AddTalkPage() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>]
+        <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Discurso"} />
                     <section className="flex m-10 justify-center items-center">
                         <FormAddTalk />
                     </section>

@@ -32,7 +32,6 @@ export const updateHospitalityGroupAtom = atom(
   null, // valor inicial → write-only atom
   async (_get, _set, hospitalityGroup_id: string, payload: UpdateHospitalityGroupPayload) => {
     try {
-      console.log(hospitalityGroup_id)
       const res = await api.patch(`/hospitalityGroup/${hospitalityGroup_id}`, payload)
 
       toast.success("Grupo de hospitalidade atualizado com sucesso!")

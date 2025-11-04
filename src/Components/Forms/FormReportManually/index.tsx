@@ -74,10 +74,6 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         })
     }
 
-    useEffect(() => {
-        console.log(publisher)
-    }, [])
-
     async function onSubmit({ hours, month, observations, studies }: FormValues) {
         const splitMonth = month.split(' ')
         const payload: IPayloadCreateReportManually = {

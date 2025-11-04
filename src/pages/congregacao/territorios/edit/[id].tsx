@@ -38,7 +38,7 @@ export default function EditTerritory() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Território"} />
                     <FormProvider {...methods}>
                         <section className="flex justify-center">
                             <FormEditTerritory territory_id={`${id}`} />

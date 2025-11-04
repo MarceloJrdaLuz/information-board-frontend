@@ -56,7 +56,7 @@ export default function EditHistoryTerritory() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Histórico do Território"} />
                     <FormProvider {...methods}>
                         <section className="flex flex-wrap justify-around ">
                             <div className="w-full m-5 flex justify-start">

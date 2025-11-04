@@ -43,7 +43,7 @@ export default function EditPublishers() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Anúncio"} />
                 <FormProvider {...methods}>
                     <section className="flex justify-center">
                         <FormEditNotice notice_id={id as string} />

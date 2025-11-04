@@ -29,7 +29,7 @@ export default function Congregacoes() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Congregações do Sistema"} />
                     <ListCongregations isLoading={isLoading} congregations={congregations ?? []} />
                 </ContentDashboard>
         </ProtectedRoute>

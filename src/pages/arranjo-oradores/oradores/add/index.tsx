@@ -33,7 +33,7 @@ export default function AddSpeakerPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Orador"} />
                     <section className="flex m-10 justify-center items-center">
                         <FormAddSpeaker />
                     </section>

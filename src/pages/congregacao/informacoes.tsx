@@ -18,7 +18,7 @@ export default function InformacoesCongregacoes() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Informações da Congregação"} />
                     <div className="flex justify-center items-center py-5">
                         <FormUpdateCongregation />
                     </div>

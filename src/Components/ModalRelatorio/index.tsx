@@ -7,7 +7,7 @@ interface ModalRelatorioProps {
     month: string
     year: string
     publisher: IPublisher
-    hours: number 
+    hours: number
     studies?: number
     observations?: string
 }
@@ -15,11 +15,11 @@ interface ModalRelatorioProps {
 export default function ModalRelatorio(props: ModalRelatorioProps) {
 
     return (
-        <li className="flex flex-col w-80 bg-white border border-1 border-gray-700 m-2 p-2">
+        <li className="flex flex-col min-w-[280px] bg-white border border-1 border-gray-700 m-2 p-2">
             <span className="py-1 font-semibold w-full text-center">Relatório de Serviço de campo</span>
             <div className="flex ">
                 <span className="font-semibold px-3 ">Nome:</span>
-                <FullNameShow defaultName={`${props.publisher.nickname ? `(${props.publisher.nickname})` : ""} ${reduzirNome(props.publisher.fullName)}`} fullName={props.publisher.fullName}/>
+                <FullNameShow defaultName={props.publisher.nickname ? props.publisher.nickname : `${reduzirNome(props.publisher.fullName)}`} />
             </div>
             <div className="flex ">
                 <span className="font-semibold px-3">Mês:</span>
@@ -28,7 +28,7 @@ export default function ModalRelatorio(props: ModalRelatorioProps) {
             <div className="mt-3 border border-gray-700 divide-y  divide-gray-700">
                 <div className="flex justify-between items-center pr-2">
                     <span className="pl-2 text-xs font-semibold text-gray-900">Marque se você participou em alguma modalidade do ministério durante o mês.</span>
-                    {props.hours === 0 ? <CheckSquareIcon className="w-10 h-10 text-gray-900"/> : <SquareIcon className="w-10 h-10 text-gray-900"/> }
+                    {props.hours === 0 ? <CheckSquareIcon className="w-10 h-10 text-gray-900" /> : <SquareIcon className="w-10 h-10 text-gray-900" />}
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="pl-2 text-xs font-semibold text-gray-900 w-11/12">Estudos bíblicos:</span>

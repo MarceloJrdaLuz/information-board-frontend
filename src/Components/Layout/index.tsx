@@ -1,9 +1,9 @@
-import { openSubMenuAtom, pageActiveAtom } from "@/atoms/atom"
+import { openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
 import CleanIcon from "../Icons/CleanIcon"
 import ExternalTalkIcon from "../Icons/ExternalTalkIcon"
@@ -28,16 +28,15 @@ import TerritoryIcon from "../Icons/TerritoryIcon"
 import { NavBar } from "../NavBar"
 import { ConsentCongregationWrapper } from "../wrappers/ConsentCongregationWrapper"
 import { LayoutProps } from "./types"
-import { menuOpenAtom } from "@/atoms/layoutAtoms"
 
 export default function Layout(props: LayoutProps) {
 
     const router = useRouter()
 
     const { authResolved, user, roleContains } = useAuthContext()
-    const [isMenuOpen, setIsMenuOpen] = useAtom(menuOpenAtom);
+    const [isMenuOpen, setIsMenuOpen] = useAtom(toogleMenu)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
-    const [pageActive, setPageActive] = useAtom(pageActiveAtom);
+    const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -79,7 +78,7 @@ export default function Layout(props: LayoutProps) {
                             active={pageActive === '/dashboard'}
                         />
 
-                        <>
+                        <ConsentCongregationWrapper>
                             <NavBar.Options
                                 title="Meus relatórios"
                                 onClick={() => {
@@ -150,7 +149,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
                                             }}
                                             icon={ReportIcon}
-                                            active={pageActive === `/congregacao/relatorios/${user?.congregation.id}`}
+                                            active={pageActive === `/congregacao/relatorios/[congregationId]`}
                                         />
                                     }
 
@@ -164,7 +163,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
                                             }}
                                             icon={FileTextIcon}
-                                            active={pageActive === `/congregacao/assistencia/${user?.congregation.id}`}
+                                            active={pageActive === `/congregacao/assistencia/[congregationId]`}
                                         />
                                     }
 
@@ -500,7 +499,7 @@ export default function Layout(props: LayoutProps) {
                                 </NavBar.ListOptions>
                             }
 
-                        </>
+                        </ConsentCongregationWrapper>
                     </>
                 )
                 }

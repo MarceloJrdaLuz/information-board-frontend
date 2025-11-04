@@ -36,7 +36,7 @@ export default function Assistencia() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Assistência"} />
                     <FormAssistance congregation_id={congregationId as string} />
                 </ContentDashboard>
         </ProtectedRoute>

@@ -34,7 +34,7 @@ export default function Notices() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Anúncios"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
                         <div className="w-full h-full">
                             <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Anúncios</h1>

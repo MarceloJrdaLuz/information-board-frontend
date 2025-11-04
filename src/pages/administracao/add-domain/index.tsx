@@ -17,7 +17,7 @@ export default function AddDomain() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN", "ADMIN_CONGREGATION"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar ao Domínio"} />
                 <FormAddDomain />
             </ContentDashboard>
         </ProtectedRoute>

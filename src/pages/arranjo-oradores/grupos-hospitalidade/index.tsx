@@ -66,7 +66,7 @@ export default function HospitalityGroupsPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Hospitalidade"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
                         <div className="w-full h-full">
                             <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de hospitalidade</h1>

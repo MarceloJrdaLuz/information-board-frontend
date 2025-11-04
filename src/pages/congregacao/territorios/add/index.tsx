@@ -33,7 +33,7 @@ export default function CreateTerritory() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Território"} />
                     <section className="flex justify-center">
                         <FormAddTerritory />
                     </section>

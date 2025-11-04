@@ -33,7 +33,7 @@ export default function AddTerm() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Termo"} />
                     <section className="flex justify-center">
                         <FormAddTermOfUse />
                     </section>

@@ -22,7 +22,7 @@ export default function ListarRelatorios() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Relatórios"} />
                     <ListRelatorios congregationId={congregationId as string} />
                 </ContentDashboard>
         </ProtectedRoute>
