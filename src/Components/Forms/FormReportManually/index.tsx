@@ -87,13 +87,12 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
             },
             studies: Number(studies)
         }
-        console.log(publisher, payload)
-        // toast.promise(
-        //     createReportManually(payload),
-        //     {
-        //         pending: 'Autenticando...'
-        //     }
-        // )
+        toast.promise(
+            createReportManually(payload),
+            {
+                pending: 'Autenticando...'
+            }
+        )
     }
 
     function onError(error: any) {

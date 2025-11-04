@@ -53,17 +53,11 @@ export default function PublisherListReports() {
         }
     }
 
-    const handleMonthArrowClick = () => {
-        setSelectedPublisher(null)
-        setArrowClicked(false)
-    }
-
     useEffect(() => {
         if (monthParam) {
             let splitWord = monthParam.split(" ")
             setMonthSelected(splitWord[0])
             setYearSelected(splitWord[1])
-            // setDateFormat(new Date(`${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${dividirPalavra[1]}`))
         }
     }, [monthParam, setMonthSelected])
 
