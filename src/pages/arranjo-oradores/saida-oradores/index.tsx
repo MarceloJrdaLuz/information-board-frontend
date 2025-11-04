@@ -125,7 +125,6 @@ export default function ExternalTalksPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="saida-oradores" >
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     {!data ? (
@@ -171,7 +170,6 @@ export default function ExternalTalksPage() {
 
 
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

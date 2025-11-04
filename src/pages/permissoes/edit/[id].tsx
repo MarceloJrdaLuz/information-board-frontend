@@ -37,7 +37,6 @@ export default function EditPermission() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Layout pageActive="permissoes">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <FormProvider {...methods}>
@@ -46,7 +45,6 @@ export default function EditPermission() {
                         </section>
                     </FormProvider>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

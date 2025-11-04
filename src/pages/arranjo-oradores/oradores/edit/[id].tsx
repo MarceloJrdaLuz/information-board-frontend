@@ -32,14 +32,12 @@ export default function EditPermissionPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="oradores">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex justify-center">
                         <FormEditSpeaker />
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

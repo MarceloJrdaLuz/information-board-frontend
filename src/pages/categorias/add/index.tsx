@@ -32,14 +32,12 @@ export default function AddCategoria() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Layout pageActive="categorias">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex justify-center">
                         <FormAddCategory />
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

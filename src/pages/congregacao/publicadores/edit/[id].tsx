@@ -37,7 +37,6 @@ export default function EditPublishers() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-            <Layout pageActive="publicadores">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <FormProvider {...methods}>
@@ -46,7 +45,6 @@ export default function EditPublishers() {
                         </section>
                     </FormProvider>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

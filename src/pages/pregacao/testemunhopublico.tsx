@@ -49,7 +49,6 @@ export default function TestemunhoPublico() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
-            <Layout pageActive="testemunhopublico">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5">
@@ -71,7 +70,6 @@ export default function TestemunhoPublico() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

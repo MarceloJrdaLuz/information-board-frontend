@@ -6,7 +6,7 @@ import { ICongregation, INotice } from "@/types/types"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-export default function NoticesPage() {
+function NoticesPage() {
     const router = useRouter()
     const { number } = router.query
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
@@ -47,4 +47,10 @@ export default function NoticesPage() {
         </>
     )
 }
+
+NoticesPage.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default NoticesPage
 

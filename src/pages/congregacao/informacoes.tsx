@@ -17,14 +17,12 @@ export default function InformacoesCongregacoes() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION"]}>
-            <Layout pageActive="informacoes-congregacoes">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <div className="flex justify-center items-center py-5">
                         <FormUpdateCongregation />
                     </div>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

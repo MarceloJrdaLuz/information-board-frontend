@@ -1,3 +1,4 @@
+import Layout from '@/Components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
 import { DocumentsProvider } from '@/context/DocumentsContext'
@@ -8,11 +9,25 @@ import { PublisherProvider } from '@/context/PublisherContext'
 import { SubmitFormProvider } from '@/context/SubmitFormContext'
 import { TerritoryProvider } from '@/context/TerritoryContext'
 import '@/styles/globals.css'
+import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
+import { ReactElement, ReactNode } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-export default function App({ Component, pageProps }: AppProps) {
+type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout =
+    Component.getLayout ??
+    ((page) => <Layout>{page}</Layout>)
+
   return (
     <SubmitFormProvider>
       <AuthProvider>
@@ -24,7 +39,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   <NoticesProvider>
                     <ToastContainer />
                     <PublicDocumentsProvider>
-                      <Component {...pageProps} />
+                      {getLayout(<Component {...pageProps} />)}
                     </PublicDocumentsProvider>
                   </NoticesProvider>
                 </PermissionAndRolesProvider>

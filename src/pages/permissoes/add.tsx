@@ -32,14 +32,12 @@ export default function AddPermissoes() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Layout pageActive="permissoes">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex justify-center">
                         <FormAddPermission />
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
 
     )

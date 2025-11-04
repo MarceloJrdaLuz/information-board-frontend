@@ -1,7 +1,7 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditNotice from "@/Components/Forms/FormEditNotice"
-import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
@@ -41,46 +41,15 @@ export default function EditPublishers() {
     }, [setPageActive])
 
     return (
-        <Layout pageActive="anuncios">
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <FormProvider {...methods}>
                     <section className="flex justify-center">
-                        <FormEditNotice notice_id={id as string}/> 
+                        <FormEditNotice notice_id={id as string} />
                     </section>
                 </FormProvider>
             </ContentDashboard>
-        </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('NOTICES_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

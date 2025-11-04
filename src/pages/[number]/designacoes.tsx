@@ -23,7 +23,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import iconDesignacoes from '../../../public/images/designacoes-gray.png'
 
-export default function Designacoes() {
+function Designacoes() {
   const router = useRouter()
   const { number } = router.query
   const domain = useAtomValue(domainUrl)
@@ -233,3 +233,10 @@ export default function Designacoes() {
     </>
   )
 }
+
+Designacoes.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Designacoes
+

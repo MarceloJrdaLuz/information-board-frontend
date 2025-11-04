@@ -32,14 +32,12 @@ export default function AddPublicadores() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-            <Layout pageActive="publicadores">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex justify-center">
                         <FormAddPublisher />
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

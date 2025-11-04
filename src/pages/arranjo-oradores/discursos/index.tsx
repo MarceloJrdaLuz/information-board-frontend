@@ -51,7 +51,6 @@ export default function TalksPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN", "ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="discursos">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -100,7 +99,6 @@ export default function TalksPage() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

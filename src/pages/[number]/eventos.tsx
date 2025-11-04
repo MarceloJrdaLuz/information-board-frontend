@@ -16,7 +16,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconEvents from '../../../public/images/eventos-gray.png'
 
-export default function Eventos() {
+function Eventos() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -90,3 +90,9 @@ export default function Eventos() {
         </>
     )
 }
+
+Eventos.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Eventos

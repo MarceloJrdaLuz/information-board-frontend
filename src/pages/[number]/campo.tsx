@@ -18,7 +18,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
 
-export default function Campo() {
+function Campo() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -135,3 +135,9 @@ export default function Campo() {
         </>
     )
 }
+
+Campo.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Campo

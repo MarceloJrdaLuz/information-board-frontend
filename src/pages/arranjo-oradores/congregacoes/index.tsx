@@ -3,19 +3,16 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
 import SalonIcon from "@/Components/Icons/SalonIcon"
-import Layout from "@/Components/Layout"
 import { ListGeneric } from "@/Components/ListGeneric"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteAuxiliaryCongregationAtom, selectedAuxiliaryCongregationAtom } from "@/atoms/auxiliaryCongregationAtoms"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { ICongregation } from "@/types/types"
 import { useAtom, useSetAtom } from "jotai"
-import { GetServerSideProps } from "next"
 import Router from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -26,7 +23,9 @@ export default function AuxiliaryCongregationsPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [congregations, setCongregations] = useState<ICongregation[]>()
 
-    const { data: getAuxiliaryCongregations, mutate } = useFetch<ICongregation[]>("/auxiliaryCongregations")
+    const { data: getAuxiliaryCongregations, mutate } = useAuthorizedFetch<ICongregation[]>("/auxiliaryCongregations", {
+        allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+    })
 
     useEffect(() => {
         if (getAuxiliaryCongregations) {
@@ -56,7 +55,7 @@ export default function AuxiliaryCongregationsPage() {
     }
 
     return (
-        <Layout pageActive="congregacoes">
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex flex-wrap w-full  p-5 ">
@@ -115,37 +114,6 @@ export default function AuxiliaryCongregationsPage() {
                     </div>
                 </section>
             </ContentDashboard>
-        </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

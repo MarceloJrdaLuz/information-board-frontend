@@ -32,7 +32,6 @@ export default function Categorias() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Layout pageActive="categorias">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -52,7 +51,6 @@ export default function Categorias() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

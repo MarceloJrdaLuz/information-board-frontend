@@ -6,7 +6,7 @@ import { useAtomValue } from "jotai"
 import { GetServerSideProps } from "next"
 import { parseCookies } from "nookies"
 
-export default function Login() {
+function Login() {
     const domain = useAtomValue(domainUrl)
 
     return (
@@ -23,6 +23,13 @@ export default function Login() {
         </main>
     )
 }
+
+Login.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Login
+
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ["quadro-token"]: token } = parseCookies(ctx)
 

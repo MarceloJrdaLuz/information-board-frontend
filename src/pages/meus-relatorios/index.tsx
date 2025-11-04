@@ -40,7 +40,6 @@ export default function MyReports() {
         .filter((r): r is IReports => r !== undefined)
     return (
         <ProtectedRoute>
-            <Layout pageActive="meus-relatorios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -51,7 +50,6 @@ export default function MyReports() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
 
     )

@@ -65,7 +65,6 @@ export default function HospitalityGroupsPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="grupos-hospitalidade">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -122,7 +121,6 @@ export default function HospitalityGroupsPage() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

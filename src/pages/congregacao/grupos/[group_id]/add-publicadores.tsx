@@ -129,7 +129,6 @@ export default function AddPublicadoresGrupo() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
-            <Layout pageActive="grupos">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <div className="flex justify-between w-full">
@@ -241,7 +240,6 @@ export default function AddPublicadoresGrupo() {
 
                     </div>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

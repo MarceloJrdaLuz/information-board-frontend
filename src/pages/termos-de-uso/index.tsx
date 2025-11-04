@@ -31,7 +31,6 @@ export default function TermsOfUSe() {
 
   return (
     <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION"]}>
-      <Layout pageActive="termos-de-uso">
         <ContentDashboard>
           <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
           <section className="flex w-full h-full justify-center items-center">
@@ -51,7 +50,6 @@ export default function TermsOfUSe() {
             </div>
           </section>
         </ContentDashboard>
-      </Layout>
     </ProtectedRoute>
   )
 }

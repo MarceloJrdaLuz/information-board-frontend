@@ -19,7 +19,6 @@ export default function Publicadores() {
     }, [setPageActive])
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER", "PUBLISHERS_VIEWER"]}>
-            <Layout pageActive="publicadores">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -39,7 +38,6 @@ export default function Publicadores() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

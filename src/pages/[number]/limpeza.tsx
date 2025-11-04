@@ -16,7 +16,7 @@ import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconClean from '../../../public/images/limpeza-gray.png'
 
-export default function Limpeza() {
+function Limpeza() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -92,4 +92,10 @@ export default function Limpeza() {
         </>
     )
 }
+
+Limpeza.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Limpeza
 

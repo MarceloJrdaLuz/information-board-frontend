@@ -32,14 +32,12 @@ export default function AddTalkPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>]
-            <Layout pageActive="discursos">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex m-10 justify-center items-center">
                         <FormAddTalk />
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

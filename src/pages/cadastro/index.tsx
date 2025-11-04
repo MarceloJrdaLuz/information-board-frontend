@@ -1,7 +1,7 @@
 import FormRegister from "@/Components/Forms/FormRegister"
 import InformationBoardImage from "@/Components/InformationBoardImage"
 
-export default function Cadastro() {
+function Cadastro() {
     return (
         <main className={`md:flex md:h-screen`}>
             <section className={`flex justify-center  items-center w-screen h-screen lg:w-7/12 md:w-7/12 md:h-full relative md:static bg-primary-100`}>
@@ -15,3 +15,9 @@ export default function Cadastro() {
         </main>
     )
 }
+
+Cadastro.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Cadastro
