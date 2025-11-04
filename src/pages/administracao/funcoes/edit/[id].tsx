@@ -38,7 +38,7 @@ export default function EditRoles() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Função"} />
                 <FormProvider {...methods}>
                     <section className="flex justify-center">
                         <FormEditRole role_id={`${id}`} />

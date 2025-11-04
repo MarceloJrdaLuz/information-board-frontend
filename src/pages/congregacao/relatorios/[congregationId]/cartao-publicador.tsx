@@ -255,7 +255,7 @@ export default function PublisherCard() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Cartão de Publicador"} />
                     <section className="flex flex-col justify-center items-center p-5">
                         <div className="flex justify-between w-full mt-5 ">
                             <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>

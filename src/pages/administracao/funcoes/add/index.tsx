@@ -32,7 +32,7 @@ export default function AddFuncao() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Criar Funções"} />
                 <section className="flex m-10 justify-center items-center">
                     <FormAddRole />
                 </section>

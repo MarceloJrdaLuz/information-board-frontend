@@ -33,7 +33,7 @@ export default function AddGrupo() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Grupo"} />
                     <section className="flex m-10 justify-center items-center">
                         <FormAddGroup />
                     </section>

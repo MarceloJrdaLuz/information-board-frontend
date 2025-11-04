@@ -33,7 +33,7 @@ export default function EditTalkPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Discurso"} />
                     <section className="flex justify-center">
                         <FormEditTalk />
                     </section>

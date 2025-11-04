@@ -17,7 +17,7 @@ export default function AtribuirFuncoes() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN", "ADMIN_CONGREGATION"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Atribuir Funções"} />
                 <section className="flex m-10 justify-center items-center">
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Atribuir Funções</h1>

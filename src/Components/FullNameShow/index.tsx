@@ -7,10 +7,9 @@ import {
 
 interface FullNameShowProps {
   defaultName: string
-  fullName: string
 }
 
-export function FullNameShow({defaultName, fullName}: FullNameShowProps) {
+export function FullNameShow({defaultName}: FullNameShowProps) {
   return (
     <Popover>
       <PopoverHandler>
@@ -18,9 +17,6 @@ export function FullNameShow({defaultName, fullName}: FullNameShowProps) {
          {defaultName}
         </Button>
       </PopoverHandler>
-      <PopoverContent>
-       {fullName}
-      </PopoverContent>
     </Popover>
   )
 }

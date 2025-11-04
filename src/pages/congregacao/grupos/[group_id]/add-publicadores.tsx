@@ -130,7 +130,7 @@ export default function AddPublicadoresGrupo() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicadores"} />
                     <div className="flex justify-between w-full">
                         {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 

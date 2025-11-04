@@ -38,7 +38,7 @@ export default function EditCategory() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Categoria"} />
                     <FormProvider {...methods}>
                         <section className="flex justify-center">
                             <FormEditCategory category_id={`${id}`} />

@@ -36,7 +36,7 @@ export default function AddPublicadores() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Criar Anúncio"} />
                 <section className="flex justify-center">
                     <FormAddNotice congregationNumber={congregationNumber} />
                 </section>

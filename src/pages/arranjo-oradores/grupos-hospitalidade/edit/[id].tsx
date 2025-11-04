@@ -32,7 +32,7 @@ export default function EditHospitalityGroupPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Grupo"} />
                 <section className="flex justify-center">
                     <FormEditHospitalityGroup />
                 </section>

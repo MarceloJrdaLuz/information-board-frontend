@@ -34,7 +34,7 @@ export default function CreateNewCongregationAuxiliary() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Congregação"} />
                 <section className="flex m-10 justify-center items-center">
                     <FormAddCongregationAuxiliary />
                 </section>

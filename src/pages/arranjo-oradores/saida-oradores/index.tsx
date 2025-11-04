@@ -126,7 +126,7 @@ export default function ExternalTalksPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Saída de oradores"} />
                     {!data ? (
                         <ExternalTalksSkeleton />
                     ) : (

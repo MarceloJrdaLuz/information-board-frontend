@@ -32,7 +32,7 @@ export default function EditCongregationPage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Congregação"} />
                 <section className="flex justify-center">
                     <FormEditCongregationAuxiliary />
                 </section>

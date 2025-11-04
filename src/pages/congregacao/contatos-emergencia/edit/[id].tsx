@@ -38,7 +38,7 @@ export default function EditEmergencyContact() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Contato"} />
                     <FormProvider {...methods}>
                         <section className="flex justify-center">
                             <FormEditEmergencyContact emergencyContact={`${id}`} />

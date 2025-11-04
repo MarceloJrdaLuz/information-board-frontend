@@ -252,7 +252,7 @@ export default function WeekendSchedulePage() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
+                    <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
                     <section className="flex flex-wrap w-full h-full p-4 relative">
                         {!data ? (
                             <WeekendScheduleSkeleton />

@@ -38,7 +38,7 @@ export default function EditPublishers() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Publicador"} />
                     <FormProvider {...methods}>
                         <section className="flex justify-center">
                             <FormEditPublisher id={`${id}`} />

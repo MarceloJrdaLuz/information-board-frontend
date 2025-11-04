@@ -60,10 +60,6 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
         }
     }, [data, setAlreadyExists, monthSelected, yearSelected])
 
-    useEffect(() => {
-        console.log(alreadyExists)
-    }, [alreadyExists])
-
     const esquemaValidacao = yup.object({
         midWeek1: yup.number().transform((originalValue) => {
             return isNaN(originalValue) ? 0 : originalValue

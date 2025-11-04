@@ -4,7 +4,7 @@ import { IBreadCrumbsProps } from "./types"
 export default function BreadCrumbs({ crumbs, pageActive }: IBreadCrumbsProps) {
     return (
 
-        <nav className="flex py-2 bg-gray-200" aria-label="Breadcrumb">
+        <nav className="flex py-2 bg-gray-200 overflow-x-auto hide-scrollbar whitespace-nowrap" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 {crumbs.map((crumb, index) => (
                     <li key={index}>

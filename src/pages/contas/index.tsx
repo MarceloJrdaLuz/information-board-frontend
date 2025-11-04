@@ -50,7 +50,7 @@ export default function Contas() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Contas"} />
                     <section className="flex flex-wrap w-full h-full p-5">
                         <div className="w-full h-full">
                             <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">

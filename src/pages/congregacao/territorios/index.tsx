@@ -98,7 +98,7 @@ export default function Territory() {
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"]}>
                 <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                    <BreadCrumbs crumbs={crumbs} pageActive={"Territórios"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de territórios</h1>
                         <Button
