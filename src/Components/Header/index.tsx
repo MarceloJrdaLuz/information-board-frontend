@@ -21,7 +21,9 @@ export default function Header(props: HeaderProps) {
             `}>
                 {props.children}
             </header>
-            <span className={`absolute text-3xl titulo text-white`}>{props.texto}</span>
+            <div className="flex w-screen justify-center items-center absolute">
+                <span className={`absolute text-3xl titulo text-white text-center`}>{props.texto}</span>
+            </div>
         </div>
     )
 }
