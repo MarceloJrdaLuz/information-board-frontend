@@ -97,7 +97,6 @@ export default function Territory() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"]}>
-            <Layout pageActive="territorios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -125,7 +124,6 @@ export default function Territory() {
                     </div> */}
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

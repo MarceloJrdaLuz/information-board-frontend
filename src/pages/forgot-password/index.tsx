@@ -1,8 +1,7 @@
 import FormForgotPassword from "@/Components/Forms/FormForgotPassword"
 import InformationBoardImage from "@/Components/InformationBoardImage"
-import Image from "next/image"
 
-export default function ForgotPassword() {
+function ForgotPassword() {
     return (
         <main className={`md:flex md:h-screen`}>
             <section className={`flex justify-center  items-center w-screen h-screen lg:w-7/12 md:w-7/12 md:h-full relative md:static bg-primary-100`}>
@@ -16,3 +15,9 @@ export default function ForgotPassword() {
         </main>
     )
 }
+
+ForgotPassword.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default ForgotPassword

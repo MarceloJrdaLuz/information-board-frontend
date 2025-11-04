@@ -84,7 +84,6 @@ export default function MudarDirigente() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
-            <Layout pageActive="grupos">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -122,7 +121,6 @@ export default function MudarDirigente() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout >
         </ProtectedRoute>
     )
 }

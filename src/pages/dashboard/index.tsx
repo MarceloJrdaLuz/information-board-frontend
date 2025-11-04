@@ -17,13 +17,11 @@ export default function Dashboard() {
 
     return (
         <ProtectedRoute>
-            <Layout pageActive="dashboard">
                 <ContentDashboard>
                     <section className="flex w-full h-full justify-center items-center">
                         {user && <ProfileCard user={user} fullName={user.fullName} email={user.email} avatar_url={user.profile?.avatar_url} />}
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

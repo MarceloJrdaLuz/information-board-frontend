@@ -4,7 +4,7 @@ import InformationBoardImage from "@/Components/InformationBoardImage"
 import { domainUrl } from "@/atoms/atom"
 import { useAtomValue } from "jotai"
 
-export default function ResetPassword() {
+function ResetPassword() {
     const domain = useAtomValue(domainUrl)
 
     return (
@@ -21,3 +21,9 @@ export default function ResetPassword() {
         </main>
     )
 }
+
+ResetPassword.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default ResetPassword

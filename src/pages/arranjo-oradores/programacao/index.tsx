@@ -251,7 +251,6 @@ export default function WeekendSchedulePage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="programacao">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive="Programação" />
                     <section className="flex flex-wrap w-full h-full p-4 relative">
@@ -368,7 +367,6 @@ export default function WeekendSchedulePage() {
 
                     </section >
                 </ContentDashboard >
-            </Layout >
         </ProtectedRoute>
     )
 }

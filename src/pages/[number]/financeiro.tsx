@@ -16,7 +16,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconeFinanceiro from '../../../public/images/financeiro-gray.png'
 
-export default function Financeiro() {
+function Financeiro() {
 
     const router = useRouter()
     const { number } = router.query
@@ -91,3 +91,10 @@ export default function Financeiro() {
         </>
     )
 }
+
+Financeiro.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Financeiro
+

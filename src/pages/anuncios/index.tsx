@@ -33,7 +33,6 @@ export default function Notices() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
-            <Layout pageActive="anuncios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -56,7 +55,6 @@ export default function Notices() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

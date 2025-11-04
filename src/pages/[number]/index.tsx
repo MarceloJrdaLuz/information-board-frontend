@@ -1,3 +1,4 @@
+'use-client'
 import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import CleanIcon from "@/Components/Icons/CleanIcon"
@@ -17,7 +18,7 @@ import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
 
-export default function Home() {
+function Home() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -91,3 +92,10 @@ export default function Home() {
         </div>
     )
 }
+
+Home.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Home
+

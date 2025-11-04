@@ -392,7 +392,6 @@ export default function RelatorioMes() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
-            <Layout pageActive="relatorios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <>
@@ -487,7 +486,6 @@ export default function RelatorioMes() {
                         </section>
                     </>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

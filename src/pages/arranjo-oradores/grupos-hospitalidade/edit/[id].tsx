@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditHospitalityGroup from "@/Components/Forms/FormEditHospitalityGroup"
-import Layout from "@/Components/Layout"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useAtom } from "jotai"
@@ -32,14 +31,12 @@ export default function EditHospitalityGroupPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="grupos-hospitalidade">
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
-                    <section className="flex justify-center">
-                        <FormEditHospitalityGroup />
-                    </section>
-                </ContentDashboard>
-            </Layout>
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
+                <section className="flex justify-center">
+                    <FormEditHospitalityGroup />
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

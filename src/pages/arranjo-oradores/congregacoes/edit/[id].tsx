@@ -1,12 +1,9 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditCongregationAuxiliary from "@/Components/Forms/FormEditCongregationAuxiliary"
-import Layout from "@/Components/Layout"
+import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { getAPIClient } from "@/services/axios"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
-import { parseCookies } from "nookies"
 import { useEffect } from "react"
 
 export default function EditCongregationPage() {
@@ -33,44 +30,13 @@ export default function EditCongregationPage() {
     }, [setPageActive])
 
     return (
-        <Layout pageActive="congregacoes">
+        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                 <section className="flex justify-center">
                     <FormEditCongregationAuxiliary />
                 </section>
             </ContentDashboard>
-        </Layout>
+        </ProtectedRoute>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-    const apiClient = getAPIClient(ctx)
-    const { ['quadro-token']: token } = parseCookies(ctx)
-
-    if (!token) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    const { ['user-roles']: userRoles } = parseCookies(ctx)
-    const userRolesParse: string[] = JSON.parse(userRoles)
-
-    if (!userRolesParse.includes('ADMIN_CONGREGATION') && !userRolesParse.includes('TALK_MANAGER')) {
-        return {
-            redirect: {
-                destination: '/dashboard',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {}
-    }
 }

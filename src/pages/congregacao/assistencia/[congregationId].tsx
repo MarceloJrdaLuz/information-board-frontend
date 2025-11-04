@@ -80,7 +80,6 @@ export default function ListarRelatorios() {
     )
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER", "ASSISTANCE_VIEWER"]}>
-            <Layout pageActive="assistencia">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -105,7 +104,6 @@ export default function ListarRelatorios() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

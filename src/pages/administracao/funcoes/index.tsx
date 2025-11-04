@@ -1,20 +1,16 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
-import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useAuthorizedFetch, useFetch } from "@/hooks/useFetch"
-import { getAPIClient } from "@/services/axios"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IRole } from "@/types/types"
 import { useAtom } from "jotai"
 import { FunctionSquareIcon } from "lucide-react"
-import { GetServerSideProps } from "next"
 import Router from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -48,7 +44,6 @@ export default function Funcoes() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <Layout pageActive="funcoes">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -68,7 +63,6 @@ export default function Funcoes() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

@@ -99,7 +99,6 @@ export default function HospitalityWeekendPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <Layout pageActive="programacao-hospitalidade">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
                     <section className="flex flex-wrap w-full h-full p-4 relative">
@@ -145,7 +144,6 @@ export default function HospitalityWeekendPage() {
                         )}
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

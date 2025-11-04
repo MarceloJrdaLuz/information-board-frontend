@@ -47,7 +47,6 @@ export default function MeioDeSemana() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
-            <Layout pageActive="meiodesemana">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-wrap w-full h-full p-5">
@@ -69,7 +68,6 @@ export default function MeioDeSemana() {
                         </div>
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

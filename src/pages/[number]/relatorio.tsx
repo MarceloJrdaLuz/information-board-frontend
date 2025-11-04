@@ -8,7 +8,7 @@ import { useAtomValue } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-export default function Relatorio() {
+function Relatorio() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -33,3 +33,9 @@ export default function Relatorio() {
         </>
     )
 } 
+
+Relatorio.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default Relatorio

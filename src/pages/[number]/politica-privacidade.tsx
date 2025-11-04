@@ -12,7 +12,7 @@ import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
 
 
-export default function PoliticaPrivacidade() {
+function PoliticaPrivacidade() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
@@ -48,4 +48,11 @@ export default function PoliticaPrivacidade() {
         </div>
     )
 }
+
+PoliticaPrivacidade.getLayout = function getLayout(page: React.ReactElement) {
+    return page // sem layout nenhum
+}
+
+export default PoliticaPrivacidade
+
 

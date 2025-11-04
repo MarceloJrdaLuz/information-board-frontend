@@ -37,7 +37,6 @@ export default function EditTerritory() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
-            <Layout pageActive="territorios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <FormProvider {...methods}>
@@ -46,7 +45,6 @@ export default function EditTerritory() {
                         </section>
                     </FormProvider>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

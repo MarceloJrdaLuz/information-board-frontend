@@ -254,7 +254,6 @@ export default function PublisherCard() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER"]}>
-            <Layout pageActive="relatorios">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <section className="flex flex-col justify-center items-center p-5">
@@ -351,7 +350,6 @@ export default function PublisherCard() {
                         )}
                     </section>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }

@@ -37,7 +37,6 @@ export default function EditEmergencyContact() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-            <Layout pageActive="contatos-emergencia">
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={pageActive} />
                     <FormProvider {...methods}>
@@ -46,7 +45,6 @@ export default function EditEmergencyContact() {
                         </section>
                     </FormProvider>
                 </ContentDashboard>
-            </Layout>
         </ProtectedRoute>
     )
 }
