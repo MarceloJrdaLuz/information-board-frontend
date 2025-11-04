@@ -27,6 +27,7 @@ function Campo() {
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
+
     useEffect(() => {
         if (congregation) {
             setCongregationData(congregation)
@@ -68,7 +69,13 @@ function Campo() {
                 image={
                     <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
                 }
-                congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-campo bg-center bg-cover lg:bg-right" textoHeader="Designações de Campo" >
+                congregationName={congregationData?.name ?? ""}
+                circuit={congregationData?.circuit ?? ""}
+                heightConteudo={'1/2'}
+                header
+                className="bg-designacoes bg-center bg-cover"
+                textoHeader="Designações de Campo"
+            >
                 <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                     <div>

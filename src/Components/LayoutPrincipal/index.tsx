@@ -1,7 +1,10 @@
-import { ReactNode } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import Conteudo from "../Conteudo"
 import Footer from "../Footer"
 import Header from "../Header"
+import { HeaderPublicSkeleton } from "../Header/skeleton"
+import { ContentPublicSkeleton } from "../Conteudo/skeleton"
+import { FooterPublicSkeleton } from "../Footer/skeleton"
 
 interface LayoutPrincipalProps {
     children?: ReactNode
@@ -14,11 +17,24 @@ interface LayoutPrincipalProps {
     congregationName: string
     circuit: string
     imageUrl?: string
-    justifyContent?: string, 
-    nCong?: string
+    justifyContent?: string,
+    nCong?: string,
+    loading?: boolean
 }
 
 export default function LayoutPrincipal(props: LayoutPrincipalProps) {
+
+    if (props.loading) {
+        return (
+            <div className="layout relative shadow shadow-gray-600 bg-gray-200 h-auto w-full flex flex-col">
+                {props.header &&
+                    <HeaderPublicSkeleton />
+                }
+                <ContentPublicSkeleton />
+                <FooterPublicSkeleton />
+            </div>
+        )
+    }
 
     return (
         <div className={`layout relative shadow shadow-gray-600 bg-gray-200 h-auto w-full flex flex-col md:m-auto lg:shadow-none`}>

@@ -29,7 +29,7 @@ function Home() {
     const [congregationData, setCongregationData] = useState<ICongregation>()
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: congregation, isLoading } = useFetch<ICongregation>(fetchConfigCongregationData)
 
     useEffect(() => {
         if (congregation) {
@@ -58,12 +58,13 @@ function Home() {
         }
     }, [data, number, setCongregationNumber])
 
+    const isFetching = isLoading || !number || !congregationData
 
     return (
         <div className=" flex flex-col h-screen w-screen bg-gray-200 overflow-auto">
             {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={number as string} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
-            <LayoutPrincipal nCong={congregationData?.number} image={(
+            <LayoutPrincipal loading={isFetching} nCong={congregationData?.number} image={(
                 congregationData?.image_url ? (
                     <Image src={congregationData?.image_url} alt="Foto do Salão do Reino" fill />
                 ) : (

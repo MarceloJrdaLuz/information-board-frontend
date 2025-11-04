@@ -10,7 +10,7 @@ function NoticesPage() {
     const router = useRouter()
     const { number } = router.query
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: congregation} = useFetch<ICongregation>(fetchConfigCongregationData)
 
     const [congregationData, setCongregationData] = useState<ICongregation>()
     const [notices, setNotices] = useState<INotice[]>()
