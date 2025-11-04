@@ -98,12 +98,8 @@ function AuthProvider(props: AuthContextProviderProps) {
 
             const token = res.data.token
 
-            const userRoles = res.data.user.roles.map(role => (
-                role.name
-            ))
-
             setCookie('quadro-token', token, {
-                maxAge: 60 * 60 * 8,
+                maxAge: 60 * 60 * 24 * 30,
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
@@ -148,7 +144,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 const token = res.data.token
 
                 setCookie('quadro-token', token, {
-                    maxAge: 60 * 60 * 8,
+                    maxAge: 60 * 60 * 24 * 30,
                 })
 
                 api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
@@ -214,7 +210,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, /*admin: !!admin,*/ user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading, authResolved
+            authenticated: !!user, user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading, authResolved
         }}>
             {props.children}
         </AuthContext.Provider>
