@@ -15,7 +15,7 @@ interface ModalRelatorioProps {
 export default function ModalRelatorio(props: ModalRelatorioProps) {
 
     return (
-        <li className="flex flex-col min-w-[280px] bg-white border border-1 border-gray-700 m-2 p-2">
+        <li className="flex flex-col min-w-[280px] max-w-[340px] bg-white border border-1 border-gray-700 m-2 p-2">
             <span className="py-1 font-semibold w-full text-center">Relatório de Serviço de campo</span>
             <div className="flex ">
                 <span className="font-semibold px-3 ">Nome:</span>
