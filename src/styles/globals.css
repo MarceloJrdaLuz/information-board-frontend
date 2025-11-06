@@ -127,34 +127,59 @@ input[type=number] {
 }
 
 .theme-dark {
-  --color-primary-50: 15 27 27;
-  /* tom mais escuro, base */
- --color-primary-100: 34 90 89;   /* #225A59 — base principal escura */
---color-primary-200: 61 181 173; /* #3DB5AD — destaque agradável */
+  /* === Primárias (roxos) === */
+  --color-primary-50: 25 5 45;      /* #19052D — roxo quase preto */
+  --color-primary-200: 173 39 255;   /* #3C1464 — base principal escura */
+  --color-primary-100: 38 9 56;  /* #8250C8 — destaque moderno */
 
+  /* === Secundárias (fundos neutros escuros) === */
+  --color-secondary-100: 22 20 25;  /* #161419 — fundo geral */
+  --color-secondary-200: 35 30 40;  /* #231E28 — contraste leve */
+
+  /* === Texto (branco com gradações suaves) === */
+  --color-typography-100: 255 255 255; /* branco puro - títulos */
+  --color-typography-200: 235 235 240;
+  --color-typography-300: 215 215 225;
+  --color-typography-400: 190 190 200;
+  --color-typography-500: 160 160 170;
+  --color-typography-600: 130 130 140;
+  --color-typography-700: 210 210 220; /* texto sobre fundo roxo */
+  --color-typography-800: 235 235 240;
+  --color-typography-900: 255 255 255;
+
+  /* === Fundos / Superfícies === */
+  --color-surface-100: 15 10 20;    /* #0F0A14 — fundo principal */
+  --color-surface-200: 25 18 35;    /* #191223 — cards / containers */
+}
+
+
+.blue {
+  /* tom mais escuro, base */
+ --color-primary-100:  159 185 227;   /* #225A59 — base principal escura */
+--color-primary-200:  10 34 75; /* #3DB5AD — destaque agradável */
 
   /* Secundárias */
-  --color-secondary-100: 28 30 31;
-  /* fundo escuro */
-  --color-secondary-200: 40 42 44;
-  /* contraste leve */
+  --color-secondary-100: 237 246 249;
+  /* #edf6f9 */
+  --color-secondary-200: 233 233 233;
+  /* #e9e9e9 */
 
-  /* Texto (invertido e ajustado p/ contraste) */
-  --color-typography-100: 255 255 255;
-  /* mais claro */
-  --color-typography-200: 235 235 235;
-  --color-typography-300: 215 215 215;
-  --color-typography-400: 190 190 190;
-  --color-typography-500: 160 160 160;
-  --color-typography-600: 130 130 130;
-  --color-typography-700: 210 210 210;
-  /* 💡 era escuro, agora claro — ideal p/ cards */
-  --color-typography-800: 235 235 235;
-  /* mais contraste */
-  --color-typography-900: 255 255 255;
-  /* branco puro, p/ títulos fortes */
+    /* Texto */
+  --color-typography-100: 245 245 245;
+  /* Preto suave */
+  --color-typography-200: 238 238 238;
+  --color-typography-300: 224 224 224;
+  --color-typography-400: 189 189 189;
+  --color-typography-500: 158 158 158;
+  --color-typography-600: 117 117 117;
+  --color-typography-700: 97 97 97;
+  --color-typography-800: 66 66 66;
+  --color-typography-900: 33 33 33;
+
 
   /* Fundos */
- --color-surface-100: 17 18 19;   /* #111213 — fundo principal */
---color-surface-200: 26 28 29;   /* #1A1C1D — cards / containers */
+  --color-surface-100: 255 255 255;
+  /* Branco */
+  --color-surface-200: 245 245 245;
+  /* Cinza claro */
 }

@@ -7,6 +7,7 @@ import { Palette } from 'lucide-react'
 const themes = [
   { name: 'Padrão', class: '', color: '#178582' },
   { name: 'Escuro', class: 'theme-dark', color: '#222' },
+  { name: 'Azul', class: 'blue', color: '#2878bb' },
 ]
 
 export default function ThemeSwitcher() {

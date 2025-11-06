@@ -39,9 +39,12 @@ export default function LayoutPrincipal(props: LayoutPrincipalProps) {
     return (
         <div className={`layout relative shadow shadow-typography-600 bg-typography-200 h-auto w-full flex flex-col md:m-auto lg:shadow-none`}>
             {!props.header ? null :
-                <Header className={props.className} texto={props.textoHeader}>
-                    {props.image}
-                </Header>}
+                <>
+                    <Header className={props.className} texto={props.textoHeader}>
+                        {props.image}
+                    </Header>
+                </>
+            }
             <Conteudo justifyContent={props.justifyContent} bgFundo={props.bgFundo} hConteudo={props.heightConteudo}>
                 {props.children}
             </Conteudo>
