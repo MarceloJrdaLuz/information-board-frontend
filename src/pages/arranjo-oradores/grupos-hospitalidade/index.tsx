@@ -75,11 +75,11 @@ export default function HospitalityGroupsPage() {
                                     onClick={() => {
                                         Router.push('/arranjo-oradores/grupos-hospitalidade/add')
                                     }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                     <GroupIcon />
                                     <span className="text-primary-200 font-semibold">Criar grupo</span>
                                 </Button>
-                                {hospitalityGroups && <span className="text-sm text-gray-600">Total: {hospitalityGroups.length}</span>}
+                                {hospitalityGroups && <span className="text-sm text-typography-600">Total: {hospitalityGroups.length}</span>}
                             </div>
 
                             {hospitalityGroups && hospitalityGroups.length > 0 ? (
@@ -91,9 +91,9 @@ export default function HospitalityGroupsPage() {
                                     label="do grupo"
                                     renderItem={(group) => (
                                         <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-gray-800">{group.name}</h3>
+                                            <h3 className="text-lg font-semibold text-typography-800">{group.name}</h3>
 
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
                                                 <div className="flex items-center gap-2">
                                                     🏠 <span>{group.host?.fullName || "Nenhum anfitrião"}</span>
                                                 </div>
@@ -101,9 +101,9 @@ export default function HospitalityGroupsPage() {
                                                     👥 <span>Membros:</span>
                                                     {group.members && group.members.length > 0
                                                         ? group.members.map((m) => (
-                                                            <span key={m.id} className="ml-4 text-gray-700">{m.fullName}</span>
+                                                            <span key={m.id} className="ml-4 text-typography-700">{m.fullName}</span>
                                                         ))
-                                                        : <span className="ml-4 text-gray-700">Nenhum membro adicionado</span>
+                                                        : <span className="ml-4 text-typography-700">Nenhum membro adicionado</span>
                                                     }
                                                 </div>
                                             </div>

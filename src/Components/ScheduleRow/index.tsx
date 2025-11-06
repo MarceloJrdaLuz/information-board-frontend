@@ -208,9 +208,9 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
 
-  let borderColorChairman = "border-gray-300"
-  let borderSpeakerColor = "border-gray-300"
-  let borderWhatchtowerColor = "border-gray-300"
+  let borderColorChairman = "border-typography-300"
+  let borderSpeakerColor = "border-typography-300"
+  let borderWhatchtowerColor = "border-typography-300"
 
   if (!current.isSpecial) {
     const filledFieldsCount = [
@@ -257,7 +257,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const talkOptions = buildTalkOptions(filteredTalks, schedules)
 
   return (
-    <div className={`border-2  rounded-xl p-3 flex flex-col gap-2 bg-white transition-colors duration-300`}>
+    <div className={`border-2  rounded-xl p-3 flex flex-col gap-2 bg-surface-100 transition-colors duration-300`}>
       <h2 className="font-semibold">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
@@ -290,9 +290,9 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
       {/* Dropdowns */}
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Presidente"))) &&
-        <div className={`border ${borderColorChairman ?? "border-gray-300"} p-4`}>
+        <div className={`border ${borderColorChairman ?? "border-typography-300"} p-4`}>
           <div className='flex justify-between items-center flex-wrap gap-4'>
-            <span className='my-2 font-semibold text-gray-900'>Presidente</span>
+            <span className='my-2 font-semibold text-typography-900'>Presidente</span>
             <DropdownObject
               textVisible
               title="Presidente"
@@ -313,7 +313,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador") || checkedOptions.includes("Tema") || checkedOptions.includes("Tema manual") || checkedOptions.includes("Orador manual"))) &&
         <div className={`border ${borderSpeakerColor} my-4 p-4`}>
           <div className='flex justify-between items-center flex-wrap gap-4'>
-            <span className='my-2 font-semibold text-gray-900'>Orador</span>
+            <span className='my-2 font-semibold text-typography-900'>Orador</span>
 
             {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Orador"))) && (
               <DropdownObject
@@ -391,7 +391,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
       <div className={`border ${borderWhatchtowerColor} my-4 p-4`}>
         <div className='flex justify-between items-center flex-wrap gap-4'>
-          <span className='my-2 font-semibold text-gray-900 '>Sentinela</span>
+          <span className='my-2 font-semibold text-typography-900 '>Sentinela</span>
 
           {(!current.isSpecial || (current.isSpecial && checkedOptions.includes("Leitor"))) &&
             <DropdownObject
@@ -421,12 +421,12 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
       {externalTalks.length > 0 && (
         <div className="mt-6 space-y-3">
-          <h3 className="font-semibold text-gray-800">Oradores que saem</h3>
+          <h3 className="font-semibold text-typography-800">Oradores que saem</h3>
           {externalTalks.map((et) => (
             <div
               key={et.id}
               className={`
-          flex items-center justify-between p-3 rounded-lg border shadow-sm bg-white
+          flex items-center justify-between p-3 rounded-lg border shadow-sm bg-surface-100
           ${et.status === "confirmed" ? "border-l-4 border-green-500" : ""}
           ${et.status === "pending" ? "border-l-4 border-yellow-500" : ""}
           ${et.status === "canceled" ? "border-l-4 border-red-500" : ""}
@@ -434,10 +434,10 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
             >
               {/* Orador + Congregação */}
               <div className="flex flex-col">
-                <span className="font-medium text-gray-800">
+                <span className="font-medium text-typography-800">
                   {et.speaker?.fullName || et.manualTalk}
                 </span>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-typography-600">
                   {et.destinationCongregation.name === et.destinationCongregation.city ?
                     et.destinationCongregation.name :
                     `${et.destinationCongregation.name} - ${et.destinationCongregation.city}`
@@ -447,7 +447,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
               {/* Status + Ação */}
               <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-typography-500">
                   {externalTalkStatusMap[et.status]}
                 </span>
                 <Link
@@ -476,7 +476,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           <Button variant="text" color="red" onClick={() => setOpenConfirm(false)}>
             Cancelar
           </Button>
-          <Button className="bg-primary-200 hover:bg-primary-100 text-white" variant="text" onClick={handleConfirmClear}>
+          <Button className="bg-primary-200 hover:bg-primary-100 text-surface-100" variant="text" onClick={handleConfirmClear}>
             Confirmar
           </Button>
         </DialogFooter>

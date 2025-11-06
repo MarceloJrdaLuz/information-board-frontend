@@ -230,14 +230,14 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                                 <div className="flex justify-center items-center w-72 h-72 m-2 relative">
                                     <Image style={{ objectFit: "cover", objectPosition: "top center" }} src={avatar_url} alt="Foto de perfil" fill className="rounded-full p-7" />
                                     <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-4 right-7 rounded-full bg-primary-200 p-4">
-                                        <CameraIcon className="text-white w-8 h-8" />
+                                        <CameraIcon className="text-typography-100 w-8 h-8" />
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex justify-center items-center w-72 h-72 m-2 relative">
                                     <Image alt="Avatar de um homem" src={avatar} className="rounded-full p-1 bg-[#a4e6da]" fill />
                                     <div onClick={handleImageClick} className="flex justify-center items-center absolute bottom-0 right-7 rounded-full bg-primary-200 p-4">
-                                        <CameraIcon className="text-white w-8 h-8" />
+                                        <CameraIcon className="text-typography-100 w-8 h-8" />
                                     </div>
                                 </div>
                             )}

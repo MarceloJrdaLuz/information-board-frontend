@@ -24,7 +24,7 @@ export const groupPublisherList = atom<'add-publishers' | 'remove-publishers' | 
 
 export const domainUrl = atom('')
 
-export const buttonStyledEdit = "flex items-center border rounded-none border-gray-300 bg-white hover:bg-sky-100 p-3 text-primary-200 font-semibold"
+export const buttonStyledEdit = "flex items-center border rounded-none border-typography-300 bg-surface-100 hover:bg-sky-100 p-3 text-primary-200 font-semibold"
 
 export const reportsAtom = atom<IReports[]>([])
 

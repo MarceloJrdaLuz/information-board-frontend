@@ -84,7 +84,7 @@ export default function Territory() {
         >
             {({ blob, url, loading, error }) => {
                 return loading ? "" :
-                    <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                    <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
                             Salvar S-13
@@ -105,7 +105,7 @@ export default function Territory() {
                             onClick={() => {
                                 Router.push('/congregacao/territorios/add')
                             }}
-                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                             <TerritoryIcon />
                             <span className="text-primary-200 font-semibold">Adicionar território</span>
                         </Button>

@@ -128,7 +128,7 @@ function Designacoes() {
   }
 
   return !pdfShow ? (
-    <div className=" flex flex-col h-screen w-screen bg-gray-200">
+    <div className=" flex flex-col h-screen w-screen bg-typography-200">
       <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
       <LayoutPrincipal
         nCong={congregationData?.number}
@@ -176,7 +176,7 @@ function Designacoes() {
 
             {!lifeAndMinistryOptionsShow ? (
               <>
-                {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-gray-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+                {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-typography-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
               </>
             ) : (
               <>
@@ -218,7 +218,7 @@ function Designacoes() {
                 <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
               )
             )}
-            {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-gray-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-typography-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
           <Button
             onClick={() => router.push(`/${number}`)}

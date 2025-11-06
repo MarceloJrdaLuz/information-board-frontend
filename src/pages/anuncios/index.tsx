@@ -42,7 +42,7 @@ export default function Notices() {
                                 onClick={() => {
                                     Router.push('/anuncios/add')
                                 }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                 <NoticesIcon />
                                 <span className="text-primary-200 font-semibold">Criar anúncio</span>
                             </Button>

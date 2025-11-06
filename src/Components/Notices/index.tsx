@@ -12,9 +12,9 @@ export default function Notices({ notices, congregationNumber }: INoticesProps) 
             <div className="w-full h-auto min-h-[70vh] overflow-auto">
                 {notices?.length ? notices?.map(notice => (
                     <div key={notice.id} className="flex flex-col items-start ">
-                        <h2 className="font-bold text-lg p-2 text-gray-900">{notice.title}</h2>
-                        <span className="p-2 text-start overflow-auto text-gray-800 whitespace-pre-wrap">{notice.text}</span>
-                        <span className="w-1/2 border border-dashed my-5 border-gray-800"></span>
+                        <h2 className="font-bold text-lg p-2 text-typography-900">{notice.title}</h2>
+                        <span className="p-2 text-start overflow-auto text-typography-800 whitespace-pre-wrap">{notice.text}</span>
+                        <span className="w-1/2 border border-dashed my-5 border-typography-800"></span>
                     </div>
                 )) : (
                     <>

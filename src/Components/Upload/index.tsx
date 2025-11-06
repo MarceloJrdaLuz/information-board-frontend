@@ -41,7 +41,7 @@ function Upload({ acceptFiles }: IUploadProps) {
   }, [isDragActive, isDragReject])
 
   return (
-    <div className={`flex justify-center items-center w-full h-full border-2 border-dashed text-primary-200 font-bold hover:bg-primary-100 hover:bg-opacity-40  hover:text-gray-900 ${!isDragReject ? "border-primary-200" : "border-red-700"}`} {...getRootProps()}>
+    <div className={`flex justify-center items-center w-full h-full border-2 border-dashed text-primary-200 font-bold hover:bg-primary-100 hover:bg-opacity-40  hover:text-typography-900 ${!isDragReject ? "border-primary-200" : "border-red-700"}`} {...getRootProps()}>
       <input className="bg-red-400" {...getInputProps()} />
       {renderDragMessage()}
     </div>

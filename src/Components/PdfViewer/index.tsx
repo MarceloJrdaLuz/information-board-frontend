@@ -59,7 +59,7 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
 
     return (
 
-        <div className='flex flex-col justify-start items-center w-screen h-screen lg:p-5 overflow-auto bg-gray-900 '>
+        <div className='flex flex-col justify-start items-center w-screen h-screen lg:p-5 overflow-auto bg-typography-900 '>
             <div className='mb-4'>
                 {!isLoading && (
                     <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>

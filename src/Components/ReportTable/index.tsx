@@ -20,7 +20,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
       {/* Tabela (visível em telas médias pra cima) */}
       <div className="hidden md:block w-full overflow-x-auto">
         <table className="w-full border-collapse shadow-md">
-          <thead className="bg-primary-100 text-gray-700">
+          <thead className="bg-primary-100 text-typography-700">
             <tr>
               <th className="p-3 text-left">Mês</th>
               <th className="p-3 text-left">Horas</th>
@@ -32,7 +32,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
             {reports?.map((report) => (
               <tr
                 key={report.id}
-                className="border-b odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="border-b odd:bg-surface-100 text-typography-800  even:bg-surface-200 hover:bg-primary-100 cursor-pointer transition-colors"
               >
                 <td className="p-3">{`${report.month} ${report.year}`}</td>
                 <td className="p-3">{report.hours}</td>
@@ -48,16 +48,16 @@ export default function ReportTable({ reports }: ReportTableProps) {
                 {isPioneiroRegular ? (
                   <div className="flex justify-center gap-6">
                     <div className="flex flex-col items-center">
-                      <span className="text-sm text-gray-800">Atual</span>
+                      <span className="text-sm text-typography-800">Atual</span>
                       <span className="font-bold">{totalHours}</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-sm text-gray-800">Esperado</span>
+                      <span className="text-sm text-typography-800">Esperado</span>
                       <span className="font-bold">{totalExpected}</span>
                     </div>
                   </div>
                 ) : (
-                  <span>{totalHours}</span>
+                  <span className="text-typography-800">{totalHours}</span>
                 )}
               </td>
               <td className="p-3">-</td>
@@ -72,18 +72,18 @@ export default function ReportTable({ reports }: ReportTableProps) {
         {reports?.map((report) => (
           <div
             key={report.id}
-            className="bg-white shadow-md rounded-xl p-4 border border-gray-200"
+            className="bg-surface-100 shadow-md rounded-xl p-4 border border-typography-200"
           >
             <div className="flex justify-between">
               <span className="font-semibold text-primary-200 text-lg">{`${report.month} ${report.year}`}</span>
-              <span className="text-gray-600 font-bold">{report.hours}h</span>
+              <span className="text-typography-700 font-bold">{report.hours}h</span>
             </div>
-            <p className="text-base text-gray-700 mt-2">
+            <p className="text-base text-typography-700 mt-2">
               <span className="font-semibold text-base">Estudos:</span>{" "}
               {report.studies ?? "-"}
             </p>
             {report.observations && (
-              <p className="text-base text-gray-600 mt-1 italic">
+              <p className="text-base text-typography-600 mt-1 italic">
                 {report.observations}
               </p>
             )}
@@ -95,7 +95,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
           <div className="flex justify-between items-center gap-3">
             <span className="font-semibold text-primary-200">Total</span>
             {isPioneiroRegular ? (
-              <div className="flex gap-8">
+              <div className="flex gap-8 text-typography-800">
                 <div className="flex flex-col items-center">
                   <span className="text-sm">Atual</span>
                   <span className="font-bold">{totalHours}h</span>
@@ -106,7 +106,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
                 </div>
               </div>
             ) : (
-              <span className="font-bold">{totalHours}h</span>
+              <span className="font-bold text-typography-700">{totalHours}h</span>
             )}
           </div>
         </div>

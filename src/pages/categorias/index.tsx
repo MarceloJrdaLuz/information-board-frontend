@@ -41,7 +41,7 @@ export default function Categorias() {
                                 onClick={() => {
                                     Router.push('/categorias/add')
                                 }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                 <SecurityIcon />
                                 <span className="text-primary-200 font-semibold">Criar categoria</span>
                             </Button>

@@ -56,14 +56,14 @@ function Eventos() {
     }
 
     return !pdfShow ? (
-        <div className=" flex flex-col h-screen w-screen bg-gray-200">
+        <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Eventos" urlMiniatura={`${domain}/images/eventos.png`} />
             <LayoutPrincipal
                 nCong={congregationData?.number}
                 image={
                     <Image src={iconEvents} alt="Icone de um calendário" fill />
                 } congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Eventos" heightConteudo={'1/2'} header className="bg-cartas bg-left-bottom bg-cover lg:bg-right">
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
                     {documents ? (
                         documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (

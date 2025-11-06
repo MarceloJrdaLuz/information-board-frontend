@@ -73,7 +73,7 @@ export default function FormAddCategory() {
                         <span className='text-primary-200'>Crie as categorias de documentos. Ex: Campo - Vai ter os arquivos relacionados a saidas de campo. Abaixo tem a lista das categorias já criadas</span>
                     </div>
                     <div className='flex flex-wrap pt-5'>
-                        {categories?.map(category => <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={category.id}>{category.name}</span>)}
+                        {categories?.map(category => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={category.id}>{category.name}</span>)}
                     </div>
                     <div className={`my-6  w-11/12 font-semibold  sm:text-2xl text-primary-200`}>Adicionar nova categoria</div>
 

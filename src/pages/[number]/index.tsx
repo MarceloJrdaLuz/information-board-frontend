@@ -61,7 +61,7 @@ function Home() {
     const isFetching = isLoading || !number || !congregationData
 
     return (
-        <div className=" flex flex-col h-screen w-screen bg-gray-200 overflow-auto">
+        <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
             {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={number as string} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal loading={isFetching} nCong={congregationData?.number} image={(

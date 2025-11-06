@@ -60,13 +60,13 @@ export default function TalksPage() {
                                 {roleContains('ADMIN') && (
                                     <Button
                                         onClick={() => Router.push('/arranjo-oradores/discursos/add')}
-                                        className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80"
+                                        className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80"
                                     >
                                         <GroupIcon />
                                         <span className="text-primary-200 font-semibold">Criar discurso</span>
                                     </Button>
                                 )}
-                                {talks && <span className="text-sm text-gray-600">Total: {talks.length}</span>}
+                                {talks && <span className="text-sm text-typography-600">Total: {talks.length}</span>}
                             </div>
 
                             {talks && talks.length > 0 ? (
@@ -79,9 +79,9 @@ export default function TalksPage() {
                                     label="do Discurso"
                                     renderItem={(talk) => (
                                         <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-gray-800">Discurso Nº {talk.number}</h3>
+                                            <h3 className="text-lg font-semibold text-typography-800">Discurso Nº {talk.number}</h3>
 
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
                                                 <div className="flex items-center gap-2">
                                                     🎯 <span>{talk.title || "Sem título"}</span>
                                                 </div>

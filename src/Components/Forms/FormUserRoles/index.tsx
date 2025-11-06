@@ -159,7 +159,7 @@ export default function FormUserRoles() {
 
                     <Dropdown textVisible handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
                     <div className="my-4 flex flex-wrap">
-                        {userSelected && <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={userSelected} >
+                        {userSelected && <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={userSelected} >
                             {userSelected}
                             <span className="py-2 ml-2  flex justify-center items-center" onClick={() => setUserSelected("")}>{IconDelete}</span>
                         </span>}
@@ -168,7 +168,7 @@ export default function FormUserRoles() {
                     <div>
                         <Dropdown textVisible handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
                         <div className="mt-4 flex flex-wrap">
-                            {rolesSelecteds && rolesSelecteds.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={permission} >
+                            {rolesSelecteds && rolesSelecteds.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={permission} >
                                 {permission}
                                 <span className="py-2 ml-2  flex justify-center items-center" onClick={() => removerRolesSelecteds(permission)}>{IconDelete}</span>
                             </span>)}

@@ -25,7 +25,7 @@ export default function Dropdown(props: IDropdown) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button onClick={props.onClick} className={`inline-flex w-full  justify-${props.textAlign ? `${props.textAlign}` : `center`} rounded-md  bg-transparent border px-3 md:px-4 py-2 text-${props.textSize ? props.textSize : "sm"} font-medium text-gray-700  hover:underline focus:outline-none  ${props.border ? "border border-blue-gray-200" : "border-none"} ${!props.notBorderFocus && "focus:ring-1  focus:ring-offset-1 focus:ring-offset-primary-200"}`}>
+        <Menu.Button onClick={props.onClick} className={`inline-flex w-full  justify-${props.textAlign ? `${props.textAlign}` : `center`} rounded-md  bg-transparent border px-3 md:px-4 py-2 text-${props.textSize ? props.textSize : "sm"} font-medium text-typography-700  hover:underline focus:outline-none  ${props.border ? "border border-blue-gray-200" : "border-none"} ${!props.notBorderFocus && "focus:ring-1  focus:ring-offset-1 focus:ring-offset-primary-200"}`}>
           <span className={`${!props.textVisible && 'hidden'} sm:flex`}>
             {props.selectedItem ? props.selectedItem : props.title}
           </span>
@@ -42,7 +42,7 @@ export default function Dropdown(props: IDropdown) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
+        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
           <div className="py-1">
             {props.options.map((option, index) => (
               <Menu.Item key={index}>
@@ -50,7 +50,7 @@ export default function Dropdown(props: IDropdown) {
                   <span
                     onClick={() => props.handleClick(option)}
                     className={classNames(
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      active ? 'bg-typography-100 text-typography-900' : 'text-typography-700',
                       'block px-4 py-2 text-sm'
                     )}
                   >

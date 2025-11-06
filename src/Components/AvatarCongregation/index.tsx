@@ -37,14 +37,14 @@ export default function AvatarCongregation({ loading }: AvatarCongregationProps)
 
     return (
         <>
-            <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 ">
+            <div className="relative w-10 h-10 overflow-hidden bg-typography-100 rounded-full dark:bg-typography-600 ">
                 {loading ? (
                     <SkeletonAvatarCongregation />
                 ) : congregationUser?.image_url ? (
                     <Image src={congregationUser?.image_url} fill sizes="33vw" alt="Foto da congregação"></Image>
                 ) : (
-                    <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                        <span className="font-medium text-gray-600 dark:text-gray-300">{congregationUser?.name?.slice(0, 1)}</span>
+                    <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-typography-100 rounded-full dark:bg-typography-600">
+                        <span className="font-medium text-typography-600 dark:text-typography-300">{congregationUser?.name?.slice(0, 1)}</span>
                     </div>
                 )
                 }

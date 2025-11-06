@@ -130,7 +130,7 @@ export default function PublisherList() {
                     {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
                 </div>
                 {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
-                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
+                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 ">
                                 {publisher.gender === "Masculino" ?
@@ -138,23 +138,23 @@ export default function PublisherList() {
                                     :
                                     <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
                                 }
-                                <span className="pl-4 font-semi-bold">{publisher.fullName}</span>
+                                <span className="pl-4 text-typography-700 font-semi-bold">{publisher.fullName}</span>
                             </div>
-                            <button className={`w-6 h-6 mr-4 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
+                            <button className={`w-6 h-6 mr-4 text-typography-700 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
                         </div>
-                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-white' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
+                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-surface-100' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
                             <div className="flex flex-wrap gap-2">
                                 {publisher.privileges.map(privilege => {
                                     if (privilege === Privileges.PIONEIROAUXILIAR) {
                                         if (isAuxPioneerMonthNow(publisher)) {
                                             return (
-                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-typography-100 text-xs" key={`${publisher.id + privilege}`}>
                                                     {privilege}
                                                 </span>
                                             )
                                         } else {
                                             return (
-                                                <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-typography-100 text-xs" key={`${publisher.id + privilege}`}>
                                                     {Privileges.PUBLICADOR}
                                                 </span>
                                             ) // Não exibe "Pioneiro Auxiliar" se não for o mês atual
@@ -162,7 +162,7 @@ export default function PublisherList() {
                                     } else if ((privilege === Privileges.PIONEIROREGULAR || privilege === Privileges.AUXILIARINDETERMINADO)) {
                                         if (isPioneerNow(publisher, new Date())) {
                                             return (
-                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                                <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-typography-100 text-xs" key={`${publisher.id + privilege}`}>
                                                     {privilege}
                                                 </span>
                                             )
@@ -171,14 +171,14 @@ export default function PublisherList() {
                                         }
                                     } else {
                                         return (
-                                            <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + privilege}`}>
+                                            <span className="bg-[#74706d]  h-fit w-fit px-3 py-2 rounded-md text-typography-100 text-xs" key={`${publisher.id + privilege}`}>
                                                 {privilege}
                                             </span>
                                         )
                                     }
                                 })}
                                 {publisher.situation !== Situation.ATIVO && (
-                                    <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-white text-xs" key={`${publisher.id + publisher.situation}`}>
+                                    <span className="bg-[#74706d] h-fit w-fit px-3 py-2 rounded-md text-typography-100 text-xs" key={`${publisher.id + publisher.situation}`}>
                                         {publisher.situation}
                                     </span>
                                 )}
@@ -187,75 +187,75 @@ export default function PublisherList() {
                             <div className="flex flex-col w-full gap-4 mt-4">
                                 {/* Apelido */}
                                 {publisher.nickname && (
-                                    <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                    <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                         <span className="text-xl">🏷️</span>
                                         <div className="flex flex-col">
                                             <span className="text-primary-200 font-semibold text-sm">Apelido</span>
-                                            <span className="text-typography-100 font-medium">{publisher.nickname}</span>
+                                            <span className="text-typography-700 font-medium">{publisher.nickname}</span>
                                         </div>
                                     </div>
                                 )}
 
                                 {/* Esperança */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                     <span className="text-xl">⭐</span>
                                     <div className="flex flex-col">
                                         <span className="text-primary-200 font-semibold text-sm">Esperança</span>
-                                        <span className="text-typography-100 font-medium">{publisher.hope}</span>
+                                        <span className="text-typography-700 font-medium">{publisher.hope}</span>
                                     </div>
                                 </div>
 
                                 {/* Data do Batismo */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                     <span className="text-xl">📅</span>
                                     <div className="flex flex-col">
                                         <span className="text-primary-200 font-semibold text-sm">Data do Batismo</span>
-                                        <span className="text-typography-100 font-medium">{publisher.dateImmersed ? moment(publisher.dateImmersed).format('DD-MM-YYYY') : "Não informado"}</span>
+                                        <span className="text-typography-700 font-medium">{publisher.dateImmersed ? moment(publisher.dateImmersed).format('DD-MM-YYYY') : "Não informado"}</span>
                                     </div>
                                 </div>
 
                                 {/* Data de Nascimento */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                     <span className="text-xl">📅</span>
                                     <div className="flex flex-col">
                                         <span className="text-primary-200 font-semibold text-sm">Data de Nascimento</span>
-                                        <span className="text-typography-100 font-medium">{publisher.birthDate ? moment(publisher.birthDate).format('DD-MM-YYYY') : "Não informado"}</span>
+                                        <span className="text-typography-700 font-medium">{publisher.birthDate ? moment(publisher.birthDate).format('DD-MM-YYYY') : "Não informado"}</span>
                                     </div>
                                 </div>
 
                                 {/* Telefone */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                     <span className="text-xl">📞</span>
                                     <div className="flex flex-col">
                                         <span className="text-primary-200 font-semibold text-sm">Telefone</span>
-                                        <span className="text-typography-100 font-medium">{publisher.phone || "Não informado"}</span>
+                                        <span className="text-typography-700 font-medium">{publisher.phone || "Não informado"}</span>
                                     </div>
                                 </div>
 
                                 {/* Endereço */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex items-center gap-3">
                                     <span className="text-xl">🏠</span>
                                     <div className="flex flex-col">
                                         <span className="text-primary-200 font-semibold text-sm">Endereço</span>
-                                        <span className="text-typography-100 font-medium">{publisher.address || "Não informado"}</span>
+                                        <span className="text-typography-700 font-medium">{publisher.address || "Não informado"}</span>
                                     </div>
                                 </div>
 
                                 {/* Contato de emergência */}
-                                <div className="p-4 bg-white shadow-sm rounded-lg border border-gray-200 flex flex-col gap-3">
+                                <div className="p-4 bg-surface-100 shadow-sm rounded-lg border border-typography-200 flex flex-col gap-3">
                                     <div className="flex items-center gap-2">
                                         <span className="text-xl">☎️</span>
                                         <span className="text-primary-200 font-semibold text-sm">Contato de emergência</span>
                                     </div>
                                     {publisher.emergencyContact ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-typography-100">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-typography-700">
                                             <div><span className="font-semibold text-primary-200 text-sm">Nome:</span> {publisher.emergencyContact.name}</div>
                                             <div><span className="font-semibold text-primary-200 text-sm">Telefone:</span> {publisher.emergencyContact.phone}</div>
                                             <div><span className="font-semibold text-primary-200 text-sm">Relacionamento:</span> {publisher.emergencyContact.relationship}</div>
                                             <div><span className="font-semibold text-primary-200 text-sm">É TJ?:</span> {publisher.emergencyContact.isTj ? "Sim" : "Não"}</div>
                                         </div>
                                     ) : (
-                                        <div className="text-typography-100 mt-2">Nenhum contato de emergência adicionado!</div>
+                                        <div className="text-typography-700 mt-2">Nenhum contato de emergência adicionado!</div>
                                     )}
                                 </div>
                             </div>
@@ -287,7 +287,7 @@ export default function PublisherList() {
 
                             </div>
                             <div className="flex justify-end my-5">
-                                <span className="flex text-gray-600 font-semibold text-xs">Atualizado em: {moment(publisher.updated_at).format("DD-MM-YYYY")}</span>
+                                <span className="flex text-typography-600 font-semibold text-xs">Atualizado em: {moment(publisher.updated_at).format("DD-MM-YYYY")}</span>
                             </div>
                         </div>
                     </li>

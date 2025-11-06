@@ -31,11 +31,11 @@ function PoliticaPrivacidade() {
     }, [congregation])
 
     return (
-        <div className=" flex flex-col h-screen w-screen bg-gray-200">
+        <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Política de Privacidade" urlMiniatura={`${domain}/images/miniatura.png`} />
-            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-gray-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
-                <div className="p-10 m-4 bg-white">
-                    <h1 className="mb-5 font-bold text-gray-900 text-2xl">Política sobre coleta e armazenamento de dados</h1>
+            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-typography-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
+                <div className="p-10 m-4 bg-surface-100">
+                    <h1 className="mb-5 font-bold text-typography-900 text-2xl">Política sobre coleta e armazenamento de dados</h1>
                     <ReactMarkdown >
                         {terms?.content ?? "Nenhuma política de privacidade foi definida pela congregação."}
                     </ReactMarkdown>

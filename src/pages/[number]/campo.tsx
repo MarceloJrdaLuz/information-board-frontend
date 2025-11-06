@@ -62,7 +62,7 @@ function Campo() {
     }
 
     return !pdfShow ? (
-        <div className=" flex flex-col h-screen w-screen bg-gray-200">
+        <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Designações de Campo" urlMiniatura={`${domain}/images/campo.png`} />
             <LayoutPrincipal
                 nCong={congregationData?.number}
@@ -76,7 +76,7 @@ function Campo() {
                 className="bg-designacoes bg-center bg-cover"
                 textoHeader="Designações de Campo"
             >
-                <div className="linha bg-gray-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                     <div>
                         <Button

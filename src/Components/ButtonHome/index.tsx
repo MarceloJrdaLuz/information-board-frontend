@@ -19,7 +19,7 @@ export default function ButtonHome(props: BotaoProps) {
         return (
             <button className={`flex justify-center items-center
                 bg-primary-200 my-1 hover:bg-teste-200 hover:border 
-                hover:border-teste-100 hover:text-black w-full rounded-md ${props.height ? props.height : 'h-11'}  
+                hover:border-teste-100 hover:text-typography-900 w-full rounded-md ${props.height ? props.height : 'h-11'}  
                 text-white text-sm sm:text-base md:text-lg font-medium m-auto ${props.className}  
                 `} onClick={props.onClick}>
                 {props.icon && <span className="mr-2">{props.icon}</span>}

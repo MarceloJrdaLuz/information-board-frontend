@@ -258,7 +258,7 @@ export default function HospitalityRow({ date }: Props) {
   }
 
   return (
-    <div className="flex flex-col  gap-4 items-start">
+    <div className="flex flex-col gap-4 items-start text-typography-800">
       {/* Data + checkboxes */}
       <div className="w-full font-semibold">
         {moment(date).format("DD/MM/YYYY")}
@@ -286,7 +286,7 @@ export default function HospitalityRow({ date }: Props) {
         const selectedGroupId = selectedAssignment?.group_id ?? ""
 
         return (
-          <div key={ev.key} className="flex flex-col gap-1 w-full border rounded-lg p-6 border-gray-200">
+          <div key={ev.key} className="flex flex-col gap-1 w-full border rounded-lg p-6 border-typography-200">
 
             <DropdownObject
               textVisible

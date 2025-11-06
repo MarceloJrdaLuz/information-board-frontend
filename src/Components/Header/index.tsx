@@ -16,7 +16,7 @@ export default function Header(props: HeaderProps) {
     }, [])
 
     return (
-        <div className={`relative flex justify-center items-center h-[40vh]  w-full bg-gray-900`}>
+        <div className={`relative flex justify-center items-center h-[40vh]  w-full bg-typography-900`}>
             <header className={`flex h-full w-full max-w-[600px] lg:h-full md:h-full brightness-30 ${props.className}
             `}>
                 {props.children}

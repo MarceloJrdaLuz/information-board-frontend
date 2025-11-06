@@ -201,19 +201,19 @@ export default function FormAddPublisher() {
                     />
                     {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxGender(selectedItems)} />
                     </div>
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxHope(selectedItems)} />
                     </div>
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxSituationPublisher(selectedItems)} />
                     </div>
 
-                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-typography-300 my-4 p-4'>
                         {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
 
                         {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
@@ -229,20 +229,20 @@ export default function FormAddPublisher() {
                         {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}
 
-                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-gray-300 my-4 p-4'>
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
                         <CheckboxMultiple visibleLabel checkedOptions={additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
                     </div>}
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={birthDate} />
 
                         <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handlers.handleImmersedDateChange} selectedDate={immersedDate} />
                     </div>
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <div className='flex justify-between items-center'>
-                            <span className='my-2 font-semibold text-gray-900 '>Contato de emergência</span>
+                            <span className='my-2 font-semibold text-typography-900 '>Contato de emergência</span>
                             <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
                         </div>
 
@@ -259,7 +259,7 @@ export default function FormAddPublisher() {
                                     searchable
                                 />
                                 <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                    <Button type='button' className='w-fit'><span><PlusIcon className='bg-white rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                    <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
                                 </span>
                             </>
                         )}

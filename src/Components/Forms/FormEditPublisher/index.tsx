@@ -115,16 +115,16 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                 <Controller defaultValue='' name="phone" control={control} render={({ field }) => <Input type="tel" placeholder="Telefone" mask="(99) 99999-9999" {...field} />} />
                                 {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
-                                <div className='border border-gray-300 my-4 p-4'>
+                                <div className='border border-typography-300 my-4 p-4'>
                                     <CheckboxUnique visibleLabel checked={values.genderCheckboxSelected} label="Gênero" options={options.genderOptions} handleCheckboxChange={handlers.handleCheckboxGender} />
                                 </div>
-                                <div className='border border-gray-300 my-4 p-4'>
+                                <div className='border border-typography-300 my-4 p-4'>
                                     <CheckboxUnique visibleLabel checked={values.hopeCheckboxSelected} label="Esperança" options={options.hopeOptions} handleCheckboxChange={handlers.handleCheckboxHope} />
                                 </div>
-                                <div className='border border-gray-300 my-4 p-4'>
+                                <div className='border border-typography-300 my-4 p-4'>
                                     <CheckboxUnique visibleLabel checked={values.situationPublisherCheckboxSelected} label="Situação do publicador" options={options.situationOptions} handleCheckboxChange={handlers.handleCheckboxSituationPublisher} />
                                 </div>
-                                {values.situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-gray-300 my-4 p-4'>
+                                {values.situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-typography-300 my-4 p-4'>
 
                                     {<CheckboxUnique visibleLabel checked={values.pioneerCheckboxSelected} label="Pioneiro" options={options.pioneerOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
 
@@ -146,7 +146,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         )}
 
                         {values.situationPublisherCheckboxSelected === Situation.ATIVO && values.genderCheckboxSelected === 'Masculino' && (
-                            <div className='border border-gray-300 my-4 p-4'>
+                            <div className='border border-typography-300 my-4 p-4'>
                                 <CheckboxUnique visibleLabel checked={values.privilegeCheckboxSelected} label="Privilégio" options={options.privilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
 
                                 <CheckboxMultiple visibleLabel checkedOptions={values.additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={options.additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
@@ -154,9 +154,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         )
                         }
 
-                        <div className='border border-gray-300 my-4 p-4'>
+                        <div className='border border-typography-300 my-4 p-4'>
                             <div className='flex justify-between items-center'>
-                                <span className='my-2 font-semibold text-gray-900 '>Contato de emergência</span>
+                                <span className='my-2 font-semibold text-typography-900 '>Contato de emergência</span>
                                 <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
                             </div>
                             {emergencyContactShow && (
@@ -172,15 +172,15 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         searchable
                                     />
                                     <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                        <Button type='button' className='w-fit'><span><PlusIcon className='bg-white rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                        <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
                                     </span>
                                 </>
                             )}
                         </div>
 
                         {hasPermission &&
-                            (<div className='border border-gray-300 my-4 p-4'>
-                                <span className='my-2 font-semibold text-gray-900 '>Vincular publicador a usuário</span>
+                            (<div className='border border-typography-300 my-4 p-4'>
+                                <span className='my-2 font-semibold text-typography-900 '>Vincular publicador a usuário</span>
                                 <div className='flex flex-col w-full items-start justify-start my-4 gap-5'>
                                     <DropdownObject<UserTypes>
                                         title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
@@ -195,7 +195,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         <Button
                                             type='button'
                                             onClick={() => { handleLinkPublisherToUser() }}
-                                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                             <UserLinkIcon />
                                             <span className="text-primary-200 font-semibold">Vincular publicador</span>
                                         </Button>
@@ -207,7 +207,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                     <Button
                                         type='button'
                                         onClick={() => { handleUnLinkPublisherToUser() }}
-                                        className="bg-white text-red-500 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                        className="bg-surface-100 text-red-500 p-3 border-typography-300 rounded-none hover:opacity-80">
                                         <UserLinkIcon />
                                         <span className="text-primary-200 font-semibold">Desvincular publicador</span>
                                     </Button>

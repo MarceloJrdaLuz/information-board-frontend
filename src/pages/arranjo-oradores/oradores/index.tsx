@@ -114,7 +114,7 @@ export default function SpeakersPage() {
             fileName={`Oradores_${speakerCongregationName || "congregacao"}.pdf`}
         >
             {({ loading }) => (
-                <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                     <PdfIcon />
                     <span className="text-primary-200 font-semibold">
                         {loading ? "Gerando PDF..." : "Lista de oradores"}
@@ -136,11 +136,11 @@ export default function SpeakersPage() {
                                     onClick={() => {
                                         Router.push('/arranjo-oradores/oradores/add')
                                     }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                     <GroupIcon />
                                     <span className="text-primary-200 font-semibold">Criar orador</span>
                                 </Button>
-                                {speakers && <span className="text-sm text-gray-600">Total: {speakers.length}</span>}
+                                {speakers && <span className="text-sm text-typography-600">Total: {speakers.length}</span>}
                             </div>
                             <div className="flex justify-between my-4">
                                 <FilterSpeakersCongregation
@@ -157,11 +157,11 @@ export default function SpeakersPage() {
                                     </Button>
                                     {speakers && <PdfLinkComponent />}
                                     {showPreview && (
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                            <div className="bg-white w-[90%] h-[90%] p-4 rounded relative">
+                                        <div className="fixed inset-0 bg-typography-900 bg-opacity-50 flex items-center justify-center z-50">
+                                            <div className="bg-surface-100 w-[90%] h-[90%] p-4 rounded relative">
                                                 <button
                                                     onClick={() => setShowPreview(false)}
-                                                    className="absolute top-2 right-2 text-gray-600 hover:text-black"
+                                                    className="absolute top-2 right-2 text-typography-600 hover:text-typography-900"
                                                 >
                                                     ✕
                                                 </button>
@@ -187,8 +187,8 @@ export default function SpeakersPage() {
                                     label="do Orador"
                                     renderItem={(speaker) => (
                                         <div className="flex flex-col gap-3">
-                                            <h3 className="text-lg font-semibold text-gray-800">{speaker.fullName}</h3>
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <h3 className="text-lg font-semibold text-typography-800">{speaker.fullName}</h3>
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
                                                 <div className="flex items-center gap-2">
                                                     📞 <span>{speaker.phone || "Não cadastrado"}</span>
                                                 </div>

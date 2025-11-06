@@ -13,7 +13,7 @@ interface ModalHelpProps {
 
 export default function ModalHelp({ text, title, onClick }: ModalHelpProps) {
     return (
-        <aside className="flex justify-center items-center bg-black bg-opacity-50 absolute top-0 left-0 z-50 w-screen h-screen">
+        <aside className="flex justify-center items-center bg-typography-900 bg-opacity-50 absolute top-0 left-0 z-50 w-screen h-screen">
             <Card className="mt-6 w-full max-w-[700px] h-5/6 overflow-auto thin-scrollbar">
                 <CardBody>
                     <div className="flex justify-between">

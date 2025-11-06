@@ -11,7 +11,7 @@ import { TerritoryProvider } from '@/context/TerritoryContext'
 import '@/styles/globals.css'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useEffect } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -27,6 +27,12 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout =
     Component.getLayout ??
     ((page) => <Layout>{page}</Layout>)
+
+  useEffect(() => {
+    // opcional: carrega tema salvo no localStorage
+    const savedTheme = localStorage.getItem('theme') || ''
+    document.documentElement.className = savedTheme
+  }, [])
 
   return (
     <SubmitFormProvider>

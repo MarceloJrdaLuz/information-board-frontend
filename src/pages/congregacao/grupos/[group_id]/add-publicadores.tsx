@@ -170,7 +170,7 @@ export default function AddPublicadoresGrupo() {
                         <div className={`flex flex-col gap-4 ${groupPublisherListOption !== 'disabled' && 'lg:flex-row lg:justify-around'}`}>
                             {groupPublisherListOption !== 'add-publishers' && (
                                 <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-full'} h-[300px]`}>
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
+                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
                                         <span>Publicadores atuais do grupo</span>
                                         <span
                                             className="cursor-pointer"
@@ -186,7 +186,7 @@ export default function AddPublicadoresGrupo() {
                                         <GroupPublishers key="publishersGroup" publishers={groupPublishers} group_id={group_id as string} />
                                     ) : (
                                         <div
-                                            className={`my-1 w-full list-none  bg-white p-4`}
+                                            className={`my-1 w-full list-none  bg-typography-100 p-4`}
                                         >
                                             Esse grupo está vazio no momento!
                                         </div>
@@ -197,7 +197,7 @@ export default function AddPublicadoresGrupo() {
                             )}
                             {publishersOthersGroup && publishersOthersGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
                                 <div className="flex flex-col h-[300px]">
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
+                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-100">
                                         <span>Publicadores de outros grupos</span>
                                         <span
                                             className="cursor-pointer"
@@ -216,7 +216,7 @@ export default function AddPublicadoresGrupo() {
                             )}
                             {publishersWithoutGroup && publishersWithoutGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
                                 <div className="flex flex-col h-[300px]">
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-white ">
+                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
                                         <span>Publicadores sem grupo</span>
                                         <span
                                             className="cursor-pointer"

@@ -64,7 +64,7 @@ export default function TerritoriesList() {
         <>
             <ul className="flex flex-wrap justify-center items-center w-full">
                 {territories && territories.length > 0 ? territories?.map(territory =>
-                    <li className={`flex flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full  text-typography-100 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
+                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full  text-typography-100 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 text-base xs:px-2">
                                 <span className="font-bold">{`Território ${territory.number}: ${territory.name}`}</span>
@@ -94,7 +94,7 @@ export default function TerritoriesList() {
                                 <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
                             </div>
                         </div>
-                        <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-white' : 'h-0'}`}>
+                        <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-surface-100' : 'h-0'}`}>
                             <div className="flex-col flex-wrap m-4">
                                 <div className={`relative w-full h-60 mb-4`}>
                                     {territory.image_url ?
@@ -104,7 +104,7 @@ export default function TerritoriesList() {
                                         <div className="relative flex w-full h-full justify-center items-center">
                                             <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={mapGeneric} fill />
                                             <div className="flex items-center justify-center">
-                                                <span className="absolute text-center text-white bg-black bg-opacity-50 px-2 py-1 rounded">Sem foto</span>
+                                                <span className="absolute text-center text-surface-100 bg-typography-900 bg-opacity-50 px-2 py-1 rounded">Sem foto</span>
                                             </div>
                                         </div>
                                     }

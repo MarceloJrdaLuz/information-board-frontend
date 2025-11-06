@@ -40,7 +40,7 @@ export default function MissingReportsModal({ missingReportsNumber, missingRepor
                     </Button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-72">
+            <PopoverContent className="w-72 bg-surface-100 text-typography-800">
                 <div className="w-full flex justify-end cursor-pointer mb-2">
                     {copySuccess ? (
                         <div className="flex justify-center items-center">
@@ -51,7 +51,7 @@ export default function MissingReportsModal({ missingReportsNumber, missingRepor
                         <CopyIcon className=" p-0.5" onClick={handleCopyToClipboard} />
                     )}
                 </div>
-                <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
+                <List className="p-0 max-h-96 overflow-auto hide-scrollbar text-typography-800" >
                     {missingReports && missingReports.length > 0 ? missingReports.map(missingReport => (
                         <ListItem key={missingReport.id}>
                             {missingReport.fullName}

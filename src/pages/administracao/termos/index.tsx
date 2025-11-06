@@ -2,7 +2,6 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
-import Layout from "@/Components/Layout"
 import { ListGeneric } from "@/Components/ListGeneric"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { deleteTermOfUseAtom } from "@/atoms/TermsOfUseAtoms"
@@ -47,7 +46,7 @@ export default function Terms() {
                                     onClick={() => {
                                         Router.push('/administracao/termos/add')
                                     }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                     <SecurityIcon />
                                     <span className="text-primary-200 font-semibold">Criar Termo</span>
                                 </Button>
@@ -61,18 +60,18 @@ export default function Terms() {
                                     renderItem={(term) => (
                                         <div className="flex flex-col gap-3">
                                             <div className="flex justify-between items-start gap-3">
-                                                <h3 className="text-lg font-semibold text-gray-800">{term.title}</h3>
+                                                <h3 className="text-lg font-semibold text-typography-800">{term.title}</h3>
                                                 <span>v.{term.version}</span>
                                                 {term.is_active ?
                                                     <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4 flex-shrink-0" />
                                                     : <CircleIcon className="bg-red-500 rounded-full text-red-500 w-4 h-4 flex-shrink-0" />}
                                             </div>
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2 items-end">
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2 items-end">
                                                 <div title="Tipo" className="flex items-center gap-2">
                                                     <span className="font-bold text-base">Tipo: {term.type}</span>
                                                 </div>
                                             </div>
-                                            <div title="Conteúdo" className="flex flex-col items-center gap-2 text-gray-800">
+                                            <div title="Conteúdo" className="flex flex-col items-center gap-2 text-typography-800">
                                                 <ReactMarkdown>
                                                     {term.content}
                                                 </ReactMarkdown>

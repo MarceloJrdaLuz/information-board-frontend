@@ -149,7 +149,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
 
                     <Dropdown textVisible handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Permissões" border />
                     <div className="mt-4 flex flex-wrap">
-                        {permissionSelected && permissionSelected.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-gray-300 rounded-3xl m-1 w-fit' key={permission} >
+                        {permissionSelected && permissionSelected.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={permission} >
                             {permission}
                             <span className="py-2 ml-2  flex justify-center items-center" onClick={() => removePermissionSelected(permission)}>{IconDelete}</span>
                         </span>)}

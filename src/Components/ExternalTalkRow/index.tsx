@@ -60,9 +60,9 @@ export default function ExternalTalkRow({
   }
 
   return (
-    <div className="rounded-xl p-4 flex flex-col gap-6 bg-gray-50 border">
+    <div className="rounded-xl p-4 flex flex-col gap-6 bg-typography-50 border">
       {/* Data */}
-      <h2 className="font-bold text-xl text-gray-800 border-b pb-2">
+      <h2 className="font-bold text-xl text-typography-800 border-b pb-2">
         {format(date, "dd/MM/yyyy")}
       </h2>
 
@@ -73,7 +73,7 @@ export default function ExternalTalkRow({
             <div
               key={t.id}
               className={`
-                flex justify-between items-start p-4 rounded-lg border shadow-sm bg-white
+                flex justify-between items-start p-4 rounded-lg border shadow-sm bg-surface-100
                 ${t.status === "confirmed" ? "border-l-4 border-green-500" : ""}
                 ${t.status === "pending" ? "border-l-4 border-yellow-500" : ""}
                 ${t.status === "canceled" ? "border-l-4 border-red-500" : ""}
@@ -82,26 +82,26 @@ export default function ExternalTalkRow({
               {/* Detalhes */}
               <div className="flex flex-col gap-3 w-full">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="font-semibold text-lg text-gray-800">
+                  <span className="font-semibold text-lg text-typography-800">
                     {t.speaker?.fullName || t.manualTalk}
                   </span>
-                  <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">
+                  <span className="text-xs bg-typography-100 px-2 py-0.5 rounded">
                     {t.destinationCongregation.name}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                <div className="grid grid-cols-2 gap-3 text-sm text-typography-700">
                   <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-gray-400" />
+                    <Calendar size={14} className="text-typography-400" />
                     <span>{t.destinationCongregation.dayMeetingPublic}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-gray-400" />
+                    <Clock size={14} className="text-typography-400" />
                     <span>{t.destinationCongregation.hourMeetingPublic}</span>
                   </div>
                   {t.talk?.title && (
                     <div className="flex items-center gap-2 col-span-2">
-                      <Book size={14} className="text-gray-400" />
+                      <Book size={14} className="text-typography-400" />
                       <span>{t.talk.title}</span>
                     </div>
                   )}
@@ -142,8 +142,8 @@ export default function ExternalTalkRow({
       )}
 
       {/* Adicionar novo ExternalTalk */}
-      <div className="bg-white rounded-lg p-4 shadow-md border">
-        <h3 className="font-semibold text-lg text-gray-700 mb-3">
+      <div className="bg-surface-100 rounded-lg p-4 shadow-md border">
+        <h3 className="font-semibold text-lg text-typography-700 mb-3">
           Adicionar discurso fora
         </h3>
         <div className="flex flex-col gap-3">
@@ -165,29 +165,29 @@ export default function ExternalTalkRow({
           />
 
           {selectedCongregation && (
-            <div className="mt-2 p-3 rounded-lg border bg-gray-50 shadow-sm">
-              <h4 className="font-semibold text-gray-800 mb-2">Detalhes da congregação</h4>
-              <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+            <div className="mt-2 p-3 rounded-lg border bg-typography-50 shadow-sm">
+              <h4 className="font-semibold text-typography-800 mb-2">Detalhes da congregação</h4>
+              <div className="grid grid-cols-2 gap-3 text-sm text-typography-700">
                 <div className="flex items-center gap-2">
-                  <Building size={14} className="text-gray-400" />
+                  <Building size={14} className="text-typography-400" />
                   <span>
                     <span className="font-medium">Congregação:</span> {selectedCongregation.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin size={14} className="text-gray-400" />
+                  <MapPin size={14} className="text-typography-400" />
                   <span>
                     <span className="font-medium">Cidade:</span> {selectedCongregation.city}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CalendarDays size={14} className="text-gray-400" />
+                  <CalendarDays size={14} className="text-typography-400" />
                   <span>
                     <span className="font-medium">Dia da reunião:</span> {selectedCongregation.dayMeetingPublic}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-gray-400" />
+                  <Clock size={14} className="text-typography-400" />
                   <span>
                     <span className="font-medium">Horário:</span>{" "}
                     {moment(selectedCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
