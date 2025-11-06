@@ -7,7 +7,6 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    console.log(process.env.NEXT_PUBLIC_API_BASE)
     router.push('/login')
   }, [router])
 
