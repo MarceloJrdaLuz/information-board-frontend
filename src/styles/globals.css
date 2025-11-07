@@ -120,9 +120,10 @@ input[type=number] {
 
 .theme-dark {
   /* Primárias */
-    --color-primary-200: 77 69 95;
-  --color-primary-150: 116 107 132;
-  --color-primary-100: 165 159 182;
+  --color-primary-200: 111 78 161;   /* #6F4EA1 — tom escuro, base forte */
+--color-primary-150: 153 119 197;  /* #9977C5 — intermediário equilibrado */
+--color-primary-100: 193 167 226;  /* #C1A7E2 — tom principal e mais claro */
+
 
 
   /* Secundárias */
@@ -174,9 +175,10 @@ input[type=number] {
 }
 
 .theme-purple {
-  --color-primary-200: 77 69 95;
-  --color-primary-150: 116 107 132;
-  --color-primary-100: 165 159 182;
+--color-primary-200: 98 70 140;    /* #62468C — tom mais escuro e sólido */
+--color-primary-150: 134 106 170;  /* #866AAA — transição equilibrada */
+--color-primary-100: 174 152 206;  /* #AE98CE — destaque suave */
+
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
