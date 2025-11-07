@@ -28,9 +28,9 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
         {/* Links */}
         <div className="flex flex-wrap justify-center items-center gap-4 mt-2 text-typography-200">
           <ThemeSwitcher />
-          <Link href="/login" className="flex items-center gap-1 hover:opacity-80 transition">
+          <Link href="/login" className="flex items-center gap-1 hover:opacity-80 transition text-primary-100">
             <InformationBoardIcon />
-            <span className="text-xs sm:text-sm">Login</span>
+            <span className="text-xs sm:text-sm text-typography-200">Login</span>
           </Link>
           <Link href={`/${nCong}/politica-privacidade`} className="text-xs sm:text-sm hover:opacity-80 transition">
             Política de privacidade

@@ -134,9 +134,9 @@ export default function PublisherList() {
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 ">
                                 {publisher.gender === "Masculino" ?
-                                    <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-[#a4e6da]" />
+                                    <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-primary-100" />
                                     :
-                                    <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
+                                    <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full bg-primary-100" />
                                 }
                                 <span className="pl-4 text-typography-700 font-semi-bold">{publisher.fullName}</span>
                             </div>
