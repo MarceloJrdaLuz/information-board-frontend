@@ -1,12 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditHospitalityGroup from "@/Components/Forms/FormEditHospitalityGroup"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function EditHospitalityGroupPage() {
+function EditHospitalityGroupPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -30,13 +30,15 @@ export default function EditHospitalityGroupPage() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Grupo"} />
-                <section className="flex justify-center">
-                    <FormEditHospitalityGroup />
-                </section>
-            </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Grupo"} />
+            <section className="flex justify-center">
+                <FormEditHospitalityGroup />
+            </section>
+        </ContentDashboard>
     )
 }
+
+EditHospitalityGroupPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default EditHospitalityGroupPage

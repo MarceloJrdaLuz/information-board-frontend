@@ -1,15 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import PublisherListReports from "@/Components/PublishersListReports"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-export default function Inserir() {
+function InsertReportPage() {
     const router = useRouter()
     const { month, congregationId } = router.query
 
@@ -36,11 +35,13 @@ export default function Inserir() {
     }, [setCrumbs, setPageActive, congregationId, month])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Inserir Relatório"} />
-                <PublisherListReports />
-            </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Inserir Relatório"} />
+            <PublisherListReports />
+        </ContentDashboard>
     )
 }
+
+InsertReportPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"])
+
+export default InsertReportPage

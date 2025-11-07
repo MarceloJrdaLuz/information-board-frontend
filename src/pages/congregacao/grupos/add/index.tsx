@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddGroup from "@/Components/Forms/FormAddGroup"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddGrupo() {
+function AddGroupPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function AddGrupo() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Grupo"} />
-                    <section className="flex m-10 justify-center items-center">
-                        <FormAddGroup />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Grupo"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddGroup />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddGroupPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "GROUPS_MANAGER"])
+
+export default AddGroupPage

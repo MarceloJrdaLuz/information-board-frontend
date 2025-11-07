@@ -4,8 +4,6 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import GroupPublishers from "@/Components/GroupPublishers"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
@@ -14,12 +12,13 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { IPublisher } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-export default function AddPublicadoresGrupo() {
+function AddPublishersToGroups() {
     const { group_id, group_number } = useRouter().query
     const { user } = useAuthContext()
     const congregationUser = user?.congregation
@@ -128,118 +127,120 @@ export default function AddPublicadoresGrupo() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicadores"} />
-                    <div className="flex justify-between w-full">
-                        {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicadores"} />
+            <div className="flex justify-between w-full">
+                {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
-                        <div className="flex p-2 gap-1 flex-wrap ">
-                            <Button
-                                className="w-52"
-                                onClick={() => Router.push({
-                                    pathname: `/congregacao/grupos/${group_id}/mudar-dirigente`,
-                                    query: { group_number: `${group_number}` }
-                                })}
-                            >
-                                <GroupOverseersIcon />
-                                Mudar dirigente
-                            </Button>
-                            <Button
-                                className={` w-52 ${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
-                                onClick={() => {
-                                    setGroupPublisherListOption('add-publishers')
-                                    setSelectedPublishers([])
-                                }}
-                            >
-                                <GroupIcon />
-                                Adicionar Publicadores
-                            </Button>
+                <div className="flex p-2 gap-1 flex-wrap ">
+                    <Button
+                        className="w-52"
+                        onClick={() => Router.push({
+                            pathname: `/congregacao/grupos/${group_id}/mudar-dirigente`,
+                            query: { group_number: `${group_number}` }
+                        })}
+                    >
+                        <GroupOverseersIcon />
+                        Mudar dirigente
+                    </Button>
+                    <Button
+                        className={` w-52 ${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
+                        onClick={() => {
+                            setGroupPublisherListOption('add-publishers')
+                            setSelectedPublishers([])
+                        }}
+                    >
+                        <GroupIcon />
+                        Adicionar Publicadores
+                    </Button>
 
-                            <Button
-                                className={`w-52 ${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
-                                remove
-                                onClick={() => {
-                                    setGroupPublisherListOption('remove-publishers')
-                                    setSelectedPublishers([])
-                                }} >Remover publicadores</Button>
-                        </div>
-                    </div>
-                    <div className={`flex flex-col px-4 flex-wrap`}>
-                        {(groupPublisherListOption === 'add-publishers' || groupPublisherListOption === 'remove-publishers') && <span className="py-4 text-primary-200 font-semibold">Selecione os publicadores</span>}
-                        <div className={`flex flex-col gap-4 ${groupPublisherListOption !== 'disabled' && 'lg:flex-row lg:justify-around'}`}>
-                            {groupPublisherListOption !== 'add-publishers' && (
-                                <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-full'} h-[300px]`}>
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
-                                        <span>Publicadores atuais do grupo</span>
-                                        <span
-                                            className="cursor-pointer"
-                                            onClick={() => setListGroupPublishersShow(!listGroupPublishersShow)}>
-                                            {listGroupPublishersShow ?
-                                                <ChevronUpIcon />
-                                                :
-                                                <ChevronDownIcon />
-                                            }
-                                        </span>
-                                    </div>
-                                    {listGroupPublishersShow && groupPublishers && groupPublishers.length > 0 ? (
-                                        <GroupPublishers key="publishersGroup" publishers={groupPublishers} group_id={group_id as string} />
-                                    ) : (
-                                        <div
-                                            className={`my-1 w-full list-none  bg-typography-100 p-4`}
-                                        >
-                                            Esse grupo está vazio no momento!
-                                        </div>
-                                    )
-
+                    <Button
+                        className={`w-52 ${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
+                        remove
+                        onClick={() => {
+                            setGroupPublisherListOption('remove-publishers')
+                            setSelectedPublishers([])
+                        }} >Remover publicadores</Button>
+                </div>
+            </div>
+            <div className={`flex flex-col px-4 flex-wrap`}>
+                {(groupPublisherListOption === 'add-publishers' || groupPublisherListOption === 'remove-publishers') && <span className="py-4 text-primary-200 font-semibold">Selecione os publicadores</span>}
+                <div className={`flex flex-col gap-4 ${groupPublisherListOption !== 'disabled' && 'lg:flex-row lg:justify-around'}`}>
+                    {groupPublisherListOption !== 'add-publishers' && (
+                        <div className={`flex flex-col ${groupPublisherListOption === 'remove-publishers' || groupPublisherListOption === 'disabled' ? 'w-full md:w-10/12 m-auto' : 'w-full'} h-[300px]`}>
+                            <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
+                                <span>Publicadores atuais do grupo</span>
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={() => setListGroupPublishersShow(!listGroupPublishersShow)}>
+                                    {listGroupPublishersShow ?
+                                        <ChevronUpIcon />
+                                        :
+                                        <ChevronDownIcon />
                                     }
-                                </div>
-                            )}
-                            {publishersOthersGroup && publishersOthersGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
-                                <div className="flex flex-col h-[300px]">
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-100">
-                                        <span>Publicadores de outros grupos</span>
-                                        <span
-                                            className="cursor-pointer"
-                                            onClick={() => setListPublishersOthersGroupsShow(!listPublishersOthersGroupsShow)}>
-                                            {listPublishersOthersGroupsShow ?
-                                                <ChevronUpIcon />
-                                                :
-                                                <ChevronDownIcon />
-                                            }
-                                        </span>
-                                    </div>
-                                    {listPublishersOthersGroupsShow &&
-                                        <GroupPublishers publishers={publishersOthersGroup} group_id={group_id as string} />
-                                    }
-                                </div>
-                            )}
-                            {publishersWithoutGroup && publishersWithoutGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
-                                <div className="flex flex-col h-[300px]">
-                                    <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
-                                        <span>Publicadores sem grupo</span>
-                                        <span
-                                            className="cursor-pointer"
-                                            onClick={() => setListPublishersWithoutGroupShow(!listPublishersWithoutGroupShow)}>
-                                            {listPublishersWithoutGroupShow ?
-                                                <ChevronUpIcon />
-                                                :
-                                                <ChevronDownIcon />
-                                            }
-                                        </span>
-                                    </div>
-                                    {listPublishersWithoutGroupShow && <GroupPublishers publishers={publishersWithoutGroup} group_id={group_id as string} />}
-                                </div>
-                            )}
-                        </div>
-                        {groupPublisherListOption !== 'disabled' &&
-                            <div className={`flex justify-center w-full mt-2`}>
-                                <Button disabled={selectedPublishers.length === 0 && true} success={dataSuccess} remove={groupPublisherListOption === 'remove-publishers' && selectedPublishers.length > 0 && true} onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup}>{groupPublisherListOption === 'add-publishers' ? 'Adicionar' : 'Remover'}</Button>
+                                </span>
                             </div>
-                        }
+                            {listGroupPublishersShow && groupPublishers && groupPublishers.length > 0 ? (
+                                <GroupPublishers key="publishersGroup" publishers={groupPublishers} group_id={group_id as string} />
+                            ) : (
+                                <div
+                                    className={`my-1 w-full list-none  bg-typography-100 p-4`}
+                                >
+                                    Esse grupo está vazio no momento!
+                                </div>
+                            )
 
+                            }
+                        </div>
+                    )}
+                    {publishersOthersGroup && publishersOthersGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
+                        <div className="flex flex-col h-[300px]">
+                            <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-100">
+                                <span>Publicadores de outros grupos</span>
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={() => setListPublishersOthersGroupsShow(!listPublishersOthersGroupsShow)}>
+                                    {listPublishersOthersGroupsShow ?
+                                        <ChevronUpIcon />
+                                        :
+                                        <ChevronDownIcon />
+                                    }
+                                </span>
+                            </div>
+                            {listPublishersOthersGroupsShow &&
+                                <GroupPublishers publishers={publishersOthersGroup} group_id={group_id as string} />
+                            }
+                        </div>
+                    )}
+                    {publishersWithoutGroup && publishersWithoutGroup.length > 0 && groupPublisherListOption === 'add-publishers' && (
+                        <div className="flex flex-col h-[300px]">
+                            <div className="flex justify-between font-bold bg-primary-100 p-4  text-typography-200 ">
+                                <span>Publicadores sem grupo</span>
+                                <span
+                                    className="cursor-pointer"
+                                    onClick={() => setListPublishersWithoutGroupShow(!listPublishersWithoutGroupShow)}>
+                                    {listPublishersWithoutGroupShow ?
+                                        <ChevronUpIcon />
+                                        :
+                                        <ChevronDownIcon />
+                                    }
+                                </span>
+                            </div>
+                            {listPublishersWithoutGroupShow && <GroupPublishers publishers={publishersWithoutGroup} group_id={group_id as string} />}
+                        </div>
+                    )}
+                </div>
+                {groupPublisherListOption !== 'disabled' &&
+                    <div className={`flex justify-center w-full mt-2`}>
+                        <Button disabled={selectedPublishers.length === 0 && true} success={dataSuccess} remove={groupPublisherListOption === 'remove-publishers' && selectedPublishers.length > 0 && true} onClick={groupPublisherListOption === 'add-publishers' ? addPublishersGroup : removePublishersGroup}>{groupPublisherListOption === 'add-publishers' ? 'Adicionar' : 'Remover'}</Button>
                     </div>
-                </ContentDashboard>
-        </ProtectedRoute>
+                }
+
+            </div>
+        </ContentDashboard>
     )
 }
+
+AddPublishersToGroups.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "GROUPS_MANAGER"])
+
+export default AddPublishersToGroups

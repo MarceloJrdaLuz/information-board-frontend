@@ -1,14 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormUpdateCongregation from "@/Components/Forms/FormUpdateCongregation"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function InformacoesCongregacoes() {
-    const [crumbs, ] = useAtom(crumbsAtom)
+function InfoCongregationPage() {
+    const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
@@ -16,13 +15,15 @@ export default function InformacoesCongregacoes() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Informações da Congregação"} />
-                    <div className="flex justify-center items-center py-5">
-                        <FormUpdateCongregation />
-                    </div>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Informações da Congregação"} />
+            <div className="flex justify-center items-center py-5">
+                <FormUpdateCongregation />
+            </div>
+        </ContentDashboard>
     )
 }
+
+InfoCongregationPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION"])
+
+export default InfoCongregationPage

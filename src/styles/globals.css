@@ -5,7 +5,7 @@
 .outline input:focus-within~label,
 .outline input:not(:placeholder-shown)~label {
   @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
-  color: #83c5be;
+  color: rgb(var(--color-primary-200));
   height: auto;
 
 }
@@ -13,7 +13,7 @@
 .outline textarea:focus-within~label,
 .outline textarea:not(:placeholder-shown)~label {
   @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
-  color: #83c5be;
+  color: rgb(var(--color-primary-200));
   height: auto;
 
 }
@@ -62,7 +62,7 @@
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #006d77;
+  background-color: rgb(var(--color-primary-200));
 }
 
 .react-pdf__Page__canvas {

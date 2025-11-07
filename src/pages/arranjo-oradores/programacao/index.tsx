@@ -3,8 +3,6 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import Input from "@/Components/Input"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import ScheduleRow from "@/Components/ScheduleRow"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
@@ -24,6 +22,7 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Card, CardBody, Option, Select } from "@material-tailwind/react"
 import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
@@ -34,7 +33,7 @@ import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
-export default function WeekendSchedulePage() {
+function WeekendSchedulePage() {
     moment.defineLocale("pt-br", null)
     const router = useRouter()
     const { date } = router.query
@@ -250,124 +249,126 @@ export default function WeekendSchedulePage() {
     })
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
-                <section className="flex flex-wrap w-full h-full p-4 relative">
-                    {!data ? (
-                        <WeekendScheduleSkeleton />
-                    ) : (
-                        <>
-                            <div className="w-full space-y-4">
-                                <div className="sticky top-0 z-30">
-                                    <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
-                                        <button
-                                            onClick={() => setShowFilters((o) => !o)}
-                                            className="flex items-center gap-2 text-sm text-typography-600"
-                                        >
-                                            {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                        </button>
-                                    </div>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
+            <section className="flex flex-wrap w-full h-full p-4 relative">
+                {!data ? (
+                    <WeekendScheduleSkeleton />
+                ) : (
+                    <>
+                        <div className="w-full space-y-4">
+                            <div className="sticky top-0 z-30">
+                                <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
+                                    <button
+                                        onClick={() => setShowFilters((o) => !o)}
+                                        className="flex items-center gap-2 text-sm text-typography-600"
+                                    >
+                                        {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                    </button>
+                                </div>
 
-                                    {/* Painel */}
-                                    <div
-                                        className={`
+                                {/* Painel */}
+                                <div
+                                    className={`
            bg-surface-100 border-b shadow-sm rounded-xl flex flex-col md:gap-4
     transition-all duration-300 overflow-visible
     ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
     md:opacity-100 md:max-h-screen md:pointer-events-auto
         `}
-                                    >
-                                        <div className="flex justify-between items-center gap-2">
-                                            <Button
-                                                onClick={() => setMonthOffset((m) => m - 1)}
-                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                            >
-                                                ◀ {prevMonthLabel}
-                                            </Button>
-
-                                            <Button
-                                                onClick={() => setMonthOffset((m) => m + 1)}
-                                                className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                            >
-                                                {nextMonthLabel} ▶
-                                            </Button>
-                                        </div>
-
-                                        <Button className="w-full" onClick={handleSave}>
-                                            Salvar todas
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <Card className="w-full p-4 bg-surface-200">
-                                    <CardBody className="flex flex-wrap gap-4 items-center">
-                                        <Input
-                                            placeholder="Data inicial"
-                                            type="date"
-                                            value={startDatePdfGenerate}
-                                            onChange={(e) => setStartDatePdfGenerate(e.target.value)}
-                                            className="flex-1"
-                                        />
-                                        <Input
-                                            placeholder="Data final"
-                                            type="date"
-                                            value={endDatePdfGenerate}
-                                            onChange={(e) => setEndDatePdfGenerate(e.target.value)}
-                                            min={startDatePdfGenerate || undefined}
-                                            className="flex-1"
-                                        />
-                                        <div className="flex-1">
-                                            <Select
-                                                label="Escala do PDF"
-                                                value={pdfScale.toString()}
-                                                onChange={(value) => setPdfScale(Number(value))}
-                                            >
-                                                <Option value="1">100%</Option>
-                                                <Option value="0.9">90%</Option>
-                                                <Option value="0.8">80%</Option>
-                                                <Option value="0.7">70%</Option>
-                                            </Select>
-                                        </div>
+                                >
+                                    <div className="flex justify-between items-center gap-2">
                                         <Button
-                                            outline
-                                            onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                            className="px-4 py-2 rounded-lg border shadow"
+                                            onClick={() => setMonthOffset((m) => m - 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
                                         >
-                                            {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                            ◀ {prevMonthLabel}
                                         </Button>
-                                        {isClient && <PdfLinkComponent />}
-                                    </CardBody>
-                                </Card>
-                                {showPdfPreview && (
-                                    <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
-                                        <PDFViewer style={{ width: "100%", height: "100%" }}>
-                                            <Document>
-                                                <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
-                                            </Document>
-                                        </PDFViewer>
-                                    </div>
-                                )}
 
-                                <div className="space-y-4 mt-6 pb-36 h-fit">
-                                    {weekendMeetingDay.map((d) => {
-                                        const externalForDate = (externalData ?? []).filter((t) =>
-                                            moment(t.date).isSame(d, "day")
-                                        )
-                                        return (
-                                            <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
-                                                <ScheduleRow date={d} externalTalks={externalForDate} />
-                                            </div>
-                                        )
-                                    })}
+                                        <Button
+                                            onClick={() => setMonthOffset((m) => m + 1)}
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                        >
+                                            {nextMonthLabel} ▶
+                                        </Button>
+                                    </div>
+
+                                    <Button className="w-full" onClick={handleSave}>
+                                        Salvar todas
+                                    </Button>
                                 </div>
                             </div>
-                        </>
-                    )
-                    }
 
-                </section >
-            </ContentDashboard >
-        </ProtectedRoute>
+                            <Card className="w-full p-4 bg-surface-200">
+                                <CardBody className="flex flex-wrap gap-4 items-center">
+                                    <Input
+                                        placeholder="Data inicial"
+                                        type="date"
+                                        value={startDatePdfGenerate}
+                                        onChange={(e) => setStartDatePdfGenerate(e.target.value)}
+                                        className="flex-1"
+                                    />
+                                    <Input
+                                        placeholder="Data final"
+                                        type="date"
+                                        value={endDatePdfGenerate}
+                                        onChange={(e) => setEndDatePdfGenerate(e.target.value)}
+                                        min={startDatePdfGenerate || undefined}
+                                        className="flex-1"
+                                    />
+                                    <div className="flex-1">
+                                        <Select
+                                            label="Escala do PDF"
+                                            value={pdfScale.toString()}
+                                            onChange={(value) => setPdfScale(Number(value))}
+                                        >
+                                            <Option value="1">100%</Option>
+                                            <Option value="0.9">90%</Option>
+                                            <Option value="0.8">80%</Option>
+                                            <Option value="0.7">70%</Option>
+                                        </Select>
+                                    </div>
+                                    <Button
+                                        outline
+                                        onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                        className="px-4 py-2 rounded-lg border shadow"
+                                    >
+                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                    </Button>
+                                    {isClient && <PdfLinkComponent />}
+                                </CardBody>
+                            </Card>
+                            {showPdfPreview && (
+                                <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
+                                    <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                        <Document>
+                                            <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
+                                        </Document>
+                                    </PDFViewer>
+                                </div>
+                            )}
+
+                            <div className="space-y-4 mt-6 pb-36 h-fit">
+                                {weekendMeetingDay.map((d) => {
+                                    const externalForDate = (externalData ?? []).filter((t) =>
+                                        moment(t.date).isSame(d, "day")
+                                    )
+                                    return (
+                                        <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
+                                            <ScheduleRow date={d} externalTalks={externalForDate} />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </>
+                )
+                }
+
+            </section >
+        </ContentDashboard >
     )
 }
+
+WeekendSchedulePage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default WeekendSchedulePage

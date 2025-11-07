@@ -1,14 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddEmergencyContact from "@/Components/Forms/FormAddEmergencyContact"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddEmergencyContact() {
+function AddEmergencyContactPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -34,13 +33,15 @@ export default function AddEmergencyContact() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Contato"} />
-                    <section className="flex m-10 justify-center items-center">
-                        <FormAddEmergencyContact congregation_id={congregation_id ?? ""} />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Contato"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddEmergencyContact congregation_id={congregation_id ?? ""} />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddEmergencyContactPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"])
+
+export default AddEmergencyContactPage

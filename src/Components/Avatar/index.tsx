@@ -38,8 +38,8 @@ export default function Avatar(props: IAvatar) {
             alt="Foto de perfil"
           />
         ) : (
-          <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-primary-50 rounded-full">
-            <span className="font-medium text-typography-600">
+          <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-primary-200 rounded-full">
+            <span className="font-medium text-typography-200">
               {getInitials(props.userName ?? "")}
             </span>
           </div>

@@ -1,13 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddNotice from "@/Components/Forms/FormAddNotice"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddPublicadores() {
+function AddNoticePage() {
     const { congregation } = useCongregationContext()
     const congregationNumber = congregation?.number as string
 
@@ -34,13 +34,15 @@ export default function AddPublicadores() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={"Criar Anúncio"} />
                 <section className="flex justify-center">
                     <FormAddNotice congregationNumber={congregationNumber} />
                 </section>
             </ContentDashboard>
-        </ProtectedRoute>
     )
 }
+
+AddNoticePage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "NOTICES_MANAGER"])
+
+export default AddNoticePage

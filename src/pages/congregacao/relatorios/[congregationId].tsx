@@ -1,14 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import Layout from "@/Components/Layout"
 import ListRelatorios from "@/Components/ListMonths"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-export default function ListarRelatorios() {
+function ListReportsPage() {
     const router = useRouter()
     const { congregationId } = router.query
 
@@ -20,11 +19,13 @@ export default function ListarRelatorios() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Relatórios"} />
-                    <ListRelatorios congregationId={congregationId as string} />
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Relatórios"} />
+            <ListRelatorios congregationId={congregationId as string} />
+        </ContentDashboard>
     )
 }
+
+ListReportsPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "REPORTS_MANAGER", " REPORTS_VIEWER"])
+
+export default ListReportsPage

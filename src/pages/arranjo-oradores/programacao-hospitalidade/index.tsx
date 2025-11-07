@@ -2,8 +2,6 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import HospitalityRow from "@/Components/HospitalityWeekendRow"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
@@ -17,13 +15,14 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IHospitalityWeekend, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
 import { IHospitalityGroup } from "@/types/types"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-export default function HospitalityWeekendPage() {
+function HospitalityWeekendPage() {
     moment.defineLocale("pt-br", null)
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
@@ -98,52 +97,54 @@ export default function HospitalityWeekendPage() {
     };
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
-                    <section className="flex flex-wrap w-full h-full p-4 relative">
-                        {!data ? (
-                            <WeekendScheduleSkeleton />
-                        ) : (
-                            <div className="w-full space-y-6">
-                                {/* Filtros e controles */}
-                                <div className="sticky top-0 z-30 bg-surface-100 p-4 rounded-xl shadow flex flex-col gap-4">
-                                    <div className="flex justify-between items-center gap-2">
-                                        <Button
-                                            onClick={() => setMonthOffset((m) => m - 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                        >
-                                            ◀ {prevMonthLabel}
-                                        </Button>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
+            <section className="flex flex-wrap w-full h-full p-4 relative">
+                {!data ? (
+                    <WeekendScheduleSkeleton />
+                ) : (
+                    <div className="w-full space-y-6">
+                        {/* Filtros e controles */}
+                        <div className="sticky top-0 z-30 bg-surface-100 p-4 rounded-xl shadow flex flex-col gap-4">
+                            <div className="flex justify-between items-center gap-2">
+                                <Button
+                                    onClick={() => setMonthOffset((m) => m - 1)}
+                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                >
+                                    ◀ {prevMonthLabel}
+                                </Button>
 
-                                        <Button
-                                            onClick={() => setMonthOffset((m) => m + 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                        >
-                                            {nextMonthLabel} ▶
-                                        </Button>
-                                    </div>
-
-                                    <Button className="w-full" onClick={handleSave}>
-                                        Salvar todas
-                                    </Button>
-                                </div>
-
-                                {/* Lista de sábados */}
-                                <div className="space-y-4 pb-36">
-                                    {weekendMeetingDay.map((d) => (
-                                        <div
-                                            key={d.toISOString()}
-                                            className="bg-surface-100 border rounded-xl shadow-sm p-4"
-                                        >
-                                            <HospitalityRow date={d} />
-                                        </div>
-                                    ))}
-                                </div>
+                                <Button
+                                    onClick={() => setMonthOffset((m) => m + 1)}
+                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                >
+                                    {nextMonthLabel} ▶
+                                </Button>
                             </div>
-                        )}
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+
+                            <Button className="w-full" onClick={handleSave}>
+                                Salvar todas
+                            </Button>
+                        </div>
+
+                        {/* Lista de sábados */}
+                        <div className="space-y-4 pb-36">
+                            {weekendMeetingDay.map((d) => (
+                                <div
+                                    key={d.toISOString()}
+                                    className="bg-surface-100 border rounded-xl shadow-sm p-4"
+                                >
+                                    <HospitalityRow date={d} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </section>
+        </ContentDashboard>
     )
 }
+
+HospitalityWeekendPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default HospitalityWeekendPage

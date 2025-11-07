@@ -3,16 +3,15 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FileList from "@/Components/FileList"
 import SkeletonFileList from "@/Components/FileList/skeletonFileList"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import Upload from "@/Components/Upload"
 import { useDocumentsContext } from "@/context/DocumentsContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { Categories, ICategory } from "@/types/types"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect, useState } from "react"
 
-export default function FimDeSemana() {
+function MeetingEndWeekPage() {
 
     const [category, setCategory] = useState<ICategory>()
     const { uploadedFiles, setDocumentCategoryId, loading } = useDocumentsContext()
@@ -49,28 +48,30 @@ export default function FimDeSemana() {
     const hasFiles = uploadedFiles && uploadedFiles.length > 0
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Reunião do Fim de Semana"} />
-                    <section className="flex flex-wrap w-full h-full p-5">
-                        <div className="w-full h-full">
-                            <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
-                                <Upload acceptFiles={{
-                                    'application/pdf': []
-                                }} />
-                            </div>
-                           {loading ? (
-                                renderSkeleton()
-                            ) : hasFiles ? (
-                                <FileList files={uploadedFiles} />
-                            ) : (
-                                <div className="w-full flex justify-center items-center py-10 text-typography-500">
-                                    Nenhum arquivo encontrado.
-                                </div>
-                            )}
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Reunião do Fim de Semana"} />
+            <section className="flex flex-wrap w-full h-full p-5">
+                <div className="w-full h-full">
+                    <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
+                        <Upload acceptFiles={{
+                            'application/pdf': []
+                        }} />
+                    </div>
+                    {loading ? (
+                        renderSkeleton()
+                    ) : hasFiles ? (
+                        <FileList files={uploadedFiles} />
+                    ) : (
+                        <div className="w-full flex justify-center items-center py-10 text-typography-500">
+                            Nenhum arquivo encontrado.
                         </div>
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+                    )}
+                </div>
+            </section>
+        </ContentDashboard>
     )
 }
+
+MeetingEndWeekPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"])
+
+export default MeetingEndWeekPage

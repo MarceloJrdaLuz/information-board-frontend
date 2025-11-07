@@ -1,14 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditRole from "@/Components/Forms/FormEditRole"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditRoles() {
+function EditRolesPage() {
     const router = useRouter()
     const { id } = router.query
     const methods = useForm()
@@ -36,7 +36,6 @@ export default function EditRoles() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={"Editar Função"} />
                 <FormProvider {...methods}>
@@ -45,6 +44,9 @@ export default function EditRoles() {
                     </section>
                 </FormProvider>
             </ContentDashboard>
-        </ProtectedRoute>
     )
 }
+
+EditRolesPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default EditRolesPage

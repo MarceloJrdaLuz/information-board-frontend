@@ -3,11 +3,11 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { deleteTermOfUseAtom } from "@/atoms/TermsOfUseAtoms"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { ITermOfUse } from "@/types/termsofuse"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
 import { CircleIcon } from "lucide-react"
 import Router from "next/router"
@@ -15,7 +15,7 @@ import { useEffect } from "react"
 import ReactMarkdown from "react-markdown"
 import { toast } from "react-toastify"
 
-export default function Terms() {
+function TermsPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const deleteTermOfUse = useSetAtom(deleteTermOfUseAtom)
@@ -35,7 +35,6 @@ export default function Terms() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={"Termos de Uso"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -83,6 +82,9 @@ export default function Terms() {
                         </div>
                     </section>
                 </ContentDashboard>
-        </ProtectedRoute>
     )
 }
+
+TermsPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default TermsPage

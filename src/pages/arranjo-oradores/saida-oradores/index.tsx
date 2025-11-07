@@ -6,12 +6,12 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import ExternalTalkRow from "@/Components/ExternalTalkRow"
 import ExternalTalksSkeleton from "@/Components/ExternalTalksSkeleton"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IExternalTalkFormData } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
 import moment from "moment"
 import "moment/locale/pt-br"
@@ -19,11 +19,11 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-export default function ExternalTalksPage() {
+function ExternalTalksPage() {
     moment.defineLocale("pt-br", null)
     const router = useRouter()
     const { date } = router.query
-    const [crumbs, ] = useAtom(crumbsAtom)
+    const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const setCreateExternalTalk = useSetAtom(createExternalAtom)
@@ -46,8 +46,8 @@ export default function ExternalTalksPage() {
 
     const { data, mutate } = useAuthorizedFetch<IExternalTalkFormData>(
         `/form-data?form=externalTalks`, {
-            allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
-        }
+        allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
+    }
     )
 
     // atualiza mês a partir da querystring
@@ -123,52 +123,54 @@ export default function ExternalTalksPage() {
     const talks = data?.talks ?? []
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Saída de oradores"} />
-                    {!data ? (
-                        <ExternalTalksSkeleton />
-                    ) : (
-                        <>
-                            <div className="flex justify-between my-4 p-4">
-                                <Button
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                    onClick={() => setMonthOffset((m) => m - 1)}>
-                                    ◀ {prevMonthLabel}
-                                </Button>
-                                <Button
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize"
-                                    onClick={() => setMonthOffset((m) => m + 1)}>
-                                    {nextMonthLabel} ▶
-                                </Button>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Saída de oradores"} />
+            {!data ? (
+                <ExternalTalksSkeleton />
+            ) : (
+                <>
+                    <div className="flex justify-between my-4 p-4">
+                        <Button
+                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                            onClick={() => setMonthOffset((m) => m - 1)}>
+                            ◀ {prevMonthLabel}
+                        </Button>
+                        <Button
+                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                            onClick={() => setMonthOffset((m) => m + 1)}>
+                            {nextMonthLabel} ▶
+                        </Button>
+                    </div>
+
+
+                    {weekendMeetingDay.map((date) => {
+                        const talksForDate = externalTalks.filter(
+                            (t) => t.date === moment(date).format("YYYY-MM-DD")
+                        )
+                        return (
+                            <div key={`${date}`} className="p-4">
+                                <ExternalTalkRow
+                                    key={date.toISOString()}
+                                    date={date}
+                                    externalTalks={talksForDate}
+                                    speakers={speakers}
+                                    congregations={congregations}
+                                    talks={talks}
+                                    onAddExternalTalk={handleAddExternalTalk}
+                                    onUpdateStatus={handleUpdateStatus}
+                                    onDelete={handleDelete}
+                                />
                             </div>
+                        )
+                    })}
+                </>
+            )}
 
 
-                            {weekendMeetingDay.map((date) => {
-                                const talksForDate = externalTalks.filter(
-                                    (t) => t.date === moment(date).format("YYYY-MM-DD")
-                                )
-                                return (
-                                    <div key={`${date}`} className="p-4">
-                                        <ExternalTalkRow
-                                            key={date.toISOString()}
-                                            date={date}
-                                            externalTalks={talksForDate}
-                                            speakers={speakers}
-                                            congregations={congregations}
-                                            talks={talks}
-                                            onAddExternalTalk={handleAddExternalTalk}
-                                            onUpdateStatus={handleUpdateStatus}
-                                            onDelete={handleDelete}
-                                        />
-                                    </div>
-                                )
-                            })}
-                        </>
-                    )}
-
-
-                </ContentDashboard>
-        </ProtectedRoute>
+        </ContentDashboard>
     )
 }
+
+ExternalTalksPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default ExternalTalksPage

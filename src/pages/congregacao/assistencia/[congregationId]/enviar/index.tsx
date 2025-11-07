@@ -1,14 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAssistance from "@/Components/Forms/FormAssistance"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-export default function Assistencia() {
+function MeetingAssistancePage() {
     const router = useRouter()
     const { congregationId } = router.query
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -34,11 +33,13 @@ export default function Assistencia() {
     }, [setCrumbs, setPageActive, congregationId])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Assistência"} />
-                    <FormAssistance congregation_id={congregationId as string} />
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Assistência"} />
+            <FormAssistance congregation_id={congregationId as string} />
+        </ContentDashboard>
     )
 }
+
+MeetingAssistancePage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER"])
+
+export default MeetingAssistancePage

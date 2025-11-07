@@ -3,27 +3,23 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
 import GroupIcon from "@/Components/Icons/GroupIcon"
-import Layout from "@/Components/Layout"
 import ListGroups from "@/Components/ListGroups"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useSubmitContext } from "@/context/SubmitFormContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useAuthorizedFetch, useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { getAPIClient } from "@/services/axios"
 import { IGroup } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
 import Router from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-export default function Grupos() {
+function GroupsPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
@@ -79,35 +75,37 @@ export default function Grupos() {
     }
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <div className="w-full h-full">
-                        <div className="flex flex-col">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
-                            <Button
-                                outline
-                                onClick={() => {
-                                    Router.push('/congregacao/grupos/add')
-                                }}
-                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                <GroupIcon />
-                                <span className="text-primary-200 font-semibold">Criar grupo</span>
-                            </Button>
-                        </div>
-                        {groups && groups.length > 0 ? (
-                            <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
-                        )
-                            : (
-                                <>
-                                    {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
-                                </>
-                            )
-                        }
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
+            <section className="flex flex-wrap w-full h-full p-5 ">
+                <div className="w-full h-full">
+                    <div className="flex flex-col">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
+                        <Button
+                            outline
+                            onClick={() => {
+                                Router.push('/congregacao/grupos/add')
+                            }}
+                            className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                            <GroupIcon />
+                            <span className="text-primary-200 font-semibold">Criar grupo</span>
+                        </Button>
                     </div>
-                </section>
-            </ContentDashboard>
-        </ProtectedRoute>
+                    {groups && groups.length > 0 ? (
+                        <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
+                    )
+                        : (
+                            <>
+                                {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
+                            </>
+                        )
+                    }
+                </div>
+            </section>
+        </ContentDashboard>
     )
 }
+
+GroupsPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"])
+
+export default GroupsPage

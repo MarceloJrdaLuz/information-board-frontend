@@ -1,15 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditTerritory from "@/Components/Forms/FormEditTerritory"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditTerritory() {
+function EditTerritoryPage() {
     const router = useRouter()
     const { id } = router.query
     const methods = useForm()
@@ -36,15 +35,17 @@ export default function EditTerritory() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Território"} />
-                    <FormProvider {...methods}>
-                        <section className="flex justify-center">
-                            <FormEditTerritory territory_id={`${id}`} />
-                        </section>
-                    </FormProvider>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Território"} />
+            <FormProvider {...methods}>
+                <section className="flex justify-center">
+                    <FormEditTerritory territory_id={`${id}`} />
+                </section>
+            </FormProvider>
+        </ContentDashboard>
     )
 }
+
+EditTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
+
+export default EditTerritoryPage

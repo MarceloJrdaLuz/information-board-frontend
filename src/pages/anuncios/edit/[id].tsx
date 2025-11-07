@@ -1,17 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditNotice from "@/Components/Forms/FormEditNotice"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { getAPIClient } from "@/services/axios"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditPublishers() {
+function EditNoticePage() {
 
     const router = useRouter()
     const { id } = router.query
@@ -41,15 +38,17 @@ export default function EditPublishers() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "NOTICES_MANAGER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Anúncio"} />
-                <FormProvider {...methods}>
-                    <section className="flex justify-center">
-                        <FormEditNotice notice_id={id as string} />
-                    </section>
-                </FormProvider>
-            </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Anúncio"} />
+            <FormProvider {...methods}>
+                <section className="flex justify-center">
+                    <FormEditNotice notice_id={id as string} />
+                </section>
+            </FormProvider>
+        </ContentDashboard>
     )
 }
+
+EditNoticePage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "NOTICES_MANAGER"])
+
+export default EditNoticePage
