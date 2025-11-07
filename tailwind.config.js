@@ -17,6 +17,7 @@ module.exports = withMT({
       colors: {
         primary: {
           100: "rgb(var(--color-primary-100) / <alpha-value>)",
+          150: "rgb(var(--color-primary-150) / <alpha-value>)",
           200: "rgb(var(--color-primary-200) / <alpha-value>)",
         },
         secondary: {

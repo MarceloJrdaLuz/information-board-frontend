@@ -99,7 +99,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute cursor-pointer left-0 z-10  w-full origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-blac-typography-900k ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto hide-scrollbar">
+        <Menu.Items className="absolute cursor-pointer left-0 z-10  w-full origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-blac-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto hide-scrollbar">
           <div className="py-1">
             <input
               type="text"

@@ -105,7 +105,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className={`absolute ${props.position}-0 z-50 mt-2 w-72 origin-top-right rounded-lg bg-surface-100 shadow-lg ring-1 ring--typography-900 ring-opacity-5 focus:outline-none max-h-80 overflow-auto thin-scrollbar`}
+          className={`absolute ${props.position}-0 z-50 mt-2 w-72 origin-top-right rounded-lg bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none max-h-80 overflow-auto thin-scrollbar`}
         >
           <div className="py-1">
             {searchable && (

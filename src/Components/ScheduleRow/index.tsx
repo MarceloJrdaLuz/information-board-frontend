@@ -258,10 +258,13 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
   return (
     <div className={`border-2  rounded-xl p-3 flex flex-col gap-2 bg-surface-100 transition-colors duration-300`}>
-      <h2 className="font-semibold">{format(date, "dd/MM/yyyy")}</h2>
+      <h2 className="font-semibold text-primary-200">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
-        color="blue-gray"
+        className="
+    checked:bg-[rgb(var(--color-primary-100))] 
+    checked:before:bg-[rgb(var(--color-primary-200))] 
+    !text-typography-100"
         label="Evento Especial"
         ripple={false}
         checked={!!current.isSpecial}
