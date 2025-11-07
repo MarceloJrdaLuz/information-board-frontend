@@ -15,6 +15,7 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconeFinanceiro from '../../../public/images/financeiro-gray.png'
+import { themeAtom } from "@/atoms/themeAtoms"
 
 function Financeiro() {
 
@@ -26,6 +27,8 @@ function Financeiro() {
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
 
     useEffect(() => {
         if (congregation) {
@@ -69,7 +72,7 @@ function Financeiro() {
                 <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
                     {documents ? (
                         documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
-                            <Button className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                            <Button outline={isDark} className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
                                 {removeMimeType(document.fileName)}
                             </Button>
                         )) : (
@@ -79,7 +82,7 @@ function Financeiro() {
                         <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
                     )}
                 </div>
-                <Button
+                <Button outline={isDark}
                     onClick={() => router.push(`/${number}`)}
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>

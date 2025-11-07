@@ -17,6 +17,7 @@ import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
+import { themeAtom } from "@/atoms/themeAtoms"
 
 function Home() {
     const router = useRouter()
@@ -27,6 +28,9 @@ function Home() {
 
     const [notices, setNotices] = useState<INotice[]>()
     const [congregationData, setCongregationData] = useState<ICongregation>()
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
+
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation, isLoading } = useFetch<ICongregation>(fetchConfigCongregationData)
@@ -71,22 +75,22 @@ function Home() {
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
             )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <Button className="w-full md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
+                <Button outline={isDark} className="w-full md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
                     <ReportIcon />Relatório de Serviço de campo
                 </Button>
-                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/limpeza`)}>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/limpeza`)}>
                     <CleanIcon />Limpeza do Salão do Reino
                 </Button>
-                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
                     <PublicMeetingIcon />Designações das Reuniões
                 </Button>
-                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/campo`)}>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/campo`)}>
                     <PrechingHomeIcon />Designações de Campo
                 </Button>
-                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
                     <CalculatorIcon />Relatório Financeiro
                 </Button>
-                <Button className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/eventos`)}>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/eventos`)}>
                     <CalendarDaysIcon />Eventos especiais
                 </Button>
             </LayoutPrincipal>

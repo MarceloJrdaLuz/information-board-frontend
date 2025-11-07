@@ -22,6 +22,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import iconDesignacoes from '../../../public/images/designacoes-gray.png'
+import { themeAtom } from '@/atoms/themeAtoms'
 
 function Designacoes() {
   const router = useRouter()
@@ -39,6 +40,8 @@ function Designacoes() {
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
   const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
   const [congregationData, setCongregationData] = useState<ICongregation>()
+  const themeAtomValue = useAtomValue(themeAtom)
+  const isDark = themeAtomValue === "theme-dark"
 
   const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
   const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
@@ -144,7 +147,7 @@ function Designacoes() {
       >
         <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
           <div>
-            <Button
+            <Button outline={isDark}
               className="w-full"
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
             >
@@ -154,7 +157,7 @@ function Designacoes() {
               documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                 {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
                   <div className="flex-1 " key={document.id}>
-                    <Button
+                    <Button outline={isDark}
                       className="w-full"
                       onClick={() => { handleButtonClick(document.url) }}
                     >{removeMimeType(document.fileName)}</Button>
@@ -167,7 +170,7 @@ function Designacoes() {
               <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
                 {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
                   <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                    <Button
+                    <Button outline={isDark}
                       onClick={() => { handleButtonClick(document.url) }}
                       className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
                   </div>
@@ -186,7 +189,7 @@ function Designacoes() {
 
           </div>
           <div>
-            <Button
+            <Button outline={isDark}
               onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
               className="w-full"
             ><PublicMeetingIcon />Reunião do Fim de Semana
@@ -200,7 +203,7 @@ function Designacoes() {
                         className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`}
                         key={document.id}
                       >
-                        <Button
+                        <Button outline={isDark}
                           onClick={() => { handleButtonClick(document.url) }}
                           className="w-full"
                         >
@@ -220,7 +223,7 @@ function Designacoes() {
             )}
             {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-typography-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
           </div>
-          <Button
+          <Button outline={isDark}
             onClick={() => router.push(`/${number}`)}
             className="w-1/2 mx-auto"
           ><ChevronsLeftIcon />Voltar</Button>
@@ -235,7 +238,7 @@ function Designacoes() {
 }
 
 Designacoes.getLayout = function getLayout(page: React.ReactElement) {
-    return page // sem layout nenhum
+  return page // sem layout nenhum
 }
 
 export default Designacoes

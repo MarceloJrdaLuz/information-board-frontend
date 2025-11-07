@@ -2,6 +2,7 @@ import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import { domainUrl } from "@/atoms/atom"
+import { themeAtom } from "@/atoms/themeAtoms"
 import { useFetch } from "@/hooks/useFetch"
 import { ITermOfUse } from "@/types/termsofuse"
 import { ICongregation } from "@/types/types"
@@ -16,13 +17,15 @@ function PoliticaPrivacidade() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
 
     const [congregationData, setCongregationData] = useState<ICongregation>()
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
-    const fetchTermsOfUsePublishersData =   `/terms/active/publisher`
+    const fetchTermsOfUsePublishersData = `/terms/active/publisher`
     const { data: terms } = useFetch<ITermOfUse>(fetchTermsOfUsePublishersData)
     useEffect(() => {
         if (congregation) {
@@ -40,6 +43,7 @@ function PoliticaPrivacidade() {
                         {terms?.content ?? "Nenhuma política de privacidade foi definida pela congregação."}
                     </ReactMarkdown>
                     <Button
+                        outline={isDark}
                         onClick={() => Router.push(`/${number}`)}
                         className="w-1/2 mx-auto mt-10"
                     ><ChevronsLeftIcon />Voltar</Button>

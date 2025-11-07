@@ -15,6 +15,7 @@ import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconClean from '../../../public/images/limpeza-gray.png'
+import { themeAtom } from "@/atoms/themeAtoms"
 
 function Limpeza() {
     const router = useRouter()
@@ -25,6 +26,8 @@ function Limpeza() {
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
 
     useEffect(() => {
         if (congregation) {
@@ -69,7 +72,7 @@ function Limpeza() {
                     {
                         documents ? (
                             documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
-                                <Button className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                                <Button outline={isDark} className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
                                     {removeMimeType(document.fileName)}
                                 </Button>
                             )) : (
@@ -80,7 +83,7 @@ function Limpeza() {
                         )
                     }
                 </div>
-                <Button
+                <Button outline={isDark}
                     onClick={() => Router.push(`/${number}`)}
                     className="w-1/2 mx-auto"
                 ><ChevronsLeftIcon />Voltar</Button>

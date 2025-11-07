@@ -32,7 +32,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
         >
           <ChevronLeft size={20} />
         </button>
-        <h2 className="text-xl font-bold text-[#2a2b2b]">{months[activeIndex]?.[0]}</h2>
+        <h2 className="text-xl font-bold text-typography-700">{months[activeIndex]?.[0]}</h2>
         <button
           onClick={() => setActiveIndex((i) => Math.min(i + 1, months.length - 1))}
           className="p-2 rounded-full bg-[#28456C] text-typography-100 shadow hover:bg-[#335784] transition"

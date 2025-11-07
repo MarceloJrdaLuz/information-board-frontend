@@ -128,35 +128,46 @@ input[type=number] {
 
 .theme-dark {
   /* === Primárias (roxos) === */
-  --color-primary-50: 25 5 45;      /* #19052D — roxo quase preto */
-  --color-primary-200: 173 39 255;   /* #3C1464 — base principal escura */
-  --color-primary-100: 38 9 56;  /* #8250C8 — destaque moderno */
+  --color-primary-50: 25 5 45;
+  /* #19052D — roxo quase preto */
+  --color-primary-100: 38 9 56;
+  /* #8250C8 — destaque moderno */
+  --color-primary-200: 173 39 255;
+  /* #3C1464 — base principal escura */
 
   /* === Secundárias (fundos neutros escuros) === */
-  --color-secondary-100: 22 20 25;  /* #161419 — fundo geral */
-  --color-secondary-200: 35 30 40;  /* #231E28 — contraste leve */
+  --color-secondary-100: 22 20 25;
+  /* #161419 — fundo geral */
+  --color-secondary-200: 35 30 40;
+  /* #231E28 — contraste leve */
 
   /* === Texto (branco com gradações suaves) === */
-  --color-typography-100: 255 255 255; /* branco puro - títulos */
+  --color-typography-100: 255 255 255;
+  /* branco puro - títulos */
   --color-typography-200: 235 235 240;
   --color-typography-300: 215 215 225;
   --color-typography-400: 190 190 200;
   --color-typography-500: 160 160 170;
   --color-typography-600: 130 130 140;
-  --color-typography-700: 210 210 220; /* texto sobre fundo roxo */
+  --color-typography-700: 210 210 220;
+  /* texto sobre fundo roxo */
   --color-typography-800: 235 235 240;
   --color-typography-900: 255 255 255;
 
   /* === Fundos / Superfícies === */
-  --color-surface-100: 15 10 20;    /* #0F0A14 — fundo principal */
-  --color-surface-200: 25 18 35;    /* #191223 — cards / containers */
+  --color-surface-100: 15 10 20;
+  /* #0F0A14 — fundo principal */
+  --color-surface-200: 25 18 35;
+  /* #191223 — cards / containers */
 }
 
 
-.blue {
+.theme-blue {
   /* tom mais escuro, base */
- --color-primary-100:  159 185 227;   /* #225A59 — base principal escura */
---color-primary-200:  10 34 75; /* #3DB5AD — destaque agradável */
+  --color-primary-100: 159 185 227;
+  /* #225A59 — base principal escura */
+  --color-primary-200: 10 34 75;
+  /* #3DB5AD — destaque agradável */
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
@@ -164,7 +175,7 @@ input[type=number] {
   --color-secondary-200: 233 233 233;
   /* #e9e9e9 */
 
-    /* Texto */
+  /* Texto */
   --color-typography-100: 245 245 245;
   /* Preto suave */
   --color-typography-200: 238 238 238;

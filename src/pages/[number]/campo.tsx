@@ -17,6 +17,7 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
+import { themeAtom } from "@/atoms/themeAtoms"
 
 function Campo() {
     const router = useRouter()
@@ -26,6 +27,8 @@ function Campo() {
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
 
 
     useEffect(() => {
@@ -79,7 +82,7 @@ function Campo() {
                 <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                 <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                     <div>
-                        <Button
+                        <Button outline={isDark}
                             onClick={() => { setFieldServiceOptionsShow(!fieldServiceOptionsShow) }}
                             className="w-full"
                         ><PreachingIcon /> Saídas de Campo</Button>
@@ -88,7 +91,7 @@ function Campo() {
                                 documents ? documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
                                     documentsFieldServiceFilter?.map(document => (
                                         <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                            <Button
+                                            <Button outline={isDark}
                                                 className="w-full"
                                                 onClick={() => { handleButtonClick(document.url) }}
                                             >
@@ -105,7 +108,7 @@ function Campo() {
                         </div>
 
                         <div>
-                            <Button
+                            <Button outline={isDark}
                                 onClick={() => { setLPublicServiceOptionsShow(!publicServiceOptionsShow) }}
                                 className="w-full"
                             ><PublicPreachingIcon />Testemunho Público</Button>
@@ -114,7 +117,7 @@ function Campo() {
                                     documents ? (
                                         documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
                                             <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                                <Button
+                                                <Button outline={isDark}
                                                     className="w-full"
                                                     onClick={() => { handleButtonClick(document.url) }}
                                                 >{removeMimeType(document.fileName)}</Button>
@@ -129,7 +132,7 @@ function Campo() {
                             </div>
                         </div>
                     </div>
-                    <Button
+                    <Button outline={isDark}
                         onClick={() => router.push(`/${number}`)}
                         className="w-1/2 mx-auto"
                     ><ChevronsLeftIcon />Voltar</Button>

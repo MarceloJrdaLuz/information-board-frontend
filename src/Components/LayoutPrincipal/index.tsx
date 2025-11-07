@@ -37,7 +37,7 @@ export default function LayoutPrincipal(props: LayoutPrincipalProps) {
     }
 
     return (
-        <div className={`layout relative shadow shadow-typography-600 bg-typography-200 h-auto w-full flex flex-col md:m-auto lg:shadow-none`}>
+        <div className={`layout relative shadow shadow-typography-600 bg-surface-200 h-auto w-full flex flex-col md:m-auto lg:shadow-none`}>
             {!props.header ? null :
                 <>
                     <Header className={props.className} texto={props.textoHeader}>
