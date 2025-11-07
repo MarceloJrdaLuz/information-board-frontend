@@ -1,15 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditCategory from "@/Components/Forms/FormEditCategory"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditCategory() {
+function EditCategoryPage() {
     const router = useRouter()
     const { id } = router.query
     const methods = useForm()
@@ -36,16 +35,17 @@ export default function EditCategory() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Categoria"} />
-                    <FormProvider {...methods}>
-                        <section className="flex justify-center">
-                            <FormEditCategory category_id={`${id}`} />
-                        </section>
-                    </FormProvider>
-                </ContentDashboard>
-        </ProtectedRoute>
-
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Categoria"} />
+            <FormProvider {...methods}>
+                <section className="flex justify-center">
+                    <FormEditCategory category_id={`${id}`} />
+                </section>
+            </FormProvider>
+        </ContentDashboard>
     )
 }
+
+EditCategoryPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default EditCategoryPage

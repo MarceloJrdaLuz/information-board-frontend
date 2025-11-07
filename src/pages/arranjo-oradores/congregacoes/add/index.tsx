@@ -1,13 +1,13 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddCongregationAuxiliary from "@/Components/Forms/FormAddCongregationAuxiliary"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
 import { useEffect } from "react"
 
-export default function CreateNewCongregationAuxiliary() {
+function AddAuxiliaryCongregationPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -32,13 +32,15 @@ export default function CreateNewCongregationAuxiliary() {
 
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Congregação"} />
-                <section className="flex m-10 justify-center items-center">
-                    <FormAddCongregationAuxiliary />
-                </section>
-            </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Congregação"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddCongregationAuxiliary />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddAuxiliaryCongregationPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default AddAuxiliaryCongregationPage

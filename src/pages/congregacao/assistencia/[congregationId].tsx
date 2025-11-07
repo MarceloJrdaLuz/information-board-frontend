@@ -4,14 +4,13 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Dropdown from "@/Components/Dropdown"
 import PdfIcon from "@/Components/Icons/PdfIcon"
-import Layout from "@/Components/Layout"
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { getYearService } from "@/functions/meses"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IMeetingAssistance } from "@/types/types"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
 import { FilePlus2Icon } from "lucide-react"
@@ -20,7 +19,7 @@ import 'moment/locale/pt-br'
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-export default function ListarRelatorios() {
+function ListReportsPage() {
     const { roleContains } = useAuthContext()
     const router = useRouter()
     const { congregationId } = router.query
@@ -79,32 +78,34 @@ export default function ListarRelatorios() {
         </PDFDownloadLink>
     )
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER", "ASSISTANCE_VIEWER"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
-                        <div className="flex justify-between">
-                            {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
-                                <Button
-                                    outline
-                                    onClick={() => {
-                                        router.push(`/congregacao/assistencia/${congregationId}/enviar`)
-                                    }}
-                                    className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <FilePlus2Icon />
-                                    <span className="text-primary-200 font-semibold">Adicionar</span>
-                                </Button>
-                            )}
-                            {pdfGenerating && <PdfLinkComponent />}
-                        </div>
-                        <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-
-                        <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />
+            <section className="flex flex-wrap w-full h-full p-5 ">
+                <div className="w-full h-full">
+                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
+                    <div className="flex justify-between">
+                        {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
+                            <Button
+                                outline
+                                onClick={() => {
+                                    router.push(`/congregacao/assistencia/${congregationId}/enviar`)
+                                }}
+                                className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                                <FilePlus2Icon />
+                                <span className="text-primary-200 font-semibold">Adicionar</span>
+                            </Button>
+                        )}
+                        {pdfGenerating && <PdfLinkComponent />}
                     </div>
-                </section>
-            </ContentDashboard>
-        </ProtectedRoute>
+                    <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+
+                    <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+                </div>
+            </section>
+        </ContentDashboard>
     )
 }
+
+ListReportsPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER", "ASSISTANCE_VIEWER"])
+
+export default ListReportsPage

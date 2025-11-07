@@ -2,19 +2,19 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import ListItems from "@/Components/ListItems"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IRole } from "@/types/types"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { FunctionSquareIcon } from "lucide-react"
 import Router from "next/router"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
-export default function Funcoes() {
+function RolesPage() {
     const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -43,7 +43,6 @@ export default function Funcoes() {
     }
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <ContentDashboard>
                     <BreadCrumbs crumbs={crumbs} pageActive={"Funções"} />
                     <section className="flex flex-wrap w-full h-full p-5 ">
@@ -63,6 +62,10 @@ export default function Funcoes() {
                         </div>
                     </section>
                 </ContentDashboard>
-        </ProtectedRoute>
     )
 }
+
+
+RolesPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default RolesPage

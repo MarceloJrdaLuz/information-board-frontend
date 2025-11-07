@@ -1,12 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormUserRoles from "@/Components/Forms/FormUserRoles"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AtribuirFuncoes() {
+function AssignRole() {
     const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -15,7 +15,6 @@ export default function AtribuirFuncoes() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN", "ADMIN_CONGREGATION"]}>
             <ContentDashboard>
                 <BreadCrumbs crumbs={crumbs} pageActive={"Atribuir Funções"} />
                 <section className="flex m-10 justify-center items-center">
@@ -25,6 +24,9 @@ export default function AtribuirFuncoes() {
                     </div>
                 </section>
             </ContentDashboard>
-        </ProtectedRoute>
     )
 }
+
+AssignRole.getLayout = withProtectedLayout(["ADMIN", "ADMIN_CONGREGATION"])
+
+export default AssignRole

@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddSpeaker from "@/Components/Forms/FormAddSpeaker"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddSpeakerPage() {
+function AddSpeakerPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function AddSpeakerPage() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Orador"} />
-                    <section className="flex m-10 justify-center items-center">
-                        <FormAddSpeaker />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Orador"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddSpeaker />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddSpeakerPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default AddSpeakerPage

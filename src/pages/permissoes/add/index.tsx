@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddPermission from "@/Components/Forms/FormAddPermission"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddPermissoes() {
+function AddPermissionPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,14 +30,15 @@ export default function AddPermissoes() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Permissão"} />
-                    <section className="flex justify-center">
-                        <FormAddPermission />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
-
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Permissão"} />
+            <section className="flex justify-center">
+                <FormAddPermission />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddPermissionPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default AddPermissionPage

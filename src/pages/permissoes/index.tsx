@@ -2,20 +2,19 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
-import Layout from "@/Components/Layout"
 import ListItems from "@/Components/ListItems"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPermission } from "@/types/types"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import Router from "next/router"
 import { useEffect } from "react"
 import { toast } from "react-toastify"
 
-export default function Permissoes() {
+function PermissionsPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -38,27 +37,28 @@ export default function Permissoes() {
     }
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Permissões"} />
-                <section className="flex flex-wrap w-full h-full p-5 ">
-                    <div className="w-full h-full">
-                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Permissões</h1>
-                        <Button outline
-                            onClick={() => {
-                                Router.push('/permissoes/add')
-                            }}
-                            className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <SecurityIcon />
-                            <span className="text-primary-200 font-semibold">Criar permissão</span>
-                        </Button>
-                        {permissionsSorted && (
-                            <ListItems onDelete={(item_id) => handleDelete(item_id)} items={permissionsSorted} label="Permissão" path="permissoes" />
-                        )}
-                    </div>
-                </section>
-            </ContentDashboard>
-        </ProtectedRoute>
-
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Permissões"} />
+            <section className="flex flex-wrap w-full h-full p-5 ">
+                <div className="w-full h-full">
+                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Permissões</h1>
+                    <Button outline
+                        onClick={() => {
+                            Router.push('/permissoes/add')
+                        }}
+                        className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                        <SecurityIcon />
+                        <span className="text-primary-200 font-semibold">Criar permissão</span>
+                    </Button>
+                    {permissionsSorted && (
+                        <ListItems onDelete={(item_id) => handleDelete(item_id)} items={permissionsSorted} label="Permissão" path="permissoes" />
+                    )}
+                </div>
+            </section>
+        </ContentDashboard>
     )
 }
+
+PermissionsPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default PermissionsPage

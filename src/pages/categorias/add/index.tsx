@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddCategory from "@/Components/Forms/FormAddCategory"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddCategoria() {
+function AddCategoryPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function AddCategoria() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Categoria"} />
-                    <section className="flex justify-center">
-                        <FormAddCategory />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Categoria"} />
+            <section className="flex justify-center">
+                <FormAddCategory />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddCategoryPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default AddCategoryPage

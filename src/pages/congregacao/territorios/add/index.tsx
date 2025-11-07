@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddTerritory from "@/Components/Forms/FormAddTerritory"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function CreateTerritory() {
+function CreateTerritoryPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function CreateTerritory() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Criar Território"} />
-                    <section className="flex justify-center">
-                        <FormAddTerritory />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Território"} />
+            <section className="flex justify-center">
+                <FormAddTerritory />
+            </section>
+        </ContentDashboard>
     )
 }
+
+CreateTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
+
+export default CreateTerritoryPage

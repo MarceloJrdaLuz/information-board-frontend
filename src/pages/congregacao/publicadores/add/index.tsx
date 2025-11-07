@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddPublicadores() {
+function AddPublishersPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function AddPublicadores() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicador"} />
-                    <section className="flex justify-center">
-                        <FormAddPublisher />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicador"} />
+            <section className="flex justify-center">
+                <FormAddPublisher />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddPublishersPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"])
+
+export default AddPublishersPage

@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditSpeaker from "@/Components/Forms/FormEditSpeaker"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function EditPermissionPage() {
+function EditSpeakerPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function EditPermissionPage() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Orador"} />
-                    <section className="flex justify-center">
-                        <FormEditSpeaker />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Orador"} />
+            <section className="flex justify-center">
+                <FormEditSpeaker />
+            </section>
+        </ContentDashboard>
     )
 }
+
+EditSpeakerPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TALK_MANAGER"])
+
+export default EditSpeakerPage

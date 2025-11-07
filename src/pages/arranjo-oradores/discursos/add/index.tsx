@@ -1,13 +1,12 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddTalk from "@/Components/Forms/FormAddTalk"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
-export default function AddTalkPage() {
+function AddTalkPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -31,13 +30,15 @@ export default function AddTalkPage() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Discurso"} />
-                    <section className="flex m-10 justify-center items-center">
-                        <FormAddTalk />
-                    </section>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Discurso"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddTalk />
+            </section>
+        </ContentDashboard>
     )
 }
+
+AddTalkPage.getLayout = withProtectedLayout(["ADMIN"])
+
+export default AddTalkPage

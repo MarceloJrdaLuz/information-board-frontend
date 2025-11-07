@@ -1,15 +1,14 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditEmergencyContact from "@/Components/FormEditEmergencyContact"
-import Layout from "@/Components/Layout"
-import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
-export default function EditEmergencyContact() {
+function EditEmergencyContactPage() {
     const router = useRouter()
     const { id } = router.query
     const methods = useForm()
@@ -36,15 +35,17 @@ export default function EditEmergencyContact() {
     }, [setPageActive])
 
     return (
-        <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Editar Contato"} />
-                    <FormProvider {...methods}>
-                        <section className="flex justify-center">
-                            <FormEditEmergencyContact emergencyContact={`${id}`} />
-                        </section>
-                    </FormProvider>
-                </ContentDashboard>
-        </ProtectedRoute>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Contato"} />
+            <FormProvider {...methods}>
+                <section className="flex justify-center">
+                    <FormEditEmergencyContact emergencyContact={`${id}`} />
+                </section>
+            </FormProvider>
+        </ContentDashboard>
     )
 }
+
+EditEmergencyContactPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"])
+
+export default EditEmergencyContactPage
