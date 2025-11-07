@@ -29,7 +29,7 @@ export default function FilterPrivileges({ handleCheckboxChange, checkedOptions,
                     </Button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-80">
+            <PopoverContent className="w-80 bg-surface-100">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
                     <CheckboxMultiple full options={privileges} label="Filtrar" handleCheckboxChange={(selectedItems) => handleCheckboxChange(selectedItems)} checkedOptions={checkedOptions} />
                 </List>

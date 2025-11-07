@@ -91,14 +91,14 @@ export const iconeEyes = (color: string = 'currentColor') => (
 
 )
 
-export const IconeSetaDireita = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-gray-200 hover:bg-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+export const IconeSetaDireita = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-typography-200 hover:bg-typography-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 </svg>
 
-export const IconeSetaEsquerda = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-gray-200 hover:bg-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+export const IconeSetaEsquerda = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-typography-200 hover:bg-typography-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
 </svg>
-export const IconeVoltar = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-gray-200 hover:bg-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+export const IconeVoltar = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-typography-200 hover:bg-typography-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
 </svg>
 
@@ -108,7 +108,7 @@ export const IconeSeta = <svg xmlns="http://www.w3.org/2000/svg" className="h-6 
   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
 </svg>
 
-export const IconeRotacao = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-gray-200 hover:bg-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+export const IconeRotacao = <svg xmlns="http://www.w3.org/2000/svg" className="mt-1 p-1 h-8 w-12 shadow shadow-slate-900 bg-typography-200 hover:bg-typography-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
   <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 </svg>
 
@@ -260,7 +260,7 @@ c0 -6 -37 -10 -90 -10 -53 0 -90 4 -90 10 0 6 37 10 90 10 53 0 90 -4 90 -10z"/>
 )
 
 export const IconImage = (
-  <svg className="w-12 h-12 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg"
+  <svg className="w-12 h-12 text-typography-200 dark:text-typography-600" xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true" fill="#9e9c9c" viewBox="0 0 640 512">
     <path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2
      160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 

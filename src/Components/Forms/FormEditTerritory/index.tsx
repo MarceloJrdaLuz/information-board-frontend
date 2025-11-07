@@ -138,7 +138,7 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
                     <input className="text-sm text-grey-500
             file:mr-5 file:py-3 file:px-10
             file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-black
+            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-900
             file:bg-gradient-to-r file:bg-primary-200
             hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
 

@@ -19,14 +19,14 @@ export function ListGeneric<T extends { id: string }>({
       {items?.map((item) => (
         <li
           key={item.id}
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 flex flex-col"
+          className="bg-surface-100 rounded-2xl border border-typography-200 shadow-sm hover:shadow-lg hover:border-typography-300 transition-all duration-200 flex flex-col"
         >
           {/* Conteúdo principal */}
           <div className="flex-1 p-5">{renderItem(item)}</div>
 
           {/* Ações */}
           {showActions && (showEdit || showDelete) && (
-            <div className="flex gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+            <div className="flex gap-2 px-5 py-3 border-t border-typography-100 bg-surface-100 rounded-b-2xl">
               {showEdit && (
                 <Button
                   size="sm"

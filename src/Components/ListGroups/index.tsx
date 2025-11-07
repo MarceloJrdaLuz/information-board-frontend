@@ -12,11 +12,11 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
       {items?.map(item => (
         <li
           key={item.id}
-          className="flex flex-col gap-3 p-4 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow w-full md:w-10/12 cursor-pointer"
+          className="flex flex-col gap-3 p-4 bg-surface-100 rounded-md shadow-sm hover:shadow-md transition-shadow w-full md:w-10/12 cursor-pointer"
         >
-          <h3 className="text-lg font-semibold text-gray-800 capitalize">{label} Nº {item.number}</h3>
+          <h3 className="text-lg font-semibold text-typography-800 capitalize">{label} Nº {item.number}</h3>
 
-          <div className="flex flex-col gap-2 text-gray-600">
+          <div className="flex flex-col gap-2 text-typography-600">
             <div className="flex items-center gap-2">
               🏷 <span>Nome do {label}: {item.name}</span>
             </div>

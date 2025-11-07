@@ -11,7 +11,7 @@ function ListNotices({ notices, onDelete }: IListItemsProps) {
     <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
       {notices?.map(notice => (
         <li
-          className={`flex flex-col flex-wrap justify-between items-center bg-white hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
+          className={`flex flex-col flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-typography-800 m-1`}
           key={notice.id}
         >
           <div className="flex w-full justify-start items-center p-6 text-primary-200 font-semibold">

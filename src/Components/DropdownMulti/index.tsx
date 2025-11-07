@@ -106,7 +106,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
           onClick={() => setOpen(!open)}
           className={`inline-flex w-full justify-${
             props.textAlign ? `${props.textAlign}` : `center`
-          } rounded-md bg-transparent border px-3 md:px-4 py-2 font-medium text-gray-700 hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-gray-100 ${
+          } rounded-md bg-transparent border px-3 md:px-4 py-2 font-medium text-typography-700 hover:underline focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-typography-100 ${
             props.border ? "border border-blue-gray-200" : "border-none"
           }`}
         >
@@ -132,7 +132,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
         <div
           className={`absolute thin-scrollbar cursor-pointer ${
             props.position ? props.position : "right"
-          }-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}
+          }-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}
         >
           <div className="py-1">
             {searchable && (
@@ -140,7 +140,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full px-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:ring-indigo-400"
+                className="block w-full px-3 py-2 text-sm border-b border-typography-200 focus:outline-none focus:ring-indigo-400"
                 placeholder="Pesquisar..."
               />
             )}
@@ -149,10 +149,10 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                 key={index}
                 onClick={() => toggleSelect(item)}
                 className={classNames(
-                  "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 hover:text-gray-900",
+                  "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-typography-100 hover:text-typography-900",
                   isSelected(item)
                     ? "font-medium text-primary-200"
-                    : "text-gray-700"
+                    : "text-typography-700"
                 )}
               >
                 {isSelected(item) ? (

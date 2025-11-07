@@ -64,7 +64,7 @@ export default function FimDeSemana() {
                             ) : hasFiles ? (
                                 <FileList files={uploadedFiles} />
                             ) : (
-                                <div className="w-full flex justify-center items-center py-10 text-gray-500">
+                                <div className="w-full flex justify-center items-center py-10 text-typography-500">
                                     Nenhum arquivo encontrado.
                                 </div>
                             )}

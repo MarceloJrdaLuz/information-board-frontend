@@ -159,9 +159,9 @@ export default function FormAddSpeaker() {
                         />
                     </>}
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <div className='flex flex-1 justify-between items-center'>
-                            <span className='my-2 font-semibold text-gray-900'>Selecionar discursos</span>
+                            <span className='my-2 font-semibold text-typography-900'>Selecionar discursos</span>
                         </div>
                         <DropdownMulti<ITalk>
                             title="Selecione os discursos"

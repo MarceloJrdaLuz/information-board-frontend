@@ -10,7 +10,7 @@ interface IGroupPublishersProps {
 export default function GroupPublishers ({publishers, group_id}: IGroupPublishersProps) {
 
   return (
-    <ul className='overflow-auto max-h-80 thin-scrollbar w-full'>
+    <ul className='overflow-auto max-h-80 thin-scrollbar w-full text-typography-900'>
       {publishers.map(publisher => (
         <PublisherItem key={publisher.id + publisher.fullName} publisher={publisher} group_id={group_id}/>
       ))}

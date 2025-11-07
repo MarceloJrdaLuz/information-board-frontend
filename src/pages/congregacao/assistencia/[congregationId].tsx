@@ -69,7 +69,7 @@ export default function ListarRelatorios() {
         >
             {({ blob, url, loading, error }) =>
                 loading ? "" :
-                    <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                    <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
                             Salvar S-88
@@ -91,7 +91,7 @@ export default function ListarRelatorios() {
                                         onClick={() => {
                                             router.push(`/congregacao/assistencia/${congregationId}/enviar`)
                                         }}
-                                        className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                                        className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                                         <FilePlus2Icon />
                                         <span className="text-primary-200 font-semibold">Adicionar</span>
                                     </Button>

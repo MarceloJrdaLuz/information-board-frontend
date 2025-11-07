@@ -232,7 +232,7 @@ export default function WeekendSchedulePage() {
             fileName={"Reunião do fim de semana.pdf"}
         >
             {({ loading }) => (
-                <Button className="bg-white text-primary-200 p-1 md:p-3 border-gray-300 rounded-none hover:opacity-80">
+                <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                     <PdfIcon />
                     <span className="text-primary-200 font-semibold">
                         {loading ? "Gerando PDF..." : "Baixar PDF"}
@@ -260,10 +260,10 @@ export default function WeekendSchedulePage() {
                             <>
                                 <div className="w-full space-y-4">
                                     <div className="sticky top-0 z-30">
-                                        <div className="md:hidden flex justify-center bg-white border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
+                                        <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
                                             <button
                                                 onClick={() => setShowFilters((o) => !o)}
-                                                className="flex items-center gap-2 text-sm text-gray-600"
+                                                className="flex items-center gap-2 text-sm text-typography-600"
                                             >
                                                 {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                                             </button>
@@ -272,7 +272,7 @@ export default function WeekendSchedulePage() {
                                         {/* Painel */}
                                         <div
                                             className={`
-           bg-white border-b shadow-sm rounded-xl flex flex-col md:gap-4
+           bg-surface-100 border-b shadow-sm rounded-xl flex flex-col md:gap-4
     transition-all duration-300 overflow-visible
     ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
     md:opacity-100 md:max-h-screen md:pointer-events-auto
@@ -354,7 +354,7 @@ export default function WeekendSchedulePage() {
                                                 moment(t.date).isSame(d, "day")
                                             )
                                             return (
-                                                <div key={d.toISOString()} className="bg-white border rounded-xl shadow-sm">
+                                                <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
                                                     <ScheduleRow date={d} externalTalks={externalForDate} />
                                                 </div>
                                             )

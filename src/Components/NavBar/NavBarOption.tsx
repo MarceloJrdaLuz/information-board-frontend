@@ -7,8 +7,8 @@ export default function NavBarOption(props: NavBarOptionType) {
         <li
             onClick={props.onClick}
             className={`relative flex items-center p-4 cursor-pointer 
-    hover:bg-secondary-100 hover:text-black 
-    ${props.active ? 'border-r-4 border-primary-500 bg-secondary-50 font-semibold' : ''}`}
+    hover:bg-surface-200 hover:text-typography-900 
+    ${props.active ? 'border-r-8 border-primary-500 bg-secondary-50 font-semibold' : ''}`}
         >
             <span className="pr-3 flex justify-center items-center">
                 <NavBarOptionIcon icon={props.icon} />

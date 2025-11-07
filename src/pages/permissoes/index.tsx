@@ -39,25 +39,25 @@ export default function Permissoes() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Permissões"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Permissões</h1>
-                            <Button
-                                onClick={() => {
-                                    Router.push('/permissoes/add')
-                                }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
-                                <SecurityIcon />
-                                <span className="text-primary-200 font-semibold">Criar permissão</span>
-                            </Button>
-                            {permissionsSorted && (
-                                <ListItems onDelete={(item_id) => handleDelete(item_id)} items={permissionsSorted} label="Permissão" path="permissoes" />
-                            )}
-                        </div>
-                    </section>
-                </ContentDashboard>
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Permissões"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Permissões</h1>
+                        <Button
+                            onClick={() => {
+                                Router.push('/permissoes/add')
+                            }}
+                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                            <SecurityIcon />
+                            <span className="text-primary-200 font-semibold">Criar permissão</span>
+                        </Button>
+                        {permissionsSorted && (
+                            <ListItems onDelete={(item_id) => handleDelete(item_id)} items={permissionsSorted} label="Permissão" path="permissoes" />
+                        )}
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
 
     )

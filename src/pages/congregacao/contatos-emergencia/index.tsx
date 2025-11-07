@@ -50,7 +50,7 @@ export default function EmergencyContacts() {
                                     onClick={() => {
                                         Router.push('/congregacao/contatos-emergencia/add')
                                     }}
-                                    className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                     <EmergencyContactIcon />
                                     <span className="text-primary-200 font-semibold">Criar contato</span>
                                 </Button>
@@ -63,9 +63,9 @@ export default function EmergencyContacts() {
                                     label="do contato"
                                     renderItem={(contact) => (
                                         <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-gray-800">{contact.name}</h3>
+                                            <h3 className="text-lg font-semibold text-typography-800">{contact.name}</h3>
 
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
                                                 <div className="flex items-center gap-2">
                                                     📞 <span>{contact.phone || "Não cadastrado"}</span>
                                                 </div>

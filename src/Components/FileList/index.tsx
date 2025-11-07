@@ -22,10 +22,10 @@ export default function FileList({ files }: IFileListProps) {
     return (
         <ul className="flex flex-col w-11/12 md:w-9/12 m-auto  justify-between items-center  cursor-pointer">
             {files?.map(file => (
-                <li key={file.id} className="flex bg-white hover:bg-sky-100  mb-2 shadow-lg w-full border border-gray-300 justify-between items-center p-6">
+                <li key={file.id} className="flex bg-surface-100 hover:bg-sky-100  mb-2 shadow-lg w-full border border-typography-300 justify-between items-center p-6">
                     <div className="flex flex-col gap-3 justify-between">
-                        <span className="font-bold text-black" >{file.name}</span>
-                        <span className="text-xs text-gray-500 " >{file.readableSize}</span>
+                        <span className="font-bold text-typography-900" >{file.name}</span>
+                        <span className="text-xs text-typography-500 " >{file.readableSize}</span>
                     </div>
 
                     <>
@@ -43,7 +43,7 @@ export default function FileList({ files }: IFileListProps) {
                                                 </>
                                             </div>
                                         ) : (
-                                            <CheckIcon className="text-white p-1.5 bg-success-100 rounded-full" />
+                                            <CheckIcon className="text-surface-100 p-1.5 bg-success-100 rounded-full" />
                                         )}
                                     </div>
                                 </div>

@@ -68,13 +68,13 @@ export default function EditHistoryTerritory() {
                                                 setTerritoryHistoryAction("create");
                                                 setTerritorHistoryToUpdateId("");
                                             }}
-                                            className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80 mb-3">
+                                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80 mb-3">
                                             <FileClockIcon />
                                             <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
                                         </Button>
                                     </div>
                                     {getHistory?.some(history => history.completion_date === null) && (
-                                        <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                                        <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                             <span className="h-full pr-1">
                                                 <InfoIcon className="p-0.5 text-primary-200" />
                                             </span>
@@ -93,7 +93,7 @@ export default function EditHistoryTerritory() {
                                 ))
                             ) : (
                                 territoryHistoryAction !== "create" &&
-                                <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                                <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                     <span className="h-full pr-1">
                                         <InfoIcon className="p-0.5 text-primary-200" />
                                     </span>

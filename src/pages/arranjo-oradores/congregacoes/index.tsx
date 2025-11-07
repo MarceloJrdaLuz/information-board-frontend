@@ -66,11 +66,11 @@ export default function AuxiliaryCongregationsPage() {
                                 onClick={() => {
                                     Router.push('/arranjo-oradores/congregacoes/add')
                                 }}
-                                className="bg-white text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                                className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                 <SalonIcon />
                                 <span className="text-primary-200 font-semibold">Criar congregação</span>
                             </Button>
-                            {congregations && <span className="text-sm text-gray-600">Total: {congregations.length}</span>}
+                            {congregations && <span className="text-sm text-typography-600">Total: {congregations.length}</span>}
                         </div>
                         <div className="flex justify-center items-center w-full mt-5">
                             {congregations && congregations.length > 0 ? (
@@ -82,8 +82,8 @@ export default function AuxiliaryCongregationsPage() {
                                     label="da Congregação"
                                     renderItem={(congregation) => (
                                         <div className="flex flex-col gap-3">
-                                            <h3 className="text-lg font-semibold text-gray-800">{congregation.name}</h3>
-                                            <div className="text-sm text-gray-600 flex flex-col gap-2">
+                                            <h3 className="text-lg font-semibold text-typography-800">{congregation.name}</h3>
+                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
                                                 <div title="Cidade" className="flex items-center gap-2">
                                                     🏙️ <span>{congregation.city || "Não cadastrada"}</span>
                                                 </div>

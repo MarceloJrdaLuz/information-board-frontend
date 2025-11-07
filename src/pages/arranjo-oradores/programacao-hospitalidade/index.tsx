@@ -107,7 +107,7 @@ export default function HospitalityWeekendPage() {
                         ) : (
                             <div className="w-full space-y-6">
                                 {/* Filtros e controles */}
-                                <div className="sticky top-0 z-30 bg-white p-4 rounded-xl shadow flex flex-col gap-4">
+                                <div className="sticky top-0 z-30 bg-surface-100 p-4 rounded-xl shadow flex flex-col gap-4">
                                     <div className="flex justify-between items-center gap-2">
                                         <Button
                                             onClick={() => setMonthOffset((m) => m - 1)}
@@ -134,7 +134,7 @@ export default function HospitalityWeekendPage() {
                                     {weekendMeetingDay.map((d) => (
                                         <div
                                             key={d.toISOString()}
-                                            className="bg-white border rounded-xl shadow-sm p-4"
+                                            className="bg-surface-100 border rounded-xl shadow-sm p-4"
                                         >
                                             <HospitalityRow date={d} />
                                         </div>

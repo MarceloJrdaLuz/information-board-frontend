@@ -31,7 +31,7 @@ const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt }) => {
 
             {/* Modal com Imagem em Tela Cheia */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-typography-900 bg-opacity-75 flex justify-center items-center z-50">
                     <div className="relative w-full h-full">
                         {/* Botão de Fechar */}
                         <button

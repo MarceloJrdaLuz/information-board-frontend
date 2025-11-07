@@ -107,14 +107,14 @@ export default function FormAddCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
-                    <div className='border border-gray-300 my-4 p-4'>
+                    <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={congregationTypeCheckboxSelected} label="Tipo" options={optionsCheckboxCongregationType[0]} handleCheckboxChange={(selectedItems) => handleCheckboxCongregationType(selectedItems)} />
                     </div>
 
                     <input className="text-sm text-grey-500
             file:mr-5 file:py-3 file:px-10
             file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-black
+            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-900
             file:bg-gradient-to-r file:bg-primary-200
             hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
 

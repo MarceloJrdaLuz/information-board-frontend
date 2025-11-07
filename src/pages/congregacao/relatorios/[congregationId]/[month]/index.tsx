@@ -397,7 +397,7 @@ export default function RelatorioMes() {
                 <>
                     <section className="flex flex-col flex-wrap w-full">
                         <div className="w-full h-full px-5">
-                            <h2 className="flex flex-1  justify-center font-semibold py-5 text-center">
+                            <h2 className="flex flex-1  justify-center font-semibold py-5 text-center text-typography-800">
                                 {monthParam ? monthParam.toLocaleUpperCase() : ""}
                             </h2>
                             <div className="flex flex-1 justify-between mb-4">
@@ -413,7 +413,7 @@ export default function RelatorioMes() {
                                 <ul>
                                     {<div className="px-5 py-0">
                                         {monthAlreadyRegister &&
-                                            <div className="flex text-gray-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
+                                            <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                                 <span className="h-full pr-1">
                                                     <InfoIcon className="p-0.5 text-primary-200" />
                                                 </span>
@@ -438,11 +438,11 @@ export default function RelatorioMes() {
                                         />
                                     </div>
                                     }
-                                    <div className="p-4 my-5 w-11/12 m-auto bg-white">
-                                        <li className="text-gray-700">Publicadores ativos</li>
-                                        <li className="mb-4 text-gray-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
-                                        <li className="text-gray-700">Média de assistência da reunião do fim de semana</li>
-                                        <li className="mb-4 text-gray-900">{meetingAssistanceEndWeek}</li>
+                                    <div className="p-4 my-5 w-11/12 m-auto bg-surface-100">
+                                        <li className="text-typography-700">Publicadores ativos</li>
+                                        <li className="mb-4 text-typography-900">{totalsRecover && totalsRecover.length > 0 ? totalsRecover[0].publishersActives : publishers?.length}</li>
+                                        <li className="text-typography-700">Média de assistência da reunião do fim de semana</li>
+                                        <li className="mb-4 text-typography-900">{meetingAssistanceEndWeek}</li>
                                     </div>
                                     {totalsPublishers && <ListTotals key={"Totais de Publicadores"} totals={totalsPublishers} />}
                                     {totalsAuxPioneers && <ListTotals key={"Totais de Pioneiros regulares"} totals={totalsAuxPioneers} />}

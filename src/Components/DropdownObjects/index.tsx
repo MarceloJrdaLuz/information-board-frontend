@@ -69,25 +69,25 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
     <Menu as="div" className={`relative ${props.full ? 'w-full' : 'inline-block'} ${props.classname}`}>
       <div>
         <Menu.Button
-          className={`w-full flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
+          className={`w-full flex items-center justify-between rounded-md border border-typography-300 bg-surface-100 px-3 py-2 text-sm text-typography-700 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
         >
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-col truncate text-left">
-              <span className="text-gray-400 text-xs">{title}</span>
+              <span className="text-typography-400 text-xs">{title}</span>
               <span className="truncate">
                 {selectedItem ? getDisplayLabel(selectedItem) : "Selecione..."}
               </span>
             </div>
 
             <div className="flex items-center gap-1">
-              <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+              <ChevronDownIcon className="h-5 w-5 text-typography-400" />
               {selectedItem && (
                 <span
                   role='button'
                   onClick={(e) => { e.stopPropagation(); props.handleChange(null) }}
-                  className="p-1 rounded hover:bg-gray-100"
+                  className="p-1 rounded hover:bg-typography-100"
                 >
-                  <XSquareIcon className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                  <XSquareIcon className="w-4 h-4 text-typography-400 hover:text-red-500" />
                 </span>
               )}
             </div>
@@ -105,7 +105,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className={`absolute ${props.position}-0 z-50 mt-2 w-72 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-80 overflow-auto thin-scrollbar`}
+          className={`absolute ${props.position}-0 z-50 mt-2 w-72 origin-top-right rounded-lg bg-surface-100 shadow-lg ring-1 ring--typography-900 ring-opacity-5 focus:outline-none max-h-80 overflow-auto thin-scrollbar`}
         >
           <div className="py-1">
             {searchable && (
@@ -113,14 +113,14 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full px-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:ring-primary-500"
+                className="block w-full px-3 py-2 text-sm border-b border-typography-200 focus:outline-none focus:ring-primary-500"
                 placeholder="Pesquisar..."
               />
             )}
 
             {filteredItems.length === 0 ? (
               emptyMessage ? (
-                <span className="block px-4 py-2 text-sm text-gray-400 italic">{emptyMessage}</span>
+                <span className="block px-4 py-2 text-sm text-typography-400 italic">{emptyMessage}</span>
               ) : null
             ) : (
               filteredItems.map((item, index) => (
@@ -129,7 +129,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                     <span
                       onClick={() => props.handleChange(item)}
                       className={classNames(
-                        active ? 'bg-primary-50 text-primary-700' : 'text-gray-700',
+                        active ? 'bg-primary-50 text-primary-700' : 'text-typography-700',
                         'flex items-center gap-3 px-4 py-2 text-sm cursor-pointer rounded-md'
                       )}
                     >

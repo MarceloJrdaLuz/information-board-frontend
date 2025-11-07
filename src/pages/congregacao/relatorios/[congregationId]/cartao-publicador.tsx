@@ -243,7 +243,7 @@ export default function PublisherCard() {
         >
             {({ blob, url, loading, error }) =>
                 loading ? "" :
-                    <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80">
+                    <Button className="my-3 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                         Salvar S-21
                         <PdfIcon />
 
@@ -288,7 +288,7 @@ export default function PublisherCard() {
                                             <PdfLinkComponent />
                                             :
                                             (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
-                                                <Button className="my-3 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                <Button className="my-3 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
                                                     Preparar registros
                                                 </Button>)
                                         }
@@ -310,7 +310,7 @@ export default function PublisherCard() {
                                                 {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
                                                     <div>
                                                         {pdfGenerating ? (
-                                                            <Button className="my-3 mx-2 bg-white font-semibold text-primary-200 p-3 border-gray-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                            <Button className="my-3 mx-2 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
                                                                 Preparar registro
                                                             </Button>
                                                         ) : (
@@ -331,9 +331,9 @@ export default function PublisherCard() {
                                                             setPdfGenerating(false),
                                                                 setTotalsFrom(ob)
                                                         }}
-                                                        className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-white"} `}
+                                                        className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-surface-100"} `}
                                                     >
-                                                        <div className={`flex flex-col p-4 text-gray-700`}>
+                                                        <div className={`flex flex-col p-4 text-typography-700`}>
                                                             <span>{ob}</span>
                                                         </div>
 

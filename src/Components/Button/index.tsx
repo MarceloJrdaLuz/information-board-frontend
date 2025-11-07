@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes } from "react"
 import { tv, VariantProps } from 'tailwind-variants'
 
 const button = tv({
-    base: 'flex justify-center items-center transition-all gap-2 duration-500 bg-primary-200 active:shadow-none shadow-xl  rounded-lg hover:opacity-90 border border-current  text-xs xs:text-sm sm:text-md lg:text-base text-white justify-self-center h-[40px] w-48',
+    base: 'flex justify-center items-center transition-all gap-2 duration-500 bg-primary-200 active:shadow-none shadow-xl  rounded-lg hover:opacity-90 border border-current  text-xs xs:text-sm sm:text-md lg:text-base text-surface-100 justify-self-center h-[40px] w-48',
     variants: {
         size: {
             default: 'px-2 py-2',
@@ -12,10 +12,10 @@ const button = tv({
             lg: 'w-40 py-3'
         },
         outline: {
-            true: "border-gray-300 hover:border-current rounded-none bg-white hover:bg-sky-100 p-3 text-primary-200 font-semibold"
+            true: "border-typography-300 hover:border-current rounded-none bg-surface-100 hover:bg-sky-100 p-3 text-primary-200 font-semibold"
         },
         disabled: {
-            true: 'bg-gray-500 hover:opacity-100 cursor-not-allowed'
+            true: 'bg-typography-500 hover:opacity-100 cursor-not-allowed'
         },
         success: {
             true: 'bg-success-100'
