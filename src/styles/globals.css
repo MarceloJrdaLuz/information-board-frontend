@@ -149,9 +149,10 @@ input[type=number] {
 
 .theme-blue {
   /* Primárias */
-  --color-primary-100: 159 185 227;
-  --color-primary-150: 65 100 150;
-  --color-primary-200: 10 34 75;
+ --color-primary-100: 159 185 227; /* #9FB9E3 */
+--color-primary-150: 65 100 150;  /* #416496 */
+--color-primary-200: 62 107 163;  /* #3E6BA3 */
+
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
