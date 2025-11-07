@@ -26,9 +26,3 @@ export default function ButtonHamburguer({ onClick }: ButtonHamburguerProps) {
         </button>  
     )
 }
-
-{/* <button onClick={toggleValue} className={`md:hidden space-y-2 ${toogleMenuValue && 'absolute z-50'}`}>
-            <span className="block w-8 h-0.5 bg-typography-900"></span>
-            <span className="block w-8 h-0.5 bg-typography-900"></span>
-            <span className="block w-5 h-0.5 bg-typography-900"></span>
-        </button> */}

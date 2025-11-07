@@ -127,13 +127,9 @@ input[type=number] {
 }
 
 .theme-dark {
-  /* === Primárias (roxos) === */
-  --color-primary-50: 25 5 45;
-  /* #19052D — roxo quase preto */
-  --color-primary-100: 38 9 56;
-  /* #8250C8 — destaque moderno */
-  --color-primary-200: 173 39 255;
-  /* #3C1464 — base principal escura */
+  
+  --color-primary-100: 167 94 255;
+  --color-primary-200: 192 127 255;
 
   /* === Secundárias (fundos neutros escuros) === */
   --color-secondary-100: 22 20 25;

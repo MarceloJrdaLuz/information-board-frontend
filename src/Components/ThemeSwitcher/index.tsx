@@ -8,7 +8,7 @@ import { themeAtom, ThemeType } from '@/atoms/themeAtoms'
 
 const themes: { name: string; class: ThemeType; color: string }[] = [
   { name: 'Padrão', class: '', color: '#178582' },
-  { name: 'Escuro', class: 'theme-dark', color: '#222' },
+  { name: 'Escuro', class: 'theme-dark', color: '#191223' },
   { name: 'Azul', class: 'theme-blue', color: '#2878bb' },
 ]
 
