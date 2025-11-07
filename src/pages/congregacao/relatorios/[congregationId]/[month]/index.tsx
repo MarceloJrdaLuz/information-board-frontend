@@ -403,7 +403,7 @@ export default function RelatorioMes() {
                             <div className="flex flex-1 justify-between mb-4">
                                 <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
                                 <FilterGroups checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={setGroupSelecteds} />
-                                <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
+                                <span className="flex sm:text-base md:text-lg lg:text-xl  justify-center items-center gap-2 font-bold text-primary-200 hover:text-primary-150 cursor-pointer" onClick={() => setTotalsModalShow(!totalsModalShow)}>
                                     Totais
                                     {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}
                                 </span>
@@ -415,7 +415,7 @@ export default function RelatorioMes() {
                                         {monthAlreadyRegister &&
                                             <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
                                                 <span className="h-full pr-1">
-                                                    <InfoIcon className="p-0.5 text-primary-200" />
+                                                    <InfoIcon className="p-0.5 text-primary-200 " />
                                                 </span>
                                                 {
                                                     date > 20 ?

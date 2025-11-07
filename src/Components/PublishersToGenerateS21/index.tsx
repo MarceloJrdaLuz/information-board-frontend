@@ -30,10 +30,10 @@ export default function PublishersToGenerateS21({ publisher, onClick, children }
 
     return (
         <li
-           
-            className={`flex justify-between flex-wrap my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-surface-100"} `}
+
+            className={`flex justify-between flex-wrap my-1 w-full list-none cursor-pointer ${isSelected ? "bg-gradient-to-br from-primary-100 to-primary-150" : "bg-surface-100"} `}
         >
-            <div  onClick={toggleSelection} className={`flex flex-1 whitespace-nowrap p-4 text-typography-700`}>
+            <div onClick={toggleSelection} className={`flex flex-1 whitespace-nowrap p-4 text-typography-700`}>
                 <span>{publisher.fullName}</span>
             </div>
             {children}

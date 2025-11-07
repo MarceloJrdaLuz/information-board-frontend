@@ -49,11 +49,11 @@ export default function Funcoes() {
                     <section className="flex flex-wrap w-full h-full p-5 ">
                         <div className="w-full h-full">
                             <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
-                            <Button
+                            <Button outline
                                 onClick={() => {
                                     Router.push('/administracao/funcoes/add')
                                 }}
-                                className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                 <FunctionSquareIcon />
                                 <span className="text-primary-200 font-semibold">Criar função</span>
                             </Button>

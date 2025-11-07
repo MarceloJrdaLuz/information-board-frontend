@@ -114,7 +114,7 @@ export default function SpeakersPage() {
             fileName={`Oradores_${speakerCongregationName || "congregacao"}.pdf`}
         >
             {({ loading }) => (
-                <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                <Button outline className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                     <PdfIcon />
                     <span className="text-primary-200 font-semibold">
                         {loading ? "Gerando PDF..." : "Lista de oradores"}
@@ -126,98 +126,99 @@ export default function SpeakersPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Oradores"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Oradores</h1>
-                            <div className="flex justify-between items-center mb-3">
-                                <Button
-                                    onClick={() => {
-                                        Router.push('/arranjo-oradores/oradores/add')
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <GroupIcon />
-                                    <span className="text-primary-200 font-semibold">Criar orador</span>
-                                </Button>
-                                {speakers && <span className="text-sm text-typography-600">Total: {speakers.length}</span>}
-                            </div>
-                            <div className="flex justify-between my-4">
-                                <FilterSpeakersCongregation
-                                    checkedOptions={filteredByCongregation?.id ?? ""}
-                                    handleCheckboxChange={(item) => handleSpeakersCongregation(item)}
-                                    congregations={congregationsForFilter ?? []}
-                                />
-                                <div className="flex flex-wrap justify-end gap-3">
-                                    <Button
-                                        onClick={() => setShowPreview(!showPreview)}
-                                        className="px-4 py-2 rounded-lg border shadow"
-                                    >
-                                        {showPreview ? "Fechar pré-visualização" : "Visualizar lista"}
-                                    </Button>
-                                    {speakers && <PdfLinkComponent />}
-                                    {showPreview && (
-                                        <div className="fixed inset-0 bg-typography-900 bg-opacity-50 flex items-center justify-center z-50">
-                                            <div className="bg-surface-100 w-[90%] h-[90%] p-4 rounded relative">
-                                                <button
-                                                    onClick={() => setShowPreview(false)}
-                                                    className="absolute top-2 right-2 text-typography-600 hover:text-typography-900"
-                                                >
-                                                    ✕
-                                                </button>
-                                                <PDFViewer style={{ width: "100%", height: "100%" }}>
-                                                    <Document>
-                                                        <SpeakersListPdf
-                                                            speakers={speakers ?? []}
-                                                            congregationName={speakerCongregationName}
-                                                        />
-                                                    </Document>
-                                                </PDFViewer>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            {speakers && speakers.length > 0 ? (
-                                <ListGeneric
-                                    onDelete={(item_id) => handleDelete(item_id)}
-                                    onUpdate={(speaker) => setSpeakerUpdate(speaker)}
-                                    items={speakers}
-                                    path="/arranjo-oradores/oradores"
-                                    label="do Orador"
-                                    renderItem={(speaker) => (
-                                        <div className="flex flex-col gap-3">
-                                            <h3 className="text-lg font-semibold text-typography-800">{speaker.fullName}</h3>
-                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    📞 <span>{speaker.phone || "Não cadastrado"}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    🏠 <span>{speaker.address || "Não cadastrado"}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    🏬 <span>{speaker.originCongregation.name}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    🎤 <span>{speaker.talks?.map((t) => t.number)
-                                                        .sort((a, b) => Number(a) - Number(b))
-                                                        .join(", ") || "Nenhum discurso"}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                />
-                            )
-                                : (
-                                    <>
-                                        {!speakers ? renderSkeleton() : <EmptyState message="Nenhum orador cadastrado" />}
-                                    </>
-                                )
-                            }
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Oradores"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Oradores</h1>
+                        <div className="flex justify-between items-center mb-3">
+                            <Button
+                                outline
+                                onClick={() => {
+                                    Router.push('/arranjo-oradores/oradores/add')
+                                }}
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                <GroupIcon />
+                                <span className="text-primary-200 font-semibold">Criar orador</span>
+                            </Button>
+                            {speakers && <span className="text-sm text-typography-600">Total: {speakers.length}</span>}
                         </div>
+                        <div className="flex justify-between items-center my-4">
+                            <FilterSpeakersCongregation
+                                checkedOptions={filteredByCongregation?.id ?? ""}
+                                handleCheckboxChange={(item) => handleSpeakersCongregation(item)}
+                                congregations={congregationsForFilter ?? []}
+                            />
+                            <div className="flex flex-wrap justify-end gap-3">
+                                <Button
+                                    onClick={() => setShowPreview(!showPreview)}
+                                    className="px-4 py-2 rounded-lg border shadow"
+                                >
+                                    {showPreview ? "Fechar pré-visualização" : "Visualizar lista"}
+                                </Button>
+                                {speakers && <PdfLinkComponent />}
+                                {showPreview && (
+                                    <div className="fixed inset-0 bg-typography-900 bg-opacity-50 flex items-center justify-center z-50">
+                                        <div className="bg-surface-100 w-[90%] h-[90%] p-4 rounded relative">
+                                            <button
+                                                onClick={() => setShowPreview(false)}
+                                                className="absolute top-2 right-2 text-typography-600 hover:text-typography-900"
+                                            >
+                                                ✕
+                                            </button>
+                                            <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                                <Document>
+                                                    <SpeakersListPdf
+                                                        speakers={speakers ?? []}
+                                                        congregationName={speakerCongregationName}
+                                                    />
+                                                </Document>
+                                            </PDFViewer>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        {speakers && speakers.length > 0 ? (
+                            <ListGeneric
+                                onDelete={(item_id) => handleDelete(item_id)}
+                                onUpdate={(speaker) => setSpeakerUpdate(speaker)}
+                                items={speakers}
+                                path="/arranjo-oradores/oradores"
+                                label="do Orador"
+                                renderItem={(speaker) => (
+                                    <div className="flex flex-col gap-3">
+                                        <h3 className="text-lg font-semibold text-typography-800">{speaker.fullName}</h3>
+                                        <div className="text-sm text-typography-700 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                📞 <span>{speaker.phone || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                🏠 <span>{speaker.address || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                🏬 <span>{speaker.originCongregation.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                🎤 <span>{speaker.talks?.map((t) => t.number)
+                                                    .sort((a, b) => Number(a) - Number(b))
+                                                    .join(", ") || "Nenhum discurso"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            />
+                        )
+                            : (
+                                <>
+                                    {!speakers ? renderSkeleton() : <EmptyState message="Nenhum orador cadastrado" />}
+                                </>
+                            )
+                        }
+                    </div>
 
-                    </section>
-                </ContentDashboard>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
 
     )

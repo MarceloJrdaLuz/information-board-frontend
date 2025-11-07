@@ -260,7 +260,7 @@ export default function HospitalityRow({ date }: Props) {
   return (
     <div className="flex flex-col gap-4 items-start text-typography-800">
       {/* Data + checkboxes */}
-      <div className="w-full font-semibold">
+      <div className="w-full font-semibold text-primary-200">
         {moment(date).format("DD/MM/YYYY")}
         <div className="flex flex-col items-start gap-1 mt-2">
           {EVENT_TYPES.map(ev => (

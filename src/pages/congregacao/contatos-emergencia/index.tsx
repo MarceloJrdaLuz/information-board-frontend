@@ -40,46 +40,47 @@ export default function EmergencyContacts() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Contatos de Emergência"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Contatos de emergência</h1>
-                            <div className="flex">
-                                <Button
-                                    onClick={() => {
-                                        Router.push('/congregacao/contatos-emergencia/add')
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <EmergencyContactIcon />
-                                    <span className="text-primary-200 font-semibold">Criar contato</span>
-                                </Button>
-                            </div>
-                            {emergencyContacts &&
-                                <ListGeneric
-                                    onDelete={(item_id) => handleDelete(item_id)}
-                                    items={emergencyContacts}
-                                    path="/congregacao/contatos-emergencia"
-                                    label="do contato"
-                                    renderItem={(contact) => (
-                                        <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-typography-800">{contact.name}</h3>
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Contatos de Emergência"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Contatos de emergência</h1>
+                        <div className="flex">
+                            <Button
+                                outline
+                                onClick={() => {
+                                    Router.push('/congregacao/contatos-emergencia/add')
+                                }}
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                <EmergencyContactIcon />
+                                <span className="text-primary-200 font-semibold">Criar contato</span>
+                            </Button>
+                        </div>
+                        {emergencyContacts &&
+                            <ListGeneric
+                                onDelete={(item_id) => handleDelete(item_id)}
+                                items={emergencyContacts}
+                                path="/congregacao/contatos-emergencia"
+                                label="do contato"
+                                renderItem={(contact) => (
+                                    <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-semibold text-typography-800">{contact.name}</h3>
 
-                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    📞 <span>{contact.phone || "Não cadastrado"}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    ✅ <span>É TJ? {contact.isTj ? "Sim" : "Não"}</span>
-                                                </div>
+                                        <div className="text-sm text-typography-700 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                📞 <span>{contact.phone || "Não cadastrado"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                ✅ <span>É TJ? {contact.isTj ? "Sim" : "Não"}</span>
                                             </div>
                                         </div>
-                                    )}
-                                />
-                            }
-                        </div>
-                    </section>
-                </ContentDashboard>
+                                    </div>
+                                )}
+                            />
+                        }
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

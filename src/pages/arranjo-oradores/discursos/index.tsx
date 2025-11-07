@@ -58,7 +58,7 @@ export default function TalksPage() {
                             <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Discursos</h1>
                             <div className="flex justify-between items-center mb-3">
                                 {roleContains('ADMIN') && (
-                                    <Button
+                                    <Button outline
                                         onClick={() => Router.push('/arranjo-oradores/discursos/add')}
                                         className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80"
                                     >

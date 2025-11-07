@@ -12,6 +12,7 @@ import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import Dropdown from "../Dropdown"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
+import { toast } from "react-toastify"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -85,7 +86,7 @@ export default function ExternalTalkRow({
                   <span className="font-semibold text-lg text-typography-800">
                     {t.speaker?.fullName || t.manualTalk}
                   </span>
-                  <span className="text-xs bg-typography-100 px-2 py-0.5 rounded">
+                  <span className="text-xs bg-surface-200 px-2 py-0.5 rounded text-typography-700">
                     {t.destinationCongregation.name}
                   </span>
                 </div>
@@ -249,7 +250,15 @@ export default function ExternalTalkRow({
           <Button
             className="w-full bg-primary-200 hover:bg-primary-100 "
             onClick={() => {
-              if (!newSpeakerId && !newManualTalk) return
+              if (!newCongregationId) {
+                toast.info("É obrigatório Selecionar uma congregação de destino!")
+                return
+              }
+
+              if (!newSpeakerId) {
+                toast.info("Selecione um orador.")
+                return
+              }
               onAddExternalTalk({
                 date: moment(date).format("YYYY-MM-DD"),
                 speaker: speakers.find((s) => s.id === newSpeakerId),

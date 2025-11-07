@@ -27,7 +27,7 @@ export default function Grupos() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-    const [crumbs, ] = useAtom(crumbsAtom)
+    const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
 
@@ -80,33 +80,34 @@ export default function Grupos() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <div className="flex flex-col">
-                                <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
-                                <Button
-                                    onClick={() => {
-                                        Router.push('/congregacao/grupos/add')
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <GroupIcon />
-                                    <span className="text-primary-200 font-semibold">Criar grupo</span>
-                                </Button>
-                            </div>
-                            {groups && groups.length > 0 ? (
-                                <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
-                            )
-                                : (
-                                    <>
-                                        {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
-                                    </>
-                                )
-                            }
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <div className="flex flex-col">
+                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de campo</h1>
+                            <Button
+                                outline
+                                onClick={() => {
+                                    Router.push('/congregacao/grupos/add')
+                                }}
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                <GroupIcon />
+                                <span className="text-primary-200 font-semibold">Criar grupo</span>
+                            </Button>
                         </div>
-                    </section>
-                </ContentDashboard>
+                        {groups && groups.length > 0 ? (
+                            <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />
+                        )
+                            : (
+                                <>
+                                    {!groups ? renderSkeleton() : <EmptyState message="Nenhum grupo cadastrado nessa congregação!" />}
+                                </>
+                            )
+                        }
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

@@ -24,7 +24,7 @@ export default function ListMonths(props: ListRelatoriosProps) {
     return (
         <section className="flex flex-col flex-1 h-[90%] overflow-auto thin-scrollbar">
             <h1 className="flex flex-1 pl-5 pt-5 text-2xl text-primary-200 font-semibold ">Relatórios</h1>
-            <Button className="m-5 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => router.push(`/congregacao/relatorios/${congregationId}/cartao-publicador`)}>
+            <Button outline className="m-5 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => router.push(`/congregacao/relatorios/${congregationId}/cartao-publicador`)}>
                 Criar registros
                 <FileSpreadsheetIcon />
             </Button>

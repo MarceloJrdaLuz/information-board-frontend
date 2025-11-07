@@ -23,10 +23,10 @@ export default function FilterSpeakersCongregation({ handleCheckboxChange, check
     return (
         <Popover placement="bottom-start">
             <PopoverHandler>
-                <div className="flex justify-end">
-                    <Button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
+                <div className="flex justify-center items-center">
+                    <button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 hover:text-primary-150 font-bold p-5">
                         <ListFilterIcon />
-                    </Button>
+                    </button>
                 </div>
             </PopoverHandler>
             <PopoverContent className="w-80">

@@ -8,7 +8,6 @@ import Dropdown from "@/Components/Dropdown"
 import FilterGroups from "@/Components/FilterGroups"
 import FilterPrivileges from "@/Components/FilterPrivileges"
 import PdfIcon from "@/Components/Icons/PdfIcon"
-import Layout from "@/Components/Layout"
 import ModalHelp from "@/Components/ModalHelp"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import S21 from "@/Components/PublisherCard"
@@ -16,16 +15,13 @@ import PublishersToGenerateS21 from "@/Components/PublishersToGenerateS21"
 import SkeletonPublishersList from "@/Components/PublishersToGenerateS21/skeletonPublishersList"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
-import { useAuthorizedFetch, useFetch } from "@/hooks/useFetch"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { getAPIClient } from "@/services/axios"
 import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/types/types"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import { HelpCircle } from "lucide-react"
-import { GetServerSideProps } from "next"
 import { useRouter } from "next/router"
-import { parseCookies } from "nookies"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 
@@ -243,7 +239,7 @@ export default function PublisherCard() {
         >
             {({ blob, url, loading, error }) =>
                 loading ? "" :
-                    <Button className="my-3 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <Button outline className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                         Salvar S-21
                         <PdfIcon />
 
@@ -259,7 +255,7 @@ export default function PublisherCard() {
                     <section className="flex flex-col justify-center items-center p-5">
                         <div className="flex justify-between w-full mt-5 ">
                             <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
-                            <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                            <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200  hover:text-primary-150 cursor-pointer" />
                         </div>
                         {publishers && (
                             <div className="w-full md:w-9/12">
@@ -288,7 +284,7 @@ export default function PublisherCard() {
                                             <PdfLinkComponent />
                                             :
                                             (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
-                                                <Button className="my-3 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                <Button outline className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
                                                     Preparar registros
                                                 </Button>)
                                         }
@@ -310,7 +306,7 @@ export default function PublisherCard() {
                                                 {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
                                                     <div>
                                                         {pdfGenerating ? (
-                                                            <Button className="my-3 mx-2 bg-surface-100 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                            <Button outline className="my-3 mx-2 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
                                                                 Preparar registro
                                                             </Button>
                                                         ) : (
