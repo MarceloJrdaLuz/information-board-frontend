@@ -1,10 +1,8 @@
-import { Card } from "@material-tailwind/react";
-
 export default function LayoutSkeleton() {
     return (
         <main className="flex w-screen h-screen overflow-hidden bg-secondary-100">
             {/* NAVBAR LATERAL */}
-            <aside className="w-[15%] bg-primary-200 shadow-lg flex flex-col p-4 animate-pulse">
+            <aside className="hidden bg-primary-200 shadow-lg md:w-2/12 md:flex md:min-w-[185px] md:flex-col p-4 animate-pulse">
                 {/* Logo / Título */}
                 <div className="h-10 w-3/4 bg-primary-100 rounded-md mb-6" />
 
@@ -29,10 +27,7 @@ export default function LayoutSkeleton() {
                 {/* HEADER */}
                 <header className="flex items-center justify-between h-20 px-6 bg-gradient-to-r from-primary-100 to-primary-150 shadow-md animate-pulse">
                     <div className="h-10 w-10 bg-primary-200 rounded-full" />
-                    <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 bg-secondary-300 rounded-full" />
-                        <div className="h-10 w-10 bg-secondary-300 rounded-full" />
-                    </div>
+                    <div className="h-10 w-10 bg-primary-100 rounded-full" />
                 </header>
 
                 {/* CONTEÚDO */}
