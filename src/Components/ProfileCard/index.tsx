@@ -223,9 +223,9 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
             )}
             {!newAvatarUrl &&
 
-                <Card className="w-96">
+                <Card className="w-96 bg-surface-100">
                     <CardHeader floated={false} className="h-80">
-                        <div className="flex justify-center items-center cursor-pointer w-full h-full">
+                        <div className="flex justify-center items-center cursor-pointer w-full h-full bg-surface-200">
                             {avatar_url ? (
                                 <div className="flex justify-center items-center w-72 h-72 m-2 relative">
                                     <Image style={{ objectFit: "cover", objectPosition: "top center" }} src={avatar_url} alt="Foto de perfil" fill className="rounded-full p-7" />
@@ -251,10 +251,10 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
                         />
                     </CardHeader>
                     <CardBody className="text-center">
-                        <Typography variant="h4" color="blue-gray" className="mb-2">
+                        <Typography variant="h4" color="blue-gray" className="mb-2 text-primary-200">
                             {fullName}
                         </Typography>
-                        <Typography color="blue-gray" className="font-medium" textGradient>
+                        <Typography color="blue-gray" className="font-medium text-primary-100" textGradient>
                             {email}
                         </Typography>
                     </CardBody>

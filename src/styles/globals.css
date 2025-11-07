@@ -29,7 +29,7 @@
   width: 75%;
   height: 10px;
   display: block;
-  background-color: #006d77;
+  background-color: rgb(var(--color-primary-200));
   margin: 8px auto;
 }
 

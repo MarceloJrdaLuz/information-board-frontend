@@ -8,7 +8,7 @@ export default function HeaderDashboard() {
     const { user } = useAuthContext()
 
     return (
-        <header className={`flex w-full justify-between items-center h-20 bg-primary-100 px-4 shadow-md`}>
+        <header className={`flex w-full justify-between items-center h-20 bg-gradient-to-r from-primary-100 to-primary-200 px-4 shadow-md`}>
             <ButtonHamburguer />
             <div className="flex w-full justify-between pl-3">
                 <div className="flex justify-center items-center">

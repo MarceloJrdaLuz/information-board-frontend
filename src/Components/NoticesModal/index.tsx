@@ -14,7 +14,7 @@ export default function NoticesModal(props: INoticesModalProps) {
     }, [setNotices, props.notices])
 
     return (
-        <div className={`bg-typography-700 flex  items-center  w-full h-0 ${props.notices && 'h-10 p-3'} absolute top-0 z-50  flex overflow-hidden text-surface-100 transition-all duration-500 `}>
+        <div className={`bg-surface-200 flex  items-center  w-full h-0 ${props.notices && 'h-10 p-3'} absolute top-0 z-50  flex overflow-hidden text-typography-800 transition-all duration-500 `}>
             {notices && notices.length > 0
                 ?
                 <div onClick={() => router.push(`/${props.congregationNumber}/anuncios`)} className="flex w-full justify-between items-center">
@@ -27,7 +27,7 @@ export default function NoticesModal(props: INoticesModalProps) {
                     <div>
                         <span className="flex justify-center items-center text-sm p-2">
                             {notices?.length > 1 && <span className="whitespace-nowrap text-xs xs:text-sm ">{`1 de ${notices?.length}`}</span>}
-                            <ChevronRightIcon  className="w-5 h-5 text-surface-100 " />
+                            <ChevronRightIcon  className="w-5 h-5 text-typography-800 cursor-pointer" />
                         </span>
                     </div>
                 </div>

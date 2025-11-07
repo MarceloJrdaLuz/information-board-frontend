@@ -8,7 +8,7 @@ export default function FooterDashboard() {
   return (
     <footer
       className="
-        w-full bg-primary-100 shadow-md py-3
+        w-full bg-gradient-to-l from-primary-100 to-primary-200 shadow-md py-3
       "
     >
       <div
