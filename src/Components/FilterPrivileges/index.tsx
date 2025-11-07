@@ -18,18 +18,21 @@ interface IFIlterPrivilegesProps {
 }
 
 export default function FilterPrivileges({ handleCheckboxChange, checkedOptions, onClick, includeOptionAll }: IFIlterPrivilegesProps) {
-    const [privileges, setPrivileges] = useState(includeOptionAll ? [ 'Todos', ...Object.values(Privileges)] : Object.values(Privileges))
+    const [privileges, setPrivileges] = useState(includeOptionAll ? ['Todos', ...Object.values(Privileges)] : Object.values(Privileges))
 
     return (
         <Popover placement="bottom-start">
             <PopoverHandler>
-                <div className="flex justify-end">
-                    <Button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
+                <div className="flex justify-center items-center">
+                    <button
+                        onClick={onClick}
+                        className=" border-none shadow-none text-primary-200 font-bold p-5"
+                    >
                         <ListFilterIcon />
-                    </Button>
+                    </button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-80 bg-surface-100">
+            <PopoverContent className="w-80 ">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
                     <CheckboxMultiple full options={privileges} label="Filtrar" handleCheckboxChange={(selectedItems) => handleCheckboxChange(selectedItems)} checkedOptions={checkedOptions} />
                 </List>

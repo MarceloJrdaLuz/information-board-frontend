@@ -10,7 +10,7 @@ const themes: { name: string; class: ThemeType; color: string }[] = [
   { name: 'Padrão', class: '', color: '#178582' },
   { name: 'Escuro', class: 'theme-dark', color: '#191223' },
   { name: 'Azul', class: 'theme-blue', color: '#2878bb' },
-  { name: 'Roxo', class: 'theme-purple', color: '#9D81FF' },
+  { name: 'Roxo', class: 'theme-purple', color: '#746B84' },
 ]
 
 export default function ThemeSwitcher() {

@@ -125,6 +125,11 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
                             </Text>
                         </View>
                     )}
+                   {schedule.chairman && <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', padding: 5 * scale }}>
+                        <Text style={styles.textLine}>
+                            {schedule.chairman && `Presidente: ${schedule.chairman?.nickname ? schedule.chairman?.nickname : schedule.chairman?.fullName}`}
+                        </Text>
+                    </View>}
 
                     <View style={[
                         styles.talkBox,

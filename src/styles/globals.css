@@ -91,25 +91,19 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-
 :root {
   /* Primárias */
   --color-primary-50: 237 249 249;
-  /* #edf6f9 */
   --color-primary-100: 131 197 190;
-  /* #83c5be */
+  --color-primary-150: 80 165 160;
   --color-primary-200: 23 133 130;
-  /* #178582 */
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
-  /* #edf6f9 */
   --color-secondary-200: 233 233 233;
-  /* #e9e9e9 */
 
   /* Texto */
   --color-typography-100: 245 245 245;
-  /* Preto suave */
   --color-typography-200: 238 238 238;
   --color-typography-300: 224 224 224;
   --color-typography-400: 189 189 189;
@@ -121,59 +115,51 @@ input[type=number] {
 
   /* Fundos */
   --color-surface-100: 255 255 255;
-  /* Branco */
   --color-surface-200: 245 245 245;
-  /* Cinza claro */
 }
 
 .theme-dark {
-  
-  --color-primary-100: 145 106 255;
-  --color-primary-200: 170 131 255;
+  /* Primárias */
+  --color-primary-200: 111 78 161;   /* #6F4EA1 — tom escuro, base forte */
+--color-primary-150: 153 119 197;  /* #9977C5 — intermediário equilibrado */
+--color-primary-100: 193 167 226;  /* #C1A7E2 — tom principal e mais claro */
 
-  /* === Secundárias (fundos neutros escuros) === */
+
+
+  /* Secundárias */
   --color-secondary-100: 22 20 25;
-  /* #161419 — fundo geral */
   --color-secondary-200: 35 30 40;
-  /* #231E28 — contraste leve */
 
-  /* === Texto (branco com gradações suaves) === */
+  /* Texto */
   --color-typography-100: 255 255 255;
-  /* branco puro - títulos */
   --color-typography-200: 235 235 240;
   --color-typography-300: 215 215 225;
   --color-typography-400: 190 190 200;
   --color-typography-500: 160 160 170;
   --color-typography-600: 130 130 140;
   --color-typography-700: 210 210 220;
-  /* texto sobre fundo roxo */
   --color-typography-800: 235 235 240;
   --color-typography-900: 255 255 255;
 
-  /* === Fundos / Superfícies === */
+  /* Fundos */
   --color-surface-100: 15 10 20;
-  /* #0F0A14 — fundo principal */
   --color-surface-200: 25 18 35;
-  /* #191223 — cards / containers */
 }
 
 
 .theme-blue {
-  /* tom mais escuro, base */
-  --color-primary-100: 159 185 227;
-  /* #225A59 — base principal escura */
-  --color-primary-200: 10 34 75;
-  /* #3DB5AD — destaque agradável */
+  /* Primárias */
+ --color-primary-100: 159 185 227; /* #9FB9E3 */
+--color-primary-150: 65 100 150;  /* #416496 */
+--color-primary-200: 62 107 163;  /* #3E6BA3 */
+
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
-  /* #edf6f9 */
   --color-secondary-200: 233 233 233;
-  /* #e9e9e9 */
 
   /* Texto */
   --color-typography-100: 245 245 245;
-  /* Preto suave */
   --color-typography-200: 238 238 238;
   --color-typography-300: 224 224 224;
   --color-typography-400: 189 189 189;
@@ -186,24 +172,21 @@ input[type=number] {
 
   /* Fundos */
   --color-surface-100: 255 255 255;
-  /* Branco */
   --color-surface-200: 245 245 245;
-  /* Cinza claro */
 }
 
 .theme-purple {
-   --color-primary-200: 145 106 255;
-  --color-primary-100: 170 131 255;
+--color-primary-200: 98 70 140;    /* #62468C — tom mais escuro e sólido */
+--color-primary-150: 134 106 170;  /* #866AAA — transição equilibrada */
+--color-primary-100: 174 152 206;  /* #AE98CE — destaque suave */
+
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
-  /* #edf6f9 */
   --color-secondary-200: 233 233 233;
-  /* #e9e9e9 */
 
   /* Texto */
   --color-typography-100: 245 245 245;
-  /* Preto suave */
   --color-typography-200: 238 238 238;
   --color-typography-300: 224 224 224;
   --color-typography-400: 189 189 189;
@@ -215,8 +198,6 @@ input[type=number] {
 
   /* Fundos */
   --color-surface-100: 255 255 255;
-  /* Branco */
   --color-surface-200: 245 245 245;
-  /* Cinza claro */
 
 }

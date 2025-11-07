@@ -19,25 +19,27 @@ export default function Publicadores() {
     }, [setPageActive])
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER", "PUBLISHERS_VIEWER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Publicadores"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de pessoas</h1>
-                            <div className="flex justify-start">
-                                <Button
-                                    onClick={() => {
-                                        Router.push('/congregacao/publicadores/add')
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <AddPersonIcon />
-                                    <span className="text-primary-200 font-semibold">Adicionar pessoa</span>
-                                </Button>
-                            </div>
-                            <PublisherList />
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Publicadores"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de pessoas</h1>
+                        <div className="flex justify-start">
+                            <Button
+                                outline
+                                onClick={() => {
+                                    Router.push('/congregacao/publicadores/add')
+                                }}
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80"
+                                >
+                                <AddPersonIcon />
+                                <span className="text-primary-200 font-semibold">Adicionar pessoa</span>
+                            </Button>
                         </div>
-                    </section>
-                </ContentDashboard>
+                        <PublisherList />
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }
