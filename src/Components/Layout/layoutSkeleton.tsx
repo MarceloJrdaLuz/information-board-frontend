@@ -31,12 +31,12 @@ export default function LayoutSkeleton() {
                 </header>
 
                 {/* CONTEÚDO */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 h-full">
+                <div className="flex-1 overflow-y-auto h-5/6 space-y-4">
 
                 </div>
 
                 {/* FOOTER */}
-                <footer className="w-full bg-gradient-to-r from-primary-100 to-primary-150 py-3 shadow-md animate-pulse">
+                <footer className="w-full h-20 bg-gradient-to-r from-primary-100 to-primary-150 py-3 shadow-md animate-pulse">
                     <div className="container mx-auto flex items-center justify-between px-6">
                         <div className="h-6 w-1/5 bg-secondary-300 rounded-md" />
                         <div className="h-6 w-1/6 bg-secondary-300 rounded-md" />
