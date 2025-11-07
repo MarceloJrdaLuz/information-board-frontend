@@ -26,7 +26,7 @@ export default function FilterPrivileges({ handleCheckboxChange, checkedOptions,
                 <div className="flex justify-center items-center">
                     <button
                         onClick={onClick}
-                        className=" border-none shadow-none text-primary-200 font-bold p-5"
+                        className=" border-none shadow-none text-primary-200 hover:text-primary-150 font-bold p-5"
                     >
                         <ListFilterIcon />
                     </button>

@@ -42,11 +42,11 @@ export default function Terms() {
                         <div className="w-full h-full">
                             <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Termos de Uso</h1>
                             <div className="flex justify-between items-center mb-3">
-                                <Button
+                                <Button outline
                                     onClick={() => {
                                         Router.push('/administracao/termos/add')
                                     }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                    className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                     <SecurityIcon />
                                     <span className="text-primary-200 font-semibold">Criar Termo</span>
                                 </Button>

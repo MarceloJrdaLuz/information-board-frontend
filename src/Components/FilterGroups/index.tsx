@@ -36,9 +36,9 @@ export default function FilterGroups({ handleCheckboxChange, checkedOptions, con
         <Popover placement="bottom-start">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 font-bold p-0 w-12">
+                    <button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 hover:text-primary-150 font-bold p-5">
                         <GroupIcon />
-                    </Button>
+                    </button>
                 </div>
             </PopoverHandler>
             <PopoverContent className="w-80">

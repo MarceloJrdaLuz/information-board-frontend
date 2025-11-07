@@ -69,7 +69,7 @@ export default function ListarRelatorios() {
         >
             {({ blob, url, loading, error }) =>
                 loading ? "" :
-                    <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <Button outline className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
                             Salvar S-88
@@ -80,30 +80,31 @@ export default function ListarRelatorios() {
     )
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER", "ASSISTANCE_VIEWER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
-                            <div className="flex justify-between">
-                                {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
-                                    <Button
-                                        onClick={() => {
-                                            router.push(`/congregacao/assistencia/${congregationId}/enviar`)
-                                        }}
-                                        className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                                        <FilePlus2Icon />
-                                        <span className="text-primary-200 font-semibold">Adicionar</span>
-                                    </Button>
-                                )}
-                                {pdfGenerating && <PdfLinkComponent />}
-                            </div>
-                            <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-
-                            <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
+                        <div className="flex justify-between">
+                            {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
+                                <Button
+                                    outline
+                                    onClick={() => {
+                                        router.push(`/congregacao/assistencia/${congregationId}/enviar`)
+                                    }}
+                                    className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                                    <FilePlus2Icon />
+                                    <span className="text-primary-200 font-semibold">Adicionar</span>
+                                </Button>
+                            )}
+                            {pdfGenerating && <PdfLinkComponent />}
                         </div>
-                    </section>
-                </ContentDashboard>
+                        <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+
+                        <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

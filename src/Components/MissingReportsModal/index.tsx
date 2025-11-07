@@ -34,7 +34,7 @@ export default function MissingReportsModal({ missingReportsNumber, missingRepor
         <Popover placement="bottom-end">
             <PopoverHandler>
                 <div className="flex justify-end">
-                    <Button className="bg-transparent border-none shadow-none text-primary-200 font-bold w-48 whitespace-nowrap ">
+                    <Button outline className="bg-transparent border-none shadow-none text-primary-200 font-bold w-48 whitespace-nowrap ">
                         {`Relatórios em falta: ${missingReportsNumber}`}
                         <ChevronDownIcon />
                     </Button>

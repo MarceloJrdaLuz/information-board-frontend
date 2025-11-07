@@ -3,7 +3,6 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import TerritoryIcon from "@/Components/Icons/TerritoryIcon"
-import Layout from "@/Components/Layout"
 import { ProtectedRoute } from "@/Components/ProtectedRoute"
 import S13 from "@/Components/S13"
 import TerritoriesList from "@/Components/TerritoriesList"
@@ -17,7 +16,7 @@ import Router from "next/router"
 import { useEffect, useState } from "react"
 
 export default function Territory() {
-    const [crumbs, ] = useAtom(crumbsAtom)
+    const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [pdfGenerating, setPdfGenerating] = useState(false)
     const { territoriesHistory } = useTerritoryContext()
@@ -84,7 +83,7 @@ export default function Territory() {
         >
             {({ blob, url, loading, error }) => {
                 return loading ? "" :
-                    <Button className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <Button outline className=" text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
                             Salvar S-13
@@ -97,33 +96,34 @@ export default function Territory() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Territórios"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de territórios</h1>
-                        <Button
-                            onClick={() => {
-                                Router.push('/congregacao/territorios/add')
-                            }}
-                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <TerritoryIcon />
-                            <span className="text-primary-200 font-semibold">Adicionar território</span>
-                        </Button>
-                        <div className="w-full h-full my-5">
-                            <div className="w-full flex justify-end">
-                                {pdfGenerating && <PdfLinkComponent />}
-                            </div>
-                            <TerritoriesList />
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Territórios"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Registros de territórios</h1>
+                    <Button
+                        outline
+                        onClick={() => {
+                            Router.push('/congregacao/territorios/add')
+                        }}
+                        className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                        <TerritoryIcon />
+                        <span className="text-primary-200 font-semibold">Adicionar território</span>
+                    </Button>
+                    <div className="w-full h-full my-5">
+                        <div className="w-full flex justify-end">
+                            {pdfGenerating && <PdfLinkComponent />}
                         </div>
-                        {/* <div className="w-screen">
+                        <TerritoriesList />
+                    </div>
+                    {/* <div className="w-screen">
                         {isClient && (
                             <PDFViewer>
                                 <S13 territoriesHistory={territoriesHistoryFilter ?? []} />
                             </PDFViewer>
                         )}
                     </div> */}
-                    </section>
-                </ContentDashboard>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

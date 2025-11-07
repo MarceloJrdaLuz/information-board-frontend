@@ -65,62 +65,63 @@ export default function HospitalityGroupsPage() {
 
     return (
         <ProtectedRoute allowedRoles={["ADMIN_CONGREGATION", "TALK_MANAGER"]}>
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Hospitalidade"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de hospitalidade</h1>
-                            <div className="flex justify-between items-center mb-3">
-                                <Button
-                                    onClick={() => {
-                                        Router.push('/arranjo-oradores/grupos-hospitalidade/add')
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                    <GroupIcon />
-                                    <span className="text-primary-200 font-semibold">Criar grupo</span>
-                                </Button>
-                                {hospitalityGroups && <span className="text-sm text-typography-600">Total: {hospitalityGroups.length}</span>}
-                            </div>
+            <ContentDashboard>
+                <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Hospitalidade"} />
+                <section className="flex flex-wrap w-full h-full p-5 ">
+                    <div className="w-full h-full">
+                        <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Grupos de hospitalidade</h1>
+                        <div className="flex justify-between items-center mb-3">
+                            <Button
+                                outline
+                                onClick={() => {
+                                    Router.push('/arranjo-oradores/grupos-hospitalidade/add')
+                                }}
+                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                <GroupIcon />
+                                <span className="text-primary-200 font-semibold">Criar grupo</span>
+                            </Button>
+                            {hospitalityGroups && <span className="text-sm text-typography-600">Total: {hospitalityGroups.length}</span>}
+                        </div>
 
-                            {hospitalityGroups && hospitalityGroups.length > 0 ? (
-                                <ListGeneric
-                                    onDelete={(item_id) => handleDelete(item_id)}
-                                    onUpdate={(group) => setHospitalityGroupUpdate(group)}
-                                    items={hospitalityGroups}
-                                    path="/arranjo-oradores/grupos-hospitalidade"
-                                    label="do grupo"
-                                    renderItem={(group) => (
-                                        <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-typography-800">{group.name}</h3>
+                        {hospitalityGroups && hospitalityGroups.length > 0 ? (
+                            <ListGeneric
+                                onDelete={(item_id) => handleDelete(item_id)}
+                                onUpdate={(group) => setHospitalityGroupUpdate(group)}
+                                items={hospitalityGroups}
+                                path="/arranjo-oradores/grupos-hospitalidade"
+                                label="do grupo"
+                                renderItem={(group) => (
+                                    <div className="flex flex-col gap-3 p-4 border rounded-md hover:shadow-md transition-shadow">
+                                        <h3 className="text-lg font-semibold text-typography-800">{group.name}</h3>
 
-                                            <div className="text-sm text-typography-700 flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    🏠 <span>{group.host?.fullName || "Nenhum anfitrião"}</span>
-                                                </div>
-                                                <div className="flex flex-col gap-1">
-                                                    👥 <span>Membros:</span>
-                                                    {group.members && group.members.length > 0
-                                                        ? group.members.map((m) => (
-                                                            <span key={m.id} className="ml-4 text-typography-700">{m.fullName}</span>
-                                                        ))
-                                                        : <span className="ml-4 text-typography-700">Nenhum membro adicionado</span>
-                                                    }
-                                                </div>
+                                        <div className="text-sm text-typography-700 flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                🏠 <span>{group.host?.fullName || "Nenhum anfitrião"}</span>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                                👥 <span>Membros:</span>
+                                                {group.members && group.members.length > 0
+                                                    ? group.members.map((m) => (
+                                                        <span key={m.id} className="ml-4 text-typography-700">{m.fullName}</span>
+                                                    ))
+                                                    : <span className="ml-4 text-typography-700">Nenhum membro adicionado</span>
+                                                }
                                             </div>
                                         </div>
-                                    )}
-                                />
+                                    </div>
+                                )}
+                            />
 
+                        )
+                            : (
+                                <>
+                                    {!hospitalityGroups ? renderSkeleton() : <EmptyState message="Nenhum grupo de hospitalidade cadastrado" />}
+                                </>
                             )
-                                : (
-                                    <>
-                                        {!hospitalityGroups ? renderSkeleton() : <EmptyState message="Nenhum grupo de hospitalidade cadastrado" />}
-                                    </>
-                                )
-                            }
-                        </div>
-                    </section>
-                </ContentDashboard>
+                        }
+                    </div>
+                </section>
+            </ContentDashboard>
         </ProtectedRoute>
     )
 }

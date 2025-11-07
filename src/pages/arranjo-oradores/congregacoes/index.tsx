@@ -62,7 +62,7 @@ export default function AuxiliaryCongregationsPage() {
                     <div className="w-full h-full">
                         <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Congregações</h1>
                         <div className="flex justify-between items-center mb-3">
-                            <Button
+                            <Button outline
                                 onClick={() => {
                                     Router.push('/arranjo-oradores/congregacoes/add')
                                 }}
