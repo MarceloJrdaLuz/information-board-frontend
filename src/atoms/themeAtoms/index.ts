@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 
-export type ThemeType = '' | 'theme-dark' | 'theme-blue' 
+export type ThemeType = '' | 'theme-dark' | 'theme-blue' | 'theme-purple' 
 
 /** Átomo com o tema atual */
 export const themeAtom = atom<ThemeType>('')

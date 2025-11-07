@@ -190,3 +190,33 @@ input[type=number] {
   --color-surface-200: 245 245 245;
   /* Cinza claro */
 }
+
+.theme-purple {
+   --color-primary-200: 145 106 255;
+  --color-primary-100: 170 131 255;
+
+  /* Secundárias */
+  --color-secondary-100: 237 246 249;
+  /* #edf6f9 */
+  --color-secondary-200: 233 233 233;
+  /* #e9e9e9 */
+
+  /* Texto */
+  --color-typography-100: 245 245 245;
+  /* Preto suave */
+  --color-typography-200: 238 238 238;
+  --color-typography-300: 224 224 224;
+  --color-typography-400: 189 189 189;
+  --color-typography-500: 158 158 158;
+  --color-typography-600: 117 117 117;
+  --color-typography-700: 97 97 97;
+  --color-typography-800: 66 66 66;
+  --color-typography-900: 33 33 33;
+
+  /* Fundos */
+  --color-surface-100: 255 255 255;
+  /* Branco */
+  --color-surface-200: 245 245 245;
+  /* Cinza claro */
+
+}

@@ -10,6 +10,7 @@ const themes: { name: string; class: ThemeType; color: string }[] = [
   { name: 'Padrão', class: '', color: '#178582' },
   { name: 'Escuro', class: 'theme-dark', color: '#191223' },
   { name: 'Azul', class: 'theme-blue', color: '#2878bb' },
+  { name: 'Roxo', class: 'theme-purple', color: '#9D81FF' },
 ]
 
 export default function ThemeSwitcher() {
@@ -18,19 +19,19 @@ export default function ThemeSwitcher() {
 
   // função para validar o valor do localStorage
   const isValidTheme = (value: string): value is ThemeType => {
-    return ['', 'theme-dark', 'theme-blue'].includes(value)
+    return ['', 'theme-dark', 'theme-blue', 'theme-purple'].includes(value)
   }
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') || ''
     const theme = isValidTheme(saved) ? saved : ''
-    document.documentElement.classList.remove('theme-dark', 'theme-blue')
+    document.documentElement.classList.remove('theme-dark', 'theme-blue', 'theme-purple')
     if (theme) document.documentElement.classList.add(theme)
     setThemeAtom(theme)
   }, [setThemeAtom])
 
   const setTheme = (themeClass: ThemeType) => {
-    document.documentElement.classList.remove('theme-dark', 'theme-blue')
+    document.documentElement.classList.remove('theme-dark', 'theme-blue', 'theme-purple')
     if (themeClass) document.documentElement.classList.add(themeClass)
     localStorage.setItem('theme', themeClass)
     setThemeAtom(themeClass)
@@ -41,7 +42,7 @@ export default function ThemeSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="w-9 h-9 flex items-center justify-center bg-primary-200 text-typography-100 rounded-full shadow-md hover:brightness-95 transition-all"
+        className="w-9 h-9 flex items-center justify-center  text-typography-100 rounded-full shadow-md hover:brightness-95 transition-all"
         title="Mudar tema"
       >
         <Palette size={18} />
