@@ -128,8 +128,8 @@ input[type=number] {
 
 .theme-dark {
   
-  --color-primary-100: 167 94 255;
-  --color-primary-200: 192 127 255;
+  --color-primary-100: 145 106 255;
+  --color-primary-200: 170 131 255;
 
   /* === Secundárias (fundos neutros escuros) === */
   --color-secondary-100: 22 20 25;
