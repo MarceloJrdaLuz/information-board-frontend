@@ -140,7 +140,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full px-3 py-2 text-sm border-b border-typography-200 focus:outline-none focus:ring-indigo-400"
+                className="block w-full px-3 py-2 text-sm border-b bg-surface-200 border-typography-700 focus:outline-none"
                 placeholder="Pesquisar..."
               />
             )}
@@ -149,7 +149,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                 key={index}
                 onClick={() => toggleSelect(item)}
                 className={classNames(
-                  "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-typography-100 hover:text-typography-900",
+                  "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-surface-200 hover:text-typography-900",
                   isSelected(item)
                     ? "font-medium text-primary-200"
                     : "text-typography-700"

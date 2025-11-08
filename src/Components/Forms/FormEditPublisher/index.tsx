@@ -193,11 +193,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                     />
                                     <ConfirmLinkForceModal button={
                                         <Button
+                                            outline
                                             type='button'
                                             onClick={() => { handleLinkPublisherToUser() }}
-                                            className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                            className=" text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                                             <UserLinkIcon />
-                                            <span className="text-primary-200 font-semibold">Vincular publicador</span>
+                                            <span className="text-primary-200 font-semibold">Vincular</span>
                                         </Button>
                                     }
                                         onDelete={() => handleConfirmForceLink()}
@@ -205,11 +206,12 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         canOpen={modalConfirmForce}
                                     />
                                     <Button
+                                        outline
                                         type='button'
                                         onClick={() => { handleUnLinkPublisherToUser() }}
-                                        className="bg-surface-100 text-red-500 p-3 border-typography-300 rounded-none hover:opacity-80">
+                                        className=" text-red-400 p-3 border-typography-300 rounded-none hover:opacity-80">
                                         <UserLinkIcon />
-                                        <span className="text-primary-200 font-semibold">Desvincular publicador</span>
+                                        <span className="text-red-400 font-semibold">Desvincular</span>
                                     </Button>
                                 </div>
                             </div>)

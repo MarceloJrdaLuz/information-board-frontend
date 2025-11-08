@@ -52,7 +52,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     useEffect(() => {
         const recoverUser = async () => {
             try {
-                const res = await api.post('/recover-user-information')
+                const res = await api.get('/recover-user-information')
                 setUser(res.data)
             } catch (err: any) {
                 setUser(null)

@@ -31,6 +31,7 @@ export interface UserTypes {
     congregation: ICongregation
     roles: RolesType[]
     profile: Profile | null
+    publisher?: IPublisher
 }
 
 
