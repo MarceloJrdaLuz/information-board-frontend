@@ -3,7 +3,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import { ProfileCard } from "@/Components/ProfileCard"
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton"
 import { UpcomingAssignmentsCard } from "@/Components/UpcomingAssignmentsCard"
-import { UpcomingAssignmentsCardSkeleton } from "@/Components/UpcomingAssignmentsCard/skeleton"
+import UpcomingAssignmentsSkeleton from "@/Components/UpcomingAssignmentsCard/skeleton"
 import { useAuthContext } from "@/context/AuthContext"
 import { useFetch } from "@/hooks/useFetch"
 import { IAssignment } from "@/types/assignment"
@@ -42,7 +42,7 @@ function Dashboard() {
 
           {/* Assignments Card or Skeleton */}
           {isLoading ? (
-            <UpcomingAssignmentsCardSkeleton />
+            <UpcomingAssignmentsSkeleton/>
           ) : (
             data && <UpcomingAssignmentsCard assignments={data} />
           )}
