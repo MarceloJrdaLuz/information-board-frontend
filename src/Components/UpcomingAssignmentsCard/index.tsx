@@ -2,6 +2,10 @@ import { IAssignment } from "@/types/assignment"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Calendar, Clock, MapPin } from "lucide-react"
+import moment from "moment";
+import "moment/locale/pt-br"; // importa o idioma
+moment.defineLocale("pt-br", null)
+
 
 interface UpcomingAssignmentsCardProps {
     assignments: IAssignment[]
@@ -19,9 +23,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             {hasAssignments ? (
                 <ul className="space-y-2">
                     {assignments.map((assignment, i) => {
-                        const formattedDate = format(new Date(assignment.date), "EEEE, dd 'de' MMMM", {
-                            locale: ptBR,
-                        })
+                        const formattedDate = moment(assignment.date).locale("pt-br").format("dddd, DD [de] MMMM")
 
                         return (
                             <li
