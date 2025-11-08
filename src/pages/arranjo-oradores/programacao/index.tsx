@@ -298,7 +298,7 @@ function WeekendSchedulePage() {
                                 </div>
                             </div>
 
-                            <Card className="w-full p-4 bg-surface-200">
+                            <Card className="w-full p-4 bg-surface-100">
                                 <CardBody className="flex flex-wrap gap-4 items-center">
                                     <Input
                                         placeholder="Data inicial"
