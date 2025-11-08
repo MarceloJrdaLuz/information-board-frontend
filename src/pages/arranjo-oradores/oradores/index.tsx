@@ -211,7 +211,6 @@ function SpeakersPage() {
                         )
                     }
                 </div>
-
             </section>
         </ContentDashboard>
     )
