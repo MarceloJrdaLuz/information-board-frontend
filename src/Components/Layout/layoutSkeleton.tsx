@@ -18,7 +18,7 @@ export default function LayoutSkeleton() {
 
                 {/* Rodapé da sidebar */}
                 <div className="mt-auto pt-4">
-                    <div className="h-8 w-2/3 bg-secondary-300 rounded-md" />
+                    <div className="h-8 w-2/3 bg-surface-100 rounded-md" />
                 </div>
             </aside>
 
@@ -31,7 +31,7 @@ export default function LayoutSkeleton() {
                 </header>
 
                 {/* CONTEÚDO */}
-                <div className="flex-1 overflow-y-auto h-5/6 space-y-4">
+                <div className="flex-1 overflow-y-auto h-5/6 space-y-4 bg-surface-100">
 
                 </div>
 

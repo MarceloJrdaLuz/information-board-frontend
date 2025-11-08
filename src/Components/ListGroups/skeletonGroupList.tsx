@@ -1,25 +1,26 @@
 
 export default function SkeletonGroupsList() {
     return (
-        <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1`}>
-            <div className="flex w-full justify-between items-center">
-                <div className="flex flex-wrap sm:flex-nowrap justify-between w-full items-center p-4 ">
-                    <div className="flex w-full gap-1">
-                        <span className="font-semi-bold w-[40%] sm:w-[40%] h-7 bg-typography-200"></span>
-                        <span className="font-semi-bold w-[40%] sm:w-[40%] h-7 bg-typography-200"></span>
-                    </div>
-                    <div className="flex w-full gap-1 mt-2 sm:mt-0 ">
-                        <span className="font-semi-bold w-[40%] sm:w-[40%] h-7 bg-typography-200"></span>
-                        <span className="font-semi-bold w-[40%] sm:w-[40%] h-7 bg-typography-200"></span>
-                    </div>
-                    <div className="flex w-full gap-1 mt-2 sm:mt-0">
-                        <span className="font-semi-bold w-[30%] sm:w-[50%] h-7 bg-typography-200"></span>
-                        <span className="font-semi-bold w-[30%] sm:w-[50%] h-7 bg-typography-200"></span>
-                    </div>
-                    
-                </div>
+        <li
+          className="bg-surface-100 rounded-2xl border border-surface-200 shadow-sm flex flex-col m-2"
+        >
+          {/* Conteúdo principal */}
+          <div className="flex-1 p-5 flex flex-col gap-3">
+            <div className="h-5 w-2/3 bg-surface-200 rounded" /> {/* título */}
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="h-3 w-1/2 bg-surface-200 rounded" />
+              <div className="h-3 w-2/3 bg-surface-200 rounded" />
+              <div className="h-3 w-1/3 bg-surface-200 rounded" />
+              <div className="h-3 w-1/4 bg-surface-200 rounded" />
+              <div className="h-3 w-1/5 bg-surface-200 rounded" />
             </div>
-        </li>
+          </div>
 
-    )
+          {/* Ações */}
+          <div className="flex gap-2 px-5 py-3 border-t border-surface-200 bg-surface-100 rounded-b-2xl">
+            <div className="h-8 w-16 bg-surface-200 rounded" />
+            <div className="h-8 w-16 bg-surface-200 rounded" />
+          </div>
+        </li>
+  )
 }

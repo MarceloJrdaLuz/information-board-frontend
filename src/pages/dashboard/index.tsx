@@ -12,7 +12,7 @@ import { useAtom } from "jotai"
 import { useEffect } from "react"
 
 function Dashboard() {
-  const { user } = useAuthContext()
+  const { user, loading } = useAuthContext()
   const [, setCrumbs] = useAtom(crumbsAtom)
 
   const fetchConfig = user?.publisher ? `/publisher/${user.publisher.id}/assignment` : ""
@@ -27,7 +27,7 @@ function Dashboard() {
       <section className="flex w-full h-fit justify-center items-center p-5">
         <div className="h-full flex flex-wrap justify-center items-center gap-5">
           {/* Profile Card or Skeleton */}
-          {isLoading ? (
+          {loading ? (
             <ProfileCardSkeleton />
           ) : (
             user && (
@@ -42,7 +42,7 @@ function Dashboard() {
 
           {/* Assignments Card or Skeleton */}
           {isLoading ? (
-            <UpcomingAssignmentsSkeleton/>
+            <UpcomingAssignmentsSkeleton />
           ) : (
             data && <UpcomingAssignmentsCard assignments={data} />
           )}
