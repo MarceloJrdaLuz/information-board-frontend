@@ -39,7 +39,7 @@ function CleanPage() {
 
     function renderSkeleton() {
         return (
-            <ul className="flex w-full h-fit flex-wrap justify-center">
+            <ul className="flex w-full h-fit flex-wrap justify-center gap-2">
                 {skeletonFileList.map((a, i) => (<SkeletonFileList key={i + 'skeleton'} />))}
             </ul>
         )

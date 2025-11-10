@@ -27,7 +27,7 @@ const button = tv({
       true: "bg-success-100"
     },
     remove: {
-      true: "bg-red-400"
+      true: "text-red-400 border-red-400"
     },
     error: {
       true: "bg-red-400"

@@ -5,54 +5,49 @@ interface ReportTableProps {
 }
 
 export default function ReportTable({ reports }: ReportTableProps) {
-  // Soma total das horas
   const totalHours = reports?.reduce((acc, report) => acc + (report.hours ?? 0), 0) ?? 0
-
-  // Verifica se a pessoa é Pioneiro Regular
   const isPioneiroRegular = reports?.some(r => r.privileges?.includes("Pioneiro Regular")) ?? false
-
-  // Só calcula esperado se for Pioneiro Regular
   const expectedPerMonth = isPioneiroRegular ? 50 : 0
   const totalExpected = isPioneiroRegular ? (reports?.length ?? 0) * expectedPerMonth : 0
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Tabela (visível em telas médias pra cima) */}
+      {/* Tabela (desktop) */}
       <div className="hidden md:block w-full overflow-x-auto">
-        <table className="w-full border-collapse shadow-md">
-          <thead className="bg-primary-100 text-typography-700">
+        <table className="w-full border-collapse rounded-xl shadow-md overflow-hidden">
+          <thead className="bg-gradient-to-r from-primary-100 to-primary-150 text-typography-900">
             <tr>
-              <th className="p-3 text-left">Mês</th>
-              <th className="p-3 text-left">Horas</th>
-              <th className="p-3 text-left">Estudos</th>
-              <th className="p-3 text-left">Observações</th>
+              <th className="p-3 text-left font-semibold">Mês</th>
+              <th className="p-3 text-left font-semibold">Horas</th>
+              <th className="p-3 text-left font-semibold">Estudos</th>
+              <th className="p-3 text-left font-semibold">Observações</th>
             </tr>
           </thead>
           <tbody>
             {reports?.map((report) => (
               <tr
                 key={report.id}
-                className="border-b odd:bg-surface-100 text-typography-800  even:bg-surface-200 hover:bg-primary-100 cursor-pointer transition-colors"
+                className="border-b odd:bg-surface-100 even:bg-surface-200 text-typography-800 hover:bg-primary-100/60 transition-colors duration-200"
               >
                 <td className="p-3">{`${report.month} ${report.year}`}</td>
-                <td className="p-3">{report.hours}</td>
+                <td className="p-3 font-medium">{report.hours}</td>
                 <td className="p-3">{report.studies ?? "-"}</td>
-                <td className="p-3">{report.observations ?? "-"}</td>
+                <td className="p-3 italic text-typography-700">{report.observations ?? "-"}</td>
               </tr>
             ))}
 
-            {/* Linha com total */}
-            <tr className="bg-primary-100 font-semibold">
+            {/* Linha total */}
+            <tr className="bg-primary-100 font-semibold text-typography-900">
               <td className="p-3">Total</td>
               <td className="p-3 flex">
                 {isPioneiroRegular ? (
                   <div className="flex justify-center gap-6">
                     <div className="flex flex-col items-center">
-                      <span className="text-sm text-typography-800">Atual</span>
+                      <span className="text-sm text-typography-700">Atual</span>
                       <span className="font-bold">{totalHours}</span>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-sm text-typography-800">Esperado</span>
+                      <span className="text-sm text-typography-700">Esperado</span>
                       <span className="font-bold">{totalExpected}</span>
                     </div>
                   </div>
@@ -67,35 +62,32 @@ export default function ReportTable({ reports }: ReportTableProps) {
         </table>
       </div>
 
-      {/* Cards (somente em mobile) */}
-      <div className="md:hidden w-full flex flex-col gap-4">
+      {/* Cards (mobile) */}
+      <div className="md:hidden w-full flex flex-col gap-4 mt-4">
         {reports?.map((report) => (
           <div
             key={report.id}
-            className="bg-surface-100 shadow-md rounded-xl p-4 border border-typography-200"
+            className="bg-surface-100 shadow-md rounded-2xl p-4 border border-typography-200 hover:shadow-lg transition-shadow duration-200"
           >
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="font-semibold text-primary-200 text-lg">{`${report.month} ${report.year}`}</span>
-              <span className="text-typography-700 font-bold">{report.hours}h</span>
+              <span className="text-typography-800 font-bold">{report.hours}h</span>
             </div>
-            <p className="text-base text-typography-700 mt-2">
-              <span className="font-semibold text-base">Estudos:</span>{" "}
-              {report.studies ?? "-"}
-            </p>
-            {report.observations && (
-              <p className="text-base text-typography-600 mt-1 italic">
-                {report.observations}
-              </p>
-            )}
+            <div className="mt-2 text-typography-700">
+              <p><span className="font-semibold">Estudos:</span> {report.studies ?? "-"}</p>
+              {report.observations && (
+                <p className="mt-1 italic text-typography-600">{report.observations}</p>
+              )}
+            </div>
           </div>
         ))}
 
-        {/* Card com total */}
-        <div className="bg-primary-50 shadow-md rounded-xl p-4 border border-primary-200 mb-4">
-          <div className="flex justify-between items-center gap-3">
-            <span className="font-semibold text-primary-200">Total</span>
+        {/* Card total */}
+        <div className="bg-gradient-to-r from-primary-100 to-primary-150 shadow-md rounded-2xl p-4 border border-primary-200 mb-4">
+          <div className="flex justify-between items-center">
+            <span className="font-semibold text-typography-900">Total</span>
             {isPioneiroRegular ? (
-              <div className="flex gap-8 text-typography-800">
+              <div className="flex gap-6 text-typography-900">
                 <div className="flex flex-col items-center">
                   <span className="text-sm">Atual</span>
                   <span className="font-bold">{totalHours}h</span>
@@ -106,7 +98,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
                 </div>
               </div>
             ) : (
-              <span className="font-bold text-typography-700">{totalHours}h</span>
+              <span className="font-bold text-typography-900">{totalHours}h</span>
             )}
           </div>
         </div>

@@ -90,7 +90,7 @@ function ChangeGroupOverseer() {
                         {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
                     </div>
-                    <div className={`flex z-0 w-full h-full sm:h-9/12 min-h-[450px]  max-w-[600px] justify-center items-center bg-surface-100 p-6 md:p-8 md:justify-center md:items-center shadow-neutral-300 rounded-xl lg:w-10/12 md:w-11/12 md:h-fit mx-auto `}>
+                    <div className={`flex z-0 w-full h-fite sm:h-9/12 min-h-[450px]  max-w-[600px] justify-center items-center bg-surface-100 p-6 md:p-8 md:justify-center md:items-center shadow-neutral-300 rounded-xl lg:w-10/12 md:w-11/12 md:h-fit mx-auto `}>
                         <div className={`w-full h-fit flex-col justify-center items-center`}>
                             <h2 className="mb-6  w-11/12 font-semibold  sm:text-2xl text-primary-200">Escolha o dirigente</h2>
                             {publishers && (

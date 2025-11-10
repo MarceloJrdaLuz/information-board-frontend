@@ -1,3 +1,4 @@
+import { Privileges } from "@/types/types"
 import {
     List,
     Popover,
@@ -6,9 +7,7 @@ import {
 } from "@material-tailwind/react"
 import { ListFilterIcon } from "lucide-react"
 import { useState } from "react"
-import Button from "../Button"
 import CheckboxMultiple from "../CheckBoxMultiple"
-import { Privileges } from "@/types/types"
 
 interface IFIlterPrivilegesProps {
     handleCheckboxChange: (selectedOptions: string[]) => void
@@ -32,7 +31,7 @@ export default function FilterPrivileges({ handleCheckboxChange, checkedOptions,
                     </button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-80 ">
+            <PopoverContent className="w-80 bg-surface-100">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
                     <CheckboxMultiple full options={privileges} label="Filtrar" handleCheckboxChange={(selectedItems) => handleCheckboxChange(selectedItems)} checkedOptions={checkedOptions} />
                 </List>

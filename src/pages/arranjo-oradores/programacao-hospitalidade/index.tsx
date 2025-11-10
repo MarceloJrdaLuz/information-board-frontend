@@ -2,6 +2,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import HospitalityRow from "@/Components/HospitalityWeekendRow"
+import SkeletonHospitalityRow from "@/Components/HospitalityWeekendRow/skeleton"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
@@ -101,7 +102,7 @@ function HospitalityWeekendPage() {
             <BreadCrumbs crumbs={crumbs} pageActive="Hospitalidade" />
             <section className="flex flex-wrap w-full h-full p-4 relative">
                 {!data ? (
-                    <WeekendScheduleSkeleton />
+                    <SkeletonHospitalityRow />
                 ) : (
                     <div className="w-full space-y-6">
                         {/* Filtros e controles */}

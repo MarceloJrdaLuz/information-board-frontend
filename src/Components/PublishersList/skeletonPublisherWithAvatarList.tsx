@@ -6,9 +6,9 @@ export default function SkeletonPublishersWithAvatarList() {
             <div className="flex w-full justify-between items-center">
                 <div className="flex w-full items-center p-6 ">
                     <SkeletonAvatar />
-                <span className="pl-4 font-semi-bold w-[40%] h-7 bg-surface-200"></span>
+                <span className="pl-4 font-semi-bold w-[40%] h-7 bg-surface-200 shimmer"></span>
                 </div>
-                <span className="w-5 h-5 mr-3 bg-surface-200"></span>
+                <span className="w-5 h-5 mr-3 bg-surface-200 shimmer"></span>
             </div>
         </li>
 

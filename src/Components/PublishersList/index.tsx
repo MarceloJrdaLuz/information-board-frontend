@@ -19,6 +19,9 @@ import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import FilterPrivileges from "../FilterPrivileges"
 import EditIcon from "../Icons/EditIcon"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+import { Document, PDFDownloadLink } from "@react-pdf/renderer"
+import PublishersListPdf from "../PublisherListPdf"
+import PdfIcon from "../Icons/PdfIcon"
 
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()
@@ -121,8 +124,35 @@ export default function PublisherList() {
         )
     }
 
+
+    const PdfLinkComponent = () => (
+        <PDFDownloadLink
+            document={
+                <Document>
+                    <PublishersListPdf
+                        publishers={publishers ?? []}
+                        congregationName={user?.congregation.name}
+                    />
+                </Document>
+            }
+            fileName={`Publicadores_${user?.congregation.name || "congregacao"}.pdf`}
+        >
+            {({ loading }) => (
+                <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <PdfIcon />
+                    <span className="text-primary-200 font-semibold">
+                        {loading ? "Gerando PDF..." : "Lista de publicadores"}
+                    </span>
+                </Button>
+            )}
+        </PDFDownloadLink>
+    );
+
     return (
         <>
+            <div className="w-full flex justify-end mt-4">
+                {publishers && <PdfLinkComponent />}
+            </div>
             <ul className="flex flex-wrap justify-center items-center w-full ">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
                     <CheckboxBoolean handleCheckboxChange={(check) => setInactivesShow(check)} checked={inactivesShow} label="Inativos" />

@@ -132,9 +132,10 @@ function AddPublishersToGroups() {
             <div className="flex justify-between w-full">
                 {group_number && <h1 className="p-4 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">{`Grupo ${group_number}`}</h1>}
 
-                <div className="flex p-2 gap-1 flex-wrap ">
+                <div className="flex justify-end p-2 gap-1 flex-wrap ">
                     <Button
-                        className="w-52"
+                        outline
+                        className="w-56"
                         onClick={() => Router.push({
                             pathname: `/congregacao/grupos/${group_id}/mudar-dirigente`,
                             query: { group_number: `${group_number}` }
@@ -144,7 +145,8 @@ function AddPublishersToGroups() {
                         Mudar dirigente
                     </Button>
                     <Button
-                        className={` w-52 ${groupPublisherListOption !== 'add-publishers' && 'bg-transparent text-primary-200'}`}
+                        outline
+                        className={` w-56 ${groupPublisherListOption === 'add-publishers' && 'border-primary-200'}`}
                         onClick={() => {
                             setGroupPublisherListOption('add-publishers')
                             setSelectedPublishers([])
@@ -155,8 +157,9 @@ function AddPublishersToGroups() {
                     </Button>
 
                     <Button
-                        className={`w-52 ${groupPublisherListOption !== 'remove-publishers' && 'bg-transparent text-red-400'}`}
-                        remove
+                        outline
+                        remove={groupPublisherListOption === 'remove-publishers'}
+                        className={`w-56  `}
                         onClick={() => {
                             setGroupPublisherListOption('remove-publishers')
                             setSelectedPublishers([])

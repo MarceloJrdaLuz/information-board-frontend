@@ -54,7 +54,7 @@ export default function TerritoriesList() {
 
     function renderSkeleton() {
         return (
-            <ul className="flex w-full h-fit flex-wrap justify-center">
+            <ul className="flex w-full h-fit flex-wrap justify-center gap-2">
                 {skeletonTerritoriesList.map((a, i) => (<SkeletonTerritoriesList key={i + 'skeleton'} />))}
             </ul>
         )
@@ -62,9 +62,9 @@ export default function TerritoriesList() {
 
     return (
         <>
-            <ul className="flex flex-wrap justify-center items-center w-full">
+            <ul className="flex flex-wrap justify-center items-center w-full mt-4">
                 {territories && territories.length > 0 ? territories?.map(territory =>
-                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full  text-typography-100 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
+                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full  text-typography-700 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 text-base xs:px-2">
                                 <span className="font-bold">{`Território ${territory.number}: ${territory.name}`}</span>
@@ -91,7 +91,7 @@ export default function TerritoriesList() {
                                     })()}
                                 </span>
                                 <FileClockIcon className="text-primary-200 hover:text-primary-100 flex-shrink-0" onClick={() => Router.push(`/congregacao/territorios/historico/${territory.id}`)} />
-                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-100 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
+                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-700 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
                             </div>
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-surface-100' : 'h-0'}`}>

@@ -39,6 +39,9 @@ module.exports = withMT({
           100: "rgb(var(--color-surface-100) / <alpha-value>)",
           200: "rgb(var(--color-surface-200) / <alpha-value>)",
         },
+        success: {
+          100: "#07bc0c"
+        },
       }
     },
   },

@@ -5,6 +5,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import Dropdown from "@/Components/Dropdown"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance"
+import SkeletonAssistanceList from "@/Components/ListMeetingAssistance/skeletonAssistanceList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { getYearService } from "@/functions/meses"
@@ -39,7 +40,7 @@ function ListReportsPage() {
     }, [setPageActive])
 
     const fetch = congregationId ? `/assistance/${congregationId}` : ""
-    const { data } = useAuthorizedFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`, {
+    const { data, isLoading } = useAuthorizedFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`, {
         allowedRoles: ["ADMIN_CONGREGATION", "ASSISTANCE_MANAGER", "ASSISTANCE_VIEWER"]
     })
 
@@ -53,6 +54,16 @@ function ListReportsPage() {
             setMeetingAssistance(sortedMeetingAssistance)
         }
     }, [data])
+
+    let skeletonAssistanceList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="flex w-full h-fit flex-wrap justify-center">
+                {skeletonAssistanceList.map((a, i) => (<SkeletonAssistanceList key={i + 'skeleton'} />))}
+            </ul>
+        )
+    }
 
     const PdfLinkComponent = () => (
         <PDFDownloadLink
@@ -98,8 +109,12 @@ function ListReportsPage() {
                         {pdfGenerating && <PdfLinkComponent />}
                     </div>
                     <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-
-                    <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+                    {isLoading || !data || data === undefined ?
+                        (
+                            renderSkeleton()
+                        ) : (
+                            <ListMeetingAssistance yearService={yearServiceSelected} items={meetingAssistance} />
+                        )}
                 </div>
             </section>
         </ContentDashboard>
