@@ -62,123 +62,145 @@ export default function TerritoriesList() {
 
     return (
         <>
-            <ul className="flex flex-wrap justify-center items-center w-full mt-4">
-                {territories && territories.length > 0 ? territories?.map(territory =>
-                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full  text-typography-700 min-w-[270px] m-1 ${selectedTerritories.has(territory.id) ? 'h-auto' : ''}`} key={`${territory.id}`}>
-                        <div className="flex w-full justify-between items-center">
-                            <div className="flex items-center p-6 text-base xs:px-2">
-                                <span className="font-bold">{`Território ${territory.number}: ${territory.name}`}</span>
-                            </div>
-                            <div className="flex justify-center items-center gap-2 xs:gap-4">
-                                <span>
-                                    {(() => {
-                                        const relevantHistory = territoriesHistory?.find(
-                                            (history) =>
-                                                history.territory.id === territory.id &&
-                                                history.completion_date === null
-                                        )
+            <ul className="flex flex-wrap justify-center w-full gap-4 mt-6">
+                {territories && territories.length > 0 ? (
+                    territories.map((territory) => {
+                        const isOpen = selectedTerritories.has(territory.id);
+                        const activeHistory = territoriesHistory?.find(
+                            (h) => h.territory.id === territory.id && h.completion_date === null
+                        );
 
-                                        return relevantHistory ? (
-                                            <div className="flex justify-center items-center  h-full gap-2 xs:gap-4">
-                                                <span className="text-sm text-center text-success-100">
-                                                    {relevantHistory.caretaker}
-                                                </span>
-                                                <CircleIcon className="bg-success-100 rounded-full text-success-100 w-4 h-4 flex-shrink-0" />
-                                            </div>
-                                        ) : (
-                                            <CircleIcon className="bg-red-600 rounded-full text-red-600 w-4 h-4 flex-shrink-0" />
-                                        )
-                                    })()}
-                                </span>
-                                <FileClockIcon className="text-primary-200 hover:text-primary-100 flex-shrink-0" onClick={() => Router.push(`/congregacao/territorios/historico/${territory.id}`)} />
-                                <button className={`w-6 h-6 mx-2 sm:mx-4 flex justify-center items-center text-typography-700 hover:text-primary-200  ${selectedTerritories.has(territory.id) && 'rotate-180'}`} onClick={() => handleShowDetails(territory)}><ChevronDownIcon /> </button>
-                            </div>
-                        </div>
-                        <div className={` w-full overflow-hidden duration-500 transition-height ${selectedTerritories.has(territory.id) ? 'h-auto pb-5 bg-surface-100' : 'h-0'}`}>
-                            <div className="flex-col flex-wrap m-4">
-                                <div className={`relative w-full h-60 mb-4`}>
-                                    {territory.image_url ?
-                                        <FullScreenImage alt={`Imagem do território ${territory.name}`} src={territory.image_url} key={territory.id} />
-                                        // <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={territory.image_url} fill />
-                                        :
-                                        <div className="relative flex w-full h-full justify-center items-center">
-                                            <Image style={{ objectFit: 'contain' }} alt={`Imagem do território ${territory.name}`} src={mapGeneric} fill />
-                                            <div className="flex items-center justify-center">
-                                                <span className="absolute text-center text-surface-100 bg-typography-900 bg-opacity-50 px-2 py-1 rounded">Sem foto</span>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                                <span className="my-2">{`Referência: ${territory.description}`}</span>
-                                <div>
-                                    {(() => {
-                                        const relevantHistory = territoriesHistory?.filter(
-                                            (history) => history.territory.id === territory.id
-                                        ) ?? []
+                        return (
+                            <li
+                                key={territory.id}
+                                className={`
+            bg-surface-100/70 hover:bg-surface-200 transition-all duration-300
+            w-full sm:w-[95%] md:w-[48%] rounded-2xl shadow-sm hover:shadow-md
+            border border-surface-300 overflow-hidden
+          `}
+                            >
+                                {/* Cabeçalho */}
+                                <div
+                                    className="flex justify-between items-center px-6 py-4 cursor-pointer"
+                                    onClick={() => handleShowDetails(territory)}
+                                >
+                                    <div className="flex flex-col">
+                                        <h3 className="font-semibold text-lg text-typography-900">
+                                            {`Território ${territory.number}: ${territory.name}`}
+                                        </h3>
+                                        <span className="text-sm text-typography-500 mt-1">
+                                            {territory.description || "Sem descrição"}
+                                        </span>
+                                    </div>
 
-                                        const sortedHistory = sortByCompletionDate(relevantHistory)
-                                        const lastCompletedHistory = sortedHistory.length > 0 ? sortedHistory[0] : null
-
-                                        // Verifica se a data é válida com o moment
-                                        const formattedDate = lastCompletedHistory?.completion_date
-                                            ? moment(lastCompletedHistory.completion_date).format("DD/MM/YYYY")
-                                            : null;
-
-                                        // Se a data for inválida, mostra "Território em aberto"
-                                        const displayDate = formattedDate && moment(formattedDate, "DD/MM/YYYY", true).isValid()
-                                            ? formattedDate
-                                            : "Território em aberto";
-
-                                        return (
-                                            <span>
-                                                {`Concluído por último em: `}
-                                                <span className="text-sm text-center text-success-100">
-                                                    {displayDate}
-                                                </span>
+                                    <div className="flex items-center gap-3">
+                                        {activeHistory ? (
+                                            <span className="flex items-center gap-1 text-success-100 text-sm">
+                                                <CircleIcon className="fill-success-100 w-3 h-3" />
+                                                {activeHistory.caretaker}
                                             </span>
-                                        );
-                                    })()}
+                                        ) : (
+                                            <CircleIcon className="fill-red-500 text-red-500 w-3 h-3" />
+                                        )}
+
+                                        <FileClockIcon
+                                            className="text-primary-200 hover:text-primary-100 cursor-pointer"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                Router.push(`/congregacao/territorios/historico/${territory.id}`);
+                                            }}
+                                        />
+                                        <ChevronDownIcon
+                                            className={`w-5 h-5 text-typography-600 transition-transform ${isOpen ? "rotate-180" : ""
+                                                }`}
+                                        />
+                                    </div>
                                 </div>
 
+                                {/* Detalhes */}
+                                <div
+                                    className={`grid transition-all duration-500 ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                                        }`}
+                                >
+                                    <div className="overflow-hidden">
+                                        <div className="px-6 pb-6 space-y-4">
+                                            <div className="relative w-full h-56 rounded-lg overflow-hidden bg-surface-200">
+                                                {territory.image_url ? (
+                                                    <FullScreenImage
+                                                        alt={`Imagem do território ${territory.name}`}
+                                                        src={territory.image_url}
+                                                    />
+                                                ) : (
+                                                    <div className="flex justify-center items-center w-full h-full">
+                                                        <Image
+                                                            src={mapGeneric}
+                                                            alt="Sem imagem"
+                                                            fill
+                                                            className="object-contain opacity-70"
+                                                        />
+                                                        <span className="absolute bg-typography-900/70 text-surface-100 px-3 py-1 rounded-lg">
+                                                            Sem foto
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
 
-                            </div>
-                            <div className="flex pl-10">
-                                <div className="gap-1 flex">
-                                    {roleContains("TERRITORIES_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
-                                        <Button
-                                            className="w-30"
-                                            onClick={() => Router.push(`/congregacao/territorios/edit/${territory.id}`)}
-                                            outline
-                                        >
-                                            <EditIcon />
-                                            Editar
-                                        </Button>}
-                                    {roleContains("TERRITORIES_MANAGER") || roleContains("ADMIN_CONGREGATION") &&
-                                        <ConfirmDeleteModal
-                                            onDelete={() => onDelete(`${territory.id}`)}
-                                            button={<Button
-                                                outline
-                                                className="text-red-400 w-30"
-                                            >
-                                                <Trash />
-                                                Excluir
-                                            </Button>}
-                                        />}
+                                            <div className="text-sm text-typography-700">
+                                                {(() => {
+                                                    const relevantHistory =
+                                                        territoriesHistory?.filter(
+                                                            (h) => h.territory.id === territory.id
+                                                        ) ?? [];
+
+                                                    const sorted = sortByCompletionDate(relevantHistory);
+                                                    const last = sorted[0];
+                                                    const date = last?.completion_date
+                                                        ? moment(last.completion_date).format("DD/MM/YYYY")
+                                                        : "Território em aberto";
+
+                                                    return (
+                                                        <span>
+                                                            Concluído por último em:{" "}
+                                                            <span className="text-success-100 font-medium">
+                                                                {date}
+                                                            </span>
+                                                        </span>
+                                                    );
+                                                })()}
+                                            </div>
+
+                                            {(roleContains("TERRITORIES_MANAGER") ||
+                                                roleContains("ADMIN_CONGREGATION")) && (
+                                                    <div className="flex gap-3 pt-2">
+                                                        <Button
+                                                            onClick={() =>
+                                                                Router.push(`/congregacao/territorios/edit/${territory.id}`)
+                                                            }
+                                                            outline
+                                                        >
+                                                            <EditIcon /> Editar
+                                                        </Button>
+
+                                                        <ConfirmDeleteModal
+                                                            onDelete={() => onDelete(territory.id)}
+                                                            button={
+                                                                <Button outline className="text-red-400">
+                                                                    <Trash /> Excluir
+                                                                </Button>
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
+                                        </div>
+                                    </div>
                                 </div>
-
-                            </div>
-                        </div>
-                    </li>
+                            </li>
+                        );
+                    })
+                ) : !territories ? (
+                    renderSkeleton()
                 ) : (
-
-                    <>
-                        {!territories ?
-                            renderSkeleton()
-                            :
-                            <EmptyState message="Nenhum território cadastrado nessa congregação!" />}
-                    </>
-
-
+                    <EmptyState message="Nenhum território cadastrado nessa congregação!" />
                 )}
             </ul>
         </>

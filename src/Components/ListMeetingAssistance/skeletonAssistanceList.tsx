@@ -1,7 +1,7 @@
 
 export default function SkeletonAssistanceList() {
     return (
-        <li className={`flex flex-col  bg-surface-100 w-full md:w-10/12 m-1`}>
+        <li className={`flex flex-col  bg-surface-100 w-full md:w-10/12 m-1 border border-surface-300 rounded-2xl shadow-sm`}>
             <span className="w-[50%] h-7 bg-surface-200 shimmer m-6 mb-0"></span>
             <div className="flex flex-wrap justify-between w-full p-6  font-semi-bold text-sm">
                 <div className="border gap-2 border-typography-300 flex flex-col w-full p-4 mb-4  bg-surface-100">

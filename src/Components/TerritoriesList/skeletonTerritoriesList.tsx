@@ -1,18 +1,39 @@
-
 export default function SkeletonTerritoriesList() {
-    return (
-        <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-11/12 text-fontColor-100 mt-4`}>
-            <div className="flex w-full justify-between items-center">
-                <div className="flex justify-between w-full items-center p-4 ">
-                    <span className="pl-4 font-semi-bold w-[50%] h-7 bg-surface-200 shimmer"></span>
-                    <div className="flex gap-2">
-                        <span className="pl-4 font-semi-bold w-7 h-7 bg-surface-200 shimmer"></span>
-                        <span className="pl-4 font-semi-bold w-7 h-7 bg-surface-200 shimmer"></span>
-                        <span className="pl-4 font-semi-bold w-7 h-7 bg-surface-200 shimmer"></span>
-                    </div>
-                </div>
-            </div>
-        </li>
+  return (
+    <li
+      className="
+        w-full sm:w-[95%] md:w-[48%] rounded-2xl shadow-sm border border-surface-300 
+        bg-surface-100/70 animate-pulse overflow-hidden
+      "
+    >
+      {/* Cabeçalho */}
+      <div className="flex justify-between items-center px-6 py-4">
+        <div className="flex flex-col gap-2">
+          <div className="h-4 w-40 bg-surface-300 rounded shimmer"></div>
+          <div className="h-3 w-28 bg-surface-300 rounded shimmer"></div>
+        </div>
 
-    )
+        <div className="flex items-center gap-3">
+          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
+          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
+          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
+        </div>
+      </div>
+
+      {/* Corpo
+      <div className="px-6 pb-6 space-y-4">
+        <div className="w-full h-56 bg-surface-200 rounded-lg shimmer"></div>
+
+        <div className="space-y-2">
+          <div className="h-3 w-60 bg-surface-300 rounded shimmer"></div>
+          <div className="h-3 w-40 bg-surface-300 rounded shimmer"></div>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <div className="h-8 w-24 bg-surface-300 rounded-md shimmer"></div>
+          <div className="h-8 w-24 bg-surface-300 rounded-md shimmer"></div>
+        </div>
+      </div> */}
+    </li>
+  );
 }

@@ -1,7 +1,7 @@
 
 export default function SkeletonFileList() {
     return (
-        <li className="flex bg-surface-100 shadow-lg w-full border border-typography-300 justify-between p-6">
+        <li className="flex bg-surface-100 w-full  justify-between p-6 border border-surface-300 rounded-2xl shadow-sm">
             <div className="flex flex-col w-full h-full gap-4">
                 <span className="bg-surface-200 shimmer h-7 w-[70%]" ></span>
                 <span className="bg-surface-200 shimmer h-7 w-[20%]" ></span>

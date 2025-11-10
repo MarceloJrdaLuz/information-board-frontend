@@ -158,20 +158,74 @@ export default function FormUserRoles() {
                     <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir função a um usuário</div>
 
                     <Dropdown textVisible handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
-                    <div className="my-4 flex flex-wrap">
-                        {userSelected && <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={userSelected} >
-                            {userSelected}
-                            <span className="py-2 ml-2  flex justify-center items-center" onClick={() => setUserSelected("")}>{IconDelete}</span>
-                        </span>}
+                    <div className="my-4 flex flex-wrap gap-2">
+                        {userSelected && (
+                            <div
+                                key={userSelected}
+                                className="
+        group
+        flex items-center gap-2
+        px-4 py-2
+        rounded-full
+        bg-surface-200
+        text-sm text-typography-900
+        shadow-sm
+        border border-surface-300
+        transition-all duration-300
+        hover:bg-surface-300 hover:shadow-md
+      "
+                            >
+                                <span className="font-medium">{userSelected}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setUserSelected("")}
+                                    className="
+          opacity-60 group-hover:opacity-100
+          transition-opacity duration-200
+          hover:text-red-400
+          flex items-center
+        "
+                                >
+                                    {IconDelete}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div>
                         <Dropdown textVisible handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
-                        <div className="mt-4 flex flex-wrap">
-                            {rolesSelecteds && rolesSelecteds.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={permission} >
-                                {permission}
-                                <span className="py-2 ml-2  flex justify-center items-center" onClick={() => removerRolesSelecteds(permission)}>{IconDelete}</span>
-                            </span>)}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {rolesSelecteds.map((permission) => (
+                                <div
+                                    key={permission}
+                                    className="
+        group
+        flex items-center gap-2
+        px-4 py-2
+        rounded-full
+        bg-surface-200
+        text-sm text-typography-900
+        shadow-sm
+        border border-surface-300
+        transition-all duration-300
+        hover:bg-surface-300 hover:shadow-md
+      "
+                                >
+                                    <span className="font-medium">{permission}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removerRolesSelecteds(permission)}
+                                        className="
+          opacity-60 group-hover:opacity-100
+          transition-opacity duration-200
+          hover:text-red-400
+          flex items-center
+        "
+                                    >
+                                        {IconDelete}
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
