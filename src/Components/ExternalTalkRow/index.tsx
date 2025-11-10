@@ -61,7 +61,7 @@ export default function ExternalTalkRow({
   }
 
   return (
-    <div className="rounded-xl p-4 flex flex-col gap-6 bg-typography-50 border">
+    <div className="rounded-xl p-4 flex flex-col gap-6 bg-surface-100 border">
       {/* Data */}
       <h2 className="font-bold text-xl text-typography-800 border-b pb-2">
         {format(date, "dd/MM/yyyy")}

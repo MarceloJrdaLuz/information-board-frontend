@@ -2,6 +2,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Dropdown from "@/Components/Dropdown"
 import ReportTable from "@/Components/ReportTable"
+import { ReportTableSkeleton } from "@/Components/ReportTable/skeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
@@ -21,7 +22,7 @@ function MyReportsPage() {
         (Number(serviceYear) - 2).toString()
     ]
 
-    const { data: getReports } = useFetch<IReports[]>("/myReports")
+    const { data: getReports, isLoading } = useFetch<IReports[]>("/myReports")
 
     useEffect(() => {
         setPageActive('Meus relatórios')
@@ -44,7 +45,12 @@ function MyReportsPage() {
                 <div className="w-full h-full">
                     <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Relatórios</h1>
                     <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={serviceYearSelected} handleClick={(select) => setServiceYearSelected(select)} textVisible title="Ano de Serviço" options={yearOptions} />
-                    <ReportTable reports={reportsFilter} />
+                    {isLoading ?
+                        (
+                            <ReportTableSkeleton />
+                        ) : (
+                            <ReportTable reports={reportsFilter} />
+                        )}
                 </div>
             </section>
         </ContentDashboard>

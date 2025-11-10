@@ -165,8 +165,6 @@ function ExternalTalksPage() {
                     })}
                 </>
             )}
-
-
         </ContentDashboard>
     )
 }

@@ -91,6 +91,83 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* Efeito nos skeletons */
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg,
+      rgb(var(--color-surface-200)) 0%,
+      rgb(var(--color-surface-100)) 50%,
+      rgb(var(--color-surface-200)) 100%);
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%);
+  animation: shimmer 1s linear infinite;
+}
+
+/* 💡 Temas claros → gradiente mais escuro para visibilidade */
+.theme-blue .shimmer::after,
+.theme-purple .shimmer::after {
+  background: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%);
+}
+
+/* 🌙 Tema escuro → gradiente mais claro */
+.theme-dark .shimmer::after {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0) 100%);
+}
+
+
+
+
+
+/* Efeito em skeleton bg-primary */
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.shimmer-primary-color {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg,
+      rgb(var(--color-primary-200)) 0%,
+      rgb(var(--color-primary-100)) 50%,
+      rgb(var(--color-primary-200)) 100%);
+}
+
+.shimmer-primary-color::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  animation: shimmer 1s linear infinite;
+}
+
 :root {
   /* Primárias */
   --color-primary-50: 237 249 249;
@@ -120,9 +197,12 @@ input[type=number] {
 
 .theme-dark {
   /* Primárias */
-  --color-primary-200: 111 78 161;   /* #6F4EA1 — tom escuro, base forte */
---color-primary-150: 153 119 197;  /* #9977C5 — intermediário equilibrado */
---color-primary-100: 193 167 226;  /* #C1A7E2 — tom principal e mais claro */
+  --color-primary-200: 111 78 161;
+  /* #6F4EA1 — tom escuro, base forte */
+  --color-primary-150: 153 119 197;
+  /* #9977C5 — intermediário equilibrado */
+  --color-primary-100: 193 167 226;
+  /* #C1A7E2 — tom principal e mais claro */
 
 
 
@@ -149,9 +229,12 @@ input[type=number] {
 
 .theme-blue {
   /* Primárias */
- --color-primary-100: 159 185 227; /* #9FB9E3 */
---color-primary-150: 65 100 150;  /* #416496 */
---color-primary-200: 62 107 163;  /* #3E6BA3 */
+  --color-primary-100: 159 185 227;
+  /* #9FB9E3 */
+  --color-primary-150: 65 100 150;
+  /* #416496 */
+  --color-primary-200: 62 107 163;
+  /* #3E6BA3 */
 
 
   /* Secundárias */
@@ -176,9 +259,12 @@ input[type=number] {
 }
 
 .theme-purple {
---color-primary-200: 98 70 140;    /* #62468C — tom mais escuro e sólido */
---color-primary-150: 134 106 170;  /* #866AAA — transição equilibrada */
---color-primary-100: 174 152 206;  /* #AE98CE — destaque suave */
+  --color-primary-200: 98 70 140;
+  /* #62468C — tom mais escuro e sólido */
+  --color-primary-150: 134 106 170;
+  /* #866AAA — transição equilibrada */
+  --color-primary-100: 174 152 206;
+  /* #AE98CE — destaque suave */
 
 
   /* Secundárias */

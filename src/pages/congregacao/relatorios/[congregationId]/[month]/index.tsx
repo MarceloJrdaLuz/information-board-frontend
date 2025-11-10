@@ -469,7 +469,14 @@ function ReportsMonthPage() {
                             </ul>
                         ) : missingReportsCount ? (
                             <>
-                                <div className="m-auto mt-4">Nenhum relatório registrado nesse mês</div>
+                                <>
+                                    <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 my-4 mx-0 p-2 ">
+                                        <span className="h-full pr-1">
+                                            <InfoIcon className="p-0.5 text-primary-200" />
+                                        </span>
+                                        <span>Nenhum relatório registrado esse mês</span>
+                                    </div>
+                                </>
                                 <div className="flex w-full justify-center items-center mt-4">
                                     <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
                                         Inserir manualmente

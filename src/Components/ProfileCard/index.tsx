@@ -116,27 +116,37 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         </div>
       ) : (
         <Card className="bg-surface-100 rounded-lg p-3 w-full  mx-auto text-center shadow-sm">
-          <CardHeader floated={false} className="relative flex justify-center items-center bg-surface-200 rounded-full w-28 h-28 mx-auto">
+          <CardHeader
+            floated={false}
+            className="relative flex justify-center items-center bg-surface-200 rounded-full w-28 h-28 mx-auto overflow-visible"
+          >
             <Image
               src={avatar_url || avatar}
               alt="Foto de perfil"
               fill
               className="rounded-full object-cover object-top"
             />
+
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-1 right-1 bg-primary-200 p-1.5 rounded-full shadow-sm hover:scale-105 transition"
+              className="absolute -bottom-2 -right-2 bg-primary-200 p-2 rounded-full shadow-md hover:scale-105 transition-all duration-200 border-2 border-surface-100"
             >
               <CameraIcon className="w-4 h-4 text-typography-100" />
             </button>
-            <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleFileChange} />
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
           </CardHeader>
 
+
           <CardBody className="pt-2 px-2">
-            <Typography variant="h6" className="text-primary-200 text-sm font-semibold truncate">
-              {fullName}
+            <Typography variant="h6" className="text-typography-700 text-sm font-semibold truncate">
+              {fullName ? `Bem-Vindo, ${fullName?.split(" ")[0]}!` : "Bem-Vindo"}
             </Typography>
-            <Typography className="text-xs text-primary-100 truncate">{email}</Typography>
           </CardBody>
         </Card>
       )}

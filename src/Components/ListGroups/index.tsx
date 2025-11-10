@@ -8,41 +8,50 @@ import { Trash } from "lucide-react"
 
 function ListGroups({ items, label, onDelete }: IListItemsProps) {
   return (
-    <ul className="flex w-full flex-wrap justify-center mt-5 gap-4">
-      {items?.map(item => (
+    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
+      {items?.map((item) => (
         <li
           key={item.id}
-          className="flex flex-col gap-3 p-4 bg-surface-100 rounded-md shadow-sm hover:shadow-md transition-shadow w-full md:w-10/12 cursor-pointer"
+          className="bg-surface-100 rounded-2xl border border-typography-200 shadow-sm hover:shadow-lg hover:border-typography-300 transition-all duration-200 flex flex-col"
         >
-          <h3 className="text-lg font-semibold text-typography-800 capitalize">{label} Nº {item.number}</h3>
+          {/* Conteúdo principal */}
+          <div className="flex-1 p-5 flex flex-col gap-3">
+            <h3 className="text-lg font-semibold text-typography-800 capitalize">
+              {label} Nº {item.number}
+            </h3>
 
-          <div className="flex flex-col gap-2 text-typography-600">
-            <div className="flex items-center gap-2">
-              🏷 <span>Nome do {label}: {item.name}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              👤 <span>Dirigente: {item.groupOverseers?.fullName ?? "Sem dirigente"}</span>
+            <div className="flex flex-col gap-2 text-sm text-typography-700">
+              <div className="flex items-center gap-2">
+                🏷 <span>Nome do {label}: {item.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                👤 <span>Dirigente: {item.groupOverseers?.fullName ?? "Sem dirigente"}</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-2 mt-2">
+          {/* Ações */}
+          <div className="flex gap-2 px-5 py-3 border-t border-typography-100 bg-surface-100 rounded-b-2xl">
             <Button
-              className="flex items-center gap-1"
+              size="sm"
+              outline
+              className="w-fit flex items-center gap-1"
               onClick={() =>
                 Router.push({
                   pathname: `/congregacao/grupos/${item.id}/add-publicadores`,
                   query: { group_number: `${item.number}` },
                 })
               }
-              outline
             >
-              <EditIcon /> Editar
+              <EditIcon className="w-4" /> Editar
             </Button>
+
             <ConfirmDeleteModal
+              
               onDelete={() => onDelete(`${item.id}`)}
               button={
-                <Button outline className="flex items-center gap-1 text-red-400">
-                  <Trash /> Excluir
+                <Button size="sm" outline className="text-red-500 w-fit flex items-center gap-1">
+                  <Trash className="w-4" /> Excluir
                 </Button>
               }
             />

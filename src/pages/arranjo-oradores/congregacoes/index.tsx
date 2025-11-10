@@ -48,7 +48,7 @@ function AuxiliaryCongregationsPage() {
 
     function renderSkeleton() {
         return (
-            <ul className="flex w-full h-fit flex-wrap justify-center">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
                 {skeletonSpeakersList.map((a, i) => (<SkeletonGroupsList key={i + 'skeleton'} />))}
             </ul>
         )
