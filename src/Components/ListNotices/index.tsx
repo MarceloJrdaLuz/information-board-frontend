@@ -6,45 +6,64 @@ import EditIcon from "../Icons/EditIcon"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import { Trash } from "lucide-react"
 
-function ListNotices({ notices, onDelete }: IListItemsProps) {
+export default function ListNotices({ notices, onDelete }: IListItemsProps) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
+    <ul className="flex flex-col gap-4 w-full items-center mt-6">
       {notices?.map(notice => (
         <li
-          className={`flex flex-col flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-typography-800 m-1`}
           key={notice.id}
+          className="
+            w-full md:w-10/12
+            bg-surface-100 hover:bg-surface-200 transition-colors duration-300
+            shadow-sm rounded-xl
+            border border-surface-200/50
+            overflow-hidden
+          "
         >
-          <div className="flex w-full justify-start items-center p-6 text-primary-200 font-semibold">
-            Título do anúncio:
-            <span className="font-normal ml-5">{notice.title}</span>
-          </div>
-          <div className="flex flex-wrap justify-between w-full px-6 pb-6 font-semi-bold">
-            <div className="w-96">
-              <span className="text-primary-200 font-semibold mr-5">Conteúdo:</span>
-              <span>{notice.text}</span>
-            </div>
-            <div className="flex mt-4">
+          <div className="flex flex-col p-5 gap-4">
+            {/* Cabeçalho */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-primary-200">
+                  {notice.title}
+                </h3>
+                <p className="text-sm text-typography-400 mt-1">
+                  {new Date(notice.created_at).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
 
-              <div className="gap-1 flex items-end">
+              {/* Ações */}
+              <div className="flex gap-2 mt-3 sm:mt-0">
                 <Button
-                  className="w-30"
-                  onClick={() => Router.push(`/anuncios/edit/${notice.id}`)}
                   outline
+                  className="flex items-center gap-2 text-primary-200 hover:text-primary-100"
+                  onClick={() => Router.push(`/anuncios/edit/${notice.id}`)}
                 >
-                  <EditIcon />
+                  <EditIcon className="w-4 h-4" />
                   Editar
                 </Button>
                 <ConfirmDeleteModal
                   onDelete={() => onDelete(`${notice.id}`)}
-                  button={<Button
-                    outline
-                    className="text-red-400 w-30"
-                  >
-                    <Trash />
-                    Excluir
-                  </Button>}
+                  button={
+                    <Button
+                      outline
+                      className="flex items-center gap-2 text-red-400 hover:text-red-500"
+                    >
+                      <Trash className="w-4 h-4" />
+                      Excluir
+                    </Button>
+                  }
                 />
               </div>
+            </div>
+
+            {/* Corpo */}
+            <div className="text-sm leading-relaxed text-typography-700 bg-surface-200/30 rounded-lg p-4">
+              {notice.text}
             </div>
           </div>
         </li>
@@ -52,5 +71,3 @@ function ListNotices({ notices, onDelete }: IListItemsProps) {
     </ul>
   )
 }
-
-export default ListNotices

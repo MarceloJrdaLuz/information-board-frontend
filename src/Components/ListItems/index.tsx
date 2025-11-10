@@ -5,45 +5,68 @@ import Button from "../Button"
 import { EditIcon, Trash } from "lucide-react"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 
-function ListItems({ items, label, path, onDelete }: IListItemsProps) {
+export default function ListItems({ items, label, path, onDelete }: IListItemsProps) {
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
+    <ul className="flex w-full flex-wrap justify-center mt-6 gap-4">
       {items?.map(item => (
         <li
-          className={`flex flex-col flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1`}
           key={item.id}
+          className="
+            flex flex-col w-full md:w-10/12
+            bg-surface-100 border border-surface-300
+            rounded-2xl shadow-sm
+            hover:shadow-md hover:-translate-y-[2px]
+            transition-all duration-300
+            overflow-hidden
+            cursor-pointer
+          "
         >
-          <div className="flex w-full justify-start items-center p-6 text-primary-200 font-semibold">
-            Nome {label}:
-            <span className="font-normal ml-5">{item.name}</span>
-          </div>
-          <div className="flex flex-wrap justify-between w-full p-6 font-semi-bold">
-            <div className="w-96 ">
-              <span className="text-primary-200 font-semibold mr-5">Descrição:</span>
-              <span>{item.description}</span>
+          {/* Header */}
+          <div className="flex justify-between items-center px-6 py-4 border-b border-surface-300">
+            <div className="flex flex-col">
+              <span className="text-sm text-typography-500 font-medium">
+                Nome {label}
+              </span>
+              <span className="text-lg font-semibold text-typography-900">
+                {item.name}
+              </span>
             </div>
-            <div className="flex  mt-4  max-h-10">
-              <div className="gap-1 flex">
-                <Button
-                  className="w-30"
-                  onClick={() => Router.push(`/${path}/edit/${item.id}`)}
-                  outline
-                >
-                  <EditIcon />
-                  Editar
-                </Button>
-                <ConfirmDeleteModal
-                  onDelete={() => onDelete(`${item.id}`)}
-                  button={
-                    <Button
-                      outline
-                      className="text-red-400 w-30"
-                    >
-                      <Trash />
-                      Excluir
-                    </Button>}
-                />
-              </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 py-4 flex flex-col md:flex-row justify-between items-start gap-4">
+            <div className="flex-1">
+              <span className="block text-sm text-typography-500 font-medium mb-1">
+                Descrição
+              </span>
+              <p className="text-typography-900 text-sm leading-relaxed break-words">
+                {item.description || "Sem descrição"}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-between items-center gap-2 mt-2 md:mt-0">
+              <Button
+                size="sm"
+                outline
+                className="w-fit flex items-center gap-1"
+                onClick={() => Router.push(`/${path}/edit/${item.id}`)}
+              >
+                <EditIcon size={16} />
+                Editar
+              </Button>
+
+              <ConfirmDeleteModal
+                onDelete={() => onDelete(`${item.id}`)}
+                button={
+                  <Button
+                    size="sm" outline className="text-red-500 w-fit flex items-center gap-1"
+                  >
+                    <Trash size={16} />
+                    Excluir
+                  </Button>
+                }
+              />
             </div>
           </div>
         </li>
@@ -51,5 +74,3 @@ function ListItems({ items, label, path, onDelete }: IListItemsProps) {
     </ul>
   )
 }
-
-export default ListItems

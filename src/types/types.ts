@@ -301,6 +301,7 @@ export interface INotice {
     startDay?: number
     endDay?: number
     expired?: Date
+    created_at: string
 }
 
 export interface IPermission {

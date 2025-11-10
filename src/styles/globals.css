@@ -193,6 +193,7 @@ input[type=number] {
   /* Fundos */
   --color-surface-100: 255 255 255;
   --color-surface-200: 245 245 245;
+  --color-surface-300: 230 233 236;
 }
 
 .theme-dark {
@@ -224,6 +225,7 @@ input[type=number] {
   /* Fundos */
   --color-surface-100: 15 10 20;
   --color-surface-200: 25 18 35;
+  --color-surface-300: 52 55 58;
 }
 
 
@@ -256,6 +258,7 @@ input[type=number] {
   /* Fundos */
   --color-surface-100: 255 255 255;
   --color-surface-200: 245 245 245;
+  --color-surface-300: 230 233 236;
 }
 
 .theme-purple {
@@ -285,5 +288,5 @@ input[type=number] {
   /* Fundos */
   --color-surface-100: 255 255 255;
   --color-surface-200: 245 245 245;
-
+  --color-surface-300: 230 233 236;
 }

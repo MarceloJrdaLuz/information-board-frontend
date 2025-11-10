@@ -15,10 +15,12 @@ function AddDomainPage() {
     }, [setPageActive])
 
     return (
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar ao Domínio"} />
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar ao Domínio"} />
+            <section className="flex m-10 justify-center items-center">
                 <FormAddDomain />
-            </ContentDashboard>
+            </section>
+        </ContentDashboard>
     )
 }
 
