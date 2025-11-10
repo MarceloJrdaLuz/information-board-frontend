@@ -157,14 +157,14 @@ input[type=number] {
 }
 
 .shimmer-primary-color::after {
-  content: "";
+ content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
   background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0) 100%);
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%);
   animation: shimmer 1s linear infinite;
 }
 
