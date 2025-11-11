@@ -42,7 +42,7 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
     const validationSchema = yup.object({
         name: yup.string().required(),
         phone: yup.string().required(),
-        relationship: yup.string().required(),
+        relationship: yup.string(),
         isTj: yup.boolean().required()
     })
 

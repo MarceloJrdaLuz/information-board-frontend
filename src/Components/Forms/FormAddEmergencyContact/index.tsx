@@ -29,7 +29,7 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
     const esquemaValidacao = yup.object({
         name: yup.string().required(),
         phone: yup.string().required(),
-        relationship: yup.string().required(),
+        relationship: yup.string(),
         isTj: yup.boolean().required()
     })
 
