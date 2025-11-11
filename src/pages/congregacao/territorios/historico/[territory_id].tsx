@@ -61,16 +61,17 @@ function EditHistoryTerritoryPage() {
 
                         <div className="flex justify-start items-start flex-wrap">
                             <div className="w-full flex flex-start">
-                                <Button
-                                    outline
-                                    onClick={() => {
-                                        setTerritoryHistoryAction("create");
-                                        setTerritorHistoryToUpdateId("");
-                                    }}
-                                    className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80 mb-3">
-                                    <FileClockIcon />
-                                    <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
-                                </Button>
+                                {!getHistory?.some(history => history.completion_date === null) &&
+                                    <Button
+                                        outline
+                                        onClick={() => {
+                                            setTerritoryHistoryAction("create");
+                                            setTerritorHistoryToUpdateId("");
+                                        }}
+                                        className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80 mb-3">
+                                        <FileClockIcon />
+                                        <span className="text-primary-200 font-semibold">Adicionar Histórico</span>
+                                    </Button>}
                             </div>
                             {getHistory?.some(history => history.completion_date === null) && (
                                 <div className="flex text-typography-800 border-l-4 border-[1px] border-primary-200 mb-4 mx-0 p-2 ">
