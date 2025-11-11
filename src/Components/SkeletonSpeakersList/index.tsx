@@ -9,20 +9,20 @@ export default function SkeletonSpeakersList() {
         <div className="h-5 w-3/4 bg-surface-200 shimmer rounded" /> {/* título */}
         <div className="flex flex-col gap-2 mt-2">
           <div className="flex gap-1">
-            <div className="h-3 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-3 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
-            <div className="h-3 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-3 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
-            <div className="h-3 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-3 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
-            <div className="h-3 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-3 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
           </div>
         </div>
       </div>
