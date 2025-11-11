@@ -4,7 +4,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
 import SalonIcon from "@/Components/Icons/SalonIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
-import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import SkeletonAuxiliaryCongregationsList from "@/Components/SkeletonAuxiliaryCongregationsList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteAuxiliaryCongregationAtom, selectedAuxiliaryCongregationAtom } from "@/atoms/auxiliaryCongregationAtoms"
 import { sortArrayByProperty } from "@/functions/sortObjects"
@@ -49,7 +49,7 @@ function AuxiliaryCongregationsPage() {
     function renderSkeleton() {
         return (
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
-                {skeletonSpeakersList.map((a, i) => (<SkeletonGroupsList key={i + 'skeleton'} />))}
+                {skeletonSpeakersList.map((a, i) => (<SkeletonAuxiliaryCongregationsList key={i + 'skeleton'} />))}
             </ul>
         )
     }

@@ -38,7 +38,7 @@ function AccountsPage() {
 
     function renderSkeleton() {
         return (
-            <ul className="flex w-full h-fit flex-wrap justify-center">
+            <ul className="flex flex-col w-11/12 md:w-9/12 m-auto  justify-between items-center cursor-pointer gap-2">
                 {skeletonFileList.map((a, i) => (<SkeletonFileList key={i + 'skeleton'} />))}
             </ul>
         )

@@ -114,13 +114,6 @@ function TerritoriesPage() {
                     </div>
                     <TerritoriesList />
                 </div>
-                {/* <div className="w-screen">
-                        {isClient && (
-                            <PDFViewer>
-                                <S13 territoriesHistory={territoriesHistoryFilter ?? []} />
-                            </PDFViewer>
-                        )}
-                    </div> */}
             </section>
         </ContentDashboard>
     )

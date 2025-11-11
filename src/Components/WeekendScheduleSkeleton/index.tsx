@@ -16,16 +16,22 @@ export default function WeekendScheduleSkeleton() {
         </div>
 
         {/* Gerar PDF + inputs de datas */}
-        <div className="flex justify-between flex-wrap gap-3 items-center bg-surface-100 border rounded-xl p-4 shadow-sm mt-4">
-          <div className="h-10 w-32 bg-surface-200 shimmer rounded-md" />
-          <div className="flex flex-1 gap-3">
+        <div className="flex w-full justify-between flex-wrap gap-1 items-center bg-surface-100 border rounded-xl p-8 shadow-sm mt-4">
+          <div className="flex w-full justify-between flex-wrap gap-2">
+            <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
+            <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
+          </div>
+          <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
+          <div className="h-10 w-full max-w-[180px] bg-surface-200 shimmer rounded-md" />
+          <div className="h-10  w-full max-w-[180px] bg-surface-200 shimmer rounded-md" />
+          {/* <div className="flex flex-1 gap-3">
             <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
             <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
           </div>
           <div className="flex flex-1 gap-3">
             <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
             <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
-          </div>
+          </div> */}
         </div>
 
         {/* Lista de sábados (cards) */}
