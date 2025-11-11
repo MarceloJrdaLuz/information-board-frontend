@@ -94,7 +94,7 @@ function ListReportsPage() {
             <section className="flex flex-wrap w-full h-full p-5 ">
                 <div className="w-full h-full">
                     <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Assistência às reuniões</h1>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between flex-wrap gap-2">
                         {(roleContains("ASSISTANCE_MANAGER") || roleContains("ADMIN_CONGREGATION")) && (
                             <Button
                                 outline

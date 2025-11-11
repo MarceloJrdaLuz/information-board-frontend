@@ -62,6 +62,7 @@ function EditHistoryTerritoryPage() {
                         <div className="flex justify-start items-start flex-wrap">
                             <div className="w-full flex flex-start">
                                 <Button
+                                    outline
                                     onClick={() => {
                                         setTerritoryHistoryAction("create");
                                         setTerritorHistoryToUpdateId("");
