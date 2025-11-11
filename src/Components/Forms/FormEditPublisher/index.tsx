@@ -53,7 +53,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const disabled = useAtomValue(buttonDisabled)
     const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
 
-    const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(data?.emergencyContact?.id || null)
     const [selectedUser, setSelectedUser] = useState<string | null>(data?.user?.id ?? null)
 
     const fetchEmergencyContactDataConfig = hasPermission && congregation_id ? `/emergencyContacts/${congregation_id}` : ""
@@ -66,9 +65,8 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         if (data?.user?.id) {
             setSelectedUser(data.user.id)
         }
-        if (data?.emergencyContact?.id) {
+        if (values.selectedEmergencyContact) {
             setEmergencyContactShow(true)
-            setSelectedEmergencyContact(data.emergencyContact.id)
         }
     }, [data])
 
@@ -157,7 +155,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         <div className='border border-typography-300 my-4 p-4'>
                             <div className='flex justify-between items-center'>
                                 <span className='my-2 font-semibold text-typography-900 '>Contato de emergência</span>
-                                <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
+                                <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 text-typography-900 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
                             </div>
                             {emergencyContactShow && (
                                 <>
@@ -165,14 +163,14 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                         textVisible
                                         items={existingContacts ?? []}
-                                        selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
-                                        handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
+                                        selectedItem={existingContacts && existingContacts.find(c => c.id === values.selectedEmergencyContact) || null}
+                                        handleChange={(contact) => { handlers.handleSelectedEmergencyContactChange(contact?.id ?? null); }}
                                         labelKey="name"
                                         labelKeySecondary='phone'
                                         searchable
                                     />
                                     <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                        <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                        <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Novo contato de emergência</Button>
                                     </span>
                                 </>
                             )}
