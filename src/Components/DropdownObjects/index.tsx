@@ -129,7 +129,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                     <span
                       onClick={() => props.handleChange(item)}
                       className={classNames(
-                        active ? 'bg-primary-50 text-primary-700' : 'text-typography-700',
+                        active ? 'bg-surface-200 text-typography-700' : 'text-typography-700',
                         'flex items-center gap-3 px-4 py-2 text-sm cursor-pointer rounded-md'
                       )}
                     >

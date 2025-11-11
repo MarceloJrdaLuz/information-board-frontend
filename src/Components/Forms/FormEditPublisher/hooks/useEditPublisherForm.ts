@@ -1,10 +1,10 @@
 import {
-    additionalsPrivilegeOptions,
-    genderOptions,
-    hopeOptions,
-    pioneerOptions,
-    privilegeOptions,
-    situationOptions,
+  additionalsPrivilegeOptions,
+  genderOptions,
+  hopeOptions,
+  pioneerOptions,
+  privilegeOptions,
+  situationOptions,
 } from "@/constants/publisherOptions"
 import { usePublisherContext } from "@/context/PublisherContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
@@ -38,6 +38,8 @@ export function useEditPublisherForm(id: string) {
   const [startPioneer, setStartPioneer] = useState<Date | null>(null)
   const [allPrivileges, setAllPrivileges] = useState<string[]>([])
   const [yearService, setYearService] = useState(getYearService().toString())
+  const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(data?.emergencyContact?.id || null)
+
 
   // ---------------- Form ----------------
   const formMethods = useForm<FormValues>({
@@ -114,17 +116,18 @@ export function useEditPublisherForm(id: string) {
     handleAuxPioneerMonths: setAuxPioneerMonthsSelected,
     handleImmersedDateChange: setImmersedDate,
     handleStartPioneerDateChange: setStartPioneer,
+    handleSelectedEmergencyContactChange: setSelectedEmergencyContact,
   }
 
   // ---------------- Submit ----------------
   const onSubmit = (data: FormValues) => {
-    const { address, emergencyContact_id, fullName, nickname, phone } = data
+    const { address, fullName, nickname, phone } = data
     const payload: IPayloadUpdatePublisher = {
       fullName,
       address,
       birthDate: birthDate ?? undefined,
       dateImmersed: immersedDate ?? undefined,
-      emergencyContact_id,
+      emergencyContact_id: selectedEmergencyContact ?? undefined,
       gender: genderCheckboxSelected,
       hope: hopeCheckboxSelected,
       nickname,
@@ -172,7 +175,8 @@ export function useEditPublisherForm(id: string) {
       situationPublisherCheckboxSelected,
       auxPioneerMonthsSelected,
       yearService,
-      additionalsPrivilegeCheckboxSelected
+      additionalsPrivilegeCheckboxSelected, 
+      selectedEmergencyContact
     },
   }
 }
