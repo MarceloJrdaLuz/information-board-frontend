@@ -56,7 +56,7 @@ function AccountsPage() {
                             'application/pdf': []
                         }} />
                     </div>
-                    {!loading ? (
+                    {loading ? (
                         renderSkeleton()
                     ) : hasFiles ? (
                         <FileList files={uploadedFiles} />
