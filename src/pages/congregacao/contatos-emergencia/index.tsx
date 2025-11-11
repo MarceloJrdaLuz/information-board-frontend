@@ -3,6 +3,7 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmergencyContactIcon from "@/Components/Icons/PhoneContactIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
+import SkeletonContactsEmergencyList from "@/Components/SkeletonContactsEmergency"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteEmergencyContactAtom } from "@/atoms/emergencyContactAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -23,7 +24,7 @@ function EmergencyContactsPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const fetchConfig = congregation_id ? `/emergencyContacts/${congregation_id}` : ""
-    const { data: emergencyContacts, mutate } = useAuthorizedFetch<IEmergencyContact[]>(fetchConfig, {
+    const { data: emergencyContacts, mutate, isLoading } = useAuthorizedFetch<IEmergencyContact[]>(fetchConfig, {
         allowedRoles: ["ADMIN_CONGREGATION", "PUBLISHERS_MANAGER"]
     })
 
@@ -35,6 +36,16 @@ function EmergencyContactsPage() {
         toast.promise(deleteEmergencyContact(emergencyContact_id), {
             pending: 'Excluindo contato...',
         })
+    }
+
+    let skeletonContactEmergencyList = Array(6).fill(0)
+
+    function renderSkeleton() {
+        return (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
+                {skeletonContactEmergencyList.map((a, i) => (<SkeletonContactsEmergencyList key={i + 'skeleton'} />))}
+            </ul>
+        )
     }
 
     return (
@@ -54,7 +65,7 @@ function EmergencyContactsPage() {
                             <span className="text-primary-200 font-semibold">Criar contato</span>
                         </Button>
                     </div>
-                    {emergencyContacts &&
+                    {emergencyContacts ?
                         <ListGeneric
                             onDelete={(item_id) => handleDelete(item_id)}
                             items={emergencyContacts}
@@ -74,7 +85,9 @@ function EmergencyContactsPage() {
                                     </div>
                                 </div>
                             )}
-                        />
+                        /> : (
+                            renderSkeleton()
+                        )
                     }
                 </div>
             </section>

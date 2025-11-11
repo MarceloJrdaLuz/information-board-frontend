@@ -9,14 +9,14 @@ export default function SkeletonTerritoriesList() {
       {/* Cabeçalho */}
       <div className="flex justify-between items-center px-6 py-4">
         <div className="flex flex-col gap-2">
-          <div className="h-4 w-40 bg-surface-300 rounded shimmer"></div>
-          <div className="h-3 w-28 bg-surface-300 rounded shimmer"></div>
+          <div className="h-5 w-40 bg-surface-300 rounded shimmer"></div>
+          <div className="h-4 w-28 bg-surface-300 rounded shimmer"></div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
-          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
-          <div className="h-4 w-4 bg-surface-300 rounded-full shimmer"></div>
+          <div className="h-5 w-4 bg-surface-300 rounded-full shimmer"></div>
+          <div className="h-5 w-4 bg-surface-300 rounded-full shimmer"></div>
+          <div className="h-5 w-4 bg-surface-300 rounded-full shimmer"></div>
         </div>
       </div>
 

@@ -7,7 +7,7 @@ export function ReportTableSkeleton() {
     ? currentMonth - 8 // ex: novembro (11) → 3 meses (set, out, nov)
     : currentMonth + 4 // ex: fevereiro (2) → 6 meses (set → fev)
 
-  const skeletonRows = Array(monthsSinceSeptember -1).fill(0)
+  const skeletonRows = Array(monthsSinceSeptember - 1).fill(0)
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -56,13 +56,18 @@ export function ReportTableSkeleton() {
         {skeletonRows.map((_, i) => (
           <div key={i} className="bg-surface-100 p-4 rounded-lg">
             <div className="flex justify-between mb-2">
-              <div className="h-4 w-24 bg-surface-200 rounded shimmer"></div>
-              <div className="h-4 w-12 bg-surface-200 rounded shimmer"></div>
+              <div className="h-6 w-24 bg-surface-200 rounded shimmer"></div>
+              <div className="h-6 w-12 bg-surface-200 rounded shimmer"></div>
             </div>
-            <div className="h-4 w-1/2 bg-surface-200 rounded mb-2 shimmer"></div>
-            <div className="h-4 w-3/4 bg-surface-200 rounded shimmer"></div>
+            <div className="h-6 w-1/2 bg-surface-200 rounded mb-2 shimmer"></div>
           </div>
         ))}
+        <div className="bg-surface-300 p-4 rounded-lg">
+          <div className="flex justify-between mb-2">
+            <div className="h-6 w-24 bg-surface-100 rounded shimmer"></div>
+            <div className="h-6 w-12 bg-surface-100 rounded shimmer"></div>
+          </div>
+        </div>
       </div>
     </div>
   )

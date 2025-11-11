@@ -4,7 +4,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
-import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import SkeletonHospitalityGroupsList from "@/Components/SkeletonHospitalityGroupsList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteHospitalityGroupAtom, selectedHospitalityGroupAtom } from "@/atoms/hospitalityGroupsAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -49,12 +49,12 @@ function HospitalityGroupsPage() {
         mutate()
     }
 
-    let skeletonSpeakersList = Array(6).fill(0)
+    let skeletonHospitalityGroupsList = Array(6).fill(0)
 
     function renderSkeleton() {
         return (
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
-                {skeletonSpeakersList.map((a, i) => (<SkeletonGroupsList key={i + 'skeleton'} />))}
+                {skeletonHospitalityGroupsList.map((a, i) => (<SkeletonHospitalityGroupsList key={i + 'skeleton'} />))}
             </ul>
         )
     }

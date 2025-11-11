@@ -6,7 +6,7 @@ import FilterSpeakersCongregation from "@/Components/FilterSpeakersCongregation"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
-import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
+import SkeletonSpeakersList from "@/Components/SkeletonSpeakersList"
 import SpeakersListPdf from "@/Components/SpeakerListPdf"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteSpeakerAtom, selectedSpeakerAtom } from "@/atoms/speakerAtoms"
@@ -92,7 +92,7 @@ function SpeakersPage() {
     function renderSkeleton() {
         return (
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
-                {skeletonSpeakersList.map((a, i) => (<SkeletonGroupsList key={i + 'skeleton'} />))}
+                {skeletonSpeakersList.map((a, i) => (<SkeletonSpeakersList key={i + 'skeleton'} />))}
             </ul>
         )
     }
