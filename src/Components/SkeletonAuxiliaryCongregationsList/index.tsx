@@ -14,19 +14,19 @@ export default function SkeletonAuxiliaryCongregationsList() {
           </div>
           <div className="flex gap-1">
             <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/6 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
             <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/3 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
             <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/4 bg-surface-200 shimmer rounded" />
           </div>
           <div className="flex gap-1">
             <div className="h-4 w-5 bg-surface-200 shimmer rounded" />
-            <div className="h-4 w-1/2 bg-surface-200 shimmer rounded" />
+            <div className="h-4 w-1/6 bg-surface-200 shimmer rounded" />
           </div>
         </div>
       </div>
