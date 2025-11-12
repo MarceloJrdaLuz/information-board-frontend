@@ -22,6 +22,7 @@ import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import FormEditPublisherSkeleton from './FormEditPublisherSkeleton'
 import { useEditPublisherForm } from './hooks/useEditPublisherForm'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 export interface IUpdatePublisher {
     id: string
@@ -65,9 +66,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
         if (data?.user?.id) {
             setSelectedUser(data.user.id)
         }
-        if (values.selectedEmergencyContact) {
-            setEmergencyContactShow(true)
-        }
     }, [data])
 
     function handleLinkPublisherToUser(force: boolean = false) {
@@ -94,6 +92,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     // ------------------- FORM -------------------
     const { register, handleSubmit, formState: { errors }, control } = formMethods
+
+    const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
+    const sortedUsers = usersData ? sortArrayByProperty(usersData, "fullName") : usersData
 
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
@@ -160,14 +161,15 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             {emergencyContactShow && (
                                 <>
                                     <DropdownObject<IEmergencyContact>
-                                        title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                        title={sortedEmergencyContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                         textVisible
-                                        items={existingContacts ?? []}
-                                        selectedItem={existingContacts && existingContacts.find(c => c.id === values.selectedEmergencyContact) || null}
+                                        items={sortedEmergencyContacts ?? []}
+                                        selectedItem={sortedEmergencyContacts && sortedEmergencyContacts.find(c => c.id === values.selectedEmergencyContact) || null}
                                         handleChange={(contact) => { handlers.handleSelectedEmergencyContactChange(contact?.id ?? null); }}
                                         labelKey="name"
                                         labelKeySecondary='phone'
                                         searchable
+                                        full
                                     />
                                     <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
                                         <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Novo contato de emergência</Button>
@@ -181,13 +183,14 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                 <span className='my-2 font-semibold text-typography-900 '>Vincular publicador a usuário</span>
                                 <div className='flex flex-col w-full items-start justify-start my-4 gap-5'>
                                     <DropdownObject<UserTypes>
-                                        title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                        title={sortedUsers ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                         textVisible
-                                        items={usersData ?? []}
-                                        selectedItem={usersData && usersData.find(c => c.id === selectedUser) || null}
+                                        items={sortedUsers ?? []}
+                                        selectedItem={sortedUsers && sortedUsers.find(c => c.id === selectedUser) || null}
                                         handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
                                         labelKey="fullName"
                                         searchable
+                                        full
                                     />
                                     <ConfirmLinkForceModal button={
                                         <Button
