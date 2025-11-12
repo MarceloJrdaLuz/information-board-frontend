@@ -75,7 +75,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
             <div className="flex flex-col truncate text-left">
               <span className="text-typography-400 text-xs">{title}</span>
               <span className="truncate">
-                {selectedItem ? getDisplayLabel(selectedItem) : "Selecione..."}
+                {selectedItem ? getLabel(selectedItem) : "Selecione..."}
               </span>
             </div>
 

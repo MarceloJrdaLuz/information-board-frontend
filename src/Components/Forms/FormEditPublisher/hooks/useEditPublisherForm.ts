@@ -18,6 +18,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { FormValues } from "../type"
 import { publisherEditSchema } from "../validations"
+import { useSetAtom } from "jotai"
+import { showModalEmergencyContact } from "@/atoms/atom"
 
 export function useEditPublisherForm(id: string) {
   const { updatePublisher } = usePublisherContext()
@@ -38,7 +40,9 @@ export function useEditPublisherForm(id: string) {
   const [startPioneer, setStartPioneer] = useState<Date | null>(null)
   const [allPrivileges, setAllPrivileges] = useState<string[]>([])
   const [yearService, setYearService] = useState(getYearService().toString())
-  const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(data?.emergencyContact?.id || null)
+  const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(null)
+  const setModalEmergencyContactShowAtom = useSetAtom(showModalEmergencyContact)
+
 
 
   // ---------------- Form ----------------
@@ -80,6 +84,8 @@ export function useEditPublisherForm(id: string) {
       setBirthDate(data.birthDate ? new Date(data.birthDate) : null)
       setImmersedDate(data.dateImmersed ? new Date(data.dateImmersed) : null)
       setStartPioneer(data.startPioneer ? new Date(data.startPioneer) : null)
+      setSelectedEmergencyContact(data.emergencyContact?.id || null)
+      data.emergencyContact?.id && setModalEmergencyContactShowAtom(true)
 
       reset({
         fullName: data.fullName || "",
@@ -88,7 +94,7 @@ export function useEditPublisherForm(id: string) {
         phone: data.phone || "",
       })
     }
-  }, [data, reset])
+  }, [data, reset, setModalEmergencyContactShowAtom])
 
   useEffect(() => {
     const updatedPrivileges: string[] = []
@@ -175,7 +181,7 @@ export function useEditPublisherForm(id: string) {
       situationPublisherCheckboxSelected,
       auxPioneerMonthsSelected,
       yearService,
-      additionalsPrivilegeCheckboxSelected, 
+      additionalsPrivilegeCheckboxSelected,
       selectedEmergencyContact
     },
   }

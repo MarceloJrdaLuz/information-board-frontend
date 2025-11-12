@@ -25,6 +25,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 
 
 export default function FormAddPublisher() {
@@ -169,6 +170,8 @@ export default function FormAddPublisher() {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
+    const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
+
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
@@ -249,10 +252,10 @@ export default function FormAddPublisher() {
                         {emergencyContactShow && (
                             <>
                                 <DropdownObject<IEmergencyContact>
-                                    title={existingContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
+                                    title={sortedEmergencyContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                     textVisible
-                                    items={existingContacts ?? []}
-                                    selectedItem={existingContacts && existingContacts.find(c => c.id === selectedEmergencyContact) || null}
+                                    items={sortedEmergencyContacts ?? []}
+                                    selectedItem={sortedEmergencyContacts && sortedEmergencyContacts.find(c => c.id === selectedEmergencyContact) || null}
                                     handleChange={(contact) => { setSelectedEmergencyContact(contact?.id ?? null); }}
                                     labelKey="name"
                                     labelKeySecondary='phone'
