@@ -1,7 +1,7 @@
 import { openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -458,6 +458,18 @@ export default function Layout(props: LayoutProps) {
                                             }}
                                             icon={FunctionSquareIcon}
                                             active={pageActive === '/administracao/funcoes'}
+                                        />
+                                    }
+
+                                    {isAdmin &&
+                                        <NavBar.Options
+                                            title="Uso do sistema"
+                                            onClick={() => {
+                                                setIsMenuOpen(!isMenuOpen)
+                                                Router.push('/administracao/controle-uso')
+                                            }}
+                                            icon={LineChart}
+                                            active={pageActive === '/administracao/controle-uso'}
                                         />
                                     }
 

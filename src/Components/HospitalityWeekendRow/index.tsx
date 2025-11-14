@@ -116,7 +116,7 @@ export default function HospitalityRow({ date }: Props) {
               link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                 group.host.phone
               )}&text=${encodedMessage}`,
-              destinationName: `${group.host.fullName || group.host.nickname || "Anfitrião"} (Anfitrião)`,
+              destinationName: `${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName || "Anfitrião"} (Anfitrião)`,
             })
           }
 
@@ -127,7 +127,7 @@ export default function HospitalityRow({ date }: Props) {
                 link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                   m.phone!
                 )}&text=${encodedMessage}`,
-                destinationName: m.fullName || "Contato",
+                destinationName: m.nickname && m.nickname !== "" ? m.nickname : m.fullName || "Contato",
               })
             })
 
@@ -163,36 +163,36 @@ export default function HospitalityRow({ date }: Props) {
   }
 
   function onGroupChange(eventType: IHospitalityEventType, group: IHospitalityGroup | null) {
-  let updatedAssignments = [...(weekend.assignments ?? [])]
-  const idx = updatedAssignments.findIndex(a => a.eventType === eventType)
+    let updatedAssignments = [...(weekend.assignments ?? [])]
+    const idx = updatedAssignments.findIndex(a => a.eventType === eventType)
 
-  if (idx >= 0) {
-    if (group) {
-      updatedAssignments[idx] = {
-        ...updatedAssignments[idx],
-        group_id: group.id,
-        group_host_fullName: group.host?.fullName,
-        group_host_nickname: group.host?.nickname,
+    if (idx >= 0) {
+      if (group) {
+        updatedAssignments[idx] = {
+          ...updatedAssignments[idx],
+          group_id: group.id,
+          group_host_fullName: group.host?.fullName,
+          group_host_nickname: group.host?.nickname,
+        }
+      } else {
+        // Limpa o grupo e o status
+        updatedAssignments[idx] = {
+          ...updatedAssignments[idx],
+          group_id: "",
+          group_host_fullName: "",
+          group_host_nickname: "",
+          completed: false,
+        }
+
+        // Limpa os links de WhatsApp desse evento
+        setWhatsappLinks(prev => ({ ...prev, [eventType]: [] }))
       }
-    } else {
-      // Limpa o grupo e o status
-      updatedAssignments[idx] = {
-        ...updatedAssignments[idx],
-        group_id: "",
-        group_host_fullName: "",
-        group_host_nickname: "",
-        completed: false,
-      }
-      
-      // Limpa os links de WhatsApp desse evento
-      setWhatsappLinks(prev => ({ ...prev, [eventType]: [] }))
     }
-  }
 
-  const updatedWeekend = { ...weekend, assignments: updatedAssignments }
-  setWeekends({ ...(weekends ?? {}), [dateKey]: updatedWeekend })
-  setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
-}
+    const updatedWeekend = { ...weekend, assignments: updatedAssignments }
+    setWeekends({ ...(weekends ?? {}), [dateKey]: updatedWeekend })
+    setDirtyWeekends(prev => ({ ...prev, [dateKey]: updatedWeekend }))
+  }
 
 
   function onCompletedChange(
@@ -322,7 +322,7 @@ export default function HospitalityRow({ date }: Props) {
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
                   >
-                    <WhatsAppIcon w="20" h="20"/>
+                    <WhatsAppIcon w="20" h="20" />
                     <span>{item.destinationName}</span>
                   </a>
                 ))}
