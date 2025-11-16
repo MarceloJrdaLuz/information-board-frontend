@@ -288,7 +288,7 @@ export default function PublisherList() {
 
 
                             <div className="flex mt-5">
-                                <div className="gap-1 flex">
+                                <div className="gap-3 flex flex-wrap">
                                     {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION")) &&
                                         <Button
                                             className="w-30"
@@ -297,7 +297,9 @@ export default function PublisherList() {
                                         >
                                             <EditIcon />
                                             Editar
-                                        </Button>}
+                                        </Button>
+                                    }
+
                                     {(roleContains("ADMIN_CONGREGATION")) &&
                                         <Button
                                             outline
@@ -305,7 +307,7 @@ export default function PublisherList() {
                                             onClick={() => Router.push(`/congregacao/publicadores/transferir/${publisher.id}`)}
                                         >
                                             <span className="flex gap-1 items-center">
-                                                <ArrowRightLeft size={16} />
+                                                <ArrowRightLeft size={20} />
                                                 <span>Transferir</span>
                                             </span>
                                         </Button>
