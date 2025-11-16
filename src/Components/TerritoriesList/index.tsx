@@ -173,6 +173,7 @@ export default function TerritoriesList() {
                                                 roleContains("ADMIN_CONGREGATION")) && (
                                                     <div className="flex gap-3 pt-2">
                                                         <Button
+                                                            size="sm"
                                                             onClick={() =>
                                                                 Router.push(`/congregacao/territorios/edit/${territory.id}`)
                                                             }
@@ -184,7 +185,7 @@ export default function TerritoriesList() {
                                                         <ConfirmDeleteModal
                                                             onDelete={() => onDelete(territory.id)}
                                                             button={
-                                                                <Button outline className="text-red-400">
+                                                                <Button size="sm" outline className="text-red-400">
                                                                     <Trash /> Excluir
                                                                 </Button>
                                                             }
