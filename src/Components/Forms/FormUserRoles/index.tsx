@@ -77,7 +77,7 @@ export default function FormUserRoles() {
             })
         }
         getUsers()
-    }, [userSelected])
+    }, [userSelected, isAdmin, congregationId])
 
     useEffect(() => {
         const getRoles = async () => {

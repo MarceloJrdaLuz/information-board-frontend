@@ -1,4 +1,5 @@
 import { IAssignment } from "@/types/assignment"
+import { formatNameCongregation } from "@/utils/formatCongregationName";
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Calendar, Clock, MapPin } from "lucide-react"
@@ -47,10 +48,18 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                     {assignment.role === "Leitor" && <strong>Leitor</strong>}
 
                                     {assignment.role === "Orador" && (
-                                        <>
-                                            <strong>Discurso: </strong>
-                                            {assignment.talk?.title || "Tema não informado"}
-                                        </>
+                                        <div className="flex flex-col gap-1">
+                                            <div>
+                                                <strong>Discurso: </strong>
+                                                {assignment.talk?.title || "Tema não informado"}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <MapPin size={12} className="text-typography-400" />
+                                                <span>
+                                                    {formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}
+                                                </span>
+                                            </div>
+                                        </div>
                                     )}
 
                                     {assignment.role === "Discurso Externo" && (
@@ -63,8 +72,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                                 <div className="flex items-center gap-1">
                                                     <MapPin size={12} className="text-typography-400" />
                                                     <span>
-                                                        {assignment.destinationCongregation.name},{" "}
-                                                        {assignment.destinationCongregation.city}
+                                                        {formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}
                                                     </span>
                                                 </div>
                                             )}

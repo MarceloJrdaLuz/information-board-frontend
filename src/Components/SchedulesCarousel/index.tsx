@@ -20,7 +20,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
     if (currentMonthIndex >= 0) {
       setActiveIndex(currentMonthIndex)
     }
-  }, [schedules])
+  }, [schedules, months])
 
   return (
     <div className="relative w-full">

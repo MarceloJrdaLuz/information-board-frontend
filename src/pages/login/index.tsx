@@ -33,17 +33,29 @@ export default Login
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ["quadro-token"]: token } = parseCookies(ctx)
 
-    if (token) {
+    if (!token) {
+        return { props: {} }
+    }
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/recover-user-information`, {
+            headers: {
+                Authorization: `Bearer ${token.replace(/"/g, "")}`,
+            },
+        })
+
+        if (!res.ok) {
+            throw new Error("Invalid token")
+        }
+
         return {
             redirect: {
                 destination: "/dashboard",
                 permanent: false,
             },
         }
-    }
 
-    return {
-        props: {},
+    } catch (error) {
+        return { props: {} }
     }
 }
-
