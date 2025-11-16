@@ -9,6 +9,7 @@ export interface ResponseAuth {
         updated_at: string
         profile: Profile | null
         roles: RolesType[]
+        publisher: IPublisher
     },
     token: string
 }
@@ -85,6 +86,12 @@ export interface ICongregation {
     type?: CongregationTypeEnum
     creatorCongregation?: ICongregation
     speakers?: ISpeaker[]
+}
+export interface ICongregationToTransferPublisher {
+    id: string
+    name: string
+    city: string
+    circuit: string
 }
 
 export interface ICongregationUpdate {
@@ -355,6 +362,11 @@ export interface ILinkPublisherToUser {
 }
 export interface IUnlinkPublisherToUser {
     publisher_id: string
+}
+
+export interface ITransferPublishers {
+    publisherIds: string[]
+    newCongregationId: string
 }
 
 export interface ITalk {

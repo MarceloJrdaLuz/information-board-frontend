@@ -3,7 +3,7 @@ import { api } from "@/services/api"
 import { IConsentRecordTypes } from "@/types/consent"
 import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/types/reports"
-import { ILinkPublisherToUser, IUnlinkPublisherToUser } from "@/types/types"
+import { ILinkPublisherToUser, ITransferPublishers, IUnlinkPublisherToUser } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { useAtom, useSetAtom } from "jotai"
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
@@ -40,6 +40,10 @@ type PublisherContextTypes = {
         publisher_id: string,
         payload: IPayloadUpdatePublisher
     ) => Promise<any>
+    transferPublishers: ({
+        publisherIds,
+        newCongregationId
+    }: ITransferPublishers) => Promise<any>
     genderCheckbox: string[],
     setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
     createReport: ({ hours, month, observations, publisher_id, studies, year }: IPayloadCreateReport) => Promise<any>
@@ -185,7 +189,7 @@ function PublisherProvider(props: PublisherContextProviderProps) {
             const storage = localStorage.getItem('publisher')
 
             let jsonSave = []
-        
+
             if (storage) {
                 const parse = JSON.parse(storage)
                 const filtered = parse.filter((p: any) => p.id !== publisher.id)
@@ -279,9 +283,21 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
+    async function transferPublishers({ publisherIds, newCongregationId }: ITransferPublishers) {
+        await api.put(`/publishers/transfer-congregation`, {
+            publisherIds,
+            newCongregationId
+        }).then(res => {
+            handleSubmitSuccess(messageSuccessSubmit.transferPublisherSuccess, '/congregacao/publicadores')
+        }).catch(err => {
+            console.log(err)
+            toast.error(messageErrorsSubmit.default)
+        })
+    }
+
     return (
         <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport,  linkPublisherToUser, unlinkPublisherToUser
+            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, linkPublisherToUser, unlinkPublisherToUser, transferPublishers
         }}>
             {props.children}
         </PublisherContext.Provider>

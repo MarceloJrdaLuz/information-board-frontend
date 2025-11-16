@@ -75,7 +75,7 @@ function HospitalityWeekendPage() {
         if (groups) {
             setGroups(groups)
         }
-    }, [groups])
+    }, [groups, setGroups])
 
     useEffect(() => {
         if (!congregation?.dayMeetingPublic) return

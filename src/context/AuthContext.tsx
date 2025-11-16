@@ -86,14 +86,15 @@ function AuthProvider(props: AuthContextProviderProps) {
             email,
             password
         }).then(res => {
-            const usuarioLogado = {
+            const user = {
                 id: res.data.user.id,
                 email: res.data.user.email,
                 fullName: res.data.user.fullName,
                 code: res.data.user.code,
                 congregation: res.data.user.congregation,
                 roles: res.data.user.roles,
-                profile: res.data.user.profile
+                profile: res.data.user.profile,
+                publisher: res.data.user.publisher
             }
 
             const token = res.data.token
@@ -104,7 +105,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
             api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
-            setUser(usuarioLogado)
+            setUser(user)
 
         }).catch(res => {
             setLoading(false)
@@ -129,7 +130,7 @@ function AuthProvider(props: AuthContextProviderProps) {
             password,
             fullName
         }).then(res => {
-            const usuarioLogado = {
+            const user = {
                 id: res.data.user.id,
                 email: res.data.user.email,
                 fullName: res.data.user.fullName,
@@ -140,7 +141,7 @@ function AuthProvider(props: AuthContextProviderProps) {
                 token: res.data.token
             }
 
-            if (usuarioLogado.token) {
+            if (user.token) {
                 const token = res.data.token
 
                 setCookie('quadro-token', token, {
@@ -149,7 +150,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
                 api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
 
-                setUser(usuarioLogado)
+                setUser(user)
 
                 handleSubmitSuccess(messageSuccessSubmit.registerCreate, '/dashboard')
             }
