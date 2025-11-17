@@ -13,7 +13,8 @@ import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
 import Router from "next/router"
-import { useEffect, useState } from "react"
+import { ReactElement, useEffect, useState } from "react"
+import TerritoriesProviderLayout from "./_layout"
 
 function TerritoriesPage() {
     const [crumbs,] = useAtom(crumbsAtom)
@@ -119,6 +120,9 @@ function TerritoriesPage() {
     )
 }
 
-TerritoriesPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"])
+TerritoriesPage.getLayout = (page: ReactElement) =>
+  withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+    <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+  )
 
 export default TerritoriesPage

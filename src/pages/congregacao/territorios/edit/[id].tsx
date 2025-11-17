@@ -5,8 +5,9 @@ import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
+import TerritoriesProviderLayout from "../_layout"
 
 function EditTerritoryPage() {
     const router = useRouter()
@@ -46,6 +47,8 @@ function EditTerritoryPage() {
     )
 }
 
-EditTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
-
+EditTerritoryPage.getLayout = (page: ReactElement) =>
+    withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+        <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+    )
 export default EditTerritoryPage

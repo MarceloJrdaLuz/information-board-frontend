@@ -41,7 +41,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <SubmitFormProvider>
       <AuthProvider>
         <CongregationProvider>
-          <TerritoryProvider>
             <DocumentsProvider>
               <PublisherProvider>
                 <PermissionAndRolesProvider>
@@ -54,7 +53,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                 </PermissionAndRolesProvider>
               </PublisherProvider>
             </DocumentsProvider>
-          </TerritoryProvider>
         </CongregationProvider>
       </AuthProvider>
     </SubmitFormProvider>
