@@ -1,9 +1,10 @@
 import { domainUrl } from "@/atoms/atom"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
+import { publicRoutes } from "@/utils/publicRoutes"
 import { deleteCookie, setCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
-import Router from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { ResponseAuth, UserTypes } from "../types/types"
 import { useSubmitContext } from "./SubmitFormContext"
@@ -33,6 +34,10 @@ type AuthContextProviderProps = {
 const AuthContext = createContext({} as AuthContextTypes)
 
 function AuthProvider(props: AuthContextProviderProps) {
+    const router = useRouter();
+    const path = router.pathname;
+    const isPublic = publicRoutes.includes(path);
+
     const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
 
     const [user, setUser] = useState<UserTypes | null>(null)
@@ -50,6 +55,12 @@ function AuthProvider(props: AuthContextProviderProps) {
 
 
     useEffect(() => {
+        if (isPublic) {
+            // Área pública → NÃO recuperar usuário
+            setAuthResolved(true);
+            return;
+        }
+
         const recoverUser = async () => {
             try {
                 const res = await api.get('/recover-user-information')
@@ -61,7 +72,7 @@ function AuthProvider(props: AuthContextProviderProps) {
             }
         }
         recoverUser()
-    }, [])
+    }, [isPublic])
 
     useEffect(() => {
         const handleRouteChangeComplete = (url: string) => {
