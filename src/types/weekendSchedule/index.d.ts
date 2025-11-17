@@ -29,7 +29,13 @@ export interface IExternalTalkPublic {
     number: number
   } | null
   manualTalk?: string | null
-  destinationCongregation: string | null
+  destinationCongregation: {
+    id: string,
+    name: string,
+    city: string,
+    dayMeetingPublic: string,
+    hourMeetingPublic: string
+  }
 }
 
 export interface IHospitalityGroupPublic {

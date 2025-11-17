@@ -144,9 +144,13 @@ function ExternalTalksPage() {
 
 
                     {weekendMeetingDay.map((date) => {
-                        const talksForDate = externalTalks.filter(
-                            (t) => t.date === moment(date).format("YYYY-MM-DD")
+                        const startWeekend = moment(date).isoWeekday(5) // sexta
+                        const endWeekend = moment(date).isoWeekday(7)   // domingo
+
+                        const talksForDate = externalTalks.filter((t) =>
+                            moment(t.date).isBetween(startWeekend, endWeekend, "day", "[]")
                         )
+
                         return (
                             <div key={`${date}`} className="p-4">
                                 <ExternalTalkRow

@@ -3,7 +3,7 @@ import { CheckCircle2, Clock, UserIcon, UsersIcon } from "lucide-react"
 import { useState } from "react"
 
 export function HospitalityCard({ item }: { item: IPublicSchedule }) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
 
     return (
         <div className="mt-1 border-t pt-3">
