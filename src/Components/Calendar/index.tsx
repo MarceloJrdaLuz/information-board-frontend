@@ -1,9 +1,6 @@
-import { useNoticesContext } from '@/context/NoticeContext'
-import React, { useState } from 'react'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css' // Estilos padrão do DatePicker
-import { registerLocale } from 'react-datepicker'
-import ptBR from 'date-fns/locale/pt-BR' // Importe a localização para o português do Brasil
+import ptBR from 'date-fns/locale/pt-BR'; // Importe a localização para o português do Brasil
+import DatePicker, { registerLocale } from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'; // Estilos padrão do DatePicker
 
 registerLocale('pt-BR', ptBR)
 
@@ -32,9 +29,6 @@ export default function Calendar({ handleDateChange, selectedDate, minDate, labe
            
                 />
             </div>
-            {/* {selectedDate && (
-                <p>Data selecionada: {selectedDate.toLocaleDateString()}</p>
-            )} */}
         </div>
     )
 }

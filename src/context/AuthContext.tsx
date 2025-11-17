@@ -1,4 +1,5 @@
 import { domainUrl } from "@/atoms/atom"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { publicRoutes } from "@/utils/publicRoutes"
@@ -7,7 +8,6 @@ import { useSetAtom } from "jotai"
 import Router, { useRouter } from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { ResponseAuth, UserTypes } from "../types/types"
-import { useSubmitContext } from "./SubmitFormContext"
 
 type AuthContextTypes = {
     authenticated: boolean
@@ -38,7 +38,7 @@ function AuthProvider(props: AuthContextProviderProps) {
     const path = router.pathname;
     const isPublic = publicRoutes.includes(path);
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [user, setUser] = useState<UserTypes | null>(null)
     const [loading, setLoading] = useState(false)

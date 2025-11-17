@@ -10,8 +10,9 @@ import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { useAuthContext } from '@/context/AuthContext'
 import { useCongregationContext } from '@/context/CongregationContext'
-import { usePublisherContext } from '@/context/PublisherContext'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { usePublisher } from '@/hooks/usePublisher'
 import { IEmergencyContact, Privileges, Situation, UserTypes } from '@/types/types'
 import { useAtom, useAtomValue } from 'jotai'
 import { ChevronDownIcon, PlusIcon } from 'lucide-react'
@@ -22,7 +23,6 @@ import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import FormEditPublisherSkeleton from './FormEditPublisherSkeleton'
 import { useEditPublisherForm } from './hooks/useEditPublisherForm'
-import { sortArrayByProperty } from '@/functions/sortObjects'
 
 export interface IUpdatePublisher {
     id: string
@@ -35,7 +35,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const hasPermission = isAdminCongregation || isPublisherManager
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
-    const { linkPublisherToUser, unlinkPublisherToUser } = usePublisherContext()
+    const { linkPublisherToUser, unlinkPublisherToUser } = usePublisher()
 
     const {
         data,

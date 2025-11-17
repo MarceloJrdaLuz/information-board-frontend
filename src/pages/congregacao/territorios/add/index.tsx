@@ -2,10 +2,10 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddTerritory from "@/Components/Forms/FormAddTerritory"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { ReactElement, useEffect } from "react"
-import TerritoriesProviderLayout from "../_layout"
 
 function CreateTerritoryPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)

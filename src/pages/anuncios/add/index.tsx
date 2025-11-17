@@ -34,12 +34,12 @@ function AddNoticePage() {
     }, [setPageActive])
 
     return (
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Criar Anúncio"} />
-                <section className="flex justify-center">
-                    <FormAddNotice congregationNumber={congregationNumber} />
-                </section>
-            </ContentDashboard>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Anúncio"} />
+            <section className="flex justify-center">
+                <FormAddNotice congregationNumber={congregationNumber} />
+            </section>
+        </ContentDashboard>
     )
 }
 

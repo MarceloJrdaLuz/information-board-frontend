@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useEffect, useState } from "react"
-import { useNoticesContext } from "@/context/NoticeContext"
 import { FormValues, IFormNoticeProps } from "./types"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import InputError from "@/Components/InputError"
@@ -16,11 +15,11 @@ import { HelpCircle } from "lucide-react"
 import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import TextArea from "@/Components/TextArea"
+import { useNotices } from "@/hooks/useNotices"
 
 export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
-    const { setExpiredNotice } = useNoticesContext()
-    const { createNotice, setCongregationNumber } = useNoticesContext()
+    const { createNotice, setExpiredNotice } = useNotices(congregationNumber)
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
@@ -31,11 +30,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
-    useEffect(() => {
-        setCongregationNumber(congregationNumber)
-    }, [setCongregationNumber, congregationNumber])
-
-    const esquemaValidacao = yup.object({
+    const validationSchema = yup.object({
         title: yup.string().required(),
         text: yup.string().required(),
         startDay: yup.number(),
@@ -50,7 +45,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
             startDay: undefined,
             endDay: undefined
 
-        }, resolver: yupResolver(esquemaValidacao)
+        }, resolver: yupResolver(validationSchema)
     })
 
     function onSubmit({ title, text, startDay, endDay }: FormValues) {

@@ -2,13 +2,12 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditTerritory from "@/Components/Forms/FormEditTerritory"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
-import TerritoriesProviderLayout from "../_layout"
-
 function EditTerritoryPage() {
     const router = useRouter()
     const { id } = router.query

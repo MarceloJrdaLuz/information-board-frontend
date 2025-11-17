@@ -7,9 +7,9 @@ import ListGroups from "@/Components/ListGroups"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { useSubmitContext } from "@/context/SubmitFormContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IGroup } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -22,7 +22,7 @@ import { toast } from "react-toastify"
 function GroupsPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
     const [crumbs,] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()

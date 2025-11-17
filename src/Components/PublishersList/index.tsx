@@ -1,10 +1,11 @@
 import { useAuthContext } from "@/context/AuthContext"
-import { usePublisherContext } from "@/context/PublisherContext"
 import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
+import { usePublisher } from "@/hooks/usePublisher"
 import { IPublisher, Privileges, Situation } from "@/types/types"
+import { Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { ArrowRightLeft, ChevronDownIcon, Trash } from "lucide-react"
 import moment from "moment"
 import Image from "next/image"
@@ -18,14 +19,13 @@ import CheckboxBoolean from "../CheckboxBoolean"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import FilterPrivileges from "../FilterPrivileges"
 import EditIcon from "../Icons/EditIcon"
-import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
-import { Document, PDFDownloadLink } from "@react-pdf/renderer"
-import PublishersListPdf from "../PublisherListPdf"
 import PdfIcon from "../Icons/PdfIcon"
+import PublishersListPdf from "../PublisherListPdf"
+import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()
-    const { deletePublisher } = usePublisherContext()
+    const { deletePublisher } = usePublisher()
     const congregationUser = user?.congregation
 
     const router = useRouter()

@@ -1,18 +1,19 @@
-import FormStyle from "../FormStyle"
-import * as yup from 'yup'
-import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useEffect } from "react"
-import { FormPermission, usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import Button from "@/Components/Button"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
-import Button from "@/Components/Button"
+import { usePermissionsAndRoles } from "@/hooks/usePermissionsAndRoles"
+import { FormPermission } from "@/types/permissionsAndRoles"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtomValue } from "jotai"
-import { buttonDisabled, errorFormSend, resetForm, successFormSend } from "@/atoms/atom"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import * as yup from 'yup'
+import FormStyle from "../FormStyle"
 
 export default function FormAddPermission() {
-    const { createPermission } = usePermissionsAndRolesContext()
+    const { createPermission } = usePermissionsAndRoles()
     const resetFormValue = useAtomValue(resetForm)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)

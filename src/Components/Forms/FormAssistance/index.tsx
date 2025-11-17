@@ -1,10 +1,10 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import Button from "@/Components/Button"
 import Dropdown from "@/Components/Dropdown"
-import { useSubmitContext } from "@/context/SubmitFormContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { obterUltimosMeses } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IMeetingAssistance } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -24,7 +24,7 @@ interface IFormAssistanceProps {
 }
 
 export default function FormAssistance({ congregation_id }: IFormAssistanceProps) {
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [monthWithYear, setMonthWithYear] = useState('')
     const [yearSelected, setYearSelected] = useState('')

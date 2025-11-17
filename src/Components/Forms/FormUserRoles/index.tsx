@@ -5,8 +5,8 @@ import Dropdown from "@/Components/Dropdown"
 import ModalHelp from "@/Components/ModalHelp"
 import { useAuthContext } from "@/context/AuthContext"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import { usePermissionsAndRoles } from "@/hooks/usePermissionsAndRoles"
 import { api } from "@/services/api"
 import { RolesType, UserTypes } from "@/types/types"
 import { useAtomValue } from "jotai"
@@ -21,7 +21,7 @@ export default function FormUserRoles() {
     const isAdmin = roleContains('ADMIN')
     const { congregation } = useCongregationContext()
     const congregationId = congregation?.id
-    const { userRoles, } = usePermissionsAndRolesContext()
+    const { userRoles, } = usePermissionsAndRoles()
     const [roles, setRoles] = useState<RolesType[]>([])
     const [users, setUsers] = useState<UserTypes[]>([])
     const [userSelected, setUserSelected] = useState('')

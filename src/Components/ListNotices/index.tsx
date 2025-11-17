@@ -14,7 +14,7 @@ export default function ListNotices({ notices, onDelete }: IListItemsProps) {
           key={notice.id}
           className="
             w-full md:w-10/12
-            bg-surface-100 hover:bg-surface-200 transition-colors duration-300
+            bg-surface-100 hover:bg-surface-100/80 transition-colors duration-300
             shadow-sm rounded-xl
             border border-surface-200/50
             overflow-hidden
@@ -39,6 +39,7 @@ export default function ListNotices({ notices, onDelete }: IListItemsProps) {
               {/* Ações */}
               <div className="flex gap-2 mt-3 sm:mt-0">
                 <Button
+                  size="sm"
                   outline
                   className="flex items-center gap-2 text-primary-200 hover:text-primary-100"
                   onClick={() => Router.push(`/anuncios/edit/${notice.id}`)}
@@ -50,6 +51,7 @@ export default function ListNotices({ notices, onDelete }: IListItemsProps) {
                   onDelete={() => onDelete(`${notice.id}`)}
                   button={
                     <Button
+                      size="sm"
                       outline
                       className="flex items-center gap-2 text-red-400 hover:text-red-500"
                     >

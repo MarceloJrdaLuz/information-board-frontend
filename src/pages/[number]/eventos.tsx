@@ -5,9 +5,11 @@ import NotFoundDocument from "@/Components/NotFoundDocument"
 import PdfViewer from "@/Components/PdfViewer"
 import Spiner from "@/Components/Spiner"
 import { domainUrl } from "@/atoms/atom"
+import { themeAtom } from "@/atoms/themeAtoms"
 import { usePublicDocumentsContext } from "@/context/PublicDocumentsContext"
 import { removeMimeType } from "@/functions/removeMimeType"
 import { useFetch } from "@/hooks/useFetch"
+import PublicDocumentsProviderLayout from "@/layouts/providers/publicDocuments/_layout"
 import { Categories, ICongregation, IDocument } from "@/types/types"
 import { useAtomValue } from "jotai"
 import { ChevronsLeftIcon } from "lucide-react"
@@ -15,7 +17,6 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconEvents from '../../../public/images/eventos-gray.png'
-import { themeAtom } from "@/atoms/themeAtoms"
 
 function Eventos() {
     const router = useRouter()
@@ -26,8 +27,8 @@ function Eventos() {
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
-     const themeAtomValue = useAtomValue(themeAtom)
-        const isDark = themeAtomValue === "theme-dark"
+    const themeAtomValue = useAtomValue(themeAtom)
+    const isDark = themeAtomValue === "theme-dark"
 
     useEffect(() => {
         if (congregation) {
@@ -94,8 +95,12 @@ function Eventos() {
     )
 }
 
-Eventos.getLayout = function getLayout(page: React.ReactElement) {
-    return page // sem layout nenhum
+Eventos.getLayout = (page: React.ReactElement) => {
+    return (
+        <PublicDocumentsProviderLayout>
+            {page}
+        </PublicDocumentsProviderLayout>
+    )
 }
 
 export default Eventos

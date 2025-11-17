@@ -10,10 +10,11 @@ import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { additionalsPrivilegeOptions } from '@/constants/publisherOptions'
 import { useAuthContext } from '@/context/AuthContext'
-import { usePublisherContext } from '@/context/PublisherContext'
 import { capitalizeFirstLetter } from '@/functions/isAuxPioneerMonthNow'
 import { getMonthsByYear, getYearService } from '@/functions/meses'
+import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { usePublisher } from '@/hooks/usePublisher'
 import { IPayloadCreatePublisher } from '@/types/publishers'
 import { Gender, Hope, IEmergencyContact, Privileges, Situation } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -25,12 +26,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-import { sortArrayByProperty } from '@/functions/sortObjects'
 
 
 export default function FormAddPublisher() {
 
-    const { createPublisher } = usePublisherContext()
+    const { createPublisher } = usePublisher()
     const { user } = useAuthContext()
     const congregationUser = user?.congregation
 

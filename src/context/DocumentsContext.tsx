@@ -1,4 +1,5 @@
 import { useFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IDocument, IFile } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -6,7 +7,6 @@ import { filesize } from "filesize"
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { useCongregationContext } from "./CongregationContext"
-import { useSubmitContext } from "./SubmitFormContext"
 
 type DocumentsContextTypes = {
     uploadedFiles: IFile[]
@@ -27,7 +27,7 @@ function DocumentsProvider(props: DocumentsContextProviderProps) {
 
     const { congregation: congregationUser } = useCongregationContext()
     const congregation_id = congregationUser?.id
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [documentCategoryId, setDocumentCategoryId] = useState("")
     const [uploadedFiles, setUploadedFiles] = useState<IFile[]>([])

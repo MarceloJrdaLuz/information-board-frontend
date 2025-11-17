@@ -1,5 +1,6 @@
 'use-client'
 import { domainUrl } from '@/atoms/atom'
+import { themeAtom } from '@/atoms/themeAtoms'
 import Button from '@/Components/Button'
 import HeadComponent from '@/Components/HeadComponent'
 import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
@@ -14,6 +15,7 @@ import DateConverter, { meses } from '@/functions/meses'
 import { removeMimeType } from '@/functions/removeMimeType'
 import { threeMonths } from '@/functions/threeMonths'
 import { useFetch } from '@/hooks/useFetch'
+import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { Categories, ICongregation, IDocument } from '@/types/types'
 import { IPublicSchedule } from '@/types/weekendSchedule'
 import { useAtomValue } from 'jotai'
@@ -22,7 +24,6 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import iconDesignacoes from '../../../public/images/designacoes-gray.png'
-import { themeAtom } from '@/atoms/themeAtoms'
 
 function Designacoes() {
   const router = useRouter()
@@ -237,8 +238,12 @@ function Designacoes() {
   )
 }
 
-Designacoes.getLayout = function getLayout(page: React.ReactElement) {
-  return page // sem layout nenhum
+Designacoes.getLayout = (page: React.ReactElement) => {
+  return (
+    <PublicDocumentsProviderLayout>
+      {page}
+    </PublicDocumentsProviderLayout>
+  )
 }
 
 export default Designacoes

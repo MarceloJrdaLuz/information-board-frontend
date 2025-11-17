@@ -16,6 +16,7 @@ import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconClean from '../../../public/images/limpeza-gray.png'
 import { themeAtom } from "@/atoms/themeAtoms"
+import PublicDocumentsProviderLayout from "@/layouts/providers/publicDocuments/_layout"
 
 function Limpeza() {
     const router = useRouter()
@@ -96,8 +97,12 @@ function Limpeza() {
     )
 }
 
-Limpeza.getLayout = function getLayout(page: React.ReactElement) {
-    return page // sem layout nenhum
+Limpeza.getLayout = (page: React.ReactElement) => {
+    return (
+        <PublicDocumentsProviderLayout>
+            {page}
+        </PublicDocumentsProviderLayout>
+    )
 }
 
 export default Limpeza

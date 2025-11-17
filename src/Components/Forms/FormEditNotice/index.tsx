@@ -5,8 +5,9 @@ import CheckboxBoolean from '@/Components/CheckboxBoolean'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import TextArea from '@/Components/TextArea'
-import { useNoticesContext } from '@/context/NoticeContext'
+import { useAuthContext } from '@/context/AuthContext'
 import { useFetch } from '@/hooks/useFetch'
+import { useNotices } from '@/hooks/useNotices'
 import { INotice } from '@/types/types'
 import { useAtom, useAtomValue } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
@@ -21,8 +22,8 @@ export interface IUpdateNotice {
 
 export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     const { data } = useFetch<INotice>(`/notice/${notice_id}`)
-
-    const { updateNotice, setExpiredNotice } = useNoticesContext()
+    const { user } = useAuthContext()
+    const { updateNotice, setExpiredNotice } = useNotices(user?.congregation.number ?? "")
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [initialExpired, setInitialExpired] = useState<Date | null>(null)
     const [noticeUpdated, setNoticeUpdated] = useState<INotice | undefined>(data)
@@ -73,7 +74,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
             }
             setNoticeUpdated(data)
         }
-        
+
         return () => {
             handleRecurrentNoticeChange(false)
         }

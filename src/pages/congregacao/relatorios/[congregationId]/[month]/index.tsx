@@ -9,13 +9,13 @@ import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
 import { crumbsAtom, pageActiveAtom, reportsAtom } from "@/atoms/atom"
-import { useSubmitContext } from "@/context/SubmitFormContext"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
 import { normalizeTotalsReports } from "@/functions/normalizeTotalsReports"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -34,7 +34,7 @@ function ReportsMonthPage() {
     const { month, congregationId } = router.query
     const date = moment().date()
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const { data } = useAuthorizedFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`, {
         allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]

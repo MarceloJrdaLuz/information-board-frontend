@@ -4,7 +4,7 @@ import Button from "@/Components/Button"
 import Dropdown from "@/Components/Dropdown"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
-import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
+import { usePermissionsAndRoles } from "@/hooks/usePermissionsAndRoles"
 import { api } from "@/services/api"
 import { PermissionType } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -17,7 +17,7 @@ import FormStyle from "../FormStyle"
 
 export default function FormAddRole() {
 
-    const { createRole } = usePermissionsAndRolesContext()
+    const { createRole } = usePermissionsAndRoles()
     const [permissions, setPermissions] = useState<PermissionType[]>([])
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
     const [permissionSelected, setPermissionsSelected] = useState<string[]>([])

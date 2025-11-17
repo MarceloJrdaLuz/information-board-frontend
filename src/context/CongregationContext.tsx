@@ -1,10 +1,10 @@
 import { useFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { ICongregation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useAuthContext } from "./AuthContext"
-import { useSubmitContext } from "./SubmitFormContext"
 
 interface ICreateCongregation {
     name: string
@@ -63,7 +63,7 @@ function CongregationProvider(props: CongregationContextProviderProps) {
     const [modalNewCongregation, setModalNewCongregation] = useState(false)
     const [congregation, setCongregation] = useState<ICongregation>()
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const { user } = useAuthContext()
     const number = user?.congregation?.number

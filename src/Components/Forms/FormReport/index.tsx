@@ -1,8 +1,8 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import Button from "@/Components/Button"
-import { usePublisherContext } from "@/context/PublisherContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
+import { usePublisher } from "@/hooks/usePublisher"
 import { api } from "@/services/api"
 import { ICheckPublisherConsent } from "@/types/consent"
 import { IPayloadCreateReport } from "@/types/reports"
@@ -31,7 +31,7 @@ interface IRelatorioFormProps {
 
 export default function FormReport(props: IRelatorioFormProps) {
     const { data } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
-    const { createReport, createConsentRecord } = usePublisherContext()
+    const { createReport, createConsentRecord } = usePublisher()
     const [month, setMonth] = useState('')
     const [year, setYear] = useState('')
     const [optionsDrop, setOptionsDrop] = useState<IPublisherList[]>([])

@@ -7,6 +7,7 @@ import S13 from "@/Components/S13"
 import TerritoriesList from "@/Components/TerritoriesList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useTerritoryContext } from "@/context/TerritoryContext"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { ITerritoryWithHistories } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
@@ -14,7 +15,6 @@ import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
 import Router from "next/router"
 import { ReactElement, useEffect, useState } from "react"
-import TerritoriesProviderLayout from "./_layout"
 
 function TerritoriesPage() {
     const [crumbs,] = useAtom(crumbsAtom)

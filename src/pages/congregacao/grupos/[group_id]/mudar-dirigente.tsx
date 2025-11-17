@@ -4,8 +4,8 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import { buttonDisabled, crumbsAtom, errorFormSend, pageActiveAtom, successFormSend } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
-import { useSubmitContext } from "@/context/SubmitFormContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IPublisher } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -21,7 +21,7 @@ function ChangeGroupOverseer() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
-    const { handleSubmitSuccess, handleSubmitError } = useSubmitContext()
+    const { handleSubmitSuccess, handleSubmitError } = useSubmit()
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)

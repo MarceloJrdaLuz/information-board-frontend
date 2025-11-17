@@ -4,9 +4,9 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import SecurityIcon from "@/Components/Icons/SecurityIcon"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { usePermissionsAndRoles } from "@/hooks/usePermissionsAndRoles"
 import { IPermission } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
@@ -21,7 +21,7 @@ function PermissionsPage() {
     const { data: getPermissions, mutate } = useAuthorizedFetch<IPermission[]>('/permission', {
         allowedRoles: ['ADMIN']
     })
-    const { deletePermission } = usePermissionsAndRolesContext()
+    const { deletePermission } = usePermissionsAndRoles()
 
     const permissionsSorted = getPermissions ? sortArrayByProperty(getPermissions, "name") : [];
 

@@ -3,9 +3,9 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import ListItems from "@/Components/ListItems"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { usePermissionsAndRolesContext } from "@/context/PermissionAndRolesContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { usePermissionsAndRoles } from "@/hooks/usePermissionsAndRoles"
 import { IRole } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
@@ -22,7 +22,7 @@ function RolesPage() {
         allowedRoles: ["ADMIN"]
     })
     const [roles, setRoles] = useState<IRole[]>()
-    const { deleteRole } = usePermissionsAndRolesContext()
+    const { deleteRole } = usePermissionsAndRoles()
 
     useEffect(() => {
         if (getRoles) {

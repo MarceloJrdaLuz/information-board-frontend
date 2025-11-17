@@ -23,6 +23,7 @@ function NoticesPage() {
 
     const fetchConfigNoticesData = congregationData?.id ? `/notices/${congregationData?.id}` : ""
     const { data } = useFetch<INotice[]>(fetchConfigNoticesData)
+    console.log(data)
 
     useEffect(() => {
         if (data) {

@@ -1,4 +1,4 @@
-import { useSubmitContext } from "@/context/SubmitFormContext"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { UserTypes } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -20,7 +20,7 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardProps) {
-  const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+  const { handleSubmitError, handleSubmitSuccess } = useSubmit()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null)
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null)

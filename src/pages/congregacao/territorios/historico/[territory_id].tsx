@@ -6,6 +6,7 @@ import { atomTerritoryHistoryAction, crumbsAtom, pageActiveAtom, territoryHistor
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { ITerritoryHistory } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
@@ -13,7 +14,6 @@ import { FileClockIcon, InfoIcon } from "lucide-react"
 import { useRouter } from "next/router"
 import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
-import TerritoriesProviderLayout from "../_layout"
 
 function EditHistoryTerritoryPage() {
     const router = useRouter()

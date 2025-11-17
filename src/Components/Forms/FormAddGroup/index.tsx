@@ -7,9 +7,9 @@ import DropdownObject from '@/Components/DropdownObjects'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { useAuthContext } from '@/context/AuthContext'
-import { useSubmitContext } from '@/context/SubmitFormContext'
 import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
+import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
 import { IPublisher } from '@/types/types'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
@@ -30,7 +30,7 @@ export default function FormAddGroup() {
     const { user } = useAuthContext()
     const congregationUser = user?.congregation
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [availableNumbers, setAvailableNumbers] = useState<string[]>([])
     const [selectedNumber, setSelectedNumber] = useState<string>()

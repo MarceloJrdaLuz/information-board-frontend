@@ -6,8 +6,8 @@ import ListNotices from "@/Components/ListNotices"
 import SkeletonListNotices from "@/Components/ListNotices/skeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { useNoticesContext } from "@/context/NoticeContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useNotices } from "@/hooks/useNotices"
 import { INotice } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
@@ -16,7 +16,7 @@ import { useEffect } from "react"
 
 function NoticesPage() {
     const { congregation } = useCongregationContext()
-    const { deleteNotice } = useNoticesContext()
+    const { deleteNotice } = useNotices(congregation?.number ?? "")
     const congregation_id = congregation?.id
 
     const [crumbs] = useAtom(crumbsAtom)
@@ -52,10 +52,11 @@ function NoticesPage() {
                         <SkeletonListNotices />
 
                     ) : notices && (
-                        <ListNotices onDelete={(notice_id) => {
-                            deleteNotice(notice_id)
-                            mutate()
+                        <ListNotices onDelete={async (notice_id) => {
+                            await deleteNotice(notice_id)
+                            mutate() // agora ele vai buscar os dados já atualizados
                         }} notices={notices} />
+
                     )}
 
                 </div>

@@ -1,7 +1,7 @@
 import Button from "@/Components/Button"
 import DropdownObject from "@/Components/DropdownObjects"
-import { usePublisherContext } from "@/context/PublisherContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { usePublisher } from "@/hooks/usePublisher"
 import { ICongregationToTransferPublisher, IPublisher, ITransferPublishers } from "@/types/types"
 import moment from "moment"
 import { useState } from "react"
@@ -13,7 +13,7 @@ interface ITransferPublisherProps {
 }
 
 export default function TransferPublishers({ initialPublisher, allPublishers }: ITransferPublisherProps) {
-    const { transferPublishers } = usePublisherContext()
+    const { transferPublishers } = usePublisher()
     const [step, setStep] = useState(1)
     const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([initialPublisher])
     const [congregationSelected, setCongregationSelected] = useState("")
