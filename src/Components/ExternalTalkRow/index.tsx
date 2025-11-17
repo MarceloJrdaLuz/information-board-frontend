@@ -13,6 +13,7 @@ import Dropdown from "../Dropdown"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
 import { toast } from "react-toastify"
+import { DayMeetingPublic, getRealDateForDestination } from "@/utils/dateUtil"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -60,6 +61,12 @@ export default function ExternalTalkRow({
     setNewManualTalk(undefined)
   }
 
+  const realDate = getRealDateForDestination(
+    selectedCongregation?.dayMeetingPublic as DayMeetingPublic,
+    date
+  )
+
+
   return (
     <div className="rounded-xl p-4 flex flex-col gap-6 bg-surface-100 border">
       {/* Data */}
@@ -74,7 +81,7 @@ export default function ExternalTalkRow({
             <div
               key={t.id}
               className={`
-                flex justify-between items-start p-4 rounded-lg border shadow-sm bg-surface-100
+                flex justify-between gap-3 items-start p-4 rounded-lg border shadow-sm bg-surface-100
                 ${t.status === "confirmed" ? "border-l-4 border-green-500" : ""}
                 ${t.status === "pending" ? "border-l-4 border-yellow-500" : ""}
                 ${t.status === "canceled" ? "border-l-4 border-red-500" : ""}
@@ -91,27 +98,33 @@ export default function ExternalTalkRow({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm text-typography-700">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-typography-400" />
-                    <span>{t.destinationCongregation.dayMeetingPublic}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-typography-400" />
-                    <span>{t.destinationCongregation.hourMeetingPublic}</span>
-                  </div>
-                  {t.talk?.title && (
-                    <div className="flex items-center gap-2 col-span-2">
-                      <Book size={14} className="text-typography-400" />
-                      <span>{t.talk.title}</span>
+                <div className="flex justify-between flex-wrap gap-3 text-sm text-typography-700">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={14} className="text-typography-400" />
+                      <span>{moment(t.date).format("DD/MM/YYYY")} - {t.destinationCongregation.dayMeetingPublic}</span>
                     </div>
-                  )}
-                  {t.talk?.number && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Nº</span>
-                      <span>{t.talk.number}</span>
+
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} className="text-typography-400" />
+                      <span>{t.destinationCongregation.hourMeetingPublic}</span>
                     </div>
-                  )}
+
+                  </div>
+                  <div className="flex justify-between items-center gap-2 flex-wrap">
+                    {t.talk?.number && (
+                      <div className="flex items-center gap-2">
+                        <Book size={14} className="text-typography-400" />
+                        <span className="font-medium">Nº</span>
+                        <span>{t.talk.number}</span>
+                      </div>
+                    )}
+                    {t.talk?.title && (
+                      <div className="flex items-center gap-2 col-span-2">
+                        <span>{t.talk.title}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -260,7 +273,7 @@ export default function ExternalTalkRow({
                 return
               }
               onAddExternalTalk({
-                date: moment(date).format("YYYY-MM-DD"),
+                date: realDate.clone().format("YYYY-MM-DD"),
                 speaker: speakers.find((s) => s.id === newSpeakerId),
                 manualTalk: newManualTalk,
                 destinationCongregation: congregations.find((c) => c.id === newCongregationId)!,

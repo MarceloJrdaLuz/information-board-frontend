@@ -5,6 +5,7 @@ import moment from "moment"
 import "moment/locale/pt-br"
 import { useEffect, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
+import { formatNameCongregation } from "@/utils/formatCongregationName"
 moment.locale("pt-br")
 
 export type ScheduleResponse = Record<string, IPublicSchedule[]>
@@ -20,7 +21,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
     if (currentMonthIndex >= 0) {
       setActiveIndex(currentMonthIndex)
     }
-  }, [schedules, months])
+  }, [schedules])
 
   return (
     <div className="relative w-full">
@@ -119,31 +120,44 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                     </span>
                   )}
                 </div>
-                {item.externalTalks && item.externalTalks.length > 0 && (
-                  <div className="mt-3 border-t m-6 border-typography-600">
-                    <p className="font-semibold text-sm text-typography-700 my-2">Oradores que saem:</p>
-                    <div className="flex justify-center space-y-2">
-                      {item.externalTalks.map(ext => (
-                        <div
-                          key={ext.id}
-                          className="flex gap-2 p-2 rounded-md"
-                        >
-                          <div className="text-sm text-typography-700">
-                            <p className="font-medium">
-                              {ext.speaker?.name}
-                            </p>
-                            <p className="text-typography-600">
-                              {ext.talk?.number ? `${ext.talk.number} - ${ext.talk.title}` : ext.talk?.title}
-                              {ext.destinationCongregation && (
-                                <span className="italic text-typography-500"> ({ext.destinationCongregation})</span>
-                              )}
-                            </p>
+                {(() => {
+                  const weekendStart = moment(item.date).isoWeekday(5)
+                  const weekendEnd = moment(item.date).isoWeekday(7)
+
+                  const filteredExternalTalks = (item.externalTalks || []).filter((ext) =>
+                    moment(ext.date).isBetween(weekendStart, weekendEnd, "day", "[]")
+                  )
+
+                  return filteredExternalTalks.length > 0 ? (
+                    <div className="mt-3 border-t m-6 border-typography-600">
+                      <p className="font-semibold text-sm text-typography-700 my-2">
+                        Oradores que saem:
+                      </p>
+                      <div className="flex justify-center space-y-2">
+                        {filteredExternalTalks.map((ext) => (
+                          <div key={ext.id} className="flex gap-2 p-2 rounded-md">
+                            <div className="text-sm text-typography-700">
+                              <p className="font-medium">{ext.speaker?.name}</p>
+                              <p className="flex gap-1 justify-center items-center flex-wrap text-typography-600">
+                                <span>
+                                  {ext.talk?.number
+                                    ? `${ext.talk.number} - ${ext.talk.title}`
+                                    : ext.talk?.title}
+                                </span>
+                                {ext.destinationCongregation && (
+                                  <span className="italic text-typography-500">
+                                    {formatNameCongregation(ext.destinationCongregation.name, ext.destinationCongregation.city)}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ) : null
+                })()}
+
                 {item.hospitality && item.hospitality.length > 0 && (
                   <HospitalityCard item={item} />
                 )}

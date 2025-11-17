@@ -21,7 +21,7 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
-import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
+import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Card, CardBody, Option, Select } from "@material-tailwind/react"
 import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
@@ -98,18 +98,23 @@ function WeekendSchedulePage() {
         setWeekendMeetingDay(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
     }, [monthOffset, congregation?.dayMeetingPublic])
 
-    const startDate = weekendMeetingDay.length > 0 ? moment(weekendMeetingDay[0]).format("YYYY-MM-DD") : null
-    const endDate = weekendMeetingDay.length > 0 ? moment(weekendMeetingDay.at(-1)).format("YYYY-MM-DD") : null
+    const firstWeekend = weekendMeetingDay[0]
+    const lastWeekend = weekendMeetingDay[weekendMeetingDay.length - 1]
 
-    const effectiveStart = startDatePdfGenerate || startDate
-    const effectiveEnd = endDatePdfGenerate || endDate
+    const effectiveStart = startDatePdfGenerate
+        || (firstWeekend ? getWeekendRange(firstWeekend).friday.format("YYYY-MM-DD") : null)
 
+    const effectiveEnd = endDatePdfGenerate
+        || (lastWeekend ? getWeekendRange(lastWeekend).sunday.format("YYYY-MM-DD") : null)
+
+
+    // Busca dados do backend usando o intervalo do fim de semana
     const { data: rawExternalData } = useAuthorizedFetch<IExternalTalk[]>(
         congregation_id && effectiveStart && effectiveEnd
             ? `/congregation/${congregation_id}/externalTalks/period?start=${effectiveStart}&end=${effectiveEnd}`
-            : "", {
-        allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
-    })
+            : "",
+        { allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"] }
+    )
 
     const externalData = useMemo(() => rawExternalData ?? [], [rawExternalData])
 
@@ -117,16 +122,24 @@ function WeekendSchedulePage() {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
     })
 
+    // Monta o weekendSchedule com os externalTalks já filtrados
     useEffect(() => {
-        if (data || externalData) {
-            const schedulesWithTalks = (data?.weekendSchedules ?? []).map(sched => ({
-                ...sched,
-                externalTalks: externalData.filter(t => t.date === sched.date)
-            }))
+        if (data) {
+            const schedulesWithTalks = (data.weekendSchedules ?? []).map(sched => {
+                // Para cada schedule, pega os external talks que caem dentro do fim de semana da congregação local
+                const weekendStartDate = moment(sched.date).isoWeekday(5)
+                const weekendEndDate = moment(sched.date).isoWeekday(7)
+                const talksForWeekend = externalData.filter(t =>
+                    moment(t.date).isBetween(weekendStartDate, weekendEndDate, "day", "[]")
+                )
+                return {
+                    ...sched,
+                    externalTalks: talksForWeekend
+                }
+            })
 
             // Ordena por data crescente
             schedulesWithTalks.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
             setWeekendScheduleWithExternalTalks(schedulesWithTalks)
         }
     }, [data, externalData])
@@ -241,11 +254,13 @@ function WeekendSchedulePage() {
         </PDFDownloadLink>
     );
 
+
+    // Filtra para gerar PDF considerando datas do usuário ou o fim de semana
     const filteredSchedules = weekendScheduleWithExternalTalks.filter(s => {
         const schedDate = new Date(s.date).getTime()
-        const afterStart = startDatePdfGenerate ? schedDate >= new Date(startDatePdfGenerate).getTime() : true
-        const beforeEnd = endDatePdfGenerate ? schedDate <= new Date(endDatePdfGenerate).getTime() : true
-        return afterStart && beforeEnd
+        const startFilter = effectiveStart ? new Date(effectiveStart).getTime() : 0
+        const endFilter = effectiveEnd ? new Date(effectiveEnd).getTime() : Infinity
+        return schedDate >= startFilter && schedDate <= endFilter
     })
 
     return (
@@ -349,8 +364,10 @@ function WeekendSchedulePage() {
 
                             <div className="space-y-4 mt-6 pb-36 h-fit">
                                 {weekendMeetingDay.map((d) => {
+                                    const weekend = getWeekendRange(d) // { friday, saturday, sunday } (Moment objects)
+
                                     const externalForDate = (externalData ?? []).filter((t) =>
-                                        moment(t.date).isSame(d, "day")
+                                        moment(t.date).isBetween(weekend.friday, weekend.sunday, "day", "[]")
                                     )
                                     return (
                                         <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
