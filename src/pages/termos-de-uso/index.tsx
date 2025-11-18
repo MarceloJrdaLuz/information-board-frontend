@@ -34,7 +34,7 @@ function TermsOfUSePage() {
       <BreadCrumbs crumbs={crumbs} pageActive={"Termos de Uso"} />
       <section className="flex w-full h-full justify-center items-center text-typography-800">
         <div className="h-full">
-          <div className="flex flex-col p-10 m-5 bg-surface-100 overflow-scroll">
+          <div className="flex flex-col p-10 m-5 bg-surface-100 overflow-scroll hide-scrollbar">
             <div className="flex justify-between items-center mb-5 flex-wrap gap-5">
               <h1 className="font-bold text-xl ">{termActive?.title}</h1>
               <p>v.{termActive?.version}</p>
