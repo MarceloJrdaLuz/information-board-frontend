@@ -261,7 +261,7 @@ export default function ExternalTalkRow({
           )}
 
           <Button
-            className="w-full bg-primary-200 hover:bg-primary-100 "
+            className="w-full bg-primary-200 hover:bg-primary-100 text-typography-200"
             onClick={() => {
               if (!newCongregationId) {
                 toast.info("É obrigatório Selecionar uma congregação de destino!")

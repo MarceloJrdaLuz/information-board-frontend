@@ -27,7 +27,7 @@ function ListMeetingAssistance({ items, yearService  }: IListItemsProps) {
 
 
   return (
-    <ul className="flex w-full h-fit flex-wrap justify-center mt-5">
+    <ul className="flex w-full h-fit flex-wrap justify-center mt-5 pb-10">
       {filteredByYearService && filteredByYearService.length > 0 ? filteredByYearService?.map(item => (
         <li
           className={`flex flex-col flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100 m-1 border border-surface-300 rounded-2xl shadow-sm`}

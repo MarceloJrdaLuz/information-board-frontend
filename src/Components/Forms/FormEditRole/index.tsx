@@ -156,7 +156,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Permissão</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

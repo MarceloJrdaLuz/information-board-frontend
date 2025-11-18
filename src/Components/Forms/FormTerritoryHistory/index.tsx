@@ -210,6 +210,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
                         <Button
+                            className="text-typography-200"
                             size="lg"
                             disabled={disabled}
                             error={dataError}

@@ -117,7 +117,7 @@ export default function FormAddTermOfUse() {
 
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button type='submit'>Criar Termo</Button>
+                        <Button className="text-typography-200" type='submit'>Criar Termo</Button>
                     </div>
                 </div>
             </FormStyle>

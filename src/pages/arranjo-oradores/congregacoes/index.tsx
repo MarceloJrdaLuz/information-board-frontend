@@ -69,7 +69,7 @@ function AuxiliaryCongregationsPage() {
                             <SalonIcon />
                             <span className="text-primary-200 font-semibold">Criar congregação</span>
                         </Button>
-                        {congregations && <span className="text-sm text-typography-600">Total: {congregations.length}</span>}
+                        {congregations && <span className="text-sm text-typography-800">Total: {congregations.length}</span>}
                     </div>
                     <div className="flex justify-center items-center w-full mt-5">
                         {congregations && congregations.length > 0 ? (

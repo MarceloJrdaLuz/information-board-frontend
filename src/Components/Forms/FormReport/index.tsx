@@ -263,6 +263,7 @@ export default function FormReport(props: IRelatorioFormProps) {
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button
+                            className="text-typography-200"
                             size="lg"
                             disabled={disabled}
                             error={dataError}

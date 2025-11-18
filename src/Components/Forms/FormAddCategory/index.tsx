@@ -92,7 +92,7 @@ export default function FormAddCategory() {
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Criar Categoria</Button>
+                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Criar Categoria</Button>
                     </div>
                 </div>
             </FormStyle>

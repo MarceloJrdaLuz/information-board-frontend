@@ -230,7 +230,7 @@ export default function FormUserRoles() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={(userSelectedId === '') ? true : disabled} type='submit'>Atribuir Função</Button>
+                        <Button className="text-typography-200" error={dataError} success={dataSuccess} disabled={(userSelectedId === '') ? true : disabled} type='submit'>Atribuir Função</Button>
                     </div>
                 </div>
             </FormStyle>

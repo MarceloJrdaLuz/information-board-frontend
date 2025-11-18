@@ -68,7 +68,7 @@ export default function FormEditTalk() {
                         {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
                     </>
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar discurso</Button>
+                        <Button className='text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar discurso</Button>
                     </div>
                 </div>
             </FormStyle>

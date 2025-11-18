@@ -90,7 +90,7 @@ export default function FormRegister() {
                     </Input>
                     {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Criar conta</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Criar conta</Button>
                     </div>
                 </div>
             </FormStyle>

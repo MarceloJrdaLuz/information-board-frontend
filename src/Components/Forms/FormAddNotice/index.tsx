@@ -137,7 +137,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                     <Calendar label="Data da expiração:" minDate={new Date()} selectedDate={selectedDate} handleDateChange={(date) => handleDateChange(date)} />
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Criar Anúncio</Button>
+                        <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Criar Anúncio</Button>
                     </div>
                 </div>
             </FormStyle>

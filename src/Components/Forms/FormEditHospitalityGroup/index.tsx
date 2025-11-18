@@ -136,7 +136,7 @@ export default function FormEditHospitalityGroup() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar grupo</Button>
+                        <Button className='text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar grupo</Button>
                     </div>
                 </div>
             </FormStyle>

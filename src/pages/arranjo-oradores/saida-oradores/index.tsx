@@ -131,12 +131,12 @@ function ExternalTalksPage() {
                 <>
                     <div className="flex justify-between my-4 p-4">
                         <Button
-                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                             onClick={() => setMonthOffset((m) => m - 1)}>
                             ◀ {prevMonthLabel}
                         </Button>
                         <Button
-                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                             onClick={() => setMonthOffset((m) => m + 1)}>
                             {nextMonthLabel} ▶
                         </Button>

@@ -185,7 +185,7 @@ export default function TransferPublishers({ initialPublisher, allPublishers }: 
 
                         <Button
                             onClick={handleFinish}
-                            className="px-6 py-2.5 bg-primary-200 text-white rounded-lg shadow hover:bg-primary-100 transition"
+                            className="px-6 py-2.5 bg-primary-200 text-typography-200 rounded-lg shadow hover:bg-primary-100 transition"
                         >
                             Finalizar transferência
                         </Button>

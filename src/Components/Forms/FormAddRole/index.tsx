@@ -121,7 +121,7 @@ export default function FormAddRole() {
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit' >Criar Permissão</Button>
+                        <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={disabled} type='submit' >Criar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

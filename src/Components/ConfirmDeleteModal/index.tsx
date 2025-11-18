@@ -67,7 +67,7 @@ export function ConfirmDeleteModal({
                   <Button
                     onClick={handleDelete}
                     disabled={loading}
-                    className="flex-1 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center gap-2"
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-typography-200  flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <span className="animate-pulse">Excluindo...</span>

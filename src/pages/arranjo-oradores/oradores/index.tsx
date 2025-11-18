@@ -136,7 +136,7 @@ function SpeakersPage() {
                             <GroupIcon />
                             <span className="text-primary-200 font-semibold">Criar orador</span>
                         </Button>
-                        {speakers && <span className="text-sm text-typography-600">Total: {speakers.length}</span>}
+                        {speakers && <span className="text-sm text-typography-800">Total: {speakers.length}</span>}
                     </div>
                     <div className="flex justify-between items-center my-4">
                         <FilterSpeakersCongregation
@@ -147,7 +147,7 @@ function SpeakersPage() {
                         <div className="flex flex-wrap justify-end gap-3">
                             <Button
                                 onClick={() => setShowPreview(!showPreview)}
-                                className="px-4 py-2 rounded-lg border shadow"
+                                className="px-4 py-2 rounded-lg border shadow text-typography-200"
                             >
                                 {showPreview ? "Fechar pré-visualização" : "Visualizar lista"}
                             </Button>

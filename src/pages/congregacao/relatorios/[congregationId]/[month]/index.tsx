@@ -450,7 +450,7 @@ function ReportsMonthPage() {
                         ) : reportsFiltered?.length > 0 ? (
                             <ul className="flex flex-wrap justify-evenly relative">
                                 <div className="flex w-full justify-center items-center mt-4">
-                                    <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
+                                    <Button className="text-typography-200" onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
                                         Inserir manualmente
                                     </Button>
                                 </div>
@@ -478,7 +478,7 @@ function ReportsMonthPage() {
                                     </div>
                                 </>
                                 <div className="flex w-full justify-center items-center mt-4">
-                                    <Button onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
+                                    <Button className="text-typography-200" onClick={() => router.push(`/congregacao/relatorios/${congregationId}/${month}/inserir`)}>
                                         Inserir manualmente
                                     </Button>
                                 </div>
