@@ -6,12 +6,13 @@ import { atomTerritoryHistoryAction, crumbsAtom, pageActiveAtom, territoryHistor
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { ITerritoryHistory } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { FileClockIcon, InfoIcon } from "lucide-react"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
 
 function EditHistoryTerritoryPage() {
@@ -106,6 +107,9 @@ function EditHistoryTerritoryPage() {
     )
 }
 
-EditHistoryTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
-
+EditHistoryTerritoryPage.getLayout = (page: ReactElement) =>
+    withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+        <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+    )
+    
 export default EditHistoryTerritoryPage

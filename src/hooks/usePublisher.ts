@@ -1,71 +1,17 @@
-import { showConfirmForceModal, showModalEmergencyContact } from "@/atoms/atom"
+import { showConfirmForceModal } from "@/atoms/atom"
 import { api } from "@/services/api"
 import { IConsentRecordTypes } from "@/types/consent"
 import { IPayloadCreatePublisher, IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPayloadCreateReport, IPayloadCreateReportManually } from "@/types/reports"
 import { ILinkPublisherToUser, ITransferPublishers, IUnlinkPublisherToUser } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
-import { useAtom, useSetAtom } from "jotai"
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react"
+import { useAtom } from "jotai"
 import { toast } from "react-toastify"
-import { useSubmitContext } from "./SubmitFormContext"
+import { useSubmit } from "./useSubmitForms"
 
-
-type PublisherContextTypes = {
-    createPublisher: ({
-        congregation_id,
-        fullName,
-        gender,
-        address,
-        birthDate,
-        dateImmersed,
-        emergencyContact_id,
-        hope,
-        nickname,
-        phone,
-        pioneerMonths,
-        privileges,
-        situation,
-        startPioneer
-    }: IPayloadCreatePublisher) => Promise<any>
-    linkPublisherToUser: ({
-        user_id,
-        publisher_id,
-        force
-    }: ILinkPublisherToUser) => Promise<any>
-    unlinkPublisherToUser: ({
-        publisher_id
-    }: IUnlinkPublisherToUser) => Promise<any>
-    updatePublisher: (
-        publisher_id: string,
-        payload: IPayloadUpdatePublisher
-    ) => Promise<any>
-    transferPublishers: ({
-        publisherIds,
-        newCongregationId
-    }: ITransferPublishers) => Promise<any>
-    genderCheckbox: string[],
-    setGenderCheckbox: Dispatch<SetStateAction<string[]>>,
-    createReport: ({ hours, month, observations, publisher_id, studies, year }: IPayloadCreateReport) => Promise<any>
-    createReportManually: ({ hours, month, observations, publisher, studies, year }: IPayloadCreateReportManually) => Promise<any>
-    createConsentRecord: (publisher_id: string, deviceId?: string) => Promise<any>
-    deletePublisher: (publisher_id: string) => Promise<any>
-    deleteReport: (report_id: string) => Promise<any>
-}
-
-type PublisherContextProviderProps = {
-    children: ReactNode
-}
-
-const PublisherContext = createContext({} as PublisherContextTypes)
-
-function PublisherProvider(props: PublisherContextProviderProps) {
-
-    const [genderCheckbox, setGenderCheckbox] = useState<string[]>([])
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
-    const modal = useSetAtom(showModalEmergencyContact)
-    const [modalLinkForce, setModalLinkForce] = useAtom(showConfirmForceModal)
-
+export function usePublisher() {
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
+    const [, setModalLinkForce] = useAtom(showConfirmForceModal)
 
     async function createPublisher({
         congregation_id,
@@ -295,24 +241,16 @@ function PublisherProvider(props: PublisherContextProviderProps) {
         })
     }
 
-    return (
-        <PublisherContext.Provider value={{
-            createPublisher, updatePublisher, setGenderCheckbox, genderCheckbox, createReport, createConsentRecord, deletePublisher, createReportManually, deleteReport, linkPublisherToUser, unlinkPublisherToUser, transferPublishers
-        }}>
-            {props.children}
-        </PublisherContext.Provider>
-    )
-}
-
-function usePublisherContext(): PublisherContextTypes {
-    const context = useContext(PublisherContext)
-
-    if (!context) {
-        throw new Error("useFiles must be used within FileProvider")
+    return {
+        createPublisher,
+        updatePublisher,
+        createReport,
+        createConsentRecord,
+        deletePublisher,
+        createReportManually,
+        deleteReport,
+        linkPublisherToUser,
+        unlinkPublisherToUser,
+        transferPublishers
     }
-
-    return context
 }
-
-export { PublisherProvider, usePublisherContext }
-

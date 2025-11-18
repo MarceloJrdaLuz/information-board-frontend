@@ -4,8 +4,8 @@ import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useSubmitContext } from '@/context/SubmitFormContext'
 import { useFetch } from '@/hooks/useFetch'
+import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
 import { ICategory } from '@/types/types'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
@@ -19,7 +19,7 @@ import FormStyle from '../FormStyle'
 
 export default function FormAddCategory() {
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [categories, setCategories] = useState<ICategory[]>()
 

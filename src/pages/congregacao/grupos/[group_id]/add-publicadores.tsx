@@ -6,9 +6,9 @@ import GroupIcon from "@/Components/Icons/GroupIcon"
 import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
-import { useSubmitContext } from "@/context/SubmitFormContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { IPublisher } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -25,7 +25,7 @@ function AddPublishersToGroups() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [selectedPublishers, setSelectedPublishers] = useAtom(selectedPublishersAtom)
     const [groupPublisherListOption, setGroupPublisherListOption] = useAtom(groupPublisherList)

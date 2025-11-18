@@ -2,12 +2,12 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormEditTerritory from "@/Components/Forms/FormEditTerritory"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
-
 function EditTerritoryPage() {
     const router = useRouter()
     const { id } = router.query
@@ -46,6 +46,8 @@ function EditTerritoryPage() {
     )
 }
 
-EditTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
-
+EditTerritoryPage.getLayout = (page: ReactElement) =>
+    withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+        <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+    )
 export default EditTerritoryPage

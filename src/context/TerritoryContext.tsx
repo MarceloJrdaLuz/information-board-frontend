@@ -1,6 +1,7 @@
 import { atomTerritoryHistoryAction, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { CreateTerritoryArgs, CreateTerritoryHistoryArgs, DeleteTerritoryArgs, DeleteTerritoryHistoryArgs, ITerritory, ITerritoryHistory, UpdateTerritoryArgs, UpdateTerritoryHistoryArgs } from "@/types/territory"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
@@ -8,7 +9,6 @@ import { useAtom } from "jotai"
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 import { mutate } from "swr"
 import { useAuthContext } from "./AuthContext"
-import { useSubmitContext } from "./SubmitFormContext"
 
 type TerritoryContextTypes = {
     setUploadedFile: React.Dispatch<React.SetStateAction<File | null>>
@@ -45,8 +45,8 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null)
     const { user, roleContains } = useAuthContext()
     const [congregationId, setCongregationId] = useState<string | undefined>("")
-    const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
-    const [territoryHistoryToUpdateId, setTerritoryHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
+    const [, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
+    const [, setTerritoryHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
     const [territoriesHistory, setTerritoriesHistory] = useState<ITerritoryHistory[] | undefined>()
     const [territories, setTerritories] = useState<ITerritory[] | undefined>()
     
@@ -66,7 +66,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
         }
     }, [data])
 
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     async function createTerritory(
         { name, number, description }: CreateTerritoryArgs

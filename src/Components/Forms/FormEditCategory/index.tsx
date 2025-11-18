@@ -4,8 +4,8 @@ import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { useSubmitContext } from '@/context/SubmitFormContext'
 import { useFetch } from '@/hooks/useFetch'
+import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
 import { ICategory } from '@/types/types'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
@@ -23,7 +23,7 @@ export interface IUpdateCategory {
 
 export default function FormEditCategory({ category_id }: IUpdateCategory) {
     const { data } = useFetch<ICategory>(`/category/${category_id}`)
-    const { handleSubmitError, handleSubmitSuccess } = useSubmitContext()
+    const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
     const [categoryToUpdate, setCategoryToUpdate] = useState<ICategory>()
 

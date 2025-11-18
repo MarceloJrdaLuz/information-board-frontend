@@ -2,12 +2,14 @@ import { useAuthContext } from "@/context/AuthContext"
 import { api } from "@/services/api"
 import useSWR from "swr"
 
-export function useFetch<Data = any, Error = any>(url: string) {
-    const { data, error, mutate, isLoading } = useSWR<Data, Error>(url !== '' ? url : null, async (url: string) => {
+export function useFetch<Data = any, Error = any>(url: string,  swrOptions?: object) {
+    const { data, error, mutate, isLoading} = useSWR<Data, Error>(url !== '' ? url : null, async (url: string) => {
         const response = await api.get(url)
 
         return response.data
-    })
+    }, 
+    swrOptions
+  )
     return { data, error, mutate, isLoading}
 }
 interface UseFetchOptions {

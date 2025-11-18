@@ -12,7 +12,6 @@ import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
 
-
 function PoliticaPrivacidade() {
     const router = useRouter()
     const { number } = router.query

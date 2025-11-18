@@ -7,13 +7,14 @@ import S13 from "@/Components/S13"
 import TerritoriesList from "@/Components/TerritoriesList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { useTerritoryContext } from "@/context/TerritoryContext"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { ITerritoryWithHistories } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
 import Router from "next/router"
-import { useEffect, useState } from "react"
+import { ReactElement, useEffect, useState } from "react"
 
 function TerritoriesPage() {
     const [crumbs,] = useAtom(crumbsAtom)
@@ -119,6 +120,9 @@ function TerritoriesPage() {
     )
 }
 
-TerritoriesPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"])
+TerritoriesPage.getLayout = (page: ReactElement) =>
+  withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+    <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+  )
 
 export default TerritoriesPage

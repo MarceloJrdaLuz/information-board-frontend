@@ -4,8 +4,8 @@ import { buttonDisabled, errorFormSend, successFormSend } from '@/atoms/atom'
 import Button from '@/Components/Button'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { usePermissionsAndRolesContext } from '@/context/PermissionAndRolesContext'
 import { useFetch } from '@/hooks/useFetch'
+import { usePermissionsAndRoles } from '@/hooks/usePermissionsAndRoles'
 import { IPermission } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
@@ -21,7 +21,7 @@ export interface IUpdatePermission {
 
 export default function FormEditPermission({ permission_id }: IUpdatePermission) {
 
-    const {updatePermission} = usePermissionsAndRolesContext()
+    const {updatePermission} = usePermissionsAndRoles()
     const [permissionToUpdate, setPermissionToUpdate] = useState<IPermission>()
 
     const { data } = useFetch(`/permission/${permission_id}`)

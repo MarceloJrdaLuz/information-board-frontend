@@ -2,8 +2,8 @@ import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import Button from "@/Components/Button"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
-import { usePublisherContext } from "@/context/PublisherContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadCreateReportManually } from "@/types/reports"
 import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -26,7 +26,7 @@ interface IRelatorioFormProps {
 }
 
 export default function FormReportManually({ report, publisher }: IRelatorioFormProps) {
-    const { createReportManually, deleteReport } = usePublisherContext()
+    const { createReportManually, deleteReport } = usePublisher()
     const router = useRouter()
     const { month } = router.query
     const monthParam = month as string

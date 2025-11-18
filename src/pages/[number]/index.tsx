@@ -8,7 +8,7 @@ import ReportIcon from "@/Components/Icons/ReportIcon"
 import LayoutPrincipal from "@/Components/LayoutPrincipal"
 import NoticesModal from "@/Components/NoticesModal"
 import { domainUrl } from "@/atoms/atom"
-import { useNoticesContext } from "@/context/NoticeContext"
+import { themeAtom } from "@/atoms/themeAtoms"
 import { useFetch } from "@/hooks/useFetch"
 import { ICongregation, INotice } from "@/types/types"
 import { useAtomValue } from "jotai"
@@ -17,20 +17,16 @@ import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
-import { themeAtom } from "@/atoms/themeAtoms"
 
 function Home() {
     const router = useRouter()
     const { number } = router.query
     const domain = useAtomValue(domainUrl)
 
-    const { setCongregationNumber } = useNoticesContext()
-
     const [notices, setNotices] = useState<INotice[]>()
     const [congregationData, setCongregationData] = useState<ICongregation>()
     const themeAtomValue = useAtomValue(themeAtom)
     const isDark = themeAtomValue === "theme-dark"
-
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
     const { data: congregation, isLoading } = useFetch<ICongregation>(fetchConfigCongregationData)
@@ -56,11 +52,7 @@ function Home() {
             })
             setNotices(filter)
         }
-
-        if (number) {
-            setCongregationNumber(number as string)
-        }
-    }, [data, number, setCongregationNumber])
+    }, [data, number])
 
     const isFetching = isLoading || !number || !congregationData
 
@@ -98,7 +90,7 @@ function Home() {
     )
 }
 
-Home.getLayout = function getLayout(page: React.ReactElement) {
+Home.getLayout = (page: React.ReactElement) => {
     return page // sem layout nenhum
 }
 

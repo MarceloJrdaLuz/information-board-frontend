@@ -6,8 +6,8 @@ import Button from '@/Components/Button'
 import Dropdown from '@/Components/Dropdown'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
-import { usePermissionsAndRolesContext } from '@/context/PermissionAndRolesContext'
 import { useFetch } from '@/hooks/useFetch'
+import { usePermissionsAndRoles } from '@/hooks/usePermissionsAndRoles'
 import { api } from '@/services/api'
 import { PermissionType, RolesType } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -24,7 +24,7 @@ export interface IUpdateRole {
 
 export default function FormEditRole({ role_id }: IUpdateRole) {
 
-    const {updateRole} = usePermissionsAndRolesContext()
+    const {updateRole} = usePermissionsAndRoles()
     const [roleToUpdate, setRoleToUpdate] = useState<RolesType>()
     const [permissions, setPermissions] = useState<PermissionType[]>([])
     const [optionsDrop, setOptionsDrop] = useState<string[]>()

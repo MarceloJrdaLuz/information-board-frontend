@@ -1,3 +1,4 @@
+import { showModalEmergencyContact } from "@/atoms/atom"
 import {
   additionalsPrivilegeOptions,
   genderOptions,
@@ -6,23 +7,22 @@ import {
   privilegeOptions,
   situationOptions,
 } from "@/constants/publisherOptions"
-import { usePublisherContext } from "@/context/PublisherContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
+import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPublisher, Privileges } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { FormValues } from "../type"
 import { publisherEditSchema } from "../validations"
-import { useSetAtom } from "jotai"
-import { showModalEmergencyContact } from "@/atoms/atom"
 
 export function useEditPublisherForm(id: string) {
-  const { updatePublisher } = usePublisherContext()
+  const { updatePublisher } = usePublisher()
   const { data } = useFetch<IPublisher>(`/publisher/${id}`)
 
   // ---------------- States ----------------

@@ -2,9 +2,10 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddTerritory from "@/Components/Forms/FormAddTerritory"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import { useEffect } from "react"
+import { ReactElement, useEffect } from "react"
 
 function CreateTerritoryPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -39,6 +40,9 @@ function CreateTerritoryPage() {
     )
 }
 
-CreateTerritoryPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])
-
+CreateTerritoryPage.getLayout = (page: ReactElement) =>
+    withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+        <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
+    )
+    
 export default CreateTerritoryPage
