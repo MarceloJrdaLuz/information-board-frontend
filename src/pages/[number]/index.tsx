@@ -52,7 +52,6 @@ function Home() {
             })
             setNotices(filter)
         }
-
     }, [data, number])
 
     const isFetching = isLoading || !number || !congregationData
