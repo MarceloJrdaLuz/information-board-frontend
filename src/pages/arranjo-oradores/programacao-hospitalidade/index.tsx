@@ -18,6 +18,7 @@ import { IHospitalityGroup } from "@/types/types"
 import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import moment from "moment"
 import "moment/locale/pt-br"
 import { useEffect, useState } from "react"
@@ -41,6 +42,8 @@ function HospitalityWeekendPage() {
     const baseDate = moment().add(monthOffset, "months")
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
+    const [showFilters, setShowFilters] = useState(true);
+
 
     const { data, mutate } = useAuthorizedFetch<IHospitalityWeekend[]>(`congregation/${congregation_id ?? ""}/hospitality/weekends`, {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
@@ -106,26 +109,45 @@ function HospitalityWeekendPage() {
                 ) : (
                     <div className="w-full space-y-6">
                         {/* Filtros e controles */}
-                        <div className="sticky top-0 z-30 bg-surface-100 p-4 rounded-xl shadow flex flex-col gap-4">
-                            <div className="flex justify-between items-center gap-2">
-                                <Button
-                                    onClick={() => setMonthOffset((m) => m - 1)}
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
+                        <div className="sticky top-0 z-30">
+                            <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
+                                <button
+                                    onClick={() => setShowFilters((o) => !o)}
+                                    className="flex items-center gap-2 text-sm text-typography-600"
                                 >
-                                    ◀ {prevMonthLabel}
-                                </Button>
-
-                                <Button
-                                    onClick={() => setMonthOffset((m) => m + 1)}
-                                    className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
-                                >
-                                    {nextMonthLabel} ▶
-                                </Button>
+                                    {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                </button>
                             </div>
 
-                            <Button className="w-full text-typography-200" onClick={handleSave}>
-                                Salvar todas
-                            </Button>
+                            {/* Painel */}
+                            <div
+                                className={`
+           bg-surface-100 border-b shadow-sm rounded-xl flex flex-col gap-3 md:gap-4
+    transition-all duration-300 overflow-visible
+    ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
+    md:opacity-100 md:max-h-screen md:pointer-events-auto
+        `}
+                            >
+                                <div className="flex justify-between items-center gap-4">
+                                    <Button
+                                        onClick={() => setMonthOffset((m) => m - 1)}
+                                        className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
+                                    >
+                                        ◀ {prevMonthLabel}
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => setMonthOffset((m) => m + 1)}
+                                        className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
+                                    >
+                                        {nextMonthLabel} ▶
+                                    </Button>
+                                </div>
+
+                                <Button className="w-full text-typography-200" onClick={handleSave}>
+                                    Salvar todas
+                                </Button>
+                            </div>
                         </div>
 
                         {/* Lista de sábados */}

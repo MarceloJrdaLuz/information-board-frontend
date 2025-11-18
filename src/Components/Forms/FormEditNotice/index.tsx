@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
+import moment from 'moment'
 
 export interface IUpdateNotice {
     notice_id: string
@@ -24,8 +25,8 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     const { data } = useFetch<INotice>(`/notice/${notice_id}`)
     const { user } = useAuthContext()
     const { updateNotice, setExpiredNotice } = useNotices(user?.congregation.number ?? "")
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-    const [initialExpired, setInitialExpired] = useState<Date | null>(null)
+    const [selectedDate, setSelectedDate] = useState<string | null>(null)
+    const [initialExpired, setInitialExpired] = useState<string | null>(null)
     const [noticeUpdated, setNoticeUpdated] = useState<INotice | undefined>(data)
     const [recurrentNotice, setRecurrentNotice] = useState(Boolean(data?.startDay !== undefined && data?.endDay !== undefined))
     const [disabled, setDisabled] = useAtom(buttonDisabled)
@@ -68,7 +69,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
             }
             if (data.expired) {
                 const initialDateStr = data.expired
-                const initialDate = new Date(initialDateStr)
+                const initialDate = moment(initialDateStr).format()
                 setSelectedDate(initialDate)
                 setInitialExpired(initialDate)
             }
@@ -94,7 +95,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     useEffect(() => {
         if (initialFormValues) {
             const isFormChanged = JSON.stringify(watchedFormValues) !== JSON.stringify(initialFormValues)
-            const isDateChanged = initialExpired?.toISOString() !== selectedDate?.toISOString()
+            const isDateChanged = initialExpired !== selectedDate
             const newDisabled = isFormChanged || isDateChanged
             setDisabled(!newDisabled)
         }
@@ -112,7 +113,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
-    const handleDateChange = (date: Date) => {
+    const handleDateChange = (date: string | null) => {
         setSelectedDate(date)
         setExpiredNotice(date)
     }
@@ -166,7 +167,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
                         </>
                     )}
 
-                    <Calendar label="Data da expiração:" minDate={new Date()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
+                    <Calendar label="Data da expiração:" minDate={moment().format()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                         <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Anúncio</Button>

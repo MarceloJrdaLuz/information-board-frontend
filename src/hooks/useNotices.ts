@@ -6,7 +6,7 @@ import { ICongregation } from "@/types/types"
 import { useFetch } from "@/hooks/useFetch"
 
 export function useNotices(congregationNumber: string) {
-  const [expiredNotice, setExpiredNotice] = useState<Date>()
+  const [expiredNotice, setExpiredNotice] = useState<string | null>()
   const [congregationId, setCongregationId] = useState<string | undefined>()
 
   const { handleSubmitError, handleSubmitSuccess } = useSubmit()

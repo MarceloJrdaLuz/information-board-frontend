@@ -85,7 +85,7 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
                 <span
                   role='button'
                   onClick={(e) => { e.stopPropagation(); props.handleChange(null) }}
-                  className="p-1 rounded hover:bg-typography-100"
+                  className="p-1 rounded hover:bg-surface-200"
                 >
                   <XSquareIcon className="w-4 h-4 text-typography-400 hover:text-red-500" />
                 </span>

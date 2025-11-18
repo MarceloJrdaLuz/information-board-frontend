@@ -1,8 +1,8 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import ContentDashboard from "@/Components/ContentDashboard"
 import PdfIcon from "@/Components/Icons/PdfIcon"
-import Input from "@/Components/Input"
 import ScheduleRow from "@/Components/ScheduleRow"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
@@ -55,8 +55,8 @@ function WeekendSchedulePage() {
     const [weekendScheduleWithExternalTalks, setWeekendScheduleWithExternalTalks] = useState<IWeekendScheduleWithExternalTalks[]>([])
     const setCreateWeekendSchedule = useSetAtom(createWeekendScheduleAtom)
     const setUpdateWeekendSchedule = useSetAtom(updateWeekendScheduleAtom)
-    const [startDatePdfGenerate, setStartDatePdfGenerate] = useState<string>("")
-    const [endDatePdfGenerate, setEndDatePdfGenerate] = useState<string>("")
+    const [startDatePdfGenerate, setStartDatePdfGenerate] = useState<string | null>(null)
+    const [endDatePdfGenerate, setEndDatePdfGenerate] = useState<string | null>(null)
     const baseDate = moment().add(monthOffset, "months")
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
@@ -244,7 +244,7 @@ function WeekendSchedulePage() {
             fileName={"Reunião do fim de semana.pdf"}
         >
             {({ loading }) => (
-                <Button outline className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                <Button outline className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]">
                     <PdfIcon />
                     <span className="text-primary-200 font-semibold">
                         {loading ? "Gerando PDF..." : "Baixar PDF"}
@@ -285,13 +285,13 @@ function WeekendSchedulePage() {
                                 {/* Painel */}
                                 <div
                                     className={`
-           bg-surface-100 border-b shadow-sm rounded-xl flex flex-col md:gap-4
+           bg-surface-100 border-b shadow-sm rounded-xl flex flex-col gap-3 md:gap-4
     transition-all duration-300 overflow-visible
     ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
     md:opacity-100 md:max-h-screen md:pointer-events-auto
         `}
                                 >
-                                    <div className="flex justify-between items-center gap-2">
+                                    <div className="flex justify-between items-center gap-4">
                                         <Button
                                             onClick={() => setMonthOffset((m) => m - 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
@@ -314,23 +314,25 @@ function WeekendSchedulePage() {
                             </div>
 
                             <Card className="w-full p-4 bg-surface-100">
-                                <CardBody className="flex flex-wrap gap-4 items-center">
-                                    <Input
-                                        placeholder="Data inicial"
-                                        type="date"
-                                        value={startDatePdfGenerate}
-                                        onChange={(e) => setStartDatePdfGenerate(e.target.value)}
-                                        className="flex-1"
+                                <h2 className="text-center font-bold text-md text-primary-200">
+                                    Exportar PDF
+                                </h2>
+                                <CardBody className="flex flex-wrap justify-around gap-4 items-center">
+                                    <Calendar
+                                        titleHidden
+                                        label="Data inicial"
+                                        selectedDate={startDatePdfGenerate}
+                                        handleDateChange={setStartDatePdfGenerate}
                                     />
-                                    <Input
-                                        placeholder="Data final"
-                                        type="date"
-                                        value={endDatePdfGenerate}
-                                        onChange={(e) => setEndDatePdfGenerate(e.target.value)}
-                                        min={startDatePdfGenerate || undefined}
-                                        className="flex-1"
+
+                                    <Calendar
+                                        titleHidden
+                                        label="Data final"
+                                        selectedDate={endDatePdfGenerate}
+                                        handleDateChange={setEndDatePdfGenerate}
                                     />
-                                    <div className="flex-1">
+
+                                    <div className="w-fit">
                                         <Select
                                             label="Escala do PDF"
                                             value={pdfScale.toString()}
@@ -345,7 +347,7 @@ function WeekendSchedulePage() {
                                     <Button
                                         outline
                                         onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                        className="px-4 py-2 rounded-lg border shadow"
+                                        className="px-4 py-2 border shadow w-fit min-w-[200px]"
                                     >
                                         {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
                                     </Button>
