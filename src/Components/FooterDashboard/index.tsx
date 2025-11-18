@@ -31,7 +31,7 @@ export default function FooterDashboard() {
         <Link
           href="/termos-de-uso"
           className="
-            text-typography-700 hover:text-primary-700 hover:underline
+            text-typography-200 hover:opacity-80 hover:underline
             transition-colors duration-200
           "
         >
