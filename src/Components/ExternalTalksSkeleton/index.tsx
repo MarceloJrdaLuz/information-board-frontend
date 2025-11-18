@@ -1,6 +1,6 @@
 export default function ExternalTalksSkeleton() {
   return (
-    <section className="w-full h-full p-5 animate-pulse">
+    <section className="w-full h-full p-4 animate-pulse">
       {/* Botões de navegação */}
       <div className="flex justify-between my-4 p-4">
         <div className="h-9 w-28 bg-surface-200 shimmer rounded-md shimmer" />

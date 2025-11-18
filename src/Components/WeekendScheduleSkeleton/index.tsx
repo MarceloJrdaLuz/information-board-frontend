@@ -1,7 +1,7 @@
 export default function WeekendScheduleSkeleton() {
   return (
-    <section className="flex flex-wrap w-full h-full p-5 animate-pulse">
-      <div className="w-full p-4 space-y-4">
+    <section className="flex flex-wrap w-full h-full animate-pulse">
+      <div className="w-full space-y-4">
         {/* Header fixo com filtros e botões de navegação */}
         <div className="sticky top-0 bg-surface-100 border-b shadow-sm z-10 p-4 rounded-xl flex flex-col gap-3">
           {/* Filtros */}

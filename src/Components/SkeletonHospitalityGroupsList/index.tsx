@@ -2,7 +2,7 @@
 export default function SkeletonHospitalityGroupsList() {
     return (
         <li
-            className="bg-surface-100 rounded-2xl border border-typography-200 shadow-sm flex flex-col m-2 min-w-[200px]"
+            className="bg-surface-100 rounded-2xl border border-typography-200 shadow-sm flex flex-col min-w-[200px]"
         >
             {/* Conteúdo principal */}
             <div className="flex-1 p-5 flex flex-col gap-3">

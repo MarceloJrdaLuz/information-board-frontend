@@ -41,7 +41,7 @@ export default function FilterGroups({ handleCheckboxChange, checkedOptions, con
                     </button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-80">
+            <PopoverContent className="w-80 bg-surface-100">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
                     <CheckboxGroups full options={groups} label="Filtrar" handleCheckboxChange={(selectedItems) => handleCheckboxChange(selectedItems)} checkedOptions={checkedOptions} />
                 </List>

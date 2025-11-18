@@ -7,7 +7,7 @@ const button = tv({
     flex justify-center items-center transition-all gap-2 duration-500
     active:shadow-none shadow-xl rounded-lg
     border text-xs xs:text-sm sm:text-md lg:text-base
-    justify-self-center h-[40px] w-48
+    justify-self-center h-[40px] w-48 text-typography-200
   `,
   variants: {
     size: {
