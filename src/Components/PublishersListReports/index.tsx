@@ -15,7 +15,7 @@ import avatarMale from '../../../public/images/avatar-male.png'
 import CheckboxBoolean from "../CheckboxBoolean"
 import FilterPrivileges from "../FilterPrivileges"
 import FormReportManually from "../Forms/FormReportManually"
-import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+import SkeletonPublishersWithAvatarList from "../PublishersList/skeletonPublisherWithAvatarList"
 
 export default function PublisherListReports() {
     const { user } = useAuthContext()
@@ -134,7 +134,7 @@ export default function PublisherListReports() {
                     {filterPublishers && <span className="flex my-3 pr-1 justify-end w-full md:w-10/12 text-primary-200 text-sm md:text-base font-semibold">Resultados: {filterPublishers?.length}</span>}
                 </div>
                 {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
-                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublisher && selectedPublisher.id === publisher.id ? 'h-auto' : ''}`} key={`${publisher.id}`}>
+                    <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12  m-1 ${selectedPublisher && selectedPublisher.id === publisher.id ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
                             <div className="flex items-center p-6 ">
                                 {publisher.gender === "Masculino" ?
@@ -142,15 +142,15 @@ export default function PublisherListReports() {
                                     :
                                     <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
                                 }
-                                <span className="pl-4 font-semi-bold">{publisher.fullName}</span>
+                                <span className="pl-4 font-medium text-typography-700">{publisher.fullName}</span>
                             </div>
                             <button className={`w-6 h-6 mr-4 flex justify-center items-center  ${arrowClicked && selectedPublisher && selectedPublisher.id === publisher.id ? 'rotate-180' : ''}`} onClick={() => {
                                 handleShowDetails(publisher)
-                            }}><ChevronDownIcon /> </button>
+                            }}><ChevronDownIcon className="text-typography-700" /> </button>
                         </div>
                         <div className={` w-full overflow-hidden duration-500 transition-height ${arrowClicked && selectedPublisher && selectedPublisher.id === publisher.id ? 'h-auto py-5 bg-surface-100' : 'h-0'}`}>
                             <div>
-                            {reportFiltered?.publisher.id === publisher.id  ? <FormReportManually publisher={publisher} report={reportFiltered}/> : <FormReportManually report={null} publisher={selectedPublisher}/> }
+                                {reportFiltered?.publisher.id === publisher.id ? <FormReportManually publisher={publisher} report={reportFiltered} /> : <FormReportManually report={null} publisher={selectedPublisher} />}
                             </div>
                         </div>
                     </li>

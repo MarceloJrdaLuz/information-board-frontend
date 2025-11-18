@@ -25,7 +25,7 @@ function Dashboard() {
   return (
     <ContentDashboard>
       <section className="flex w-full h-fit justify-center items-center p-5">
-        <div className="h-full flex flex-wrap justify-center items-center gap-5">
+        <div className="h-full w-full flex flex-wrap justify-center items-center gap-5">
           {/* Profile Card or Skeleton */}
           {loading ? (
             <ProfileCardSkeleton />

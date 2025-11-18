@@ -85,7 +85,7 @@ export default function FormResetPassword() {
                     </Input>
                     {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Resetar senha</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Resetar senha</Button>
                     </div>
                 </div>
             </FormStyle>

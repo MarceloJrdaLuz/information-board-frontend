@@ -119,7 +119,7 @@ export default function FormAddCongregation() {
             hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
+                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>

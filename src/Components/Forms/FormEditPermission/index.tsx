@@ -90,7 +90,7 @@ export default function FormEditPermission({ permission_id }: IUpdatePermission)
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Atualizar Permissão</Button>
+                        <Button className='text-typography-200' success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Atualizar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

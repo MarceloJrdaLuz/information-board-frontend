@@ -118,7 +118,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
                 )}
             </div>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-auto flex-col justify-center items-center`}>
+                <div className={`w-full h-auto flex-col justify-center items-center p-8 border border-surface-300`}>
                     <Input
                         readOnly
                         type="text"
@@ -167,6 +167,7 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
                         <Button
+                            className="text-typography-200"
                             size="lg"
                             disabled={disabled}
                             error={dataError}

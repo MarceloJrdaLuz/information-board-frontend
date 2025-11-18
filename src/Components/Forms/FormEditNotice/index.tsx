@@ -169,7 +169,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
                     <Calendar label="Data da expiração:" minDate={new Date()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Anúncio</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Anúncio</Button>
                     </div>
                 </div>
             </FormStyle>

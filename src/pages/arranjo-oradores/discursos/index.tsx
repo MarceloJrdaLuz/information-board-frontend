@@ -64,7 +64,7 @@ function TalksPage() {
                                 <span className="text-primary-200 font-semibold">Criar discurso</span>
                             </Button>
                         )}
-                        {talks && <span className="text-sm text-typography-600">Total: {talks.length}</span>}
+                        {talks && <span className="text-sm text-typography-800">Total: {talks.length}</span>}
                     </div>
 
                     {talks && talks.length > 0 ? (

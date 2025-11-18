@@ -75,7 +75,7 @@ function HospitalityGroupsPage() {
                             <GroupIcon />
                             <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
-                        {hospitalityGroups && <span className="text-sm text-typography-600">Total: {hospitalityGroups.length}</span>}
+                        {hospitalityGroups && <span className="text-sm text-typography-800">Total: {hospitalityGroups.length}</span>}
                     </div>
 
                     {hospitalityGroups && hospitalityGroups.length > 0 ? (

@@ -62,7 +62,7 @@ export default function TerritoriesList() {
 
     return (
         <>
-            <ul className="flex flex-wrap justify-center w-full gap-4 mt-6">
+            <ul className="flex flex-wrap justify-center w-full gap-4 mt-6 pb-20">
                 {territories && territories.length > 0 ? (
                     territories.map((territory) => {
                         const isOpen = selectedTerritories.has(territory.id);

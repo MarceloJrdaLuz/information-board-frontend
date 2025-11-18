@@ -91,7 +91,7 @@ export default function FormAddDomain() {
                         invalid={errors?.userCode?.message ? 'invalido' : ''} />
                     {errors?.userCode?.type && <InputError type={errors.userCode.type} field='userCode' />}
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button success={dataSuccess} error={dataError} disabled={(congregationSelect === '' || disabled)} type='submit'>Atribuir à domínio</Button>
+                        <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={(congregationSelect === '' || disabled)} type='submit'>Atribuir à domínio</Button>
                     </div>
                 </div>
             </FormStyle>

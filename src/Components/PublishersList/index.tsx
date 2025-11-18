@@ -149,7 +149,7 @@ export default function PublisherList() {
             <div className="w-full flex justify-end mt-4">
                 {publishers && <PdfLinkComponent />}
             </div>
-            <ul className="flex flex-wrap justify-center items-center w-full ">
+            <ul className="flex flex-wrap justify-center items-center w-full pb-20">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
                     <CheckboxBoolean handleCheckboxChange={(check) => setInactivesShow(check)} checked={inactivesShow} label="Inativos" />
                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)} />
@@ -168,7 +168,7 @@ export default function PublisherList() {
                             </div>
                             <button className={`w-6 h-6 mr-4 text-typography-700 flex justify-center items-center ${selectedPublishers.has(publisher.id) && 'rotate-180'}`} onClick={() => handleShowDetails(publisher)}><ChevronDownIcon /> </button>
                         </div>
-                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-surface-100' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
+                        <div className={`w-full overflow-hidden duration-500 transition-all ${selectedPublishers.has(publisher.id) ? 'h-auto px-8 py-2  bg-surface-100 rounded-2xl' : 'h-0 px-8'}`}>                        {/* Exibir as informações adicionais aqui */}
                             <div className="flex flex-wrap gap-2">
                                 {publisher.privileges.map(privilege => {
                                     if (privilege === Privileges.PIONEIROAUXILIAR) {

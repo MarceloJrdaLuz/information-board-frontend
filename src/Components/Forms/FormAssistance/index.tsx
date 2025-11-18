@@ -199,8 +199,8 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div>
                     <Dropdown textVisible selectedItem={monthWithYear} border handleClick={(option) => handleClick(option)} options={optionsDropdown} title="Selecione o mês" />
-                    <div className="flex flex-col w-full  border border-blue-gray-200 py-6 px-16 my-4">
-                        <h2 className="font-semibold">Reunião do meio de semana</h2>
+                    <div className="flex flex-col w-full  border border-surface-300 py-6 px-16 my-4">
+                        <h2 className="font-semibold text-typography-800">Reunião do meio de semana</h2>
                         <Input type="number" placeholder="1ª semana" registro={{ ...register('midWeek1') }} invalid={errors?.midWeek1?.message ? 'invalido' : ''} />
                         {errors?.midWeek1?.type && <InputError type={errors.midWeek1.type} field='midWeek1' />}
                         <Input type="number" placeholder="2ª semana" registro={{ ...register('midWeek2') }} invalid={errors?.midWeek2?.message ? 'invalido' : ''} />
@@ -211,17 +211,17 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
                         {errors?.midWeek4?.type && <InputError type={errors.midWeek4.type} field='midWeek4' />}
                         <Input type="number" placeholder="5ª semana" registro={{ ...register('midWeek5') }} invalid={errors?.midWeek5?.message ? 'invalido' : ''} />
                         {errors?.midWeek5?.type && <InputError type={errors.midWeek5.type} field='midWeek5' />}
-                        <div className="font-semibold">
+                        <div className="font-semibold text-typography-800">
                             <span className="pr-2">Totais:</span>
                             <span>{midWeekTotal}</span>
                         </div>
-                        <div className="font-semibold">
+                        <div className="font-semibold text-typography-800">
                             <span className="pr-2">Média:</span>
                             <span>{midWeekAverage}</span>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full border border-blue-gray-200 py-6 px-16 my-4">
-                        <h2 className="font-semibold">Reunião do fim de semana</h2>
+                    <div className="flex flex-col w-full border border-surface-300 py-6 px-16 my-4">
+                        <h2 className="font-semibold text-typography-800">Reunião do fim de semana</h2>
                         <Input type="number" placeholder="1ª semana" registro={{ ...register('endWeek1') }} invalid={errors?.endWeek1?.message ? 'invalido' : ''} />
                         {errors?.endWeek1?.type && <InputError type={errors.endWeek1.type} field='endWeek1' />}
                         <Input type="number" placeholder="2ª semana" registro={{ ...register('endWeek2') }} invalid={errors?.endWeek2?.message ? 'invalido' : ''} />
@@ -233,11 +233,11 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
                         <Input type="number" placeholder="5ª semana" registro={{ ...register('endWeek5') }} invalid={errors?.endWeek5?.message ? 'invalido' : ''} />
                         {errors?.endWeek5?.type && <InputError type={errors.endWeek5.type} field='endWeek5' />}
 
-                        <div className="font-semibold">
+                        <div className="font-semibold text-typography-800">
                             <span className="pr-2">Totais:</span>
                             <span>{endWeekTotal}</span>
                         </div>
-                        <div className="font-semibold">
+                        <div className="font-semibold text-typography-800">
                             <span className="pr-2">Média:</span>
                             <span>{endWeekAverage}</span>
                         </div>
@@ -249,6 +249,7 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
                             error={dataError}
                             success={dataSuccess}
                             type='submit'
+                            className="text-typography-200"
                         >Enviar</Button>
                     </div>
                 </div>

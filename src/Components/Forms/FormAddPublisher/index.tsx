@@ -245,8 +245,8 @@ export default function FormAddPublisher() {
 
                     <div className='border border-typography-300 my-4 p-4'>
                         <div className='flex justify-between items-center'>
-                            <span className='my-2 font-semibold text-typography-900 '>Contato de emergência</span>
-                            <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon /> </span>
+                            <span className='my-2 font-semibold text-typography-700 '>Contato de emergência</span>
+                            <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon className='text-typography-700' /> </span>
                         </div>
 
                         {emergencyContactShow && (
@@ -262,14 +262,14 @@ export default function FormAddPublisher() {
                                     searchable
                                 />
                                 <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                    <Button type='button' className='w-fit'><span><PlusIcon className='bg-surface-100 rounded-full text-primary-200 p-1 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                    <Button type='button' className='w-fit text-typography-200'><span><PlusIcon className='bg-transparent rounded-full text-typography-200 w-5 h-5' /></span>Adicionar contato de emergência</Button>
                                 </span>
                             </>
                         )}
                     </div>
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
+                        <Button className='text-typography-200' error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
                     </div>
                 </div>
             </FormStyle>

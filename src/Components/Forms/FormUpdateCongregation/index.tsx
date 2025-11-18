@@ -150,7 +150,7 @@ export default function FormUpdateCongregation() {
                     />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Congregação</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>

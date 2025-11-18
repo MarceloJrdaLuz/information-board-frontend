@@ -102,7 +102,7 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
                     {errors?.isTj && <InputError type={errors.isTj.type} field="isTj" />}
 
                     <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type="submit">
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type="submit">
                             Criar contato
                         </Button>
                     </div>

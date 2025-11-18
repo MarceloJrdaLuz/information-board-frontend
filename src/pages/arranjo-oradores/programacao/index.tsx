@@ -294,20 +294,20 @@ function WeekendSchedulePage() {
                                     <div className="flex justify-between items-center gap-2">
                                         <Button
                                             onClick={() => setMonthOffset((m) => m - 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
                                             ◀ {prevMonthLabel}
                                         </Button>
 
                                         <Button
                                             onClick={() => setMonthOffset((m) => m + 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize"
+                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
                                             {nextMonthLabel} ▶
                                         </Button>
                                     </div>
 
-                                    <Button className="w-full" onClick={handleSave}>
+                                    <Button className="w-full text-typography-200" onClick={handleSave}>
                                         Salvar todas
                                     </Button>
                                 </div>

@@ -135,15 +135,15 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
                         </div>
                     )}
 
-                    <input className="text-sm text-grey-500
+                    <input className="text-sm text-typography-700
             file:mr-5 file:py-3 file:px-10
             file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-900
+            file:text-md file:font-semibold  file:text-typography-200 hover:file:text-typography-900
             file:bg-gradient-to-r file:bg-primary-200
             hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
 
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Território</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Território</Button>
                     </div>
                 </div>
             </FormStyle>

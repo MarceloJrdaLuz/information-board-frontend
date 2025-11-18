@@ -29,9 +29,9 @@ export default function FilterSpeakersCongregation({ handleCheckboxChange, check
                     </button>
                 </div>
             </PopoverHandler>
-            <PopoverContent className="w-80">
+            <PopoverContent className="w-80 bg-surface-100">
                 <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
-                    <span>Congregação / Cidade</span>
+                    <span className="text-typography-200">Congregação / Cidade</span>
                     <CheckboxUniqueObject
                         options={[
                             { value: "", label: "Todas as congregações" },

@@ -55,7 +55,7 @@ export default function FormForgotPassword() {
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
                        
-                        <Button error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
+                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
                     </div>
                 </div>
             </FormStyle>
