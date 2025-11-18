@@ -16,22 +16,29 @@ export default function WeekendScheduleSkeleton() {
         </div>
 
         {/* Gerar PDF + inputs de datas */}
-        <div className="flex w-full justify-between flex-wrap gap-1 items-center bg-surface-100 border rounded-xl p-8 shadow-sm mt-4">
-          <div className="flex w-full justify-between flex-wrap gap-2">
-            <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-            <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
+        <div className="w-full p-4 bg-surface-100 border rounded-xl shadow-sm animate-pulse">
+          {/* Título */}
+          <div className="h-6 w-32 mx-auto bg-surface-200 shimmer rounded-md mb-6" />
+
+          {/* Conteúdo interno */}
+          <div className="flex flex-wrap justify-around gap-4 items-center">
+
+            {/* Calendar - Data inicial */}
+            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
+
+            {/* Calendar - Data final */}
+            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
+
+            {/* Select escala */}
+            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
+
+            {/* Botão de visualizar PDF */}
+            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
+
+            {/* Link do PDF (se renderiza) */}
+            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
+
           </div>
-          <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-          <div className="h-10 w-full max-w-[180px] bg-surface-200 shimmer rounded-md" />
-          <div className="h-10  w-full max-w-[180px] bg-surface-200 shimmer rounded-md" />
-          {/* <div className="flex flex-1 gap-3">
-            <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
-            <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
-          </div>
-          <div className="flex flex-1 gap-3">
-            <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
-            <div className="flex-1 w-32 h-10 bg-surface-200 shimmer rounded-md" />
-          </div> */}
         </div>
 
         {/* Lista de sábados (cards) */}

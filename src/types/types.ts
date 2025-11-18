@@ -158,9 +158,9 @@ export interface IPublisher {
     pioneerMonths?: string[]
     hope: Hope
     gender: Gender
-    dateImmersed?: Date
-    startPioneer?: Date
-    birthDate?: Date
+    dateImmersed?: string | null
+    startPioneer?: string | null
+    birthDate?: string | null
     congregation: ICongregation
     group: IGroup
     situation: Situation

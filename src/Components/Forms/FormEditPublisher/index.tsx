@@ -152,6 +152,11 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             </div>
                         )
                         }
+                        <div className='border border-typography-300 my-4 p-4'>
+                            <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={values.birthDate} />
+
+                            <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handlers.handleImmersedDateChange} selectedDate={values.immersedDate} />
+                        </div>
 
                         <div className='border border-typography-300 my-4 p-4'>
                             <div className='flex justify-between items-center'>

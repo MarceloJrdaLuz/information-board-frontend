@@ -33,6 +33,10 @@
   margin: 8px auto;
 }
 
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
 * {
   margin: 0;
   padding: 0;

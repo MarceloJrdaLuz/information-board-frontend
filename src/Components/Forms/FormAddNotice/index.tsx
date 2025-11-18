@@ -16,12 +16,13 @@ import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import TextArea from "@/Components/TextArea"
 import { useNotices } from "@/hooks/useNotices"
+import moment from "moment"
 
 export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
     const { createNotice, setExpiredNotice } = useNotices(congregationNumber)
 
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+    const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
     const [recurrentNotice, setRecurrentNotice] = useState(false)
     const [modalHelpShow, setModalHelpShow] = useState(false)
@@ -72,7 +73,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
         }
     }
 
-    const handleDateChange = (date: Date) => {
+    const handleDateChange = (date: string | null) => {
         setExpiredNotice(date)
         setSelectedDate(date)
     }
@@ -134,7 +135,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                         </>
                     )}
 
-                    <Calendar label="Data da expiração:" minDate={new Date()} selectedDate={selectedDate} handleDateChange={(date) => handleDateChange(date)} />
+                    <Calendar label="Data da expiração:" minDate={moment().format()} selectedDate={selectedDate} handleDateChange={handleDateChange} />
 
                     <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
                         <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Criar Anúncio</Button>
