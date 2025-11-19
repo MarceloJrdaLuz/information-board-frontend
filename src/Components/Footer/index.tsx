@@ -18,21 +18,21 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
     <footer className={`${!isDark ? "bg-gradient-to-tl from-primary-200 to-primary-150" : "border border-t-typography-800 bg-gradient-to-b from-surface-100 to-surface-200"}  border-surface-200 text-surface-100 py-6 text-sm sm:text-base`}>
       <div className="container mx-auto flex flex-col items-center space-y-3">
         {/* Linha superior */}
-        <div className="text-typography-200 flex flex-wrap justify-center items-center gap-2 text-center">
+        <div className="text-typography-300 flex flex-wrap justify-center items-center gap-2 text-center">
           <strong>{ano} | {nomeCongregacao}</strong>
         </div>
 
         {/* Aviso */}
-        <p className="text-typography-200 text-center font-semibold">{aviso}</p>
+        <p className="text-typography-300 text-center font-semibold">{aviso}</p>
 
         {/* Links */}
         <div className="flex flex-wrap justify-center items-center gap-4 mt-2 text-typography-200">
           <ThemeSwitcher />
-          <Link href="/login" className="flex items-center gap-1 hover:opacity-80 transition text-primary-100">
+          <Link href="/login" className="flex items-center gap-1  transition text-primary-100">
             <InformationBoardIcon />
-            <span className="text-xs sm:text-sm text-typography-200">Login</span>
+            <span className="text-xs hover:underline hover:opacity-80 sm:text-sm text-typography-200">Login</span>
           </Link>
-          <Link href={`/${nCong}/politica-privacidade`} className="text-xs sm:text-sm hover:opacity-80 transition">
+          <Link href={`/${nCong}/politica-privacidade`} className="text-xs sm:text-sm text-typography-200 hover:underline hover:opacity-80 transition">
             Política de privacidade
           </Link>
         </div>
