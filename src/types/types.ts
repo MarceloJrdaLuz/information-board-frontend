@@ -116,7 +116,7 @@ export interface IGroup {
     publishers: IPublisher[]
 }
 export interface IGroupOverseers extends IPublisher {
-
+  publisherId: string
 }
 
 export interface IReports {

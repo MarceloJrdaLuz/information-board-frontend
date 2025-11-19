@@ -98,11 +98,17 @@ export default function GroupsFieldServicePdf({
 
             <View style={styles.table}>
                 {groups.map(group => {
-                    const activeMembers = group.publishers
+                    const leaderId = group.groupOverseers.publisherId
+                    // Remove o dirigente da lista
+                    const publishersWithoutLeader = group.publishers.filter(
+                        pub => pub.id !== leaderId
+                    )
+                    console.log(publishersWithoutLeader)
+                    const activeMembers = publishersWithoutLeader
                         .filter(pub => pub.situation === Situation.ATIVO)
                         .sort((a, b) => a.fullName.localeCompare(b.fullName))
 
-                    const inactiveMembers = group.publishers
+                    const inactiveMembers = publishersWithoutLeader
                         .filter(pub => pub.situation !== Situation.ATIVO)
                         .sort((a, b) => a.fullName.localeCompare(b.fullName))
 
@@ -131,7 +137,7 @@ export default function GroupsFieldServicePdf({
                             <Text style={styles.overseerTitle}>Publicadores:</Text>
                             {activeMembers.map(pub => (
                                 <Text key={pub.id} style={styles.memberName}>
-                                    {pub.nickname || pub.fullName}
+                                    {pub.fullName}
                                 </Text>
                             ))}
 
@@ -141,7 +147,7 @@ export default function GroupsFieldServicePdf({
                                     <Text style={styles.inactiveTitle}>Publicadores inativos:</Text>
                                     {inactiveMembers.map(pub => (
                                         <Text key={pub.id} style={styles.memberName}>
-                                            {pub.nickname || pub.fullName} - ({pub.situation})
+                                            {pub.fullName} - ({pub.situation})
                                         </Text>
                                     ))}
                                 </>
