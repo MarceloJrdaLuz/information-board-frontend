@@ -23,6 +23,37 @@ import PdfIcon from "../Icons/PdfIcon"
 import PublishersListPdf from "../PublisherListPdf"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
+interface PdfLinkComponentProps {
+    publishers: IPublisher[]
+    congregationName?: string
+}
+
+function PdfLinkComponent({ publishers, congregationName }: PdfLinkComponentProps) {
+    return (
+        <PDFDownloadLink
+            document={
+                <Document>
+                    <PublishersListPdf
+                        publishers={publishers}
+                        congregationName={congregationName}
+                    />
+                </Document>
+            }
+            fileName={`Publicadores_${congregationName || "congregacao"}.pdf`}
+        >
+            {({ loading }) => (
+                <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <PdfIcon />
+                    <span className="text-primary-200 font-semibold">
+                        {loading ? "Gerando PDF..." : "Lista de publicadores"}
+                    </span>
+                </Button>
+            )}
+        </PDFDownloadLink>
+    )
+}
+
+
 export default function PublisherList() {
     const { user, roleContains } = useAuthContext()
     const { deletePublisher } = usePublisher()
@@ -37,7 +68,6 @@ export default function PublisherList() {
     const [filterPublishers, setFilterPublishers] = useState<IPublisher[]>()
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
-    const [filterSituation, setFilterSituation] = useState<string[]>([])
     const [inactivesShow, setInactivesShow] = useState(false)
     const [publishersOthers, setPublishersOthers] = useState<IPublisher[]>()
 
@@ -63,9 +93,9 @@ export default function PublisherList() {
         }
     }, [data])
 
-    useEffect(() => {
-        mutate() // Refetch dos dados utilizando a função mutate do useFetch sempre que muda a rota
-    }, [selectedPublishers, router.asPath, mutate])
+    // useEffect(() => {
+    //     mutate() // Refetch dos dados utilizando a função mutate do useFetch sempre que muda a rota
+    // }, [router.asPath, mutate])
 
     async function onDelete(publisher_id: string) {
 
@@ -120,34 +150,15 @@ export default function PublisherList() {
         )
     }
 
-
-    const PdfLinkComponent = () => (
-        <PDFDownloadLink
-            document={
-                <Document>
-                    <PublishersListPdf
-                        publishers={publishers ?? []}
-                        congregationName={user?.congregation.name}
-                    />
-                </Document>
-            }
-            fileName={`Publicadores_${user?.congregation.name || "congregacao"}.pdf`}
-        >
-            {({ loading }) => (
-                <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                    <PdfIcon />
-                    <span className="text-primary-200 font-semibold">
-                        {loading ? "Gerando PDF..." : "Lista de publicadores"}
-                    </span>
-                </Button>
-            )}
-        </PDFDownloadLink>
-    );
-
     return (
         <>
             <div className="w-full flex justify-end mt-4">
-                {publishers && <PdfLinkComponent />}
+                {publishers && (
+                    <PdfLinkComponent
+                        publishers={publishers}
+                        congregationName={user?.congregation.name}
+                    />
+                )}
             </div>
             <ul className="flex flex-wrap justify-center items-center w-full pb-20">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">

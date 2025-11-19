@@ -113,10 +113,10 @@ export interface IGroup {
     name: string
     number: string
     groupOverseers: IGroupOverseers
-
+    publishers: IPublisher[]
 }
 export interface IGroupOverseers extends IPublisher {
-
+  publisherId: string
 }
 
 export interface IReports {
