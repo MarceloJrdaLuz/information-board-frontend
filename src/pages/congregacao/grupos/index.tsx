@@ -1,8 +1,11 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
+import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
+import GroupsFieldServicePdf from "@/Components/GroupFieldServiceListPdf"
 import GroupIcon from "@/Components/Icons/GroupIcon"
+import PdfIcon from "@/Components/Icons/PdfIcon"
 import ListGroups from "@/Components/ListGroups"
 import SkeletonGroupsList from "@/Components/ListGroups/skeletonGroupList"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
@@ -14,19 +17,50 @@ import { api } from "@/services/api"
 import { IGroup } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
+import { Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
 import Router from "next/router"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
+interface IGroupPdfLinkComponentProps {
+    groups: IGroup[] | undefined
+    congregation: string
+    showInactives?: boolean
+}
+
+function PdfLinkComponent({ groups, congregation, showInactives }: IGroupPdfLinkComponentProps) {
+    console.log(showInactives)
+    return (<PDFDownloadLink
+        document={
+            <Document>
+                <GroupsFieldServicePdf
+                    groups={groups ?? []}
+                    congregationName={congregation}
+                    showInactives={showInactives}
+                />
+            </Document>
+        }
+        fileName={`Grupos de campo congregacao ${congregation}.pdf`}
+    >
+        {({ loading }) => (
+            <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                <PdfIcon />
+                <span className="text-primary-200 font-semibold">
+                    {loading ? "Gerando PDF..." : "Lista de grupos"}
+                </span>
+            </Button>
+        )}
+    </PDFDownloadLink>)
+}
 function GroupsPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
     const [crumbs,] = useAtom(crumbsAtom)
-    const [pageActive, setPageActive] = useAtom(pageActiveAtom)
+    const [, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
-
+    const [showInactives, setShowInactives] = useState(false)
     const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
     const { data: getGroups, mutate } = useAuthorizedFetch<IGroup[]>(fetchConfig, {
         allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]
@@ -90,6 +124,12 @@ function GroupsPage() {
                             <GroupIcon />
                             <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
+                        <div className="w-full flex justify-end gap-2 mt-4">
+                            <div className="flex flex-col gap-2">
+                                {groups && <PdfLinkComponent showInactives={showInactives} groups={groups} congregation={congregation?.name ?? ""} />}
+                                <CheckboxBoolean handleCheckboxChange={setShowInactives} checked={showInactives} label="Incluir inativos" />
+                            </div>
+                        </div>
                     </div>
                     {groups && groups.length > 0 ? (
                         <ListGroups onDelete={(item_id) => handleDelete(item_id)} items={groups} path="" label="grupo" />

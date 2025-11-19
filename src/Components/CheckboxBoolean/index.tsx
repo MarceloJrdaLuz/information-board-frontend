@@ -30,7 +30,7 @@ export default function CheckboxBoolean(props: ICheckbox) {
         onChange={(e) => handleCheckboxChange(e.target.checked)}
         className="w-4 h-4 cursor-pointer text-primary-200 bg-typography-100 border-typography-300 rounded focus:bg-primary-200 accent-primary-200  mr-2"
       />
-      <span className='text-sm text-typography-800'>{props.label}</span>
+      <span className='text-sm text-typography-700'>{props.label}</span>
     </div>
   )
 }
