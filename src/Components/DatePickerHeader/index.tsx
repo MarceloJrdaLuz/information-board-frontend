@@ -42,7 +42,8 @@ export function DatePickerHeader({
             </div>
 
             <Dropdown
-                  title={months[date.getMonth()]} 
+                textVisible
+                title={months[date.getMonth()]}
                 selectedItem={months[date.getMonth()]}
                 options={months}
                 handleClick={handleMonthChange}
@@ -50,7 +51,8 @@ export function DatePickerHeader({
 
 
             <Dropdown
-                title={date.getFullYear().toString()} 
+                textVisible
+                title={date.getFullYear().toString()}
                 selectedItem={date.getFullYear().toString()}
                 options={years.map(y => y.toString())}
                 handleClick={handleYearChange}
