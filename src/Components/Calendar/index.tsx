@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css'; // Estilos padrão do DateP
 registerLocale('pt-BR', ptBR)
 import moment from "moment";
 import 'react-datepicker/dist/react-datepicker.css';
+import { DatePickerHeader } from '../DatePickerHeader';
 
 registerLocale('pt-BR', ptBR);
 
@@ -39,6 +40,7 @@ export default function Calendar({
             {!titleHidden && <h1 className="font-bold my-2 text-typography-700">{label}</h1>}
 
             <DatePicker
+
                 customInput={<CustomInput label={label} />}
                 locale="pt-BR"
                 selected={parsedSelected}
@@ -53,9 +55,20 @@ export default function Calendar({
                     const formatted = moment(date).format("YYYY-MM-DD");
                     handleDateChange(formatted);
                 }}
-
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
                 className={` px-3 py-2.5 w-full text-sm
                     text-typography-700 appearance-none placeholder-transparent focus:outline-none  rounded-lg bg-transparent read-only:bg-typography-300 read-only:rounded-lg font-sans font-normal text-left border-[1px] border-blue-gray-200`}
+                renderCustomHeader={(props) => (
+                    <DatePickerHeader
+                        date={props.date}
+                        decreaseMonth={props.decreaseMonth}
+                        increaseMonth={props.increaseMonth}
+                        changeMonth={props.changeMonth}
+                        changeYear={props.changeYear}
+                    />
+                )}
             />
         </div>
     );
@@ -77,37 +90,3 @@ const CustomInput = forwardRef(({ value, onClick, label }: any, ref: any) => (
 
 CustomInput.displayName = "CustomInput";
 
-// interface CalendarProps {
-//     handleDateChange: (date: Date | null) => void
-//     selectedDate: Date | null
-//     minDate?: Date | null
-//     label: string
-// }
-
-
-// export default function Calendar({ handleDateChange, selectedDate, minDate, label }: CalendarProps) {
-
-
-//     return (
-//         <div>
-//             <h1 className='font-bold my-2 text-typography-900'>{label}</h1>
-//             <div>
-//                 <DatePicker
-//                     customInput={<CustomInput />}
-//                     locale="pt-BR"
-//                     className={` px-3 py-2.5 w-full text-sm
-//                     text-typography-900 appearance-none placeholder-transparent focus:outline-none  rounded-xl bg-transparent read-only:bg-typography-300 read-only:rounded-lg font-sans font-normal text-left border-[1px] border-blue-gray-200`}
-//                     selected={selectedDate}
-//                     onChange={(date) => {
-//                         if (!date) return handleDateChange(null);
-//                         const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-//                         handleDateChange(localDate);
-//                     }}
-//                     dateFormat="dd/MM/yyyy"
-//                     minDate={minDate}
-
-//                 />
-//             </div>
-//         </div>
-//     )
-// }

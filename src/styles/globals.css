@@ -33,9 +33,7 @@
   margin: 8px auto;
 }
 
-.react-datepicker-popper {
-  z-index: 9999 !important;
-}
+
 
 * {
   margin: 0;
@@ -161,7 +159,7 @@ input[type=number] {
 }
 
 .shimmer-primary-color::after {
- content: "";
+  content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
@@ -293,4 +291,102 @@ input[type=number] {
   --color-surface-100: 255 255 255;
   --color-surface-200: 245 245 245;
   --color-surface-300: 230 233 236;
+}
+
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+/* ----- Calendário Base ----- */
+.react-datepicker {
+  background: rgb(var(--color-surface-100)) !important;
+  border: 1px solid #d4d4d8 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  font-family: inherit !important;
+  color: #1f2937 !important;
+  /* texto básico */
+}
+
+/* ----- Cabeçalho ----- */
+.react-datepicker__header {
+  background: rgb(var(--color-surface-200)) !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+/* Mês atual */
+.react-datepicker__current-month {
+  color: rgb(var(--color-typography-800)) !important;
+  font-weight: 600 !important;
+}
+
+/* ----- Selects (mês/ano) ----- */
+.react-datepicker__month-select,
+.react-datepicker__year-select {
+  border: 1px solid rgb(var(--color-typography-300)) !important;
+  background: rgb(var(--color-surface-200)) !important;
+  color: rgb(var(--color-typography-800)) !important;
+  padding: 8px !important;
+  cursor: pointer;
+  border-radius: 6px !important;
+  font-size: 0.8rem !important;
+  @apply hide-scrollbar;
+}
+
+
+.react-datepicker__month-select option:hover,
+.react-datepicker__year-select option:hover {
+  background-color: rgb(var(--color-surface-200)) !important;
+  color: rgb(var(--color-typography-700)) !important;
+}
+
+.react-datepicker__month-select option:checked,
+.react-datepicker__year-select option:checked {
+  background-color: rgb(var(--color-primary-200)) !important;
+  color: rgb(var(--color-typography-700)) !important;
+}
+
+/* ----- Dia da Semana (Dom, Seg, Ter...) ----- */
+.react-datepicker__day-name {
+  color: rgb(var(--color-typography-800)) !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+}
+
+/* ----- Dias Normais ----- */
+.react-datepicker__day {
+  color: rgb(var(--color-typography-700)) !important;
+  border-radius: 6px !important;
+}
+
+/* Hover nos dias */
+.react-datepicker__day:hover {
+  background: rgb(var(--color-surface-200)) !important;
+  color: rgb(var(--color-typography-800)) !important;
+}
+
+/* ----- Dia Selecionado ----- */
+.react-datepicker__day--selected {
+  background: rgb(var(--color-primary-200)) !important;
+  /* roxo leve */
+  color: rgb(var(--color-typography-200)) !important;
+}
+
+/* ----- Dia de hoje ----- */
+.react-datepicker__day--today {
+  border: 1px solid rgb(var(--color-primary-200)) !important;
+  background: rgb(var(--color-surface-200)) !important;
+  color: rgb(var(--color-typography-800)) !important;
+}
+
+/* ----- Dias fora do mês ----- */
+.react-datepicker__day--outside-month {
+  color: #9ca3af !important;
+}
+
+/* ----- Setas de navegação ----- */  
+.react-datepicker__navigation-icon::before {
+  border-color: rgb(var(--color-primary-200)) !important;
 }
