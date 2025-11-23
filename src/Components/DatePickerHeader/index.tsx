@@ -19,7 +19,7 @@ export function DatePickerHeader({
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
 
-    const years = Array.from({ length: 80 }, (_, i) => 1980 + i);
+    const years = Array.from({ length: 80 }, (_, i) => 1900 + i);
 
     function handleMonthChange(month: string) {
         changeMonth(months.indexOf(month));
