@@ -278,7 +278,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
 
                     <CheckboxUnique disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false} visibleLabel label="Tipo de trabalho" options={optionsCheckbox[0]} handleCheckboxChange={(selectedItems) => handleCheckboxWorkType(selectedItems)} checked={workType}>
                         {workType === "Outra" ? (
-                            <>
+                            <div className="px-2">
                                 <Input
                                     readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                                     type={"text"}
@@ -291,7 +291,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                                     invalid={errors?.work_type?.message ? 'invalido' : ''}
                                 />
                                 {errors?.work_type?.type && <InputError type={errors?.work_type?.type} field='work_type' />}
-                            </>
+                            </div>
                         ) : null}
                     </CheckboxUnique>
 
