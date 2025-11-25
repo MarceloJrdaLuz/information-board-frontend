@@ -253,7 +253,8 @@ export enum Privileges {
     LEITOR = "Leitor",
     PRESIDENTE = "Presidente",
     INDICADOR = "Indicador",
-    MICROFONEVOLANTE = "Microfone Volante"
+    MICROFONEVOLANTE = "Microfone Volante",
+    DIRIGENTECAMPO = "Dirigente de Campo"
 }
 
 export enum PrivilegesMinistry {

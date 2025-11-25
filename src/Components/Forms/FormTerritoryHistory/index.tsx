@@ -1,11 +1,14 @@
 import { atomTerritoryHistoryAction, buttonDisabled, errorFormSend, successFormSend, territoryHistoryToUpdate } from "@/atoms/atom"
 import Button from "@/Components/Button"
+import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
-import { useAuthContext } from "@/context/AuthContext"
+import DropdownObject from "@/Components/DropdownObjects"
 import { useTerritoryContext } from "@/context/TerritoryContext"
-import { CreateTerritoryHistoryArgs, UpdateTerritoryHistoryArgs } from "@/types/territory"
-import { WORKTYPESTERRITORY } from "@/types/types"
+import { sortArrayByProperty } from "@/functions/sortObjects"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { CreateTerritoryHistoryArgs, IFieldConductors, UpdateTerritoryHistoryArgs } from "@/types/territory"
+import { IPublisher, WORKTYPESTERRITORY } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtom, useAtomValue } from "jotai"
 import { EditIcon, Trash } from "lucide-react"
@@ -19,7 +22,6 @@ import Input from "../../Input"
 import InputError from "../../InputError"
 import FormStyle from "../FormStyle"
 import { FormValues, ITerritoryHiistoryFormProps } from "./types"
-import { mutate } from "swr"
 
 
 export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHiistoryFormProps) {
@@ -34,9 +36,28 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
     const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
     const [workTypeInput, setWorkTypeInput] = useState("")
     const optionsCheckbox = useState<string[]>(Object.values(WORKTYPESTERRITORY))
+    const [fieldConductors, setFieldConductors] = useState<IFieldConductors[]>()
+    const [selectedItem, setSelectedItem] = useState<IFieldConductors | null>(null)
+    const [conductorManually, setConductorManually] = useState(false)
+    const isEditing = territoryHistory && territoryHistory.id === territoryHistoryToUpdateId;
+
+    const { data } = useAuthorizedFetch<IFieldConductors[]>('/form-data?form=territoryHistory', {
+        allowedRoles: ['ADMIN_CONGREGATION', 'TERRITORY_MANAGER']
+    })
+
+    useEffect(() => {
+        if (data) {
+            const sorted = sortArrayByProperty(data, 'fullName')
+            setFieldConductors(sorted)
+        }
+    }, [data])
 
     const validationSchema = yup.object({
-        caretaker: yup.string().required(),
+        caretaker: yup.string().when([], {
+            is: () => conductorManually === true,
+            then: yup.string().required(),
+            otherwise: yup.string().nullable(),
+        }),
         assignment_date: yup.date().required(),
         completion_date: yup.date().nullable(),
         work_type: yup.string().when([], {
@@ -45,7 +66,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         }),
     })
 
-    const { register, handleSubmit, formState: { errors }, watch } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm({
         defaultValues: {
             caretaker: territoryHistory ? territoryHistory?.caretaker : "",
             assignment_date: territoryHistory ? territoryHistory?.assignment_date : null,
@@ -63,6 +84,20 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         }
     }, [watchedWorkType, workType]);
 
+    const handleCheckBoxConductorManually = (checked: boolean) => {
+        setConductorManually(checked)
+        setSelectedItem(null)
+        if (!checked) {
+            // limpando campo manual do caretaker
+            setValue("caretaker", "")
+        }
+    }
+
+    const handleSelectChange = (item: IFieldConductors) => {
+        setSelectedItem(item)
+        setValue("caretaker", "")
+    }
+
     useEffect(() => {
         if (territoryHistory?.work_type !== undefined) {
             !Object.values(WORKTYPESTERRITORY).includes(territoryHistory?.work_type as WORKTYPESTERRITORY) ? setWorkType("Outra") : setWorkType(territoryHistory.work_type)
@@ -74,6 +109,11 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
     }
 
     async function onSubmit(data: FormValues) {
+        function getCaretakerName(item?: IPublisher | null, fallback?: string) {
+            if (!item) return fallback ?? "";
+            return item.nickname?.trim() ? item.nickname : item.fullName;
+        }
+
         const territoryId = typeof territory_id === 'string' ? territory_id : ''
 
         switch (workType) {
@@ -89,7 +129,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
             const payload: UpdateTerritoryHistoryArgs = {
                 territoryHistory_id: territoryHistoryToUpdateId,
                 territory_id: territoryId,
-                caretaker: data.caretaker,
+                caretaker: getCaretakerName(selectedItem, data.caretaker),
                 assignment_date: data.assignment_date,
                 completion_date: data.completion_date,
                 work_type: data.work_type,
@@ -97,10 +137,11 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
             toast.promise(updateTerritoryHistory(payload), {
                 pending: 'Atualizando histórico do território...',
             })
+            setConductorManually(false)
         } else {
             const payload: CreateTerritoryHistoryArgs = {
                 territory_id: territoryId,
-                caretaker: data.caretaker,
+                caretaker: getCaretakerName(selectedItem, data.caretaker),
                 assignment_date: data.assignment_date,
                 completion_date: data.completion_date,
                 work_type: data.work_type,
@@ -108,6 +149,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
             toast.promise(createTerritoryHistory(payload), {
                 pending: 'Criando histórico do território...'
             })
+            setConductorManually(false)
         }
     }
 
@@ -156,17 +198,62 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
 
                     </div>
                     }
-                    <Input
-                        readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
-                        type={"text"}
-                        placeholder={territoryHistory ? territoryHistory.caretaker : "Dirigente"}
-                        registro={{
-                            ...register('caretaker', {
-                                required: 'Campo Obrigatório'
-                            })
-                        }}
-                    />
-                    {errors?.caretaker?.type && <InputError type={errors?.caretaker?.type} field='caretaker' />}
+                    <div className=" flex flex-col">
+                        <div className="flex flex-col gap-2 mt-5">
+                            {(isEditing || territoryHistoryAction === "create") && (
+                                <CheckboxBoolean
+                                    checked={conductorManually}
+                                    handleCheckboxChange={handleCheckBoxConductorManually}
+                                    label="Dirigente manualmente"
+                                />
+                            )}
+                            {isEditing || territoryHistoryAction === "create" ? (
+                                <>
+                                    {!conductorManually ? (
+                                        fieldConductors && (
+                                            <div className="my-3">
+                                                <DropdownObject<IPublisher>
+                                                    title="Dirigente de Campo"
+                                                    items={fieldConductors}
+                                                    selectedItem={selectedItem}
+                                                    handleChange={handleSelectChange}
+                                                    labelKey="fullName"
+                                                    border
+                                                    textVisible
+                                                    full
+                                                    textAlign='left'
+                                                    searchable
+                                                />
+                                            </div>
+                                        )
+                                    ) : (
+                                        <>
+                                            <Input
+                                                type="text"
+                                                placeholder="Dirigente"
+                                                registro={{
+                                                    ...register('caretaker', {
+                                                        required: 'Campo Obrigatório',
+                                                    })
+                                                }}
+                                            />
+                                            {errors?.caretaker?.type &&
+                                                <InputError type={errors?.caretaker?.type} field='caretaker' />
+                                            }
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <Input
+                                    readOnly
+                                    disabled
+                                    type="text"
+                                    value={territoryHistory?.caretaker || ""}
+                                />
+                            )}
+                        </div>
+
+                    </div>
                     <Input
                         readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                         type="date"
