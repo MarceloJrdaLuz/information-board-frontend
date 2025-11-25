@@ -51,3 +51,5 @@ export type CreateTerritoryHistoryArgs = {
 }
 
 export type UpdateTerritoryHistoryArgs = CreateTerritoryHistoryArgs  & {territoryHistory_id}
+
+export type IFieldConductors = IPublisher
