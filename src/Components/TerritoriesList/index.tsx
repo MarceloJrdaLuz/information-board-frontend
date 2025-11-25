@@ -1,5 +1,6 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { useTerritoryContext } from "@/context/TerritoryContext"
+import { shortenName } from "@/functions/reduzirNome"
 import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { ITerritory } from "@/types/territory"
@@ -84,27 +85,27 @@ export default function TerritoriesList() {
                                     className="flex justify-between items-center px-6 py-4 cursor-pointer"
                                     onClick={() => handleShowDetails(territory)}
                                 >
-                                    <div className="flex flex-col">
-                                        <h3 className="font-semibold text-lg text-typography-900">
+                                    <div className="flex flex-col min-w-[60%] max-w-[75%]">
+                                        <h3 className="font-semibold text-sm xs:text-base sm:text-lg text-typography-900">
                                             {`Território ${territory.number}: ${territory.name}`}
                                         </h3>
-                                        <span className="text-sm text-typography-500 mt-1">
+                                        <span className="text-xs sm:text-sm text-typography-500 mt-1">
                                             {territory.description || "Sem descrição"}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex flex-col-reverse sm:flex-row items-end sm:items-center gap-2 sm:gap-3">
                                         {activeHistory ? (
-                                            <span className="flex items-center gap-1 text-success-100 text-sm">
+                                            <span className="flex items-center gap-1 text-success-100 text-xs sm:text-sm">
                                                 <CircleIcon className="fill-success-100 w-3 h-3" />
-                                                {activeHistory.caretaker}
+                                                <span className="whitespace-nowrap">{shortenName(activeHistory.caretaker)}</span>
                                             </span>
                                         ) : (
-                                            <CircleIcon className="fill-red-500 text-red-500 w-3 h-3" />
+                                            <CircleIcon className="fill-red-500 text-red-500 w-3 h-3 self-center" />
                                         )}
 
                                         <FileClockIcon
-                                            className="text-primary-200 hover:text-primary-100 cursor-pointer"
+                                            className="text-primary-200 hover:text-primary-100 cursor-pointer w-5 h-5"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 Router.push(`/congregacao/territorios/historico/${territory.id}`);
