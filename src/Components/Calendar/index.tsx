@@ -89,7 +89,7 @@ const CustomInput = forwardRef(({ value, onClick, label, disabled }: any, ref: a
         ref={ref}
         className={`flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] border text-sm rounded-lg
         ${disabled
-                ? "bg-typography-300 text-typography-700 border-transparent  cursor-not-allowed"
+                ? "bg-surface-300 text-typography-700 border-transparent  cursor-not-allowed"
                 : "bg-transparent text-typography-700 border-blue-gray-200 cursor-pointer"
             }
       `}
