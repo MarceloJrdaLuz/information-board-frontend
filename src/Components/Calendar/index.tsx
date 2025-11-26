@@ -1,21 +1,23 @@
-import ptBR from 'date-fns/locale/pt-BR';
-import { CalendarIcon } from 'lucide-react';
-import { forwardRef } from 'react';
+import ptBR from 'date-fns/locale/pt-BR'
+import { CalendarIcon } from 'lucide-react'
+import { forwardRef } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'; // Estilos padrão do DatePicker
+import 'react-datepicker/dist/react-datepicker.css' // Estilos padrão do DatePicker
 registerLocale('pt-BR', ptBR)
-import moment from "moment";
-import 'react-datepicker/dist/react-datepicker.css';
-import { DatePickerHeader } from '../DatePickerHeader';
+import moment from "moment"
+import 'react-datepicker/dist/react-datepicker.css'
+import { DatePickerHeader } from '../DatePickerHeader'
 
-registerLocale('pt-BR', ptBR);
+registerLocale('pt-BR', ptBR)
 
 interface CalendarProps {
-    handleDateChange: (date: string | null) => void;
-    selectedDate: string | null;
-    minDate?: string | null;
-    label: string;
+    handleDateChange: (date: string | null) => void
+    selectedDate: string | null
+    minDate?: string | null
+    label: string
     titleHidden?: boolean
+    disabled?: boolean
+    full?: boolean
 }
 
 export default function Calendar({
@@ -23,37 +25,40 @@ export default function Calendar({
     selectedDate,
     minDate,
     label,
-    titleHidden
+    titleHidden,
+    disabled = false,
+    full = false
 }: CalendarProps) {
 
     // Converte string -> Date para exibir no DatePicker
     const parsedSelected = selectedDate
         ? moment(selectedDate, "YYYY-MM-DD").toDate()
-        : null;
+        : null
 
     const parsedMin = minDate
         ? moment(minDate, "YYYY-MM-DD").toDate()
-        : null;
+        : null
 
     return (
         <div>
             {!titleHidden && <h1 className="font-bold my-2 text-typography-700">{label}</h1>}
 
             <DatePicker
-
-                customInput={<CustomInput label={label} />}
+                wrapperClassName={full ? "w-full" : ""}
+                disabled={disabled}
+                customInput={<CustomInput label={label} disabled={disabled} />}
                 locale="pt-BR"
                 selected={parsedSelected}
                 minDate={parsedMin}
                 dateFormat="dd/MM/yyyy"
                 onChange={(date: Date | null) => {
                     if (!date) {
-                        handleDateChange(null);
-                        return;
+                        handleDateChange(null)
+                        return
                     }
                     // Date -> "YYYY-MM-DD"
-                    const formatted = moment(date).format("YYYY-MM-DD");
-                    handleDateChange(formatted);
+                    const formatted = moment(date).format("YYYY-MM-DD")
+                    handleDateChange(formatted)
                 }}
                 showMonthDropdown
                 showYearDropdown
@@ -71,22 +76,28 @@ export default function Calendar({
                 )}
             />
         </div>
-    );
+    )
 }
 
 
 
-const CustomInput = forwardRef(({ value, onClick, label }: any, ref: any) => (
+const CustomInput = forwardRef(({ value, onClick, label, disabled }: any, ref: any) => (
     <button
         type="button"
-        onClick={onClick}
+        onClick={!disabled ? onClick : undefined}
+        disabled={disabled}
         ref={ref}
-        className="flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] text-sm text-typography-700 border-[1px] border-blue-gray-200 rounded-lg bg-transparent"
+        className={`flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] border text-sm rounded-lg
+        ${disabled
+                ? "bg-typography-300 text-typography-700 border-transparent  cursor-not-allowed"
+                : "bg-transparent text-typography-700 border-blue-gray-200 cursor-pointer"
+            }
+      `}
     >
         <span>{value || label}</span>
-        <CalendarIcon className="w-4 h-4 text-typography-700" />
+        <CalendarIcon className={`w-4 h-4 text-typography-700`} />
     </button>
-));
+))
 
-CustomInput.displayName = "CustomInput";
+CustomInput.displayName = "CustomInput"
 
