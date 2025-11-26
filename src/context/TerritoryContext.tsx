@@ -31,7 +31,7 @@ type TerritoryContextTypes = {
         { territory_id }: DeleteTerritoryArgs
     ) => Promise<any>
     deleteTerritoryHistory: (
-        { territoryHistory_id, territory_id }: DeleteTerritoryHistoryArgs
+        { territoryHistory_id }: DeleteTerritoryHistoryArgs
     ) => Promise<any>
 }
 
@@ -50,7 +50,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     const [territoriesHistory, setTerritoriesHistory] = useState<ITerritoryHistory[] | undefined>()
     const [territories, setTerritories] = useState<ITerritory[] | undefined>()
     
-    const { data } = useAuthorizedFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "", {
+    const { data, mutate } = useAuthorizedFetch<ITerritoryHistory[]>(congregationId ? `/territoriesHistory/${congregationId}` : "", {
         allowedRoles: ["ADMIN_CONGREGATION","TERRITORIES_MANAGER" ]
     })
 
@@ -141,9 +141,8 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     async function deleteTerritory(
         { territory_id }: DeleteTerritoryArgs
     ) {
-        const congregation_id = congregationId
         await api.delete(`${API_ROUTES.TERRITORY}/${territory_id}`).then(res => {
-            mutate(`/territories/${congregation_id}`)
+            mutate()
             handleSubmitSuccess(messageSuccessSubmit.territoryDelete)
         }).catch(err => {
             const { response: { data: { message } } } = err
@@ -170,7 +169,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
             if (uploadedFile) {
                 setUploadedFile(null)
             }
-            mutate(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`)
+            mutate()
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
@@ -179,7 +178,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     }
 
     async function updateTerritoryHistory(
-        { assignment_date, caretaker, territoryHistory_id, completion_date, work_type, territory_id }: UpdateTerritoryHistoryArgs
+        { assignment_date, caretaker, territoryHistory_id, completion_date, work_type }: UpdateTerritoryHistoryArgs
     ) {
 
         await api.put(`${API_ROUTES.TERRITORYHISTORY}/${territoryHistory_id}`, {
@@ -196,7 +195,7 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
             if (uploadedFile) {
                 setUploadedFile(null)
             }
-            mutate(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`)
+            mutate()
         }).catch(err => {
             const { response: { data: { message } } } = err
             if (message === "The assignment date must be before or equal to the completion date") {
@@ -208,10 +207,10 @@ function TerritoryProvider(props: TerritoryContextProviderProps) {
     }
 
     async function deleteTerritoryHistory(
-        { territoryHistory_id, territory_id }: DeleteTerritoryHistoryArgs
+        { territoryHistory_id }: DeleteTerritoryHistoryArgs
     ) {
         await api.delete(`${API_ROUTES.TERRITORYHISTORY}/${territoryHistory_id}`).then(res => {
-            mutate(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`)
+            mutate()
             handleSubmitSuccess(messageSuccessSubmit.territoryHistoryDelete)
         }).catch(err => {
             const { response: { data: { message } } } = err

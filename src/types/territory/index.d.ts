@@ -1,3 +1,5 @@
+import { IPublisher } from "../types"
+
 export type CreateTerritoryArgs = {
     name: string
     number: number
@@ -17,7 +19,6 @@ export type DeleteTerritoryArgs = {
 
 export type DeleteTerritoryHistoryArgs = {
     territoryHistory_id: string
-    territory_id: string
 }
 
 export interface ITerritory {
@@ -50,6 +51,6 @@ export type CreateTerritoryHistoryArgs = {
     completion_date?: string | null
 }
 
-export type UpdateTerritoryHistoryArgs = CreateTerritoryHistoryArgs  & {territoryHistory_id}
+export type UpdateTerritoryHistoryArgs = Omit<CreateTerritoryHistoryArgs, "territory_id"> & {territoryHistory_id}
 
 export type IFieldConductors = IPublisher

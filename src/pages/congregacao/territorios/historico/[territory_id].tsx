@@ -4,30 +4,55 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import FormTerritoryHistory from "@/Components/Forms/FormTerritoryHistory"
 import { atomTerritoryHistoryAction, crumbsAtom, pageActiveAtom, territoryHistoryToUpdate } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
+import { useTerritoryContext } from "@/context/TerritoryContext"
 import { sortByCompletionDate } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
-import { ITerritoryHistory } from "@/types/territory"
+import { CreateTerritoryHistoryArgs, DeleteTerritoryHistoryArgs, ITerritoryHistory, UpdateTerritoryHistoryArgs } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { FileClockIcon, InfoIcon } from "lucide-react"
 import { useRouter } from "next/router"
 import { ReactElement, useEffect } from "react"
 import { FormProvider, useForm } from 'react-hook-form'
+import { toast } from "react-toastify"
 
 function EditHistoryTerritoryPage() {
     const router = useRouter()
     const { territory_id } = router.query
     const methods = useForm()
+    const { createTerritoryHistory, updateTerritoryHistory, deleteTerritoryHistory } = useTerritoryContext()
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [territoryHistoryAction, setTerritoryHistoryAction] = useAtom(atomTerritoryHistoryAction)
     const [, setTerritorHistoryToUpdateId] = useAtom(territoryHistoryToUpdate)
 
-    const { data: getHistory } = useAuthorizedFetch<ITerritoryHistory[]>(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`, {
+    const { data: getHistory, mutate } = useAuthorizedFetch<ITerritoryHistory[]>(`${API_ROUTES.TERRITORYHISTORY}/${territory_id}`, {
         allowedRoles: ["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"]
     })
+
+    async function handleCreate(data: CreateTerritoryHistoryArgs) {
+        await toast.promise(createTerritoryHistory(data), {
+            pending: 'Criando histórico do território...'
+        })
+        mutate()
+    }
+
+    async function handleUpdate(data: UpdateTerritoryHistoryArgs) {
+        await toast.promise(updateTerritoryHistory(data), {
+            pending: 'Atualizando histórico do território...'
+        })
+        mutate()
+    }
+
+    async function handleDelete(data: DeleteTerritoryHistoryArgs) {
+        await toast.promise(deleteTerritoryHistory(data), {
+            pending: 'Excluindo histórico do território...'
+        })
+        mutate()
+    }
+
 
     useEffect(() => {
         setTerritoryHistoryAction("")
@@ -59,8 +84,8 @@ function EditHistoryTerritoryPage() {
             <FormProvider {...methods}>
                 <section className="flex flex-wrap justify-around ">
                     <div className="w-full m-5 flex justify-start">
-
                         <div className="flex justify-start items-start flex-wrap">
+                        {getHistory && <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-typography-700 font-semibold">{`${getHistory[0].territory.number} - ${getHistory[0].territory.name}`}</h1>}
                             <div className="w-full flex flex-start">
                                 {!getHistory?.some(history => history.completion_date === null) &&
                                     <Button
@@ -86,11 +111,20 @@ function EditHistoryTerritoryPage() {
 
                     </div>
                     {territoryHistoryAction === "create" && (
-                        <FormTerritoryHistory key="new" territoryHistory={null} />
+                        <FormTerritoryHistory
+                            key="new"
+                            territoryHistory={null}
+                            onCreate={handleCreate}
+                        />
                     )}
                     {getHistory && getHistory.length > 0 ? (
                         sortByCompletionDate(getHistory).map((history) => (
-                            <FormTerritoryHistory key={history.id} territoryHistory={history} />
+                            <FormTerritoryHistory
+                                key={history.id}
+                                territoryHistory={history}
+                                onDelete={handleDelete}
+                                onUpdate={handleUpdate}
+                            />
                         ))
                     ) : (
                         territoryHistoryAction !== "create" &&
@@ -111,5 +145,5 @@ EditHistoryTerritoryPage.getLayout = (page: ReactElement) =>
     withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
         <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
     )
-    
+
 export default EditHistoryTerritoryPage
