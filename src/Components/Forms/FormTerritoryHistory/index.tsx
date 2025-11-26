@@ -1,10 +1,10 @@
 import { atomTerritoryHistoryAction, buttonDisabled, errorFormSend, successFormSend, territoryHistoryToUpdate } from "@/atoms/atom"
 import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
 import DropdownObject from "@/Components/DropdownObjects"
-import { useTerritoryContext } from "@/context/TerritoryContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { CreateTerritoryHistoryArgs, IFieldConductors, UpdateTerritoryHistoryArgs } from "@/types/territory"
@@ -12,6 +12,7 @@ import { IPublisher, WORKTYPESTERRITORY } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtom, useAtomValue } from "jotai"
 import { EditIcon, Trash } from "lucide-react"
+import moment from "moment"
 import 'moment/locale/pt-br'
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -24,8 +25,7 @@ import FormStyle from "../FormStyle"
 import { FormValues, ITerritoryHiistoryFormProps } from "./types"
 
 
-export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHiistoryFormProps) {
-    const { createTerritoryHistory, updateTerritoryHistory, deleteTerritoryHistory } = useTerritoryContext()
+export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpdate, onDelete }: ITerritoryHiistoryFormProps) {
     const router = useRouter()
     const { territory_id } = router.query
     const dataSuccess = useAtomValue(successFormSend)
@@ -40,10 +40,24 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
     const [selectedItem, setSelectedItem] = useState<IFieldConductors | null>(null)
     const [conductorManually, setConductorManually] = useState(false)
     const isEditing = territoryHistory && territoryHistory.id === territoryHistoryToUpdateId;
+    const [assignmentDate, setAssignmentDate] = useState<string | null>(null)
+    const [completionDate, setCompletionDate] = useState<string | null>(null)
 
     const { data } = useAuthorizedFetch<IFieldConductors[]>('/form-data?form=territoryHistory', {
         allowedRoles: ['ADMIN_CONGREGATION', 'TERRITORY_MANAGER']
     })
+
+    useEffect(() => {
+        if (territoryHistory && fieldConductors) {
+            const found = fieldConductors.find(
+                (item) => item.nickname === territoryHistory.caretaker || item.fullName === territoryHistory.caretaker
+            )
+            if (found) {
+                setSelectedItem(found)
+            }
+        }
+    }, [territoryHistory, fieldConductors])
+
 
     useEffect(() => {
         if (data) {
@@ -58,8 +72,6 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
             then: yup.string().required(),
             otherwise: yup.string().nullable(),
         }),
-        assignment_date: yup.date().required(),
-        completion_date: yup.date().nullable(),
         work_type: yup.string().when([], {
             is: () => workType === "Outra",
             then: yup.string().required(),
@@ -69,8 +81,6 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
     const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm({
         defaultValues: {
             caretaker: territoryHistory ? territoryHistory?.caretaker : "",
-            assignment_date: territoryHistory ? territoryHistory?.assignment_date : null,
-            completion_date: territoryHistory ? territoryHistory?.completion_date : null,
             work_type: territoryHistory ? String(territoryHistory.work_type || "") : ""
         },
         resolver: yupResolver(validationSchema)
@@ -80,7 +90,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
 
     useEffect(() => {
         if (workType === "Outra") {
-            setWorkTypeInput(watchedWorkType || ""); // Atualiza o estado com o valor monitorado
+            setWorkTypeInput(watchedWorkType || "");
         }
     }, [watchedWorkType, workType]);
 
@@ -88,12 +98,11 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         setConductorManually(checked)
         setSelectedItem(null)
         if (!checked) {
-            // limpando campo manual do caretaker
             setValue("caretaker", "")
         }
     }
 
-    const handleSelectChange = (item: IFieldConductors) => {
+    const handleSelectChange = (item: IFieldConductors | null) => {
         setSelectedItem(item)
         setValue("caretaker", "")
     }
@@ -128,27 +137,38 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         if (territoryHistoryAction === "update") {
             const payload: UpdateTerritoryHistoryArgs = {
                 territoryHistory_id: territoryHistoryToUpdateId,
-                territory_id: territoryId,
                 caretaker: getCaretakerName(selectedItem, data.caretaker),
-                assignment_date: data.assignment_date,
-                completion_date: data.completion_date,
+                assignment_date: assignmentDate,
+                completion_date: completionDate,
                 work_type: data.work_type,
             }
-            toast.promise(updateTerritoryHistory(payload), {
-                pending: 'Atualizando histórico do território...',
-            })
+            if (payload.caretaker === "") {
+                toast.info("Selecione um dirigente de campo ou preencha o nome do dirigente manualmente.")
+                return
+            }
+            if (!payload.assignment_date) {
+                toast.info("Preencha a data de designação.")
+                return
+            }
+            onUpdate && onUpdate(payload)
             setConductorManually(false)
         } else {
             const payload: CreateTerritoryHistoryArgs = {
                 territory_id: territoryId,
                 caretaker: getCaretakerName(selectedItem, data.caretaker),
-                assignment_date: data.assignment_date,
-                completion_date: data.completion_date,
+                assignment_date: assignmentDate,
+                completion_date: completionDate,
                 work_type: data.work_type,
             }
-            toast.promise(createTerritoryHistory(payload), {
-                pending: 'Criando histórico do território...'
-            })
+            if (payload.caretaker === "") {
+                toast.info("Selecione um dirigente de campo ou preencha o nome do dirigente manualmente.")
+                return
+            }
+            if (!payload.assignment_date) {
+                toast.info("Preencha a data de designação.")
+                return
+            }
+            onCreate && onCreate(payload)
             setConductorManually(false)
         }
     }
@@ -157,11 +177,8 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
-    async function onDelete(territoryHistory_id: string, territory_id: string) {
-        deleteTerritoryHistory({
-            territoryHistory_id,
-            territory_id
-        })
+    async function handleDelete(territoryHistory_id: string) {
+        onDelete && onDelete({ territoryHistory_id })
     }
 
     return (
@@ -173,8 +190,11 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                             <Button
                                 className="w-30"
                                 onClick={() => {
-                                    territoryHistory && setTerritoryHistoryToUpdateId(territoryHistory.id),
-                                        setTerritoryHistoryAction("update")
+                                    territoryHistory &&
+                                        setTerritoryHistoryToUpdateId(territoryHistory.id)
+                                    setAssignmentDate(territoryHistory.assignment_date)
+                                    setCompletionDate(territoryHistory.completion_date || null)
+                                    setTerritoryHistoryAction("update")
                                 }}
                                 outline
                                 type="button"
@@ -183,7 +203,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                                 Editar
                             </Button>
                             <ConfirmDeleteModal
-                                onDelete={() => onDelete(`${territoryHistory.id}`, `${territoryHistory.territory.id}`)}
+                                onDelete={() => handleDelete(territoryHistory.id)}
                                 button={
                                     <Button
                                         type="button"
@@ -212,7 +232,7 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                                     {!conductorManually ? (
                                         fieldConductors && (
                                             <div className="my-3">
-                                                <DropdownObject<IPublisher>
+                                                <DropdownObject<IFieldConductors>
                                                     title="Dirigente de Campo"
                                                     items={fieldConductors}
                                                     selectedItem={selectedItem}
@@ -254,28 +274,27 @@ export default function FormTerritoryHistory({ territoryHistory }: ITerritoryHii
                         </div>
 
                     </div>
-                    <Input
-                        readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
-                        type="date"
-                        placeholder={territoryHistory?.assignment_date ?? "Data da designação"}
-                        registro={{
-                            ...register('assignment_date')
-                        }}
-                        invalid={errors?.assignment_date?.message ? 'invalido' : ''}
-                    />
-                    {errors?.assignment_date?.type && <InputError type={errors?.assignment_date?.type} field='assignment_date' />}
-                    <Input
-                        readOnly={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
-                        type="date"
-                        placeholder={territoryHistory?.completion_date ?? "Data da conclusão"}
-                        maxLength={50}
-                        registro={{
-                            ...register('completion_date')
-                        }}
-                        invalid={errors?.completion_date?.message ? 'invalido' : ''}
-                    />
-                    {errors?.completion_date?.type && <InputError type={errors?.completion_date?.type} field='completion_date' />}
+                    <div className="flex flex-col w-full gap-2">
+                        <Calendar
+                            key="assignmentDate"
+                            label={territoryHistory?.assignment_date ? moment(territoryHistory?.assignment_date).format("DD/MM/YYYY") : "Data da designação"}
+                            disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
+                            titleHidden
+                            full
+                            handleDateChange={setAssignmentDate}
+                            selectedDate={assignmentDate}
+                        />
 
+                        <Calendar
+                            key="completionDate"
+                            label={territoryHistory?.completion_date ? moment(territoryHistory?.completion_date).format("DD/MM/YYYY") : "Data da conclusão"}
+                            disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
+                            full
+                            handleDateChange={setCompletionDate}
+                            selectedDate={completionDate}
+                            titleHidden
+                        />
+                    </div>
                     <CheckboxUnique disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false} visibleLabel label="Tipo de trabalho" options={optionsCheckbox[0]} handleCheckboxChange={(selectedItems) => handleCheckboxWorkType(selectedItems)} checked={workType}>
                         {workType === "Outra" ? (
                             <div className="px-2">

@@ -1,12 +1,14 @@
-import { ITerritoryHistory } from "@/types/territory"
+import { CreateTerritoryHistoryArgs, DeleteTerritoryHistoryArgs, ITerritoryHistory, UpdateTerritoryHistoryArgs } from "@/types/territory"
 
 export type FormValues = {
     caretaker: string
-    assignment_date:  string | null ,
-    completion_date?: string | null ,
     work_type?: string
 }
 
 export interface ITerritoryHiistoryFormProps {
     territoryHistory: ITerritoryHistory | null, 
+    onCreate?: (data: CreateTerritoryHistoryArgs) => Promise<void>,
+    onUpdate?: (data: UpdateTerritoryHistoryArgs) => Promise<void>,
+    onDelete?: (data: DeleteTerritoryHistoryArgs) => Promise<void>, 
 }
+
