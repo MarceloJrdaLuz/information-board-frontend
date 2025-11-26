@@ -356,8 +356,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 items={talkOptions ?? []}
                 selectedItem={talkOptions?.find(t => t.id === current.talk_id) || null}
                 handleChange={item => handleChange("talk_id", item)}
-                labelKey="number"
-                labelKeySecondary="displayLabel"
+                labelKey="displayLabel"
                 border
                 full
                 emptyMessage="Nenhum tema"
