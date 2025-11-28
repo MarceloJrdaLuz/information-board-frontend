@@ -3,8 +3,8 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
 import FilterSpeakersCongregation from "@/Components/FilterSpeakersCongregation"
-import GroupIcon from "@/Components/Icons/GroupIcon"
 import PdfIcon from "@/Components/Icons/PdfIcon"
+import SpeakerIcon from "@/Components/Icons/SpeakerIcon"
 import { ListGeneric } from "@/Components/ListGeneric"
 import SkeletonSpeakersList from "@/Components/SkeletonSpeakersList"
 import SpeakersListPdf from "@/Components/SpeakerListPdf"
@@ -133,7 +133,7 @@ function SpeakersPage() {
                                 Router.push('/arranjo-oradores/oradores/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <GroupIcon />
+                            <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
                             <span className="text-primary-200 font-semibold">Criar orador</span>
                         </Button>
                         {speakers && <span className="text-sm text-typography-800">Total: {speakers.length}</span>}

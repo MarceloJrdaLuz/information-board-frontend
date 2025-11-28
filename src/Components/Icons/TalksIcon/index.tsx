@@ -1,15 +1,7 @@
-import React, { ElementType } from "react"
-
-interface TalkIconProps {
-  w: string
-  h: string
-}
-
-const TalkIcon: ElementType = ({ w = "24", h = "24" }: TalkIconProps) => {
+export default function TalkIcon({ className }: { className?: string }) {
   return (
     <svg
-      width={w}
-      height={h}
+      className={className}
       viewBox="0 0 356.484 356.484"
       xmlns="http://www.w3.org/2000/svg"
       xmlSpace="preserve"
@@ -32,5 +24,3 @@ const TalkIcon: ElementType = ({ w = "24", h = "24" }: TalkIconProps) => {
     </svg>
   )
 }
-
-export default TalkIcon

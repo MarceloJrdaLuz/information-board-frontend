@@ -67,7 +67,7 @@ function AuxiliaryCongregationsPage() {
                                 Router.push('/arranjo-oradores/congregacoes/add')
                             }}
                             className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <SalonIcon />
+                            <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
                             <span className="text-primary-200 font-semibold">Criar congregação</span>
                         </Button>
                         {congregations && <span className="text-sm text-typography-800">Total: {congregations.length}</span>}

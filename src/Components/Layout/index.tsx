@@ -78,10 +78,10 @@ export default function Layout(props: LayoutProps) {
                     <NavBar.Options
                         title="Início"
                         onClick={() => {
-                            {!isDesktop && setIsMenuOpen(false)}
+                            { !isDesktop && setIsMenuOpen(false) }
                             Router.push('/dashboard')
                         }}
-                        icon={HomeIcon}
+                        icon={() => <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                         active={pageActive === '/dashboard'}
                     />
 
@@ -89,10 +89,10 @@ export default function Layout(props: LayoutProps) {
                         <NavBar.Options
                             title="Meus relatórios"
                             onClick={() => {
-                                {!isDesktop && setIsMenuOpen(false)}
+                                { !isDesktop && setIsMenuOpen(false) }
                                 Router.push('/meus-relatorios')
                             }}
-                            icon={MyReportsIcon}
+                            icon={() => <MyReportsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             active={pageActive === '/meus-relatorios'}
                         />
 
@@ -114,19 +114,20 @@ export default function Layout(props: LayoutProps) {
                                 showList={openSubMenu === 'congregacao'}
                                 onClick={() => toggleSubMenu('congregacao')}
                                 title="Congregação"
-                                icon={SalonIcon}
+                                icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 {(isAdminCongregation ||
                                     roleContains('PUBLISHERS_MANAGER') ||
                                     roleContains('PUBLISHERS_VIEWER') ||
                                     roleContains('TALK_MANAGER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Publicadores"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/congregacao/publicadores')
                                         }}
-                                        icon={PublisherIcon}
+                                        icon={() => <PublisherIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/congregacao/publicadores'}
                                     />
                                 }
@@ -135,12 +136,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('GROUPS_MANAGER') ||
                                     roleContains('GROUPS_VIEWER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Grupos de Campo"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/congregacao/grupos')
                                         }}
-                                        icon={GroupIcon}
+                                        icon={() => <GroupIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
                                         active={pageActive === '/congregacao/grupos'}
                                     />
                                 }
@@ -150,12 +152,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('REPORTS_VIEWER')
                                 ) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Relatórios"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
                                         }}
-                                        icon={ReportIcon}
+                                        icon={() => <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === `/congregacao/relatorios/[congregationId]`}
                                     />
                                 }
@@ -164,12 +167,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('ASSISTANCE_MANAGER') ||
                                     roleContains('ASSISTANCE_VIEWER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Assistência"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
                                         }}
-                                        icon={FileTextIcon}
+                                        icon={() => <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === `/congregacao/assistencia/[congregationId]`}
                                     />
                                 }
@@ -178,12 +182,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('TERRITORIES_MANAGER') ||
                                     roleContains('TERRITORIES_VIEWER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Territórios"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/congregacao/territorios`)
                                         }}
-                                        icon={TerritoryIcon}
+                                        icon={() => <TerritoryIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/congregacao/territorios'}
                                     />
                                 }
@@ -192,12 +197,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('PUBLISHERS_MANAGER') ||
                                     roleContains('PUBLISHERS_VIEWER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Contatos de emergência"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/congregacao/contatos-emergencia`)
                                         }}
-                                        icon={EmergencyContactIcon}
+                                        icon={() => <EmergencyContactIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/congregacao/contatos-emergencia'}
                                     />
                                 }
@@ -213,90 +219,97 @@ export default function Layout(props: LayoutProps) {
                                 showList={openSubMenu === 'arranjo-oradores'}
                                 onClick={() => toggleSubMenu('arranjo-oradores')}
                                 title="Arranjo de oradores"
-                                icon={PublicMeetingIcon}
+                                icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 {isAdminCongregation &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Administração"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/arranjo-oradores/administracao`)
                                         }}
-                                        icon={KanbanSquareIcon}
+                                        icon={() => <KanbanSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/arranjo-oradores/administracao'}
                                     />}
                                 {(isAdmin ||
                                     isAdminCongregation ||
                                     roleContains('TALK_MANAGER')) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Discursos"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push(`/arranjo-oradores/discursos`)
                                         }}
-                                        icon={TalkIcon}
+                                        icon={() => <TalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/arranjo-oradores/discursos'}
                                     />}
                                 {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
                                     <>
                                         <NavBar.Options
+                                            isSubItem
                                             title="Programação"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/programacao`)
                                             }}
-                                            icon={CalendarMicIcon}
+                                            icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/programacao'}
                                         />
                                         <NavBar.Options
+                                            isSubItem
                                             title="Saída de oradores"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/saida-oradores`)
                                             }}
-                                            icon={ExternalTalkIcon}
+                                            icon={() => <ExternalTalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/saida-oradores'}
                                         />
                                         <NavBar.Options
+                                            isSubItem
                                             title="Oradores"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/oradores`)
                                             }}
-                                            icon={SpeakerIcon}
+                                            icon={() => <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/oradores'}
                                         />
 
                                         <NavBar.Options
+                                            isSubItem
                                             title="Congregações"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/congregacoes`)
                                             }}
-                                            icon={SalonIcon}
+                                            icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/congregacoes'}
                                         />
                                         <NavBar.Options
+                                            isSubItem
                                             title="Grupos de hospitalidade"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/grupos-hospitalidade`)
                                             }}
-                                            icon={GroupIcon}
+                                            icon={() => <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/grupos-hospitalidade'}
                                         />
                                         <NavBar.Options
+                                            isSubItem
                                             title="Programação de hospitalidade"
                                             onClick={() => {
-                                                {!isDesktop && setIsMenuOpen(false)}
+                                                { !isDesktop && setIsMenuOpen(false) }
                                                 Router.push(`/arranjo-oradores/programacao-hospitalidade`)
                                             }}
-                                            icon={UtensilsIcon}
+                                            icon={() => <UtensilsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive === '/arranjo-oradores/programacao-hospitalidade'}
                                         />
                                     </>
                                 }
-
                             </NavBar.ListOptions>
                         }
 
@@ -306,25 +319,27 @@ export default function Layout(props: LayoutProps) {
                                 showList={openSubMenu === 'reunioes'}
                                 onClick={() => toggleSubMenu('reunioes')}
                                 title="Reuniões"
-                                icon={MeetingIcon}
+                                icon={() => <MeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 <NavBar.Options
+                                    isSubItem
                                     title="Meio de semana"
                                     onClick={() => {
-                                        {!isDesktop && setIsMenuOpen(false)}
+                                        { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/reunioes/meiodesemana`)
                                     }}
-                                    icon={LifeAndMinistry}
+                                    icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === '/reunioes/meiodesemana'}
                                 />
 
                                 <NavBar.Options
+                                    isSubItem
                                     title="Fim de semana"
                                     onClick={() => {
-                                        {!isDesktop && setIsMenuOpen(false)}
+                                        { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/reunioes/fimdesemana`)
                                     }}
-                                    icon={PublicMeetingIcon}
+                                    icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === '/reunioes/fimdesemana'}
                                 />
                             </NavBar.ListOptions>
@@ -336,25 +351,27 @@ export default function Layout(props: LayoutProps) {
                                 showList={openSubMenu === 'pregacao'}
                                 onClick={() => toggleSubMenu('pregacao')}
                                 title="Pregação"
-                                icon={PreachingIcon}
+                                icon={() => <PreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 <NavBar.Options
+                                    isSubItem
                                     title="Saídas de campo"
                                     onClick={() => {
-                                        {!isDesktop && setIsMenuOpen(false)}
+                                        { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/pregacao/saidasdecampo`)
                                     }}
-                                    icon={PrechingHomeIcon}
+                                    icon={() => <PrechingHomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === '/pregacao/saidasdecampo'}
                                 />
 
                                 <NavBar.Options
+                                    isSubItem
                                     title="Testemunho público"
                                     onClick={() => {
-                                        {!isDesktop && setIsMenuOpen(false)}
+                                        { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/pregacao/testemunhopublico`)
                                     }}
-                                    icon={PublicPreachingIcon}
+                                    icon={() => <PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === '/pregacao/testemunhopublico'}
                                 />
                             </NavBar.ListOptions>
@@ -364,10 +381,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Usuários"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/usuarios')
                                 }}
-                                icon={UsersIcon}
+                                icon={() => <UsersIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/usuarios'}
                             />
                         }
@@ -376,10 +393,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Permissões"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/permissoes')
                                 }}
-                                icon={SecurityIcon}
+                                icon={() => <SecurityIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/permissoes'}
                             />
                         }
@@ -388,10 +405,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Categorias"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/categorias')
                                 }}
-                                icon={SquareStackIcon}
+                                icon={() => <SquareStackIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/categorias'}
                             />
                         }
@@ -400,10 +417,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Congregações"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/congregacoes')
                                 }}
-                                icon={SalonIcon}
+                                icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/congregacoes'}
                             />
                         }
@@ -412,10 +429,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Limpeza"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/limpeza')
                                 }}
-                                icon={CleanIcon}
+                                icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
                                 active={pageActive === '/limpeza'}
                             />
                         }
@@ -425,10 +442,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Contas"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/contas')
                                 }}
-                                icon={CalculatorIcon}
+                                icon={() => <CalculatorIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/contas'}
                             />
                         }
@@ -437,10 +454,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Eventos especiais"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/eventosespeciais')
                                 }}
-                                icon={CalendarDaysIcon}
+                                icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/eventosespeciais'}
                             />
                         }
@@ -449,10 +466,10 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Anúncios"
                                 onClick={() => {
-                                    {!isDesktop && setIsMenuOpen(false)}
+                                    { !isDesktop && setIsMenuOpen(false) }
                                     Router.push('/anuncios')
                                 }}
-                                icon={NoticesIcon}
+                                icon={() => <NoticesIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive === '/anuncios'}
                             />
                         }
@@ -463,71 +480,75 @@ export default function Layout(props: LayoutProps) {
                                 showList={openSubMenu === 'administracao'}
                                 onClick={() => toggleSubMenu('administracao')}
                                 title="Administração"
-                                icon={SecurityIcon}
+                                icon={() => <SecurityIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
 
                                 {isAdmin &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Funções"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/funcoes')
                                         }}
-                                        icon={FunctionSquareIcon}
+                                        icon={() => <FunctionSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/administracao/funcoes'}
                                     />
                                 }
 
                                 {isAdmin &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Uso do sistema"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/controle-uso')
                                         }}
-                                        icon={LineChart}
+                                        icon={() => <LineChart className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/administracao/controle-uso'}
                                     />
                                 }
 
                                 {isAdmin &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Termos de uso"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/termos')
                                         }}
-                                        icon={ClipboardList}
+                                        icon={() => <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/administracao/termos'}
                                     />
                                 }
 
                                 {(isAdmin || isAdminCongregation) &&
                                     <NavBar.Options
+                                        isSubItem
                                         title="Atribuir função"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/funcoes/atribuir')
                                         }}
-                                        icon={FunctionSquareIcon}
+                                        icon={() => <FunctionSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/administracao/funcoes/atribuir'}
                                     />
                                 }
 
                                 {(isAdmin || isAdminCongregation) ?
                                     <NavBar.Options
+                                        isSubItem
                                         title="Domínio"
                                         onClick={() => {
-                                            {!isDesktop && setIsMenuOpen(false)}
+                                            { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/add-domain')
                                         }}
-                                        icon={PuzzleIcon}
+                                        icon={() => <PuzzleIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === '/administracao/add-domain'}
                                     /> : null
                                 }
                             </NavBar.ListOptions>
                         }
-
                     </ConsentCongregationWrapper>
                 </div>
             </NavBar.Root>

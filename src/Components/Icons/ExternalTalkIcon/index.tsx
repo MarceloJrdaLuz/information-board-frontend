@@ -1,25 +1,12 @@
-import React, { ElementType } from "react"
-
-interface ExternalTalkIconProps {
-  w?: string
-  h?: string
-  strokeWidth?: number
-}
-
-const ExternalTalkIcon: ElementType = ({
-  w = "24",
-  h = "24",
-  strokeWidth = 13,
-}: ExternalTalkIconProps) => {
+export default function ExternalTalkIcon({ className }: { className?: string }) {
   return (
     <svg
       fill="currentColor"
       stroke="currentColor"
-      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      height={h}
-      width={w}
+      strokeWidth={13}
+      className={className}
       viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -32,5 +19,3 @@ const ExternalTalkIcon: ElementType = ({
     </svg>
   )
 }
-
-export default ExternalTalkIcon

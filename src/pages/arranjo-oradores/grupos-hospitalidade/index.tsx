@@ -72,7 +72,7 @@ function HospitalityGroupsPage() {
                                 Router.push('/arranjo-oradores/grupos-hospitalidade/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <GroupIcon />
+                            <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
                             <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
                         {hospitalityGroups && <span className="text-sm text-typography-800">Total: {hospitalityGroups.length}</span>}

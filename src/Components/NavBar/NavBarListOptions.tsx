@@ -6,7 +6,7 @@ export default function NavBarListOptions({ children, title, icon, showList, onC
     
     return (
         <div title={title} >
-            <div onClick={onClick} className={`relative flex flex-1 p-4 items-center cursor-pointer  hover:bg-secondary-100 hover:text-typography-900  `}>
+            <div onClick={onClick} className={`relative flex flex-1 p-4 items-center cursor-pointer  hover:bg-surface-100 hover:text-typography-900 `}>
                 <span className="pr-3 flex justify-center items-center">
                     <NavBarOptionIcon icon={icon} />
                 </span>
@@ -14,7 +14,7 @@ export default function NavBarListOptions({ children, title, icon, showList, onC
                 {showList && <span className="flex ml-auto"><ChevronDown /></span>}
             </div>
             {showList && (
-                <ul className="pl-2">
+                <ul className="">
                     {children}
                 </ul>
             )}

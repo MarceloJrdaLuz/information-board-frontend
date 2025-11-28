@@ -6,14 +6,14 @@ export default function NavBarOption(props: NavBarOptionType) {
     return (
         <li
             onClick={props.onClick}
-            className={`relative flex items-center p-4 cursor-pointer 
-    hover:bg-surface-200 hover:text-typography-900 
-    ${props.active ? 'border-r-8 border-primary-500 bg-secondary-50 font-semibold' : ''}`}
+            className={`relative flex items-center p-3 cursor-pointer 
+    hover:bg-surface-200 hover:text-typography-900  
+    ${props.active ? 'border-surface-100 font-semibold' : 'border-transparent'} ${props.isSubItem ? 'pl-8 border-l-8 ' : ''}`}
         >
             <span className="pr-3 flex justify-center items-center">
                 <NavBarOptionIcon icon={props.icon} />
             </span>
-            <span className="text-xs lg:text-sm flex items-center max-w-[100px] lg:max-w-none">
+            <span className="text-xs sm:text-sm  flex items-center max-w-[100px] lg:max-w-none">
                 {props.title}
             </span>
         </li>

@@ -1,7 +1,4 @@
-import { useEffect } from "react"
 import InformationBoardImage from "../InformationBoardImage"
-import { useAtom, useSetAtom } from "jotai"
-import { toogleMenu } from "@/atoms/atom"
 
 export interface INavBarLogoProps {
     isMenuOpen: boolean
