@@ -4,7 +4,7 @@ export default function LayoutSkeleton() {
     return (
         <main className="flex w-screen h-screen overflow-hidden bg-secondary-100">
             {/* NAVBAR LATERAL */}
-            <aside className="hidden bg-primary-200 shadow-lg w-2/3 md:w-2/12 md:flex md:min-w-[185px] md:flex-col pt-4 animate-pulse">
+            <aside className="hidden bg-primary-200 shadow-lg w-2/3 md:w-2/12 md:flex md:min-w-[185px] md:flex-col pt-6 animate-pulse">
                 {/* Logo / Título */}
                 <div className="text-surface-300">
                     <NavBar.Logo isMenuOpen />
