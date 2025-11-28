@@ -36,7 +36,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="text-typography-300" size={15} />
-                                        <span className="text-sm font-bold text-primary-200 ">
+                                        <span className="text-sm font-bold text-primary-200 leading-loose">
                                             {formattedDate}
                                         </span>
                                     </div>
@@ -71,9 +71,11 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                             </div>
                                             {assignment.destinationCongregation && (
                                                 <div className="flex flex-col items-start gap-1">
-                                                    <div className="flex gap-1 ml-4">
-                                                        {/* <MapPin size={12} className="text-typography-400" /> */}
-                                                        <span>{`${assignment.destinationCongregation.address} ${formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}`}</span>
+                                                    <div className="flex items-center gap-1 ml-4">
+                                                        <MapPin size={12} className="text-typography-400" />
+                                                        <span className="leading-none">
+                                                            {`${assignment.destinationCongregation.address ?? ""} ${formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}`}
+                                                        </span>
                                                     </div>
                                                     <div className="ml-4">
                                                         <LocationLink latitude={assignment.destinationCongregation.latitude} longitude={assignment.destinationCongregation.longitude} />
