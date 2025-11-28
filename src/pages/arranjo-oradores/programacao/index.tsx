@@ -56,7 +56,7 @@ function PdfSpeakerInvitation({ schedule, congregationLocale }: PdfLinkComponent
             fileName={`Convite para discurso público - ${schedule.speaker?.fullName}.pdf`}
         >
             {({ loading }) => (
-                <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                <Button outline className="bg-surface-100 w-[200px] text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
                     <PdfIcon />
                     <span className="text-primary-200 font-semibold">
                         {loading ? "Gerando PDF..." : "Gerar Convite PDF"}
@@ -406,9 +406,8 @@ function WeekendSchedulePage() {
                                                 <h2 className="font-bold text-md text-primary-200 text-center">
                                                     Convite ao Orador
                                                 </h2>
-
-                                                <div className="flex justify-center w-full">
-                                                    <div className="w-8/12">
+                                                <div className="flex justify-center w-full ">
+                                                    <div className="w-full min-w-[200px] max-w-[200px]">
                                                         <DropdownObject
                                                             textVisible
                                                             title="Selecionar Orador"
@@ -422,7 +421,6 @@ function WeekendSchedulePage() {
                                                         />
                                                     </div>
                                                 </div>
-
                                                 {selectedSchedule && congregation && (
                                                     <PdfSpeakerInvitation
                                                         schedule={{
