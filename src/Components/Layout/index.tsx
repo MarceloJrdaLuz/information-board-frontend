@@ -42,7 +42,7 @@ export default function Layout(props: LayoutProps) {
 
     useEffect(() => {
         if (authResolved) {
-            const timeout = setTimeout(() => setShowMenu(true), 500); // 50ms ou 100ms
+            const timeout = setTimeout(() => setShowMenu(true), 700); // 50ms ou 100ms
             return () => clearTimeout(timeout);
         }
     }, [authResolved]);
