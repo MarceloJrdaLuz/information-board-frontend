@@ -47,9 +47,26 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     }, [checkScreenWidth])
 
     return (
-        <nav className={`${!isMenuOpen ? 'w-0 transition-all duration-200' : 'transition-all duration-200 w-2/3 max-w-[300px] '}  md:w-2/12  md:min-w-[185px] bg-gradient-to-b from-primary-200 to-primary-150 text-typography-100 shadow-2xl overflow-auto hide-scrollbar h-screen absolute md:relative z-40 pb-9`}>
-            <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop />
-            {children}
+       <nav
+  className={`
+    fixed top-0 left-0 h-screen z-40
+    bg-gradient-to-b from-primary-200 to-primary-150 
+    text-typography-100 shadow-xl
+
+    transform transition-transform duration-300
+    ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
+
+    w-2/3 max-w-[300px]
+
+    md:relative md:translate-x-0 md:w-2/12 md:min-w-[185px]
+  `}
+>
+            <div className={`sticky top-0 z-50`}>
+                <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop />
+            </div>
+            <div className="overflow-y-auto hide-scrollbar h-[calc(100vh-80px)] pb-9">
+                {children}
+            </div>
         </nav>
     )
 }

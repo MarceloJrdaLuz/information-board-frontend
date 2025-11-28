@@ -14,7 +14,7 @@ export default function NavBarListOptions({ children, title, icon, showList, onC
                 {showList && <span className="flex ml-auto"><ChevronDown /></span>}
             </div>
             {showList && (
-                <ul className="">
+                <ul>
                     {children}
                 </ul>
             )}
