@@ -1,20 +1,16 @@
+import { NavBar } from "../NavBar";
+
 export default function LayoutSkeleton() {
     return (
         <main className="flex w-screen h-screen overflow-hidden bg-secondary-100">
             {/* NAVBAR LATERAL */}
-            <aside className="hidden bg-primary-200 shadow-lg md:w-2/12 md:flex md:min-w-[185px] md:flex-col p-4 animate-pulse">
+            <aside className="hidden bg-primary-200 shadow-lg w-2/3 md:w-2/12 md:flex md:min-w-[185px] md:flex-col pt-4 animate-pulse">
                 {/* Logo / Título */}
-                <div className="h-10 w-3/4 bg-primary-100 shimmer rounded-md mb-6" />
-
-                {/* Itens de menu simulados */}
-                <div className="flex flex-col gap-3">
-                    {Array.from({ length: 7 }).map((_, i) => (
-                        <div
-                            key={i}
-                            className="h-9 w-full bg-primary-100 shimmer rounded-md"
-                        />
-                    ))}
+                <div className="text-surface-300">
+                    <NavBar.Logo isMenuOpen />
                 </div>
+
+                <NavBar.Skeleton items={5} />
             </aside>
 
             {/* CONTEÚDO PRINCIPAL */}

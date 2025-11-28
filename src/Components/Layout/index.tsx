@@ -3,7 +3,7 @@ import { useAuthContext } from "@/context/AuthContext"
 import { useAtom } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileSpreadsheetIcon, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
 import CleanIcon from "../Icons/CleanIcon"
 import ExternalTalkIcon from "../Icons/ExternalTalkIcon"
@@ -37,6 +37,14 @@ export default function Layout(props: LayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useAtom(toogleMenu)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
+    const [showMenu, setShowMenu] = useState(false);
+
+    useEffect(() => {
+        if (authResolved) {
+            const timeout = setTimeout(() => setShowMenu(true), 400); // 50ms ou 100ms
+            return () => clearTimeout(timeout);
+        }
+    }, [authResolved]);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -63,468 +71,464 @@ export default function Layout(props: LayoutProps) {
     return (
         <main className={`flex w-screen h-screen max-h-full overflow-y-auto`}>
             <NavBar.Root>
-                {!authResolved ? (
-                    <NavBar.Skeleton items={5} />
-                ) : (
-                    <>
-                        {/* <NavBar.Logo /> */}
+                {!showMenu && <NavBar.Skeleton items={5} />}
+                <div className={`transition-opacity duration-150 ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    {/* <NavBar.Logo /> */}
+                    <NavBar.Options
+                        title="Início"
+                        onClick={() => {
+                            setIsMenuOpen(!isMenuOpen)
+                            Router.push('/dashboard')
+                        }}
+                        icon={HomeIcon}
+                        active={pageActive === '/dashboard'}
+                    />
+
+                    <ConsentCongregationWrapper>
                         <NavBar.Options
-                            title="Início"
+                            title="Meus relatórios"
                             onClick={() => {
                                 setIsMenuOpen(!isMenuOpen)
-                                Router.push('/dashboard')
+                                Router.push('/meus-relatorios')
                             }}
-                            icon={HomeIcon}
-                            active={pageActive === '/dashboard'}
+                            icon={MyReportsIcon}
+                            active={pageActive === '/meus-relatorios'}
                         />
 
-                        <ConsentCongregationWrapper>
-                            <NavBar.Options
-                                title="Meus relatórios"
-                                onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
-                                    Router.push('/meus-relatorios')
-                                }}
-                                icon={MyReportsIcon}
-                                active={pageActive === '/meus-relatorios'}
-                            />
+                        {(isAdminCongregation ||
+                            roleContains('PUBLISHERS_MANAGER') ||
+                            roleContains('PUBLISHERS_VIEWER') ||
+                            roleContains('GROUPS_VIEWER') ||
+                            roleContains('GROUPS_MANAGER') ||
+                            roleContains('PUBLISHERS_VIEWER') ||
+                            roleContains('REPORTS_VIEWER') ||
+                            roleContains('REPORTS_MANAGER') ||
+                            roleContains('TERRITORIES_MANAGER') ||
+                            roleContains('ASSISTANCE_MANAGER') ||
+                            roleContains('ASSISTANCE_VIEWER') ||
+                            roleContains('TERRITORIES_VIEWER') ||
+                            roleContains('TALK_MANAGER')) &&
+                            <NavBar.ListOptions
+                                key={"submenuCongregação"}
+                                showList={openSubMenu === 'congregacao'}
+                                onClick={() => toggleSubMenu('congregacao')}
+                                title="Congregação"
+                                icon={SalonIcon}
+                            >
+                                {(isAdminCongregation ||
+                                    roleContains('PUBLISHERS_MANAGER') ||
+                                    roleContains('PUBLISHERS_VIEWER') ||
+                                    roleContains('TALK_MANAGER')) &&
+                                    <NavBar.Options
+                                        title="Publicadores"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push('/congregacao/publicadores')
+                                        }}
+                                        icon={PublisherIcon}
+                                        active={pageActive === '/congregacao/publicadores'}
+                                    />
+                                }
 
-                            {(isAdminCongregation ||
-                                roleContains('PUBLISHERS_MANAGER') ||
-                                roleContains('PUBLISHERS_VIEWER') ||
-                                roleContains('GROUPS_VIEWER') ||
-                                roleContains('GROUPS_MANAGER') ||
-                                roleContains('PUBLISHERS_VIEWER') ||
-                                roleContains('REPORTS_VIEWER') ||
-                                roleContains('REPORTS_MANAGER') ||
-                                roleContains('TERRITORIES_MANAGER') ||
-                                roleContains('ASSISTANCE_MANAGER') ||
-                                roleContains('ASSISTANCE_VIEWER') ||
-                                roleContains('TERRITORIES_VIEWER') ||
-                                roleContains('TALK_MANAGER')) &&
-                                <NavBar.ListOptions
-                                    key={"submenuCongregação"}
-                                    showList={openSubMenu === 'congregacao'}
-                                    onClick={() => toggleSubMenu('congregacao')}
-                                    title="Congregação"
-                                    icon={SalonIcon}
-                                >
-                                    {(isAdminCongregation ||
-                                        roleContains('PUBLISHERS_MANAGER') ||
-                                        roleContains('PUBLISHERS_VIEWER') ||
-                                        roleContains('TALK_MANAGER')) &&
+                                {(isAdminCongregation ||
+                                    roleContains('GROUPS_MANAGER') ||
+                                    roleContains('GROUPS_VIEWER')) &&
+                                    <NavBar.Options
+                                        title="Grupos de Campo"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push('/congregacao/grupos')
+                                        }}
+                                        icon={GroupIcon}
+                                        active={pageActive === '/congregacao/grupos'}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('REPORTS_MANAGER') ||
+                                    roleContains('REPORTS_VIEWER')
+                                ) &&
+                                    <NavBar.Options
+                                        title="Relatórios"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
+                                        }}
+                                        icon={ReportIcon}
+                                        active={pageActive === `/congregacao/relatorios/[congregationId]`}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('ASSISTANCE_MANAGER') ||
+                                    roleContains('ASSISTANCE_VIEWER')) &&
+                                    <NavBar.Options
+                                        title="Assistência"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
+                                        }}
+                                        icon={FileTextIcon}
+                                        active={pageActive === `/congregacao/assistencia/[congregationId]`}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('TERRITORIES_MANAGER') ||
+                                    roleContains('TERRITORIES_VIEWER')) &&
+                                    <NavBar.Options
+                                        title="Territórios"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/congregacao/territorios`)
+                                        }}
+                                        icon={TerritoryIcon}
+                                        active={pageActive === '/congregacao/territorios'}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('PUBLISHERS_MANAGER') ||
+                                    roleContains('PUBLISHERS_VIEWER')) &&
+                                    <NavBar.Options
+                                        title="Contatos de emergência"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/congregacao/contatos-emergencia`)
+                                        }}
+                                        icon={EmergencyContactIcon}
+                                        active={pageActive === '/congregacao/contatos-emergencia'}
+                                    />
+                                }
+                            </NavBar.ListOptions>
+                        }
+
+                        {(isAdminCongregation ||
+                            roleContains('TALK_MANAGER') ||
+                            roleContains('ADMIN'))
+                            &&
+                            <NavBar.ListOptions
+                                key={"submenuArranjoOradores"}
+                                showList={openSubMenu === 'arranjo-oradores'}
+                                onClick={() => toggleSubMenu('arranjo-oradores')}
+                                title="Arranjo de oradores"
+                                icon={PublicMeetingIcon}
+                            >
+                                {isAdminCongregation &&
+                                    <NavBar.Options
+                                        title="Administração"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/arranjo-oradores/administracao`)
+                                        }}
+                                        icon={KanbanSquareIcon}
+                                        active={pageActive === '/arranjo-oradores/administracao'}
+                                    />}
+                                {(isAdmin ||
+                                    isAdminCongregation ||
+                                    roleContains('TALK_MANAGER')) &&
+                                    <NavBar.Options
+                                        title="Discursos"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push(`/arranjo-oradores/discursos`)
+                                        }}
+                                        icon={TalkIcon}
+                                        active={pageActive === '/arranjo-oradores/discursos'}
+                                    />}
+                                {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
+                                    <>
                                         <NavBar.Options
-                                            title="Publicadores"
+                                            title="Programação"
                                             onClick={() => {
                                                 setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/congregacao/publicadores')
+                                                Router.push(`/arranjo-oradores/programacao`)
                                             }}
-                                            icon={PublisherIcon}
-                                            active={pageActive === '/congregacao/publicadores'}
+                                            icon={CalendarMicIcon}
+                                            active={pageActive === '/arranjo-oradores/programacao'}
                                         />
-                                    }
-
-                                    {(isAdminCongregation ||
-                                        roleContains('GROUPS_MANAGER') ||
-                                        roleContains('GROUPS_VIEWER')) &&
                                         <NavBar.Options
-                                            title="Grupos de Campo"
+                                            title="Saída de oradores"
                                             onClick={() => {
                                                 setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/congregacao/grupos')
+                                                Router.push(`/arranjo-oradores/saida-oradores`)
+                                            }}
+                                            icon={ExternalTalkIcon}
+                                            active={pageActive === '/arranjo-oradores/saida-oradores'}
+                                        />
+                                        <NavBar.Options
+                                            title="Oradores"
+                                            onClick={() => {
+                                                setIsMenuOpen(!isMenuOpen)
+                                                Router.push(`/arranjo-oradores/oradores`)
+                                            }}
+                                            icon={SpeakerIcon}
+                                            active={pageActive === '/arranjo-oradores/oradores'}
+                                        />
+
+                                        <NavBar.Options
+                                            title="Congregações"
+                                            onClick={() => {
+                                                setIsMenuOpen(!isMenuOpen)
+                                                Router.push(`/arranjo-oradores/congregacoes`)
+                                            }}
+                                            icon={SalonIcon}
+                                            active={pageActive === '/arranjo-oradores/congregacoes'}
+                                        />
+                                        <NavBar.Options
+                                            title="Grupos de hospitalidade"
+                                            onClick={() => {
+                                                setIsMenuOpen(!isMenuOpen)
+                                                Router.push(`/arranjo-oradores/grupos-hospitalidade`)
                                             }}
                                             icon={GroupIcon}
-                                            active={pageActive === '/congregacao/grupos'}
+                                            active={pageActive === '/arranjo-oradores/grupos-hospitalidade'}
                                         />
-                                    }
-
-                                    {(isAdminCongregation ||
-                                        roleContains('REPORTS_MANAGER') ||
-                                        roleContains('REPORTS_VIEWER')
-                                    ) &&
                                         <NavBar.Options
-                                            title="Relatórios"
+                                            title="Programação de hospitalidade"
                                             onClick={() => {
                                                 setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
+                                                Router.push(`/arranjo-oradores/programacao-hospitalidade`)
                                             }}
-                                            icon={ReportIcon}
-                                            active={pageActive === `/congregacao/relatorios/[congregationId]`}
+                                            icon={UtensilsIcon}
+                                            active={pageActive === '/arranjo-oradores/programacao-hospitalidade'}
                                         />
-                                    }
+                                    </>
+                                }
 
-                                    {(isAdminCongregation ||
-                                        roleContains('ASSISTANCE_MANAGER') ||
-                                        roleContains('ASSISTANCE_VIEWER')) &&
-                                        <NavBar.Options
-                                            title="Assistência"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
-                                            }}
-                                            icon={FileTextIcon}
-                                            active={pageActive === `/congregacao/assistencia/[congregationId]`}
-                                        />
-                                    }
+                            </NavBar.ListOptions>
+                        }
 
-                                    {(isAdminCongregation ||
-                                        roleContains('TERRITORIES_MANAGER') ||
-                                        roleContains('TERRITORIES_VIEWER')) &&
-                                        <NavBar.Options
-                                            title="Territórios"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/congregacao/territorios`)
-                                            }}
-                                            icon={TerritoryIcon}
-                                            active={pageActive === '/congregacao/territorios'}
-                                        />
-                                    }
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                            <NavBar.ListOptions
+                                key={"submenuReunioes"}
+                                showList={openSubMenu === 'reunioes'}
+                                onClick={() => toggleSubMenu('reunioes')}
+                                title="Reuniões"
+                                icon={MeetingIcon}
+                            >
+                                <NavBar.Options
+                                    title="Meio de semana"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/reunioes/meiodesemana`)
+                                    }}
+                                    icon={LifeAndMinistry}
+                                    active={pageActive === '/reunioes/meiodesemana'}
+                                />
 
-                                    {(isAdminCongregation ||
-                                        roleContains('PUBLISHERS_MANAGER') ||
-                                        roleContains('PUBLISHERS_VIEWER')) &&
-                                        <NavBar.Options
-                                            title="Contatos de emergência"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/congregacao/contatos-emergencia`)
-                                            }}
-                                            icon={EmergencyContactIcon}
-                                            active={pageActive === '/congregacao/contatos-emergencia'}
-                                        />
-                                    }
-                                </NavBar.ListOptions>
-                            }
-
-                            {(isAdminCongregation ||
-                                roleContains('TALK_MANAGER') ||
-                                roleContains('ADMIN'))
-                                &&
-                                <NavBar.ListOptions
-                                    key={"submenuArranjoOradores"}
-                                    showList={openSubMenu === 'arranjo-oradores'}
-                                    onClick={() => toggleSubMenu('arranjo-oradores')}
-                                    title="Arranjo de oradores"
+                                <NavBar.Options
+                                    title="Fim de semana"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/reunioes/fimdesemana`)
+                                    }}
                                     icon={PublicMeetingIcon}
-                                >
-                                    {isAdminCongregation &&
-                                        <NavBar.Options
-                                            title="Administração"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/arranjo-oradores/administracao`)
-                                            }}
-                                            icon={KanbanSquareIcon}
-                                            active={pageActive === '/arranjo-oradores/administracao'}
-                                        />}
-                                    {(isAdmin ||
-                                        isAdminCongregation ||
-                                        roleContains('TALK_MANAGER')) &&
-                                        <NavBar.Options
-                                            title="Discursos"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push(`/arranjo-oradores/discursos`)
-                                            }}
-                                            icon={TalkIcon}
-                                            active={pageActive === '/arranjo-oradores/discursos'}
-                                        />}
-                                    {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
-                                        <>
-                                            <NavBar.Options
-                                                title="Programação"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/programacao`)
-                                                }}
-                                                icon={CalendarMicIcon}
-                                                active={pageActive === '/arranjo-oradores/programacao'}
-                                            />
-                                            <NavBar.Options
-                                                title="Saída de oradores"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/saida-oradores`)
-                                                }}
-                                                icon={ExternalTalkIcon}
-                                                active={pageActive === '/arranjo-oradores/saida-oradores'}
-                                            />
-                                            <NavBar.Options
-                                                title="Oradores"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/oradores`)
-                                                }}
-                                                icon={SpeakerIcon}
-                                                active={pageActive === '/arranjo-oradores/oradores'}
-                                            />
+                                    active={pageActive === '/reunioes/fimdesemana'}
+                                />
+                            </NavBar.ListOptions>
+                        }
 
-                                            <NavBar.Options
-                                                title="Congregações"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/congregacoes`)
-                                                }}
-                                                icon={SalonIcon}
-                                                active={pageActive === '/arranjo-oradores/congregacoes'}
-                                            />
-                                            <NavBar.Options
-                                                title="Grupos de hospitalidade"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/grupos-hospitalidade`)
-                                                }}
-                                                icon={GroupIcon}
-                                                active={pageActive === '/arranjo-oradores/grupos-hospitalidade'}
-                                            />
-                                            <NavBar.Options
-                                                title="Programação de hospitalidade"
-                                                onClick={() => {
-                                                    setIsMenuOpen(!isMenuOpen)
-                                                    Router.push(`/arranjo-oradores/programacao-hospitalidade`)
-                                                }}
-                                                icon={UtensilsIcon}
-                                                active={pageActive === '/arranjo-oradores/programacao-hospitalidade'}
-                                            />
-                                        </>
-                                    }
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                            <NavBar.ListOptions
+                                key={"submenuPregacao"}
+                                showList={openSubMenu === 'pregacao'}
+                                onClick={() => toggleSubMenu('pregacao')}
+                                title="Pregação"
+                                icon={PreachingIcon}
+                            >
+                                <NavBar.Options
+                                    title="Saídas de campo"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/pregacao/saidasdecampo`)
+                                    }}
+                                    icon={PrechingHomeIcon}
+                                    active={pageActive === '/pregacao/saidasdecampo'}
+                                />
 
-                                </NavBar.ListOptions>
-                            }
+                                <NavBar.Options
+                                    title="Testemunho público"
+                                    onClick={() => {
+                                        setIsMenuOpen(!isMenuOpen)
+                                        Router.push(`/pregacao/testemunhopublico`)
+                                    }}
+                                    icon={PublicPreachingIcon}
+                                    active={pageActive === '/pregacao/testemunhopublico'}
+                                />
+                            </NavBar.ListOptions>
+                        }
 
-                            {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                                <NavBar.ListOptions
-                                    key={"submenuReunioes"}
-                                    showList={openSubMenu === 'reunioes'}
-                                    onClick={() => toggleSubMenu('reunioes')}
-                                    title="Reuniões"
-                                    icon={MeetingIcon}
-                                >
+                        {isAdmin &&
+                            <NavBar.Options
+                                title="Usuários"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/usuarios')
+                                }}
+                                icon={UsersIcon}
+                                active={pageActive === '/usuarios'}
+                            />
+                        }
+
+                        {isAdmin &&
+                            <NavBar.Options
+                                title="Permissões"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/permissoes')
+                                }}
+                                icon={SecurityIcon}
+                                active={pageActive === '/permissoes'}
+                            />
+                        }
+
+                        {isAdmin &&
+                            <NavBar.Options
+                                title="Categorias"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/categorias')
+                                }}
+                                icon={SquareStackIcon}
+                                active={pageActive === '/categorias'}
+                            />
+                        }
+
+                        {isAdmin &&
+                            <NavBar.Options
+                                title="Congregações"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/congregacoes')
+                                }}
+                                icon={SalonIcon}
+                                active={pageActive === '/congregacoes'}
+                            />
+                        }
+
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                            <NavBar.Options
+                                title="Limpeza"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/limpeza')
+                                }}
+                                icon={CleanIcon}
+                                active={pageActive === '/limpeza'}
+                            />
+                        }
+
+
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                            <NavBar.Options
+                                title="Contas"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/contas')
+                                }}
+                                icon={CalculatorIcon}
+                                active={pageActive === '/contas'}
+                            />
+                        }
+
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                            <NavBar.Options
+                                title="Eventos especiais"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/eventosespeciais')
+                                }}
+                                icon={CalendarDaysIcon}
+                                active={pageActive === '/eventosespeciais'}
+                            />
+                        }
+
+                        {(isAdminCongregation || roleContains('NOTICES_MANAGER')) &&
+                            <NavBar.Options
+                                title="Anúncios"
+                                onClick={() => {
+                                    setIsMenuOpen(!isMenuOpen)
+                                    Router.push('/anuncios')
+                                }}
+                                icon={NoticesIcon}
+                                active={pageActive === '/anuncios'}
+                            />
+                        }
+
+                        {(isAdminCongregation || isAdmin) &&
+                            <NavBar.ListOptions
+                                key={"submenuAdministracao"}
+                                showList={openSubMenu === 'administracao'}
+                                onClick={() => toggleSubMenu('administracao')}
+                                title="Administração"
+                                icon={SecurityIcon}
+                            >
+
+                                {isAdmin &&
                                     <NavBar.Options
-                                        title="Meio de semana"
+                                        title="Funções"
                                         onClick={() => {
                                             setIsMenuOpen(!isMenuOpen)
-                                            Router.push(`/reunioes/meiodesemana`)
+                                            Router.push('/administracao/funcoes')
                                         }}
-                                        icon={LifeAndMinistry}
-                                        active={pageActive === '/reunioes/meiodesemana'}
+                                        icon={FunctionSquareIcon}
+                                        active={pageActive === '/administracao/funcoes'}
                                     />
+                                }
 
+                                {isAdmin &&
                                     <NavBar.Options
-                                        title="Fim de semana"
+                                        title="Uso do sistema"
                                         onClick={() => {
                                             setIsMenuOpen(!isMenuOpen)
-                                            Router.push(`/reunioes/fimdesemana`)
+                                            Router.push('/administracao/controle-uso')
                                         }}
-                                        icon={PublicMeetingIcon}
-                                        active={pageActive === '/reunioes/fimdesemana'}
+                                        icon={LineChart}
+                                        active={pageActive === '/administracao/controle-uso'}
                                     />
-                                </NavBar.ListOptions>
-                            }
+                                }
 
-                            {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                                <NavBar.ListOptions
-                                    key={"submenuPregacao"}
-                                    showList={openSubMenu === 'pregacao'}
-                                    onClick={() => toggleSubMenu('pregacao')}
-                                    title="Pregação"
-                                    icon={PreachingIcon}
-                                >
+                                {isAdmin &&
                                     <NavBar.Options
-                                        title="Saídas de campo"
+                                        title="Termos de uso"
                                         onClick={() => {
                                             setIsMenuOpen(!isMenuOpen)
-                                            Router.push(`/pregacao/saidasdecampo`)
+                                            Router.push('/administracao/termos')
                                         }}
-                                        icon={PrechingHomeIcon}
-                                        active={pageActive === '/pregacao/saidasdecampo'}
+                                        icon={ClipboardList}
+                                        active={pageActive === '/administracao/termos'}
                                     />
+                                }
 
+                                {(isAdmin || isAdminCongregation) &&
                                     <NavBar.Options
-                                        title="Testemunho público"
+                                        title="Atribuir função"
                                         onClick={() => {
                                             setIsMenuOpen(!isMenuOpen)
-                                            Router.push(`/pregacao/testemunhopublico`)
+                                            Router.push('/administracao/funcoes/atribuir')
                                         }}
-                                        icon={PublicPreachingIcon}
-                                        active={pageActive === '/pregacao/testemunhopublico'}
+                                        icon={FunctionSquareIcon}
+                                        active={pageActive === '/administracao/funcoes/atribuir'}
                                     />
-                                </NavBar.ListOptions>
-                            }
+                                }
 
-                            {isAdmin &&
-                                <NavBar.Options
-                                    title="Usuários"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/usuarios')
-                                    }}
-                                    icon={UsersIcon}
-                                    active={pageActive === '/usuarios'}
-                                />
-                            }
+                                {(isAdmin || isAdminCongregation) ?
+                                    <NavBar.Options
+                                        title="Domínio"
+                                        onClick={() => {
+                                            setIsMenuOpen(!isMenuOpen)
+                                            Router.push('/administracao/add-domain')
+                                        }}
+                                        icon={PuzzleIcon}
+                                        active={pageActive === '/administracao/add-domain'}
+                                    /> : null
+                                }
+                            </NavBar.ListOptions>
+                        }
 
-                            {isAdmin &&
-                                <NavBar.Options
-                                    title="Permissões"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/permissoes')
-                                    }}
-                                    icon={SecurityIcon}
-                                    active={pageActive === '/permissoes'}
-                                />
-                            }
-
-                            {isAdmin &&
-                                <NavBar.Options
-                                    title="Categorias"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/categorias')
-                                    }}
-                                    icon={SquareStackIcon}
-                                    active={pageActive === '/categorias'}
-                                />
-                            }
-
-                            {isAdmin &&
-                                <NavBar.Options
-                                    title="Congregações"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/congregacoes')
-                                    }}
-                                    icon={SalonIcon}
-                                    active={pageActive === '/congregacoes'}
-                                />
-                            }
-
-                            {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                                <NavBar.Options
-                                    title="Limpeza"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/limpeza')
-                                    }}
-                                    icon={CleanIcon}
-                                    active={pageActive === '/limpeza'}
-                                />
-                            }
-
-
-                            {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                                <NavBar.Options
-                                    title="Contas"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/contas')
-                                    }}
-                                    icon={CalculatorIcon}
-                                    active={pageActive === '/contas'}
-                                />
-                            }
-
-                            {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                                <NavBar.Options
-                                    title="Eventos especiais"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/eventosespeciais')
-                                    }}
-                                    icon={CalendarDaysIcon}
-                                    active={pageActive === '/eventosespeciais'}
-                                />
-                            }
-
-                            {(isAdminCongregation || roleContains('NOTICES_MANAGER')) &&
-                                <NavBar.Options
-                                    title="Anúncios"
-                                    onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
-                                        Router.push('/anuncios')
-                                    }}
-                                    icon={NoticesIcon}
-                                    active={pageActive === '/anuncios'}
-                                />
-                            }
-
-                            {(isAdminCongregation || isAdmin) &&
-                                <NavBar.ListOptions
-                                    key={"submenuAdministracao"}
-                                    showList={openSubMenu === 'administracao'}
-                                    onClick={() => toggleSubMenu('administracao')}
-                                    title="Administração"
-                                    icon={SecurityIcon}
-                                >
-
-                                    {isAdmin &&
-                                        <NavBar.Options
-                                            title="Funções"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/administracao/funcoes')
-                                            }}
-                                            icon={FunctionSquareIcon}
-                                            active={pageActive === '/administracao/funcoes'}
-                                        />
-                                    }
-
-                                    {isAdmin &&
-                                        <NavBar.Options
-                                            title="Uso do sistema"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/administracao/controle-uso')
-                                            }}
-                                            icon={LineChart}
-                                            active={pageActive === '/administracao/controle-uso'}
-                                        />
-                                    }
-
-                                    {isAdmin &&
-                                        <NavBar.Options
-                                            title="Termos de uso"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/administracao/termos')
-                                            }}
-                                            icon={ClipboardList}
-                                            active={pageActive === '/administracao/termos'}
-                                        />
-                                    }
-
-                                    {(isAdmin || isAdminCongregation) &&
-                                        <NavBar.Options
-                                            title="Atribuir função"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/administracao/funcoes/atribuir')
-                                            }}
-                                            icon={FunctionSquareIcon}
-                                            active={pageActive === '/administracao/funcoes/atribuir'}
-                                        />
-                                    }
-
-                                    {(isAdmin || isAdminCongregation) ?
-                                        <NavBar.Options
-                                            title="Domínio"
-                                            onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
-                                                Router.push('/administracao/add-domain')
-                                            }}
-                                            icon={PuzzleIcon}
-                                            active={pageActive === '/administracao/add-domain'}
-                                        /> : null
-                                    }
-                                </NavBar.ListOptions>
-                            }
-
-                        </ConsentCongregationWrapper>
-                    </>
-                )
-                }
+                    </ConsentCongregationWrapper>
+                </div>
             </NavBar.Root>
             {props.children}
         </main >
