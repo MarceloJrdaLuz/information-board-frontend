@@ -65,7 +65,7 @@ export default function FormEditSpeaker() {
             toast.error("Selecione uma congregação.")
             return
         }
-        const publisherId = speakerIsPublisher ? selectedPublisher?.id : ""
+        const publisherId = speakerIsPublisher ? selectedPublisher?.id : undefined
         const talk_ids = selectedTalks?.map(talk => talk.id)
 
         const payload = {
@@ -80,7 +80,7 @@ export default function FormEditSpeaker() {
             pending: 'Atualizando orador...',
         })
         reset()
-        
+
     }
 
     function onError(error: any) {
