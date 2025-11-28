@@ -170,11 +170,13 @@ export default function PublisherList() {
                 {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
                     <li className={`flex flex-wrap border border-surface-300 rounded-2xl shadow-sm justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
-                            <div className="flex items-center p-6">
+                            <div className="flex items-center p-4">
                                 {publisher.gender === "Masculino" ?
                                     <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-primary-100" />
                                     :
-                                    <AvatarFemale className="w-10 h-10 rounded-full bg-primary-100 text-primary-100" />
+                                    <div className="w-fit rounded-full">
+                                        <AvatarFemale className="w-10 h-10 rounded-full bg-primary-100 text-primary-100" />
+                                    </div>
 
                                 }
                                 <span className="pl-4 text-typography-700 font-semi-bold">{publisher.fullName}</span>
