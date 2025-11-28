@@ -6,18 +6,9 @@ import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmi
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { useAuthContext } from "./AuthContext"
 
-interface ICreateCongregation {
-    name: string
-    number: string
-    circuit: string
-    city: string
-    dayMeetingPublic?: string
-    dayMeetingLifeAndMinistary?: string
-    hourMeetingLifeAndMinistary?: string
-    hourMeetingPublic?: string
-}
+type ICreateCongregation = Omit<ICongregation, 'id'| 'creatorCongregation' | 'speakers'> 
 
-type IUpdateCongregation = Partial<ICreateCongregation>
+export type IUpdateCongregation = Partial<ICreateCongregation>
 
 type CongregationContextTypes = {
     createCongregation: ({
@@ -25,6 +16,9 @@ type CongregationContextTypes = {
         number,
         circuit,
         city,
+        address,
+        latitude,
+        longitude,
         dayMeetingPublic,
         dayMeetingLifeAndMinistary,
         hourMeetingLifeAndMinistary,
@@ -81,13 +75,20 @@ function CongregationProvider(props: CongregationContextProviderProps) {
         setCongregation(data)
     }, [data, congregation])
 
-    async function createCongregation({ name, number, circuit, city, dayMeetingLifeAndMinistary, dayMeetingPublic, hourMeetingLifeAndMinistary, hourMeetingPublic }: ICreateCongregation) {
+    async function createCongregation({ name, number, circuit, city, dayMeetingLifeAndMinistary, dayMeetingPublic, hourMeetingLifeAndMinistary, hourMeetingPublic, address, latitude, longitude }: ICreateCongregation) {
         const formData = new FormData()
 
         formData.set('name', name)
         formData.set('number', number ?? "")
         formData.set('circuit', circuit)
         formData.set('city', city)
+        if (address) formData.set('address', address)
+        if (latitude !== undefined) {
+            formData.set('latitude', latitude)
+        }
+        if (longitude !== undefined) {
+            formData.set('longitude', longitude)
+        }
         formData.set('dayMeetingLifeAndMinistary', dayMeetingLifeAndMinistary ?? "")
         formData.set('dayMeetingPublic', dayMeetingPublic ?? "")
         formData.set('hourMeetingLifeAndMinistary', hourMeetingLifeAndMinistary ?? "")
@@ -119,7 +120,7 @@ function CongregationProvider(props: CongregationContextProviderProps) {
 
         await api.put(`/congregation/${congregation_id}`, body).then(suc => {
             mutate()
-            handleSubmitSuccess(messageSuccessSubmit.congregationUpdate)
+            handleSubmitSuccess(messageSuccessSubmit.congregationUpdate, '/dashboard')
         }).catch(res => {
             if (res.response.data.message === "Any changes found") {
                 return

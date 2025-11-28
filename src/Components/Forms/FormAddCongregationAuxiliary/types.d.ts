@@ -5,6 +5,9 @@ export type FormValues = {
     number: string
     city: string 
     circuit: string
+    latitude?: string
+    longitude?: string
+    address?: string
     dayMeetingPublic?: EndweekDays
     hourMeetingPublic: string
 }

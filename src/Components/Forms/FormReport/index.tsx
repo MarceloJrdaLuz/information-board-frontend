@@ -24,13 +24,14 @@ import Input from "../../Input"
 import InputError from "../../InputError"
 import FormStyle from "../FormStyle"
 import { FormValues } from "./types"
+import { API_ROUTES } from "@/constants/apiRoutes"
 
 interface IRelatorioFormProps {
     congregationNumber: string
 }
 
 export default function FormReport(props: IRelatorioFormProps) {
-    const { data } = useFetch<IPublisherList[]>(`/publishers/congregationNumber/${props.congregationNumber}`)
+    const { data } = useFetch<IPublisherList[]>(`${API_ROUTES.PUBLISHERS}/congregationNumber/${props.congregationNumber}`)
     const { createReport, createConsentRecord } = usePublisher()
     const [month, setMonth] = useState('')
     const [year, setYear] = useState('')

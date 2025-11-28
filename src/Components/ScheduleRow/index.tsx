@@ -2,7 +2,7 @@ import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakerFi
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
-import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
+import { IRecordWeekendSchedule, IWeekendSchedule } from "@/types/weekendSchedule"
 import { externalTalkStatusMap } from "@/utils/statusMap"
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Switch } from "@material-tailwind/react"
 import { format } from "date-fns"
@@ -12,6 +12,10 @@ import { useEffect, useState } from "react"
 import CheckboxMultiple from "../CheckBoxMultiple"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
+import { ICongregation } from "@/types/types"
+import { Document, PDFDownloadLink } from "@react-pdf/renderer"
+import SpeakerInvitationPdf from "../SpeakerInvitationPdf"
+import PdfIcon from "../Icons/PdfIcon"
 
 interface ScheduleRowProps {
   date: Date

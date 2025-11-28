@@ -5,6 +5,7 @@ import { ptBR } from "date-fns/locale"
 import { Calendar, Clock, MapPin } from "lucide-react"
 import moment from "moment";
 import "moment/locale/pt-br"; // importa o idioma
+import { LocationLink } from "../LocationLink";
 moment.defineLocale("pt-br", null)
 
 
@@ -63,17 +64,20 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                     )}
 
                                     {assignment.role === "Discurso Externo" && (
-                                        <div className="flex flex-col gap-1">
+                                        <div className="flex flex-col gap-2">
                                             <div>
                                                 <strong>Discurso Fora:</strong>{" "}
                                                 {assignment.talk?.title || "Tema não informado"}
                                             </div>
                                             {assignment.destinationCongregation && (
-                                                <div className="flex items-center gap-1">
-                                                    <MapPin size={12} className="text-typography-400" />
-                                                    <span>
-                                                        {formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}
-                                                    </span>
+                                                <div className="flex flex-col items-start gap-1">
+                                                    <div className="flex gap-1 ml-4">
+                                                        {/* <MapPin size={12} className="text-typography-400" /> */}
+                                                        <span>{`${assignment.destinationCongregation.address} ${formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}`}</span>
+                                                    </div>
+                                                    <div className="ml-4">
+                                                        <LocationLink latitude={assignment.destinationCongregation.latitude} longitude={assignment.destinationCongregation.longitude} />
+                                                    </div>
                                                 </div>
                                             )}
                                             <div>

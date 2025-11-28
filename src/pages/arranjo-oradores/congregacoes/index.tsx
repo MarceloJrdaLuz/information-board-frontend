@@ -10,6 +10,7 @@ import { deleteAuxiliaryCongregationAtom, selectedAuxiliaryCongregationAtom } fr
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { ICongregation } from "@/types/types"
+import { LocationLink } from "@/Components/LocationLink"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
 import Router from "next/router"
@@ -85,6 +86,12 @@ function AuxiliaryCongregationsPage() {
                                         <div className="text-sm text-typography-700 flex flex-col gap-2">
                                             <div title="Cidade" className="flex items-center gap-2">
                                                 🏙️ <span>{congregation.city || "Não cadastrada"}</span>
+                                            </div>
+                                            <div title="Endereço" className="flex items-center gap-2">
+                                                🏠 <span>{congregation.address || "Não cadastrada"}</span>
+                                            </div>
+                                            <div title="Localização" className="flex items-center gap-2">
+                                                 <span>{<LocationLink longitude={congregation.longitude} latitude={congregation.latitude} />}</span>
                                             </div>
                                             <div title="Circuito" className="flex items-center gap-2">
                                                 🔄 <span>{congregation.circuit || "Não cadastrado"}</span>

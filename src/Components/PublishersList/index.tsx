@@ -22,6 +22,7 @@ import EditIcon from "../Icons/EditIcon"
 import PdfIcon from "../Icons/PdfIcon"
 import PublishersListPdf from "../PublisherListPdf"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
+import { API_ROUTES } from "@/constants/apiRoutes"
 
 interface PdfLinkComponentProps {
     publishers: IPublisher[]
@@ -60,7 +61,7 @@ export default function PublisherList() {
     const congregationUser = user?.congregation
 
     const router = useRouter()
-    const fetchConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ""
+    const fetchConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ""
     const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
 
     const [publishers, setPublishers] = useState<IPublisher[]>()

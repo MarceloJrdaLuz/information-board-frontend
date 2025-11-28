@@ -36,7 +36,7 @@ export default function ListCongregations({ congregations, isLoading }: ListCong
                             image_url={congregation.image_url} />
                     ))}
                     <li className="flex place-self-center justify-center items-center w-60 h-56 m-3 ">
-                        <span onClick={() => { Router.push('/congregacao/add'), setShowCongregationCreated(false) }} className="border-2 border-primary-100 rounded-full p-5 hover:p-6 cursor-pointer"><PlusIcon color='#83c5be' /> </span>
+                        <span onClick={() => { Router.push('/congregacoes/add'), setShowCongregationCreated(false) }} className="border-2 border-primary-100 rounded-full p-5 hover:p-6 cursor-pointer"><PlusIcon color='#83c5be' /> </span>
                     </li>
                 </ul>
             )}

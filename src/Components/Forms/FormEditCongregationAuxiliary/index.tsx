@@ -28,9 +28,27 @@ export default function FormEditCongregationAuxiliary() {
     const [generatedCongregationNumberFake, setGeneratedCongregationNumberFake] = useState(false)
 
     const validationSchema = yup.object({
-        name: yup.string().required(),
-        circuit: yup.string().required(),
-        city: yup.string().required(),
+        name: yup.string(),
+        circuit: yup.string(),
+        city: yup.string(),
+        address: yup.string().transform((value) => value === "" ? undefined : value),
+        latitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
+
+        longitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
         hourMeetingPublic: yup.string(),
     })
 
@@ -40,6 +58,9 @@ export default function FormEditCongregationAuxiliary() {
             circuit: selectedAuxiliaryCongregation?.circuit,
             number: selectedAuxiliaryCongregation?.number,
             city: selectedAuxiliaryCongregation?.city,
+            address: selectedAuxiliaryCongregation?.address,
+            latitude: selectedAuxiliaryCongregation?.latitude,
+            longitude: selectedAuxiliaryCongregation?.longitude,
             hourMeetingPublic: selectedAuxiliaryCongregation?.hourMeetingPublic
         }, resolver: yupResolver(validationSchema)
     })
@@ -50,6 +71,9 @@ export default function FormEditCongregationAuxiliary() {
             number: data.number ?? "",
             circuit: data.circuit,
             city: data.city,
+            address: data.address,
+            latitude: data.latitude,
+            longitude: data.longitude,
             dayMeetingPublic,
             hourMeetingPublic: data.hourMeetingPublic
         }
@@ -127,6 +151,24 @@ export default function FormEditCongregationAuxiliary() {
                     }}
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
+
+                    <Input type="text" placeholder="Endereço" registro={{
+                        ...register('address')
+                    }}
+                        invalid={errors?.address?.message ? 'invalido' : ''} />
+                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
+
+                    <Input type="text" placeholder="Latitude" registro={{
+                        ...register('latitude')
+                    }}
+                        invalid={errors?.latitude?.message ? 'invalido' : ''} />
+                    {errors?.latitude?.type && <InputError type={errors.latitude.type} field='latitude' />}
+
+                    <Input type="text" placeholder="Longitude" registro={{
+                        ...register('longitude')
+                    }}
+                        invalid={errors?.longitude?.message ? 'invalido' : ''} />
+                    {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
 
                     <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 

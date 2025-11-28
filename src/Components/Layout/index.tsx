@@ -1,7 +1,7 @@
 import { openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileSpreadsheetIcon, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -208,6 +208,16 @@ export default function Layout(props: LayoutProps) {
                                     title="Arranjo de oradores"
                                     icon={PublicMeetingIcon}
                                 >
+                                    {isAdminCongregation &&
+                                        <NavBar.Options
+                                            title="Administração"
+                                            onClick={() => {
+                                                setIsMenuOpen(!isMenuOpen)
+                                                Router.push(`/arranjo-oradores/administracao`)
+                                            }}
+                                            icon={KanbanSquareIcon}
+                                            active={pageActive === '/arranjo-oradores/administracao'}
+                                        />}
                                     {(isAdmin ||
                                         isAdminCongregation ||
                                         roleContains('TALK_MANAGER')) &&

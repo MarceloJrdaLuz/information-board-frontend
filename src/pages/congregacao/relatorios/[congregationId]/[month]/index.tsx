@@ -9,6 +9,7 @@ import MissingReportsModal from "@/Components/MissingReportsModal"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
 import { crumbsAtom, pageActiveAtom, reportsAtom } from "@/atoms/atom"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
@@ -36,7 +37,7 @@ function ReportsMonthPage() {
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
-    const { data } = useAuthorizedFetch<IPublisher[]>(`/publishers/congregationId/${congregationId}`, {
+    const { data } = useAuthorizedFetch<IPublisher[]>(`${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}`, {
         allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
     })
     const { data: getAssistance } = useAuthorizedFetch<IMeetingAssistance[]>(`/assistance/${congregationId}`, {

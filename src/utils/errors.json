@@ -13,7 +13,7 @@
         "required": "Senha é um campo obrigatório",
         "matches": "A senha deve conter pelo menos 8 caracteres, pelo menos uma letra e um número"
     },
-     "phone": {
+    "phone": {
         "matches": "Número de telefone inválido"
     },
     "confirmPassword": {
@@ -65,31 +65,33 @@
     },
     "title": {
         "required": "Título é um campo obrigatório"
-    }, 
+    },
     "startDay": {
-        "required": "Dia inicial é um campo obrigatório no anúncio corrente", 
+        "required": "Dia inicial é um campo obrigatório no anúncio corrente",
         "typeError": "Dia inicial é um campo obrigatório no anúncio corrente"
     },
     "endDay": {
-        "required": "Último dia é um campo obrigatório no anúncio corrente", 
+        "required": "Último dia é um campo obrigatório no anúncio corrente",
         "typeError": "Último dia é um campo obrigatório no anúncio corrente"
-    }, 
+    },
     "text": {
         "required": "Texto é um campo obrigatório"
     },
     "caretaker": {
         "required": "Nome do dirigente é um campo obrigatório"
     },
-    "assignment_date":{
-        "required": "Data da designação é um campo obrigatório", 
+    "assignment_date": {
+        "required": "Data da designação é um campo obrigatório",
         "typeError": "Data da designação é um campo obrigatório, e precisa ser uma data válida"
     },
-    "completion_date":{
-        "required": "Data da designação é um campo obrigatório", 
+    "completion_date": {
+        "required": "Data da designação é um campo obrigatório",
         "typeError": "Formato de data inválida"
     },
-    "work_type":{
+    "work_type": {
         "required": "Campo obrigatório quando OUTRA é selecionado"
+    },
+    "hourMeetingPublic": {
+        "required": "Hora da reunião é um campo obrigatório"
     }
-    
 }

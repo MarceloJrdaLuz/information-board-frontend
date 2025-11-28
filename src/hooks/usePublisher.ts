@@ -8,6 +8,7 @@ import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmi
 import { useAtom } from "jotai"
 import { toast } from "react-toastify"
 import { useSubmit } from "./useSubmitForms"
+import { API_ROUTES } from "@/constants/apiRoutes"
 
 export function usePublisher() {
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
@@ -230,7 +231,7 @@ export function usePublisher() {
     }
 
     async function transferPublishers({ publisherIds, newCongregationId }: ITransferPublishers) {
-        await api.put(`/publishers/transfer-congregation`, {
+        await api.put(`${API_ROUTES.PUBLISHERS}/transfer-congregation`, {
             publisherIds,
             newCongregationId
         }).then(res => {
