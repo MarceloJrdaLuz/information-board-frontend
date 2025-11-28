@@ -1,6 +1,6 @@
-import { openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
+import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileSpreadsheetIcon, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -36,6 +36,7 @@ export default function Layout(props: LayoutProps) {
     const { authResolved, user, roleContains } = useAuthContext()
     const [isMenuOpen, setIsMenuOpen] = useAtom(toogleMenu)
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
+    const isDesktop = useAtomValue(isDesktopAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const [showMenu, setShowMenu] = useState(false);
 
@@ -77,7 +78,7 @@ export default function Layout(props: LayoutProps) {
                     <NavBar.Options
                         title="Início"
                         onClick={() => {
-                            setIsMenuOpen(!isMenuOpen)
+                            {!isDesktop && setIsMenuOpen(false)}
                             Router.push('/dashboard')
                         }}
                         icon={HomeIcon}
@@ -88,7 +89,7 @@ export default function Layout(props: LayoutProps) {
                         <NavBar.Options
                             title="Meus relatórios"
                             onClick={() => {
-                                setIsMenuOpen(!isMenuOpen)
+                                {!isDesktop && setIsMenuOpen(false)}
                                 Router.push('/meus-relatorios')
                             }}
                             icon={MyReportsIcon}
@@ -122,7 +123,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Publicadores"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/congregacao/publicadores')
                                         }}
                                         icon={PublisherIcon}
@@ -136,7 +137,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Grupos de Campo"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/congregacao/grupos')
                                         }}
                                         icon={GroupIcon}
@@ -151,7 +152,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Relatórios"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
                                         }}
                                         icon={ReportIcon}
@@ -165,7 +166,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Assistência"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
                                         }}
                                         icon={FileTextIcon}
@@ -179,7 +180,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Territórios"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/congregacao/territorios`)
                                         }}
                                         icon={TerritoryIcon}
@@ -193,7 +194,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Contatos de emergência"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/congregacao/contatos-emergencia`)
                                         }}
                                         icon={EmergencyContactIcon}
@@ -218,7 +219,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Administração"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/arranjo-oradores/administracao`)
                                         }}
                                         icon={KanbanSquareIcon}
@@ -230,7 +231,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Discursos"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push(`/arranjo-oradores/discursos`)
                                         }}
                                         icon={TalkIcon}
@@ -241,7 +242,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Programação"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/programacao`)
                                             }}
                                             icon={CalendarMicIcon}
@@ -250,7 +251,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Saída de oradores"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/saida-oradores`)
                                             }}
                                             icon={ExternalTalkIcon}
@@ -259,7 +260,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Oradores"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/oradores`)
                                             }}
                                             icon={SpeakerIcon}
@@ -269,7 +270,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Congregações"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/congregacoes`)
                                             }}
                                             icon={SalonIcon}
@@ -278,7 +279,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Grupos de hospitalidade"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/grupos-hospitalidade`)
                                             }}
                                             icon={GroupIcon}
@@ -287,7 +288,7 @@ export default function Layout(props: LayoutProps) {
                                         <NavBar.Options
                                             title="Programação de hospitalidade"
                                             onClick={() => {
-                                                setIsMenuOpen(!isMenuOpen)
+                                                {!isDesktop && setIsMenuOpen(false)}
                                                 Router.push(`/arranjo-oradores/programacao-hospitalidade`)
                                             }}
                                             icon={UtensilsIcon}
@@ -310,7 +311,7 @@ export default function Layout(props: LayoutProps) {
                                 <NavBar.Options
                                     title="Meio de semana"
                                     onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
+                                        {!isDesktop && setIsMenuOpen(false)}
                                         Router.push(`/reunioes/meiodesemana`)
                                     }}
                                     icon={LifeAndMinistry}
@@ -320,7 +321,7 @@ export default function Layout(props: LayoutProps) {
                                 <NavBar.Options
                                     title="Fim de semana"
                                     onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
+                                        {!isDesktop && setIsMenuOpen(false)}
                                         Router.push(`/reunioes/fimdesemana`)
                                     }}
                                     icon={PublicMeetingIcon}
@@ -340,7 +341,7 @@ export default function Layout(props: LayoutProps) {
                                 <NavBar.Options
                                     title="Saídas de campo"
                                     onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
+                                        {!isDesktop && setIsMenuOpen(false)}
                                         Router.push(`/pregacao/saidasdecampo`)
                                     }}
                                     icon={PrechingHomeIcon}
@@ -350,7 +351,7 @@ export default function Layout(props: LayoutProps) {
                                 <NavBar.Options
                                     title="Testemunho público"
                                     onClick={() => {
-                                        setIsMenuOpen(!isMenuOpen)
+                                        {!isDesktop && setIsMenuOpen(false)}
                                         Router.push(`/pregacao/testemunhopublico`)
                                     }}
                                     icon={PublicPreachingIcon}
@@ -363,7 +364,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Usuários"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/usuarios')
                                 }}
                                 icon={UsersIcon}
@@ -375,7 +376,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Permissões"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/permissoes')
                                 }}
                                 icon={SecurityIcon}
@@ -387,7 +388,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Categorias"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/categorias')
                                 }}
                                 icon={SquareStackIcon}
@@ -399,7 +400,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Congregações"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/congregacoes')
                                 }}
                                 icon={SalonIcon}
@@ -411,7 +412,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Limpeza"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/limpeza')
                                 }}
                                 icon={CleanIcon}
@@ -424,7 +425,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Contas"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/contas')
                                 }}
                                 icon={CalculatorIcon}
@@ -436,7 +437,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Eventos especiais"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/eventosespeciais')
                                 }}
                                 icon={CalendarDaysIcon}
@@ -448,7 +449,7 @@ export default function Layout(props: LayoutProps) {
                             <NavBar.Options
                                 title="Anúncios"
                                 onClick={() => {
-                                    setIsMenuOpen(!isMenuOpen)
+                                    {!isDesktop && setIsMenuOpen(false)}
                                     Router.push('/anuncios')
                                 }}
                                 icon={NoticesIcon}
@@ -469,7 +470,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Funções"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/administracao/funcoes')
                                         }}
                                         icon={FunctionSquareIcon}
@@ -481,7 +482,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Uso do sistema"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/administracao/controle-uso')
                                         }}
                                         icon={LineChart}
@@ -493,7 +494,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Termos de uso"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/administracao/termos')
                                         }}
                                         icon={ClipboardList}
@@ -505,7 +506,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Atribuir função"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/administracao/funcoes/atribuir')
                                         }}
                                         icon={FunctionSquareIcon}
@@ -517,7 +518,7 @@ export default function Layout(props: LayoutProps) {
                                     <NavBar.Options
                                         title="Domínio"
                                         onClick={() => {
-                                            setIsMenuOpen(!isMenuOpen)
+                                            {!isDesktop && setIsMenuOpen(false)}
                                             Router.push('/administracao/add-domain')
                                         }}
                                         icon={PuzzleIcon}

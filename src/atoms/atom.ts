@@ -3,6 +3,7 @@ import { IReports } from '@/types/types'
 import { atom } from 'jotai'
 
 export const toogleMenu = atom(false)
+export const isDesktopAtom = atom(false)
 export const resetForm = atom(false)
 export const successFormSend = atom(false)
 export const errorFormSend = atom(false)
