@@ -39,22 +39,22 @@ function ListMeetingAssistance({ items, yearService  }: IListItemsProps) {
           <div className="flex flex-wrap justify-between w-full p-6 font-semi-bold text-sm">
             <div className="border border-blue-gray-200 w-full p-4 mb-4 text-primary-200 font-semibold">
               Reunião do meio de semana
-              <div className="w-96 mt-2 text-typography-900">
+              <div className="w-fit mt-2 text-typography-900">
                 <span className=" font-semibold mr-5">Total:</span>
                 <span>{item.midWeekTotal}</span>
               </div>
-              <div className="w-96 text-typography-900">
+              <div className="w-fit text-typography-900">
                 <span className=" font-semibold mr-5 ">Média: </span>
                 <span>{item.midWeekAverage}</span>
               </div>
             </div>
             <div className="border border-blue-gray-200 w-full p-4 text-primary-200 font-semibold">
               Reunião do fim de semana
-              <div className="w-96 mt-2 text-typography-900">
+              <div className="w-fit mt-2 text-typography-900">
                 <span className=" font-semibold mr-5">Total:</span>
                 <span>{item.endWeekTotal}</span>
               </div>
-              <div className="w-96 text-typography-900">
+              <div className="w-fit text-typography-900">
                 <span className=" font-semibold mr-5 ">Média: </span>
                 <span>{item.endWeekAverage}</span>
               </div>
