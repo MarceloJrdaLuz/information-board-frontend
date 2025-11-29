@@ -68,7 +68,7 @@ function Home() {
                 )
             )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
                 <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
-                    <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />Relatórios
+                    <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />Relatório
                 </Button>
                 <Button alignLeft outline={isDark} className="w-full max-w-[350px] md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
                     <PublicMeetingIcon className="w-6 h-6 sm:w-7 sm:h-7" />Reuniões
