@@ -1,6 +1,6 @@
-export default function NavBarOptionSkeleton({ items = 3 }: { items?: number }) {
+export default function NavBarOptionSkeleton({ items = 3, className}: { items?: number, className?: string }) {
     return (
-        <ul>
+        <ul className={className}>
             {
                 Array.from({ length: items }).map((_, i) => (
                     <li key={i} className="relative flex items-center p-4 animate-pulse cursor-default">

@@ -1,17 +1,9 @@
-import React, { ElementType } from "react"
-
-interface SpeakerIconProps {
-  w: string
-  h: string
-}
-
-const SpeakerIcon: ElementType = ({ w = "28", h = "28" }: SpeakerIconProps) => {
+export default function SpeakerIcon({ className }: { className?: string }) {
   return (
     <svg
       id="expanded"
       enableBackground="new 0 0 512 512"
-      width={w}
-      height={h}
+      className={className}
       viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
@@ -30,5 +22,3 @@ const SpeakerIcon: ElementType = ({ w = "28", h = "28" }: SpeakerIconProps) => {
     </svg>
   )
 }
-
-export default SpeakerIcon

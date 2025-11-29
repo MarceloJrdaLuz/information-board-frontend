@@ -68,16 +68,16 @@ function Home() {
                 )
             )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
                 <Button outline={isDark} className="w-full md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
-                    <ReportIcon />Relatório de Serviço de campo
-                </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/limpeza`)}>
-                    <CleanIcon />Limpeza do Salão do Reino
+                    <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />Relatório de Serviço de campo
                 </Button>
                 <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
-                    <PublicMeetingIcon />Designações das Reuniões
+                    <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Designações das Reuniões
+                </Button>
+                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto " onClick={() => Router.push(`${number}/limpeza`)}>
+                    <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />Limpeza do Salão do Reino
                 </Button>
                 <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/campo`)}>
-                    <PrechingHomeIcon />Designações de Campo
+                    <PrechingHomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />Designações de Campo
                 </Button>
                 <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
                     <CalculatorIcon />Relatório Financeiro

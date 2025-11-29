@@ -6,7 +6,7 @@ import Dropdown from '@/Components/Dropdown'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { useCongregationContext } from '@/context/CongregationContext'
-import { EndweekDays, MidweekDays } from '@/types/types'
+import { EndweekDays, ICongregation, MidweekDays } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
 import Image from 'next/image'
@@ -26,9 +26,27 @@ export default function FormUpdateCongregation() {
     const disabled = useAtomValue(buttonDisabled)
 
     const esquemaValidacao = yup.object({
-        name: yup.string().required(),
-        circuit: yup.string().required(),
-        city: yup.string().required(),
+        name: yup.string(),
+        circuit: yup.string(),
+        city: yup.string(),
+        address: yup.string().transform((value) => value === "" ? undefined : value),
+        latitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
+
+        longitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
         hourMeetingLifeAndMinistary: yup.string(),
         hourMeetingPublic: yup.string(),
     })
@@ -38,6 +56,9 @@ export default function FormUpdateCongregation() {
             name: congregationUser?.name ?? "",
             circuit: congregationUser?.circuit ?? "",
             city: congregationUser?.city ?? "",
+            latitude: congregationUser?.latitude ?? undefined,
+            longitude: congregationUser?.longitude ?? undefined,
+            address: congregationUser?.address ?? undefined,
             hourMeetingLifeAndMinistary: congregationUser?.hourMeetingLifeAndMinistary?.slice(0, 5),
             hourMeetingPublic: congregationUser?.hourMeetingPublic?.slice(0, 5),
         }, resolver: yupResolver(esquemaValidacao)
@@ -46,13 +67,16 @@ export default function FormUpdateCongregation() {
     function onSubmit(data: FormValues) {
         const {
             dayMeetingLifeAndMinistary: dayMeetingLifeAndMinistaryUpdated, hourMeetingLifeAndMinistary, dayMeetingPublic: dayMeetingPublicUpdated,
-            hourMeetingPublic, name, city, circuit
+            hourMeetingPublic, name, city, circuit, address, latitude, longitude
         } = data
 
-        const updateCongregationBody = {
+        const updateCongregationBody: Partial<ICongregation> = {
             name,
             city,
             circuit,
+            address,
+            latitude,
+            longitude,
             hourMeetingLifeAndMinistary,
             hourMeetingPublic,
             dayMeetingLifeAndMinistary: dayMeetingLifeAndMinistaryUpdated ?? dayMeetingLifeAndMinistary,
@@ -106,6 +130,24 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
+                    <Input type="text" placeholder="Endereço" registro={{
+                        ...register('address')
+                    }}
+                        invalid={errors?.address?.message ? 'invalido' : ''} />
+                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
+
+                    <Input type="text" placeholder="Latitude" registro={{
+                        ...register('latitude')
+                    }}
+                        invalid={errors?.latitude?.message ? 'invalido' : ''} />
+                    {errors?.latitude?.type && <InputError type={errors.latitude.type} field='latitude' />}
+
+                    <Input type="text" placeholder="Longitude" registro={{
+                        ...register('longitude')
+                    }}
+                        invalid={errors?.longitude?.message ? 'invalido' : ''} />
+                    {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
+
                     <Dropdown textAlign='left' selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
 
                     <Input type="time" placeholder="Horário meio de semana" registro={{
@@ -116,7 +158,6 @@ export default function FormUpdateCongregation() {
 
                     <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 
-
                     <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')
                     }}
@@ -124,7 +165,7 @@ export default function FormUpdateCongregation() {
                     {errors?.hourMeetingPublic?.type && <InputError type={errors.hourMeetingPublic.type} field='hourMeetingPublic' />}
 
                     {congregationUser?.image_url && <div className='w-full mb-4'>
-                        <span>Foto Atual</span>
+                        <span className='text-typography-700'>Foto Atual</span>
                         <Image src={`${congregationUser?.image_url}`} alt="Foto atual da congregação" width={400} height={400} />
                     </div>}
 
@@ -137,10 +178,10 @@ export default function FormUpdateCongregation() {
                     )}
 
                     <input
-                        className="text-sm text-grey-500
+                        className="text-sm text-typography-700
             file:mr-5 file:py-3 file:px-10
             file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-900
+            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-200
             file:bg-gradient-to-r file:bg-primary-200
             hover:file:cursor-pointer hover:file:opacity-80"
                         type="file"

@@ -16,6 +16,7 @@ import CheckboxBoolean from "../CheckboxBoolean"
 import FilterPrivileges from "../FilterPrivileges"
 import FormReportManually from "../Forms/FormReportManually"
 import SkeletonPublishersWithAvatarList from "../PublishersList/skeletonPublisherWithAvatarList"
+import { API_ROUTES } from "@/constants/apiRoutes"
 
 export default function PublisherListReports() {
     const { user } = useAuthContext()
@@ -24,7 +25,7 @@ export default function PublisherListReports() {
     const { month } = router.query
     const monthParam = month as string
 
-    const fetchConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ""
+    const fetchConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ""
     const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
 
     const [reports, setReports] = useAtom(reportsAtom)

@@ -2,8 +2,10 @@ import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import Calendar from "@/Components/Calendar"
 import ContentDashboard from "@/Components/ContentDashboard"
+import DropdownObject from "@/Components/DropdownObjects"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import ScheduleRow from "@/Components/ScheduleRow"
+import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
@@ -17,10 +19,12 @@ import {
     talksAtom,
     updateWeekendScheduleAtom
 } from "@/atoms/weekendScheduleAtoms"
+import { useAuthContext } from "@/context/AuthContext"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
-import { IRecordWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
+import { ICongregation, ISpeaker } from "@/types/types"
+import { IRecordWeekendSchedule, IWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { Card, CardBody, Option, Select } from "@material-tailwind/react"
@@ -33,12 +37,43 @@ import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
+interface PdfLinkComponentProps {
+    schedule: IWeekendSchedule
+    congregationLocale: ICongregation
+}
+
+function PdfSpeakerInvitation({ schedule, congregationLocale }: PdfLinkComponentProps) {
+    return (
+        <PDFDownloadLink
+            document={
+                <Document>
+                    <SpeakerInvitationPdf
+                        schedule={schedule}
+                        congregationLocale={congregationLocale}
+                    />
+                </Document>
+            }
+            fileName={`Convite para discurso público - ${schedule.speaker?.fullName}.pdf`}
+        >
+            {({ loading }) => (
+                <Button outline className="bg-surface-100 w-[200px] text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                    <PdfIcon />
+                    <span className="text-primary-200 font-semibold">
+                        {loading ? "Gerando PDF..." : "Gerar Convite PDF"}
+                    </span>
+                </Button>
+            )}
+        </PDFDownloadLink>
+    )
+}
+
 function WeekendSchedulePage() {
     moment.defineLocale("pt-br", null)
     const router = useRouter()
     const { date } = router.query
-    const { congregation } = useCongregationContext()
-    const congregation_id = congregation?.id
+    const { user } = useAuthContext()
+    const congregation = user?.congregation
+    const congregation_id = user?.congregation?.id
     const [crumbs,] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [monthOffset, setMonthOffset] = useState<number>(0)
@@ -61,6 +96,8 @@ function WeekendSchedulePage() {
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
+    const [selectedSpeaker, setSelectedSpeaker] = useState<ISpeaker | null>(null)
+    const [isPdfSectionOpen, setIsPdfSectionOpen] = useState(false)
 
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
@@ -263,6 +300,35 @@ function WeekendSchedulePage() {
         return schedDate >= startFilter && schedDate <= endFilter
     })
 
+    // Filtrar `weekendSchedules` com speaker_id preenchido
+    const scheduledSpeakers = useMemo(() => {
+        if (!data?.speakers) return [];
+
+        const now = moment().startOf("day"); // evita problemas com hora
+
+        const ids = new Set<string>();
+
+        Object.values(weekendSchedules).forEach(s => {
+            if (!s?.date || !s?.speaker_id) return;
+
+            const scheduleDate = moment(s.date).startOf("day");
+
+            if (scheduleDate.isSameOrAfter(now)) {
+                ids.add(s.speaker_id);
+            }
+        });
+
+        return data.speakers.filter(sp => ids.has(sp.id));
+    }, [weekendSchedules, data?.speakers]);
+
+
+    const selectedSchedule = useMemo(() => {
+        if (!selectedSpeaker) return null;
+        return Object.values(weekendSchedules).find(
+            (s) => s.speaker_id === selectedSpeaker.id
+        ) ?? null;
+    }, [selectedSpeaker, weekendSchedules]);
+
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
@@ -313,45 +379,108 @@ function WeekendSchedulePage() {
                                 </div>
                             </div>
 
-                            <Card className="w-full p-4 bg-surface-100">
-                                <h2 className="text-center font-bold text-md text-primary-200">
-                                    Exportar PDF
-                                </h2>
-                                <CardBody className="flex flex-wrap justify-around gap-4 items-center">
-                                    <Calendar
-                                        titleHidden
-                                        label="Data inicial"
-                                        selectedDate={startDatePdfGenerate}
-                                        handleDateChange={setStartDatePdfGenerate}
-                                    />
-
-                                    <Calendar
-                                        titleHidden
-                                        label="Data final"
-                                        selectedDate={endDatePdfGenerate}
-                                        handleDateChange={setEndDatePdfGenerate}
-                                    />
-
-                                    <div className="w-fit">
-                                        <Select
-                                            label="Escala do PDF"
-                                            value={pdfScale.toString()}
-                                            onChange={(value) => setPdfScale(Number(value))}
-                                        >
-                                            <Option value="1">100%</Option>
-                                            <Option value="0.9">90%</Option>
-                                            <Option value="0.8">80%</Option>
-                                            <Option value="0.7">70%</Option>
-                                        </Select>
-                                    </div>
-                                    <Button
-                                        outline
-                                        onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                        className="px-4 py-2 border shadow w-fit min-w-[200px]"
+                            <Card className="w-full bg-surface-100">
+                                <CardBody className="flex flex-wrap justify-around items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsPdfSectionOpen(o => !o)}
+                                        className="w-full flex justify-between items-center bg-surface-100 px-4 py-2 rounded-md hover:brightness-105 transition"
                                     >
-                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
-                                    </Button>
-                                    {isClient && <PdfLinkComponent />}
+                                        <span className="font-semibold text-typography-700">
+                                            Exportar / PDF
+                                        </span>
+
+                                        {isPdfSectionOpen ? (
+                                            <ChevronUp size={20} className="text-typography-700" />
+                                        ) : (
+                                            <ChevronDown size={20} className="text-typography-700" />
+                                        )}
+                                    </button>
+                                    {/* Área expansível */}
+                                    <div className={`transition-all duration-300 ease-out overflow-hidden
+            ${isPdfSectionOpen ? "max-h-[800px] mt-4 opacity-100" : "max-h-0 opacity-0"}
+        `}>
+                                        <div className="flex flex-wrap justify-around gap-4 mt-2">
+                                            {/* Convite ao Orador */}
+                                            <div className="flex flex-col gap-3 w-full border rounded-md border-surface-300 px-8 py-4">
+                                                <h2 className="font-bold text-md text-primary-200 text-center">
+                                                    Convite ao Orador
+                                                </h2>
+                                                <div className="flex justify-center w-full ">
+                                                    <div className="w-full min-w-[200px] max-w-[200px]">
+                                                        <DropdownObject
+                                                            textVisible
+                                                            title="Selecionar Orador"
+                                                            items={scheduledSpeakers ?? []}
+                                                            selectedItem={scheduledSpeakers?.find(s => s.id === selectedSpeaker?.id) ?? null}
+                                                            handleChange={item => setSelectedSpeaker(item)}
+                                                            labelKey="fullName"
+                                                            border
+                                                            full
+                                                            emptyMessage="Nenhum orador"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {selectedSchedule && congregation && (
+                                                    <PdfSpeakerInvitation
+                                                        schedule={{
+                                                            ...selectedSchedule,
+                                                            speaker: data?.speakers.find(sp => sp.id === selectedSpeaker?.id) ?? undefined,
+                                                            talk: data?.talks.find(t => t.id === selectedSchedule.talk_id) ?? undefined,
+                                                            visitingCongregation: data?.congregations.find(c => c.id === selectedSchedule.visitingCongregation_id) ?? undefined
+                                                        }}
+                                                        congregationLocale={congregation}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div className="flex flex-col gap-3 w-full px-8 py-4 border border-surface-300 rounded-md">
+                                                <h2 className="font-bold text-md text-primary-200 text-center">
+                                                    Agenda de Designações
+                                                </h2>
+                                                <div className="flex flex-col items-center gap-3 w-full">
+                                                    <Calendar
+                                                        full
+                                                        titleHidden
+                                                        label="Data inicial"
+                                                        selectedDate={startDatePdfGenerate}
+                                                        handleDateChange={setStartDatePdfGenerate}
+                                                    />
+
+                                                    <Calendar
+                                                        full
+                                                        titleHidden
+                                                        label="Data final"
+                                                        selectedDate={endDatePdfGenerate}
+                                                        handleDateChange={setEndDatePdfGenerate}
+                                                    />
+
+                                                    <div className="w-fit">
+                                                        <Select
+                                                            label="Escala do PDF"
+                                                            value={pdfScale.toString()}
+                                                            onChange={(value) => setPdfScale(Number(value))}
+                                                        >
+                                                            <Option value="1">100%</Option>
+                                                            <Option value="0.9">90%</Option>
+                                                            <Option value="0.8">80%</Option>
+                                                            <Option value="0.7">70%</Option>
+                                                        </Select>
+                                                    </div>
+                                                    <Button
+                                                        outline
+                                                        onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                                        className="px-4 py-2 border shadow w-fit min-w-[200px]"
+                                                    >
+                                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                                    </Button>
+                                                    {isClient && <PdfLinkComponent />}
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
                                 </CardBody>
                             </Card>
                             {showPdfPreview && (

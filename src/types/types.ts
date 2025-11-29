@@ -74,9 +74,12 @@ export interface IHospitalityGroup {
 export interface ICongregation {
     id: string
     name: string
-    number?: string
+    number: string
     city: string
     circuit: string
+    address?: string
+    latitude?: string
+    longitude?: string
     image_url?: string
     imageKey?: string
     dayMeetingLifeAndMinistary?: string,
@@ -86,6 +89,7 @@ export interface ICongregation {
     type?: CongregationTypeEnum
     creatorCongregation?: ICongregation
     speakers?: ISpeaker[]
+    speakerCoordinator?: IPublisher
 }
 export interface ICongregationToTransferPublisher {
     id: string

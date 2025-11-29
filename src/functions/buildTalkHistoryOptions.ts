@@ -26,7 +26,7 @@ export function buildTalkOptions(
       return {
         ...t,
         lastDate,
-        displayLabel: `${t.title} ${
+        displayLabel: `${t.number} - ${t.title} ${
           lastDate ? `— [${moment(lastDate).format("DD/MM/YYYY")}]` : "— [Sem histórico]"
         }`
       }

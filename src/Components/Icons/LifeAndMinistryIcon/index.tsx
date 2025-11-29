@@ -1,8 +1,6 @@
-import React, { ElementType } from "react"
-
-const LifeAndMinistryIcon: ElementType = () => {
+export default function LifeAndMinistryIcon ({ className }: { className?: string }){
   return (
-    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
       <rect width="24" height="24" fill="none" />
 
       <path d="M11.729 2.12716C11.5161 2.24636 11.5161 2.27815 11.5161 3.91523V5.57616L11.7581 5.67153C11.9419 5.7351 12.0581 5.7351 12.2419 5.67153L12.4839 5.57616V3.91523C12.4839 2.27815 12.4839 2.24636 12.271 2.12716C12.1548 2.05563 12.029 2 12 2C11.971 2 11.8452 2.05563 11.729 2.12716Z" fill="currentColor" stroke="currentColor" strokeWidth="0.4" />
@@ -17,5 +15,3 @@ const LifeAndMinistryIcon: ElementType = () => {
 
   )
 }
-
-export default LifeAndMinistryIcon

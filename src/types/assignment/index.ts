@@ -10,6 +10,9 @@ export interface IAssignment {
     destinationCongregation: {
         name: string
         city: string
+        address?: string
+        latitude?: string
+        longitude?: string
         dayMeetingPublic: string
         hourMeetingPublic: string
     }

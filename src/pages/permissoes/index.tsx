@@ -48,7 +48,7 @@ function PermissionsPage() {
                                 Router.push('/permissoes/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <SecurityIcon />
+                            <SecurityIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
                             <span className="text-primary-200 font-semibold">Criar permissão</span>
                         </Button>
                     </div>

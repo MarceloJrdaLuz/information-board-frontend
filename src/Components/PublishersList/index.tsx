@@ -1,3 +1,4 @@
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
@@ -12,8 +13,8 @@ import Image from "next/image"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
-import avatarFemale from '../../../public/images/avatar-female.png'
 import avatarMale from '../../../public/images/avatar-male.png'
+import AvatarFemale from "../AvatarFemale"
 import Button from "../Button"
 import CheckboxBoolean from "../CheckboxBoolean"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
@@ -60,7 +61,7 @@ export default function PublisherList() {
     const congregationUser = user?.congregation
 
     const router = useRouter()
-    const fetchConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ""
+    const fetchConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ""
     const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
 
     const [publishers, setPublishers] = useState<IPublisher[]>()
@@ -169,11 +170,14 @@ export default function PublisherList() {
                 {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
                     <li className={`flex flex-wrap border border-surface-300 rounded-2xl shadow-sm justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12 text-fontColor-100  m-1 ${selectedPublishers.has(publisher.id) ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
-                            <div className="flex items-center p-6 ">
+                            <div className="flex items-center p-4">
                                 {publisher.gender === "Masculino" ?
                                     <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-primary-100" />
                                     :
-                                    <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full bg-primary-100" />
+                                    <div className="w-fit rounded-full">
+                                        <AvatarFemale className="w-10 h-10 rounded-full bg-primary-100 text-primary-100" />
+                                    </div>
+
                                 }
                                 <span className="pl-4 text-typography-700 font-semi-bold">{publisher.fullName}</span>
                             </div>

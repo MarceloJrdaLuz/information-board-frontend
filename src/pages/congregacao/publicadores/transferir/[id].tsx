@@ -3,6 +3,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
 import FormTransferPublisher from "@/Components/Forms/FormTransferPublisher"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPublisher } from "@/types/types"
@@ -19,7 +20,7 @@ function TransferPublishersPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
-    const { data: publishers } = useAuthorizedFetch<IPublisher[]>(`/publishers/congregationId/${congregationUser?.id}`, {
+    const { data: publishers } = useAuthorizedFetch<IPublisher[]>(`${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}`, {
         allowedRoles: ["ADMIN_CONGREGATION"]
     })
 

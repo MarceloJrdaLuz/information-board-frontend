@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
+import { API_ROUTES } from '@/constants/apiRoutes'
 
 export interface IGroup {
     id: string
@@ -40,7 +41,7 @@ export default function FormAddGroup() {
     const fetchConfig = congregationUser ? `/groups/${congregationUser.id}` : ""
     const { data } = useFetch<IGroup[]>(fetchConfig)
 
-    const fetchPublisherDataConfig = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
+    const fetchPublisherDataConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ''
     const { data: publishersData, mutate } = useFetch<IPublisher[]>(fetchPublisherDataConfig)
 
     const dataSuccess = useAtomValue(successFormSend)

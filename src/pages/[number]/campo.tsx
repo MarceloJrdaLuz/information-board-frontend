@@ -86,7 +86,7 @@ function Campo() {
                         <Button outline={isDark}
                             onClick={() => { setFieldServiceOptionsShow(!fieldServiceOptionsShow) }}
                             className="w-full"
-                        ><PreachingIcon /> Saídas de Campo</Button>
+                        ><PreachingIcon className="w-5 h-5 sm:w-6 sm:h-6"/> Saídas de Campo</Button>
                         <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                             {fieldServiceOptionsShow && (
                                 documents ? documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
@@ -112,7 +112,7 @@ function Campo() {
                             <Button outline={isDark}
                                 onClick={() => { setLPublicServiceOptionsShow(!publicServiceOptionsShow) }}
                                 className="w-full"
-                            ><PublicPreachingIcon />Testemunho Público</Button>
+                            ><PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Testemunho Público</Button>
                             <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
                                 {publicServiceOptionsShow && (
                                     documents ? (

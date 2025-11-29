@@ -152,7 +152,7 @@ function Designacoes() {
               className="w-full"
               onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
             >
-              <LifeAndMinistryIcon /> Reunião do Meio de Semana
+              <LifeAndMinistryIcon className="w-5 h-5 sm:w-6 sm:h-6" /> Reunião do Meio de Semana
             </Button>
             {lifeAndMinistryOptionsShow && (
               documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
@@ -193,7 +193,7 @@ function Designacoes() {
             <Button outline={isDark}
               onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
               className="w-full"
-            ><PublicMeetingIcon />Reunião do Fim de Semana
+            ><PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Reunião do Fim de Semana
             </Button>
             {publicOptionsShow && (
               documents ? (

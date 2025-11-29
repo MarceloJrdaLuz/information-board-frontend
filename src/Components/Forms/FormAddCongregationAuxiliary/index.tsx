@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './types'
+import { CreateAuxiliaryCongregationPayload } from '@/atoms/auxiliaryCongregationAtoms/types'
 
 export default function FormAddCongregationAuxiliary() {
     const dataSuccess = useAtomValue(successFormSend)
@@ -30,7 +31,25 @@ export default function FormAddCongregationAuxiliary() {
         name: yup.string().required(),
         circuit: yup.string().required(),
         city: yup.string().required(),
-        hourMeetingPublic: yup.string(),
+        address: yup.string().transform((value) => value === "" ? undefined : value),
+        latitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
+
+        longitude: yup
+            .string()
+            .transform((value) => {
+                const trimmed = value?.trim() ?? ""
+                return trimmed === "" ? undefined : trimmed
+            })
+            .nullable()
+            .notRequired(),
+        hourMeetingPublic: yup.string().required(),
     })
 
     const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
@@ -39,18 +58,28 @@ export default function FormAddCongregationAuxiliary() {
             circuit: '',
             number: '',
             city: '',
+            address: '',
+            latitude: '',
+            longitude: '',
             hourMeetingPublic: ''
         }, resolver: yupResolver(validationSchema)
     })
 
     function onSubmit(data: FormValues) {
-        const payload = {
+        const payload: CreateAuxiliaryCongregationPayload = {
             name: data.name,
             number: data.number ?? "",
             circuit: data.circuit,
             city: data.city,
+            address: data.address,
+            latitude: data.latitude,
+            longitude: data.longitude,
             dayMeetingPublic: dayMeetingPublic ?? "",
             hourMeetingPublic: data.hourMeetingPublic
+        }
+        if (!dayMeetingPublic) {
+            toast.info('Por favor, selecione o dia da reunião do fim de semana.')
+            return
         }
         toast.promise(createAuxiliaryCongregation(payload), {
             pending: "Criando nova congregação..."
@@ -95,7 +124,7 @@ export default function FormAddCongregationAuxiliary() {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Nova Congregação</div>
-                    <Input type="text" placeholder="Nome da Congregação" registro={{
+                    <Input type="text" placeholder="Nome da Congregação*" registro={{
                         ...register('name',
                             { required: "Campo obrigatório" })
                     }}
@@ -108,27 +137,45 @@ export default function FormAddCongregationAuxiliary() {
                         handleCheckboxChange={handleCheckboxChange}
                     />
 
-                    <Input type="text" placeholder="Nº da congregação" registro={{
+                    <Input type="text" placeholder="Nº da congregação*" registro={{
                         ...register('number', { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.number?.message ? 'invalido' : ''} />
                     {errors?.number?.type && <InputError type={errors.number.type} field='number' />}
 
-                    <Input type="text" placeholder="Cidade" registro={{
+                    <Input type="text" placeholder="Cidade*" registro={{
                         ...register('city', { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.city?.message ? 'invalido' : ''} />
                     {errors?.city?.type && <InputError type={errors.city.type} field='city' />}
 
-                    <Input type="text" placeholder="Circuito" registro={{
+                    <Input type="text" placeholder="Circuito*" registro={{
                         ...register('circuit', { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
-                    <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
+                    <Input type="text" placeholder="Endereço" registro={{
+                        ...register('address')
+                    }}
+                        invalid={errors?.address?.message ? 'invalido' : ''} />
+                    {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
 
-                    <Input type="time" placeholder="Horário da reunião" registro={{
+                    <Input type="text" placeholder="Latitude" registro={{
+                        ...register('latitude')
+                    }}
+                        invalid={errors?.latitude?.message ? 'invalido' : ''} />
+                    {errors?.latitude?.type && <InputError type={errors.latitude.type} field='latitude' />}
+
+                    <Input type="text" placeholder="Longitude" registro={{
+                        ...register('longitude')
+                    }}
+                        invalid={errors?.longitude?.message ? 'invalido' : ''} />
+                    {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
+
+                    <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana*' border full textVisible />
+
+                    <Input type="time" placeholder="Horário da reunião*" registro={{
                         ...register('hourMeetingPublic')
                     }}
                         invalid={errors?.hourMeetingPublic?.message ? 'invalido' : ''} />

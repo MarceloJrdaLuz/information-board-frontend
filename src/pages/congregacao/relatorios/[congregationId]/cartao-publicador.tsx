@@ -12,6 +12,7 @@ import ModalHelp from "@/Components/ModalHelp"
 import S21 from "@/Components/PublisherCard"
 import PublishersToGenerateS21 from "@/Components/PublishersToGenerateS21"
 import SkeletonPublishersList from "@/Components/PublishersToGenerateS21/skeletonPublishersList"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
@@ -47,7 +48,7 @@ function PublisherCardPage() {
     const [reportsTotalsFrom, setReportsTotalsFrom] = useState<ITotalsReports[]>()
     const [reportsTotalsFromFilter, setReportsTotalsFromFilter] = useState<ITotalsReports[]>()
 
-    const fetchConfig = congregationId ? `/publishers/congregationId/${congregationId}` : ""
+    const fetchConfig = congregationId ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}` : ""
     const { data } = useAuthorizedFetch<IPublisher[]>(fetchConfig, {
         allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"]
     })

@@ -7,10 +7,11 @@ export type NavBarProps = {
 export type NavBarOptionType = {
     title: string
     active?: boolean
-    icon: ElementType 
+    icon: ElementType
+    isSubItem?: boolean
     onMouseEnter?: () => void
     onMouseLeave?: () => void
-    onClick: () => void 
+    onClick: () => void
 }
 
 export type NavBarListOptionsType = {
@@ -18,5 +19,5 @@ export type NavBarListOptionsType = {
     title: string
     icon: ElementType
     showList?: boolean
-    onClick: () => void 
+    onClick: () => void
 }

@@ -5,6 +5,7 @@ import GroupPublishers from "@/Components/GroupPublishers"
 import GroupIcon from "@/Components/Icons/GroupIcon"
 import GroupOverseersIcon from "@/Components/Icons/GroupOverseersIcon"
 import { crumbsAtom, groupPublisherList, pageActiveAtom, selectedPublishersAtom } from "@/atoms/atom"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
@@ -40,7 +41,7 @@ function AddPublishersToGroups() {
 
     const [dataSuccess, setDataSuccess] = useState(false)
 
-    const fetchConfigPublishers = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
+    const fetchConfigPublishers = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ''
     const { data: getPublishers, mutate } = useAuthorizedFetch<IPublisher[]>(fetchConfigPublishers, {
         allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER"]
     })
@@ -152,7 +153,7 @@ function AddPublishersToGroups() {
                             setSelectedPublishers([])
                         }}
                     >
-                        <GroupIcon />
+                        <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
                         Adicionar Publicadores
                     </Button>
 

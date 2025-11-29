@@ -102,12 +102,12 @@ export default function ExternalTalkRow({
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-1">
                       <Calendar size={14} className="text-typography-400" />
-                      <span>{moment(t.date).format("DD/MM/YYYY")} - {t.destinationCongregation.dayMeetingPublic}</span>
+                      <span className="leading-relaxed">{moment(t.date).format("DD/MM/YYYY")} - {t.destinationCongregation.dayMeetingPublic}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
                       <Clock size={14} className="text-typography-400" />
-                      <span>{t.destinationCongregation.hourMeetingPublic}</span>
+                      <span className="leading-relaxed">{moment(t.destinationCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}</span>
                     </div>
 
                   </div>
@@ -115,7 +115,7 @@ export default function ExternalTalkRow({
                     {t.talk?.number && (
                       <div className="flex items-center gap-2">
                         <Book size={14} className="text-typography-400" />
-                        <span className="font-medium">Nº</span>
+                        <span className="leading-relaxed">Nº</span>
                         <span>{t.talk.number}</span>
                       </div>
                     )}

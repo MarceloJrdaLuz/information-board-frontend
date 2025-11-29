@@ -3,6 +3,7 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import { buttonDisabled, crumbsAtom, errorFormSend, pageActiveAtom, successFormSend } from "@/atoms/atom"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { useSubmit } from "@/hooks/useSubmitForms"
@@ -30,7 +31,7 @@ function ChangeGroupOverseer() {
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
-    const fetchConfigPublishers = congregationUser ? `/publishers/congregationId/${congregationUser?.id}` : ''
+    const fetchConfigPublishers = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ''
     const { data: getPublishers, mutate } = useAuthorizedFetch<IPublisher[]>(fetchConfigPublishers, {
         allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER"]
     })
