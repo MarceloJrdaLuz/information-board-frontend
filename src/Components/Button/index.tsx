@@ -1,4 +1,4 @@
-import { CheckCircle2Icon } from "lucide-react"
+import { AlignLeft, CheckCircle2Icon } from "lucide-react"
 import { ButtonHTMLAttributes } from "react"
 import { tv, VariantProps } from "tailwind-variants"
 
@@ -6,7 +6,7 @@ const button = tv({
   base: `
     flex justify-center items-center transition-all gap-2 duration-500
     active:shadow-none shadow-xl rounded-lg
-    border   text-xs xs:text-sm sm:text-md lg:text-base
+    border text-xs xs:text-sm sm:text-md lg:text-base
     justify-self-center h-[40px] w-48 text-typography-200
   `,
   variants: {
@@ -23,6 +23,9 @@ const button = tv({
     disabled: {
       true: "bg-typography-500 hover:opacity-100 cursor-not-allowed shadow-none"
     },
+    alignLeft: {
+      true: "justify-start px-10"
+    },
     success: {
       true: "bg-success-100"
     },
@@ -38,7 +41,8 @@ const button = tv({
     outline: false,
     success: false,
     remove: false,
-    error: false
+    error: false,
+    alignLeft: false
   }
 })
 
@@ -53,12 +57,13 @@ export default function Button({
   className,
   error,
   outline,
+  alignLeft,
   ...props
 }: ButtonProps) {
   return (
     <button
       disabled={disabled}
-      className={button({ disabled, size, success, remove, error, outline, className })}
+      className={button({ disabled, size, success, remove, error, outline, alignLeft, className })}
       {...props}
     >
       {error ? (
