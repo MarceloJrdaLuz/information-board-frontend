@@ -67,22 +67,22 @@ function Home() {
                     <Image src={quadro} alt="Icone de um quadro de anúncios" fill />
                 )
             )} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} textoHeader="Quadro de Anúncios" heightConteudo={'auto'} header className="bg-left-bottom bg-cover md:bg-center lg:bg-right ">
-                <Button outline={isDark} className="w-full md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
-                    <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />Relatório de Serviço de campo
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/relatorio`)}>
+                    <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />Relatórios
                 </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
-                    <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Designações das Reuniões
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px] md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/designacoes`)}>
+                    <PublicMeetingIcon className="w-6 h-6 sm:w-7 sm:h-7" />Reuniões
                 </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto " onClick={() => Router.push(`${number}/limpeza`)}>
-                    <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />Limpeza do Salão do Reino
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto " onClick={() => Router.push(`${number}/limpeza`)}>
+                    <CleanIcon className="w-7 h-7 sm:w-8 sm:h-8" />Limpeza
                 </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/campo`)}>
-                    <PrechingHomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />Designações de Campo
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/campo`)}>
+                    <PrechingHomeIcon className="w-6 h-6 sm:w-7 sm:h-7" />Campo
                 </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
-                    <CalculatorIcon />Relatório Financeiro
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/financeiro`)}>
+                    <CalculatorIcon />Financeiro
                 </Button>
-                <Button outline={isDark} className="w-full  md:w-9/12 mx-auto" onClick={() => Router.push(`${number}/eventos`)}>
+                <Button alignLeft outline={isDark} className="w-full max-w-[350px]  md:w-9/12 md:max-w-[400px] mx-auto" onClick={() => Router.push(`${number}/eventos`)}>
                     <CalendarDaysIcon />Eventos especiais
                 </Button>
             </LayoutPrincipal>
