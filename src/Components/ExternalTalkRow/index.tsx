@@ -1,19 +1,21 @@
+import { UpdateExternalTalksPayload } from "@/atoms/externalTalksAtoms/types"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { IExternalTalk } from "@/types/externalTalks"
 import { ICongregation, ISpeaker, ITalk } from "@/types/types"
+import { DayMeetingPublic, getRealDateForDestination } from "@/utils/dateUtil"
 import { externalTalkStatusMap } from "@/utils/statusMap"
 import { format } from "date-fns"
 import { Book, Building, Calendar, CalendarDays, Clock, MapPin, Trash } from "lucide-react"
 import moment from "moment"
 import { useState } from "react"
+import { toast } from "react-toastify"
 import Button from "../Button"
 import CheckboxBoolean from "../CheckboxBoolean"
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import Dropdown from "../Dropdown"
 import DropdownObject from "../DropdownObjects"
+import EditIcon from "../Icons/EditIcon"
 import Input from "../Input"
-import { toast } from "react-toastify"
-import { DayMeetingPublic, getRealDateForDestination } from "@/utils/dateUtil"
 
 interface ExternalTalkRowProps {
   date: Date
@@ -23,6 +25,7 @@ interface ExternalTalkRowProps {
   talks?: ITalk[]
   onAddExternalTalk: (talk: Partial<IExternalTalk>) => void
   onUpdateStatus: (externalTalk_id: string, status: IExternalTalk["status"]) => void
+  onUpdate: (externalTalk_id: string, payload: Partial<IExternalTalk>) => void
   onDelete: (externalTalk_id: string) => void
 }
 
@@ -33,6 +36,7 @@ export default function ExternalTalkRow({
   speakers,
   congregations,
   onAddExternalTalk,
+  onUpdate,
   onUpdateStatus,
   onDelete
 }: ExternalTalkRowProps) {
@@ -43,6 +47,7 @@ export default function ExternalTalkRow({
   const [newManualTalk, setNewManualTalk] = useState<string>()
   const [manualTalkShow, setManualTalkShow] = useState<boolean>(false)
   const sortedCongregations = sortArrayByProperty(congregations, "name")
+  const [editTarget, setEditTarget] = useState<UpdateExternalTalksPayload | null>(null)
 
   let filteredSpeakers = speakers
   if (newTalkId) {
@@ -141,10 +146,28 @@ export default function ExternalTalkRow({
                   border
                 />
 
+                <Button
+                  size="sm"
+                  outline
+                  className="text-primary-200"
+                  onClick={() => {
+                    setEditTarget(t)
+                    setNewCongregationId(t.destinationCongregation.id)
+                    setSelectedCongregation(t.destinationCongregation)
+                    setNewSpeakerId(t.speaker?.id || "")
+                    setNewTalkId(t.talk?.id || "")
+                    setNewManualTalk(t.manualTalk || "")
+                    setManualTalkShow(t.manualTalk ? true: false) 
+                  }}
+                >
+                  <EditIcon className="mr-1 w-4" />
+                  Editar
+                </Button>
+
                 <ConfirmDeleteModal
                   onDelete={() => onDelete(t.id)}
                   button={
-                    <Button size="sm" outline className="text-red-500 w-fit">
+                    <Button size="sm" outline className="text-red-500 ">
                       <Trash className="mr-1 w-4" /> Excluir
                     </Button>
                   }
@@ -172,6 +195,7 @@ export default function ExternalTalkRow({
             }}
             labelKey="name"
             labelKeySecondary="city"
+            showSecondaryLabelOnSelected
             border
             full
             emptyMessage="Nenhuma congregação"
@@ -208,7 +232,6 @@ export default function ExternalTalkRow({
                   </span>
                 </div>
               </div>
-
             </div>
           )}
 
@@ -244,6 +267,7 @@ export default function ExternalTalkRow({
               handleChange={(item) => setNewTalkId(item?.id || "")}
               labelKey="number"
               labelKeySecondary="title"
+              showSecondaryLabelOnSelected
               border
               full
               emptyMessage="Nenhum tema"
@@ -259,7 +283,6 @@ export default function ExternalTalkRow({
               onChange={(e) => setNewManualTalk(e.target.value)}
             />
           )}
-
           <Button
             className="w-full bg-primary-200 hover:bg-primary-100 text-typography-200"
             onClick={() => {
@@ -267,27 +290,35 @@ export default function ExternalTalkRow({
                 toast.info("É obrigatório Selecionar uma congregação de destino!")
                 return
               }
-
               if (!newSpeakerId) {
                 toast.info("Selecione um orador.")
                 return
               }
-              onAddExternalTalk({
+
+              const payload: Partial<IExternalTalk> = {
                 date: realDate.clone().format("YYYY-MM-DD"),
                 speaker: speakers.find((s) => s.id === newSpeakerId),
                 manualTalk: newManualTalk,
                 destinationCongregation: congregations.find((c) => c.id === newCongregationId)!,
-                status: "pending",
                 talk: talks?.find((t) => t.id === newTalkId),
-              })
+              }
+
+              if (editTarget) {
+                onUpdate(editTarget.id, payload)
+                setEditTarget(null)
+              } else {
+                onAddExternalTalk({ ...payload, status: "pending" })
+              }
+
               setNewSpeakerId("")
               setNewCongregationId("")
               setNewManualTalk(undefined)
               setNewTalkId("")
             }}
           >
-            Adicionar Orador Externo
+            {editTarget ? "Salvar alterações" : "Adicionar Orador Externo"}
           </Button>
+
         </div>
       </div>
     </div>

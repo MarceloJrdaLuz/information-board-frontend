@@ -7,4 +7,4 @@ export type CreateExternalTalksPayload = {
   date: string
 }
 
-export type UpdateExternalTalksPayload = Partial<CreateExternalTalksPayload>
+export type UpdateExternalTalksPayload = Partial<IExternalTalk>

@@ -1,6 +1,6 @@
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
-import { createExternalAtom, deleteExternalTalkAtom, updateStatusExternalTalkAtom } from "@/atoms/externalTalksAtoms"
-import { CreateExternalTalksPayload } from "@/atoms/externalTalksAtoms/types"
+import { createExternalAtom, deleteExternalTalkAtom, updateExternalTalkAtom, updateStatusExternalTalkAtom } from "@/atoms/externalTalksAtoms"
+import { CreateExternalTalksPayload, UpdateExternalTalksPayload } from "@/atoms/externalTalksAtoms/types"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
@@ -27,6 +27,7 @@ function ExternalTalksPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const setCreateExternalTalk = useSetAtom(createExternalAtom)
+    const setUpdateExternalTalk = useSetAtom(updateExternalTalkAtom)
     const setUpdateStatusExternalTalk = useSetAtom(updateStatusExternalTalkAtom)
     const setDeleteExternalTalk = useSetAtom(deleteExternalTalkAtom)
 
@@ -88,6 +89,21 @@ function ExternalTalksPage() {
 
         await toast.promise(
             setCreateExternalTalk(congregation_id ?? "", payload),
+            { pending: "Salvando discurso externo..." }
+        )
+
+        mutate()
+    }
+
+    const handleUpdate = async (externalTalk_id: string, payload: Partial<IExternalTalk>) => {
+        const paylodUpdate: UpdateExternalTalksPayload = {
+            destinationCongregation_id: payload.destinationCongregation?.id,
+            speaker_id: payload.speaker?.id,
+            talk_id: payload.talk?.id,
+            manualTalk: payload.manualTalk
+        }
+        await toast.promise(
+            setUpdateExternalTalk(externalTalk_id ?? "", paylodUpdate),
             { pending: "Salvando discurso externo..." }
         )
 
@@ -161,6 +177,7 @@ function ExternalTalksPage() {
                                     congregations={congregations}
                                     talks={talks}
                                     onAddExternalTalk={handleAddExternalTalk}
+                                    onUpdate={handleUpdate}
                                     onUpdateStatus={handleUpdateStatus}
                                     onDelete={handleDelete}
                                 />
