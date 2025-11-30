@@ -148,9 +148,14 @@ export default function SpeakerInvitationPdf({
             </View>
 
             <Text style={styles.paragraph}>
-                Caso use imagens que não estão no esboço, poderá criar uma playlist no
+                Caso use imagens, poderá criar uma playlist no
                 aplicativo JW Library. Por favor, compartilhe as imagens com uma
                 semana de antecedência no meu whatsapp.
+            </Text>
+
+            <Text style={styles.paragraph}>
+                Seria um prazer para a congregação receber o irmão e a família para um lanche após a reunião. 
+                Se for possível, confirme o quanto antes se vão ficar, e a quantidade de pessoas para que o arranjo possa ser organizado. 
             </Text>
 
             <Text style={styles.paragraph}>
