@@ -133,7 +133,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                       <p className="font-semibold text-sm text-typography-700 my-2">
                         Oradores que saem:
                       </p>
-                      <div className="flex flex-col justify-center space-y-2">
+                      <div className="flex flex-col justify-center items-center space-y-2">
                         {filteredExternalTalks.map((ext) => (
                           <div key={ext.id} className="flex gap-2 p-2 rounded-md">
                             <div className="text-sm text-typography-700">
