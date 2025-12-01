@@ -1,7 +1,7 @@
-import { Fragment, useState, useEffect } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { XSquareIcon } from 'lucide-react'
+import { Fragment, useEffect, useState } from 'react'
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -23,6 +23,7 @@ interface IDropdown<T> {
   labelKeySecondary?: keyof T
   searchable?: boolean
   borderColor?: string
+  showSecondaryLabelOnSelected?: boolean
 }
 
 export default function DropdownObject<T>(props: IDropdown<T>) {
@@ -75,7 +76,12 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
             <div className="flex flex-col truncate text-left">
               <span className="text-typography-400 text-xs">{title}</span>
               <span className="truncate">
-                {selectedItem ? getLabel(selectedItem) : "Selecione..."}
+                {selectedItem
+                  ? props.showSecondaryLabelOnSelected
+                    ? getDisplayLabel(selectedItem)
+                    : getLabel(selectedItem)
+                  : "Selecione..."}
+
               </span>
             </div>
 
