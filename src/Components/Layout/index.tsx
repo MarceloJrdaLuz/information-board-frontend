@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileSpreadsheetIcon, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -50,6 +50,7 @@ export default function Layout(props: LayoutProps) {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setPageActive(router.pathname)
+            console.log(pageActive)
         }
     }, [router.pathname, setPageActive])
 
@@ -82,7 +83,7 @@ export default function Layout(props: LayoutProps) {
                             Router.push('/dashboard')
                         }}
                         icon={() => <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        active={pageActive === '/dashboard'}
+                        active={pageActive.startsWith('/dashboard')}
                     />
 
                     <ConsentCongregationWrapper>
@@ -128,7 +129,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/congregacao/publicadores')
                                         }}
                                         icon={() => <PublisherIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/congregacao/publicadores'}
+                                        active={pageActive.startsWith('/congregacao/publicadores')}
                                     />
                                 }
 
@@ -143,7 +144,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/congregacao/grupos')
                                         }}
                                         icon={() => <GroupIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-                                        active={pageActive === '/congregacao/grupos'}
+                                        active={pageActive.startsWith('/congregacao/grupos')}
                                     />
                                 }
 
@@ -159,7 +160,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/congregacao/relatorios/${user?.congregation.id}`)
                                         }}
                                         icon={() => <ReportIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === `/congregacao/relatorios/[congregationId]`}
+                                        active={pageActive.startsWith("/congregacao/relatorios")}
                                     />
                                 }
 
@@ -174,7 +175,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/congregacao/assistencia/${user?.congregation.id}`)
                                         }}
                                         icon={() => <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === `/congregacao/assistencia/[congregationId]`}
+                                        active={pageActive.startsWith(`/congregacao/assistencia`)}
                                     />
                                 }
 
@@ -189,7 +190,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/congregacao/territorios`)
                                         }}
                                         icon={() => <TerritoryIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/congregacao/territorios'}
+                                        active={pageActive.startsWith('/congregacao/territorios')}
                                     />
                                 }
 
@@ -204,7 +205,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/congregacao/contatos-emergencia`)
                                         }}
                                         icon={() => <EmergencyContactIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/congregacao/contatos-emergencia'}
+                                        active={pageActive.startsWith('/congregacao/contatos-emergencia')}
                                     />
                                 }
                             </NavBar.ListOptions>
@@ -230,7 +231,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/arranjo-oradores/administracao`)
                                         }}
                                         icon={() => <KanbanSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/arranjo-oradores/administracao'}
+                                        active={pageActive.startsWith('/arranjo-oradores/administracao')}
                                     />}
                                 {(isAdmin ||
                                     isAdminCongregation ||
@@ -243,7 +244,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/arranjo-oradores/discursos`)
                                         }}
                                         icon={() => <TalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/arranjo-oradores/discursos'}
+                                        active={pageActive.startsWith('/arranjo-oradores/discursos')}
                                     />}
                                 {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
                                     <>
@@ -255,7 +256,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/programacao`)
                                             }}
                                             icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/programacao'}
+                                            active={pageActive.startsWith('/arranjo-oradores/programacao')}
                                         />
                                         <NavBar.Options
                                             isSubItem
@@ -265,7 +266,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/saida-oradores`)
                                             }}
                                             icon={() => <ExternalTalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/saida-oradores'}
+                                            active={pageActive.startsWith('/arranjo-oradores/saida-oradores')}
                                         />
                                         <NavBar.Options
                                             isSubItem
@@ -275,7 +276,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/oradores`)
                                             }}
                                             icon={() => <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/oradores'}
+                                            active={pageActive.startsWith('/arranjo-oradores/oradores')}
                                         />
 
                                         <NavBar.Options
@@ -286,7 +287,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/congregacoes`)
                                             }}
                                             icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/congregacoes'}
+                                            active={pageActive.startsWith('/arranjo-oradores/congregacoes')}
                                         />
                                         <NavBar.Options
                                             isSubItem
@@ -296,7 +297,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/grupos-hospitalidade`)
                                             }}
                                             icon={() => <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/grupos-hospitalidade'}
+                                            active={pageActive.startsWith('/arranjo-oradores/grupos-hospitalidade')}
                                         />
                                         <NavBar.Options
                                             isSubItem
@@ -306,7 +307,7 @@ export default function Layout(props: LayoutProps) {
                                                 Router.push(`/arranjo-oradores/programacao-hospitalidade`)
                                             }}
                                             icon={() => <UtensilsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive === '/arranjo-oradores/programacao-hospitalidade'}
+                                            active={pageActive.startsWith('/arranjo-oradores/programacao-hospitalidade')}
                                         />
                                     </>
                                 }
@@ -329,7 +330,7 @@ export default function Layout(props: LayoutProps) {
                                         Router.push(`/reunioes/meiodesemana`)
                                     }}
                                     icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/reunioes/meiodesemana'}
+                                    active={pageActive.startsWith('/reunioes/meiodesemana')}
                                 />
 
                                 <NavBar.Options
@@ -340,7 +341,7 @@ export default function Layout(props: LayoutProps) {
                                         Router.push(`/reunioes/fimdesemana`)
                                     }}
                                     icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/reunioes/fimdesemana'}
+                                    active={pageActive.startsWith('/reunioes/fimdesemana')}
                                 />
                             </NavBar.ListOptions>
                         }
@@ -361,7 +362,7 @@ export default function Layout(props: LayoutProps) {
                                         Router.push(`/pregacao/saidasdecampo`)
                                     }}
                                     icon={() => <PrechingHomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/pregacao/saidasdecampo'}
+                                    active={pageActive.startsWith('/pregacao/saidasdecampo')}
                                 />
 
                                 <NavBar.Options
@@ -372,7 +373,7 @@ export default function Layout(props: LayoutProps) {
                                         Router.push(`/pregacao/testemunhopublico`)
                                     }}
                                     icon={() => <PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/pregacao/testemunhopublico'}
+                                    active={pageActive.startsWith('/pregacao/testemunhopublico')}
                                 />
                             </NavBar.ListOptions>
                         }
@@ -385,7 +386,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/usuarios')
                                 }}
                                 icon={() => <UsersIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/usuarios'}
+                                active={pageActive.startsWith('/usuarios')}
                             />
                         }
 
@@ -397,7 +398,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/permissoes')
                                 }}
                                 icon={() => <SecurityIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/permissoes'}
+                                active={pageActive.startsWith('/permissoes')}
                             />
                         }
 
@@ -409,7 +410,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/categorias')
                                 }}
                                 icon={() => <SquareStackIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/categorias'}
+                                active={pageActive.startsWith('/categorias')}
                             />
                         }
 
@@ -421,7 +422,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/congregacoes')
                                 }}
                                 icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/congregacoes'}
+                                active={pageActive.startsWith('/congregacoes')}
                             />
                         }
 
@@ -433,7 +434,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/limpeza')
                                 }}
                                 icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-                                active={pageActive === '/limpeza'}
+                                active={pageActive.startsWith('/limpeza')}
                             />
                         }
 
@@ -446,7 +447,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/contas')
                                 }}
                                 icon={() => <CalculatorIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/contas'}
+                                active={pageActive.startsWith('/contas')}
                             />
                         }
 
@@ -458,7 +459,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/eventosespeciais')
                                 }}
                                 icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/eventosespeciais'}
+                                active={pageActive.startsWith('/eventosespeciais')}
                             />
                         }
 
@@ -470,7 +471,7 @@ export default function Layout(props: LayoutProps) {
                                     Router.push('/anuncios')
                                 }}
                                 icon={() => <NoticesIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive === '/anuncios'}
+                                active={pageActive.startsWith('/anuncios')}
                             />
                         }
 
@@ -492,7 +493,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/administracao/funcoes')
                                         }}
                                         icon={() => <FunctionSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/administracao/funcoes'}
+                                        active={pageActive.startsWith('/administracao/funcoes')}
                                     />
                                 }
 
@@ -505,7 +506,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/administracao/controle-uso')
                                         }}
                                         icon={() => <LineChart className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/administracao/controle-uso'}
+                                        active={pageActive.startsWith('/administracao/controle-uso')}
                                     />
                                 }
 
@@ -518,7 +519,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/administracao/termos')
                                         }}
                                         icon={() => <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/administracao/termos'}
+                                        active={pageActive.startsWith('/administracao/termos')}
                                     />
                                 }
 
@@ -531,7 +532,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/administracao/funcoes/atribuir')
                                         }}
                                         icon={() => <FunctionSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/administracao/funcoes/atribuir'}
+                                        active={pageActive.startsWith('/administracao/funcoes')}
                                     />
                                 }
 
@@ -544,7 +545,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/administracao/add-domain')
                                         }}
                                         icon={() => <PuzzleIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/administracao/add-domain'}
+                                        active={pageActive.startsWith('/administracao/add-domain')}
                                     /> : null
                                 }
                             </NavBar.ListOptions>
