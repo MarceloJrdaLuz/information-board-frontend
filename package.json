@@ -22,6 +22,7 @@
     "cookies-next": "^3.0.0",
     "daisyui": "^3.5.1",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.19",
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.5",
     "filesize": "^10.0.6",

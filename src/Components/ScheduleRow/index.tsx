@@ -1,4 +1,4 @@
-import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakerFilterTalkAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
+import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
@@ -25,7 +25,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const speakers = useAtomValue(speakersAtom)
   const talks = useAtomValue(talksAtom)
   const congregations = useAtomValue(congregationsAtom)
-  const [filterTalk] = useAtom(speakerFilterTalkAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
   const [openConfirm, setOpenConfirm] = useState(false)
   const dateStr = date.toISOString().split("T")[0]
@@ -251,8 +250,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     }
   }
 
-  const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName")
-  const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName")
+  const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName", dateStr)
+  const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName", dateStr)
   const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName")
   const talkOptions = buildTalkOptions(filteredTalks, schedules)
 

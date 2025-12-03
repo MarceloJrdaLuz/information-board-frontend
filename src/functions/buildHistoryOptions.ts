@@ -1,23 +1,32 @@
 import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
-import moment from "moment"
+import dayjs from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+dayjs.extend(isSameOrBefore)
 
 export function buildOptions<T extends { id: string }>(
     people: T[] | undefined | null,
     schedules: Record<string, IRecordWeekendSchedule>,
     roleField: keyof IRecordWeekendSchedule,
-    labelKey: keyof T
+    labelKey: keyof T,
+    limitDate?: string // <-- opcional
 ) {
     if (!people) return []
 
-    const historyMap = new Map<string, string>() // id -> última data
+    const historyMap = new Map<string, string>()
+    const limit = limitDate ? dayjs(limitDate) : null
 
     Object.values(schedules).forEach(s => {
         const personId = s[roleField] as string | undefined
-        if (personId) {
-            const prevDate = historyMap.get(personId)
-            if (!prevDate || new Date(s.date) > new Date(prevDate)) {
-                historyMap.set(personId, s.date)
-            }
+        if (!personId) return
+
+        const d = dayjs(s.date)
+
+        // Só faz filtro se limitDate tiver sido passado
+        if (limit && !d.isBefore(limit)) return  
+
+        const prevDate = historyMap.get(personId)
+        if (!prevDate || d.isAfter(dayjs(prevDate))) {
+            historyMap.set(personId, s.date)
         }
     })
 
@@ -27,13 +36,14 @@ export function buildOptions<T extends { id: string }>(
             return {
                 ...p,
                 lastDate,
-                displayLabel: `${(p as any)[labelKey]} ${lastDate ? `— [${moment(lastDate).format("DD/MM/YYYY")}]` : "— [Nunca]"
-                    }`
+                displayLabel:
+                    `${(p as any)[labelKey]} ` +
+                    `${lastDate ? `— [${dayjs(lastDate).format("DD/MM/YYYY")}]` : "— [Nunca]"}`
             }
         })
         .sort((a, b) => {
             if (!a.lastDate) return -1
             if (!b.lastDate) return 1
-            return new Date(a.lastDate).getTime() - new Date(b.lastDate).getTime()
+            return dayjs(a.lastDate).valueOf() - dayjs(b.lastDate).valueOf()
         })
 }
