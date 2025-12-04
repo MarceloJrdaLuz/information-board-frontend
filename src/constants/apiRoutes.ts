@@ -10,5 +10,10 @@ export const API_ROUTES = {
     NOTICE: "/notice",
     REPORT: "/report",
     GROUP: "/group", 
-    ASSISTANCE: "/assistance"
+    ASSISTANCE: "/assistance", 
+    CLEANING_GROUPS: "/cleaning/groups",
+    CLEANING_SCHEDULES_CONFIG: "/cleaning/schedule-config",
+    CLEANING_SCHEDULES: "/cleaning/schedule",
+    CLEANING_EXCEPTIONS: "/cleaning-exception",
+    FAMILIES: "/families"
 }

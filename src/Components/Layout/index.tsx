@@ -109,6 +109,7 @@ export default function Layout(props: LayoutProps) {
                             roleContains('ASSISTANCE_MANAGER') ||
                             roleContains('ASSISTANCE_VIEWER') ||
                             roleContains('TERRITORIES_VIEWER') ||
+                            roleContains('CLEANING_MANAGER') ||
                             roleContains('TALK_MANAGER')) &&
                             <NavBar.ListOptions
                                 key={"submenuCongregação"}
@@ -130,6 +131,19 @@ export default function Layout(props: LayoutProps) {
                                         }}
                                         icon={() => <PublisherIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive.startsWith('/congregacao/publicadores')}
+                                    />
+                                }
+                                {(isAdminCongregation ||
+                                    roleContains('PUBLISHERS_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Famílias"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/familias')
+                                        }}
+                                        icon={() => <GroupIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/familias')}
                                     />
                                 }
 
@@ -206,6 +220,33 @@ export default function Layout(props: LayoutProps) {
                                         }}
                                         icon={() => <EmergencyContactIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive.startsWith('/congregacao/contatos-emergencia')}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('CLEANING_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Grupos de Limpeza"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/grupos-limpeza')
+                                        }}
+                                        icon={() => <GroupIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/grupos-limpeza')}
+                                    />
+                                }
+                                {(isAdminCongregation ||
+                                    roleContains('CLEANING_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Limpeza"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/programacao-limpeza')
+                                        }}
+                                        icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/programacao-limpeza')}
                                     />
                                 }
                             </NavBar.ListOptions>
