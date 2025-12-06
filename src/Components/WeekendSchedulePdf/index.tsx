@@ -99,7 +99,7 @@ export default function WeekendMeeting({ schedules, scale = 1 }: IWeekendSchedul
 
     return (
         <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>Reunião do Fim de Semana</Text>
+            <Text fixed style={styles.header}>Reunião do Fim de Semana</Text>
 
             {schedules.map((schedule, idx) => (
                 <View key={idx} style={styles.meetingBlock} wrap={false}>

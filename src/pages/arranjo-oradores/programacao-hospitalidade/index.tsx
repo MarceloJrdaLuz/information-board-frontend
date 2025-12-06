@@ -3,7 +3,6 @@ import Button from "@/Components/Button"
 import ContentDashboard from "@/Components/ContentDashboard"
 import HospitalityRow from "@/Components/HospitalityWeekendRow"
 import SkeletonHospitalityRow from "@/Components/HospitalityWeekendRow/skeleton"
-import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
     createHospitalityWeekendAtom,

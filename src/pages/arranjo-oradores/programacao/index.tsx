@@ -20,7 +20,6 @@ import {
     updateWeekendScheduleAtom
 } from "@/atoms/weekendScheduleAtoms"
 import { useAuthContext } from "@/context/AuthContext"
-import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
 import { ICongregation, ISpeaker } from "@/types/types"
