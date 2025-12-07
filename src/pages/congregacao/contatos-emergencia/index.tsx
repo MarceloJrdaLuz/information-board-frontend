@@ -35,6 +35,10 @@ function EmergencyContactsPage() {
     function handleDelete(emergencyContact_id: string) {
         toast.promise(deleteEmergencyContact(emergencyContact_id), {
             pending: 'Excluindo contato...',
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 

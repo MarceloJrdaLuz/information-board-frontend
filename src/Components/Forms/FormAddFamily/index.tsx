@@ -78,12 +78,14 @@ export default function FormAddFamily() {
                 memberIds: selectedMembers.map(m => m.id)
             }),
             { pending: "Criando nova família..." }
-        );
-
-        reset();
-        setSelectedMembers([]);
-        setResponsible(null);
-        mutate();
+        ).then(() => {
+            reset();
+            setSelectedMembers([]);
+            setResponsible(null);
+            mutate();
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     function onError() {

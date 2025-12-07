@@ -16,7 +16,7 @@ import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { CleaningScheduleMode, ICleaningScheduleConfig, ICleaningScheduleResponse } from "@/types/cleaning";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
-import { Document, PDFDownloadLink } from "@react-pdf/renderer";
+import { BlobProvider, Document, PDFDownloadLink } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -32,30 +32,39 @@ function PdfLinkComponent({ schedule, congregationName }: PdfLinkComponentProps)
     if (!schedule || !schedule.schedules || schedule.schedules.length === 0) {
         return null;
     }
-
     return (
-
-        <PDFDownloadLink
-            document={
-                <Document>
-                    <CleaningSchedulePdf
-                        schedule={schedule}
-                        congregationName={congregationName}
-                    />
-                </Document>
-            }
-            fileName={`Programacao de limpeza.pdf`}
+        <BlobProvider
+            document={<Document>
+                <CleaningSchedulePdf
+                    schedule={schedule}
+                    congregationName={congregationName}
+                />
+            </Document>}
         >
-            {({ loading }) => (
-                <Button outline className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                    <PdfIcon />
-                    <span className="text-primary-200 font-semibold">
-                        {loading ? "Gerando PDF..." : "Gerar PDF"}
-                    </span>
-                </Button>
-            )}
-        </PDFDownloadLink>
-    )
+            {({ blob, url, loading, error }) => {
+                const isDisabled = loading || !!error || !blob;
+
+                return (
+                    <a
+                        href={url || "#"}
+                        download={url ? `Programação da limpeza.pdf` : undefined}
+                        className={isDisabled ? "pointer-events-none" : ""}
+                    >
+                        <Button
+                            outline
+                            className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80"
+                            disabled={isDisabled}
+                        >
+                            <PdfIcon />
+                            <span className="text-primary-200 font-semibold">
+                                {loading ? "Gerando PDF..." : "Gerar PDF"}
+                            </span>
+                        </Button>
+                    </a>
+                );
+            }}
+        </BlobProvider>
+    );
 }
 
 function CleaningSchedulePage() {
@@ -118,8 +127,11 @@ function CleaningSchedulePage() {
             }),
             {
                 pending: 'Gerando programação de limpeza...'
+            }).then(() => {
+                mutate()
+            }).catch(err => {
+                console.log(err)
             })
-        mutate()
         setLoading(false);
     };
 

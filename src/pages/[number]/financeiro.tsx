@@ -64,30 +64,32 @@ function Financeiro() {
     return !pdfShow ? (
         <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Financeiro" urlMiniatura={`${domain}/images/financeiro.png`} />
-            <LayoutPrincipal
-                nCong={congregationData?.number}
-                image={
-                    <Image src={iconeFinanceiro} alt="Icone uma calculadora e contas" fill />
-                } congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
-                <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
-                <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
-                    {documents ? (
-                        documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
-                            <Button outline={isDark} className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
-                                {removeMimeType(document.fileName)}
-                            </Button>
-                        )) : (
-                            <NotFoundDocument message="Relatório das contas não localizado!" />
-                        )
-                    ) : (
-                        <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-                    )}
-                </div>
-                <Button outline={isDark}
-                    onClick={() => router.push(`/${number}`)}
-                    className="w-1/2 mx-auto"
-                ><ChevronsLeftIcon />Voltar</Button>
-            </LayoutPrincipal >
+            <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+                <LayoutPrincipal
+                    nCong={congregationData?.number}
+                    image={
+                        <Image src={iconeFinanceiro} alt="Icone uma calculadora e contas" fill />
+                    } congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-contas bg-left-bottom bg-cover lg:bg-right" textoHeader="Relatório Financeiro">
+                    <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                    <div className="flex justify-between overflow-auto hide-scrollbar w-11/12 md:w-8/12 gap-2 my-2 m-auto flex-wrap">
+                        {documents ? (
+                            documentsFilter && documentsFilter?.length > 0 ? documentsFilter?.map(document => (
+                                <Button outline={isDark} className="w-full" key={document.id} onClick={() => { handleButtonClick(document.url) }}>
+                                    {removeMimeType(document.fileName)}
+                                </Button>
+                            )) : (
+                                <NotFoundDocument message="Relatório das contas não localizado!" />
+                            )
+                        ) : (
+                            <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
+                        )}
+                    </div>
+                    <Button outline={isDark}
+                        onClick={() => router.push(`/${number}`)}
+                        className="w-1/2 mx-auto"
+                    ><ChevronsLeftIcon />Voltar</Button>
+                </LayoutPrincipal >
+            </div>
         </div>
     ) : (
         <>

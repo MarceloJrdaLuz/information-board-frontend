@@ -44,8 +44,11 @@ function CleaningGroupsPage() {
   async function handleDelete(group_id: string) {
     await toast.promise(setDeleteCleaningGroup(group_id), {
       pending: "Excluindo grupo de limpeza..."
+    }).then(() => {
+      mutate()
+    }).catch(err => {
+      console.log(err)
     })
-    mutate()
   }
 
   return (

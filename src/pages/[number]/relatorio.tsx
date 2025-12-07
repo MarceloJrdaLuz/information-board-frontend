@@ -27,12 +27,14 @@ function Relatorio() {
     return (
         <>
             <HeadComponent title="Relatório" urlMiniatura={`${domain}/images/relatorio.png`} />
-            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
-                <FormReport congregationNumber={number as string} />
-            </LayoutPrincipal>
+            <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+                <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} bgFundo={'bg-teste-100'} heightConteudo="h-[90vh]">
+                    <FormReport congregationNumber={number as string} />
+                </LayoutPrincipal>
+            </div>
         </>
     )
-} 
+}
 
 Relatorio.getLayout = function getLayout(page: React.ReactElement) {
     return page // sem layout nenhum

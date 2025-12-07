@@ -70,9 +70,12 @@ export default function FormAddRole() {
     function onSubmit(data: { name: string, description: string }) {
         toast.promise(createRole(data.name, data.description, permissionSelectedsIds), {
             pending: "Criando nova permissão"
+        }).then(() => {
+            reset()
+            setPermissionsSelected([])
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setPermissionsSelected([])
     }
 
 

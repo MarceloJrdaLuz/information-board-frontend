@@ -1,22 +1,23 @@
-import {
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button,
-} from "@material-tailwind/react"
+import * as Popover from "@radix-ui/react-popover";
+import { Button } from "../ui/button";
 
 interface FullNameShowProps {
-  defaultName: string
+  defaultName: string;
 }
 
-export function FullNameShow({defaultName}: FullNameShowProps) {
+export function FullNameShow({ defaultName }: FullNameShowProps) {
   return (
-    <Popover>
-      <PopoverHandler>
-        <Button className="shadow-none rounded-none hover:shadow-none h-fit text-typography-900 font-semi-bold p-1 text-start bg-transparent overflow-hidden whitespace-nowrap text-ellipsis border-b-2 border-dashed border-typography-900 w-full mr-3 capitalize font-medium text-sm">
-         {defaultName}
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <Button className="shadow-none rounded-none hover:shadow-none h-fit text-typography-900 font-semibold p-1 text-start bg-transparent overflow-hidden whitespace-nowrap text-ellipsis border-b-2 border-dashed border-typography-900 w-full mr-3 capitalize text-sm">
+          {defaultName}
         </Button>
-      </PopoverHandler>
-    </Popover>
-  )
+      </Popover.Trigger>
+
+      <Popover.Content side="bottom" align="start" className="bg-white rounded-md shadow-lg p-2">
+        {/* Aqui você pode colocar conteúdo extra se quiser mostrar algo ao clicar */}
+        {defaultName}
+      </Popover.Content>
+    </Popover.Root>
+  );
 }

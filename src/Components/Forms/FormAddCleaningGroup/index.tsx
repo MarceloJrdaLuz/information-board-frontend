@@ -77,7 +77,7 @@ export default function FormAddCleaningGroup() {
 
     async function onSubmit(data: FormValues) {
 
-        if(!selectedNumber){
+        if (!selectedNumber) {
             toast.info("É obrigatório escolher um número.")
             return
         }
@@ -90,13 +90,15 @@ export default function FormAddCleaningGroup() {
 
         await toast.promise(createCleaningGroup(congregation_id ?? "", payload), {
             pending: "Criando novo grupo de limpeza..."
+        }).then(() => {
+            reset()
+            mutate()
+            setSelectedMembers([])
+            setAvailableNumbers([])
+            setSelectedNumber(undefined)
+        }).catch(err => {
+            console.log(err)
         })
-
-        reset()
-        mutate()
-        setSelectedMembers([])
-        setAvailableNumbers([])
-        setSelectedNumber(undefined)
     }
 
     function onError() {

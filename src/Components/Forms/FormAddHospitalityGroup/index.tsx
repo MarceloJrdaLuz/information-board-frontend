@@ -79,11 +79,13 @@ export default function FormAddHospitalityGroup() {
 
         toast.promise(createHospitalityGroup(congregation_id ?? "", payload), {
             pending: 'Criando novo grupo de hospitalidade...',
+        }).then(() => {
+            reset()
+            setSelectedPublisherHost(null)
+            setSelectedGroupMembers([])
+        }).catch(err => {
+            console.log(err)
         })
-
-        reset()
-        setSelectedPublisherHost(null)
-        setSelectedGroupMembers([])
     }
 
     function onError(error: any) {

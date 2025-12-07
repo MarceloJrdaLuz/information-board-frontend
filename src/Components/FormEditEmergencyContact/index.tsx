@@ -103,6 +103,10 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
             }),
             {
                 pending: 'Atualizando contato de emergência...'
+            }).then(() => {
+
+            }).catch(err => {
+                console.log(err)
             })
     }
     function onError(error: any) {

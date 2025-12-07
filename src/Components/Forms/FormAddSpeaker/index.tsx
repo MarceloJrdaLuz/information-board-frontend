@@ -78,12 +78,15 @@ export default function FormAddSpeaker() {
             talk_ids
         }), {
             pending: 'Criando novo orador',
+        }).then(() => {            
+            reset()
+            setSelectedTalks(null)
+            setSelectedSpeakerCongregation(null)
+            setSelectedPublisher(null)
+            setSpeakerIsPublisher(false)
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setSelectedTalks(null)
-        setSelectedSpeakerCongregation(null)
-        setSelectedPublisher(null)
-        setSpeakerIsPublisher(false)
     }
 
     function onError(error: any) {

@@ -39,8 +39,11 @@ function FamiliesPage() {
     async function handleDelete(family_id: string) {
         await toast.promise(setDeleteFamily(family_id), {
             pending: "Excluindo família..."
-        });
-        mutate();
+        }).then(() => {
+            mutate();
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     return (

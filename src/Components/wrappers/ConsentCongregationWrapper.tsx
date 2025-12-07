@@ -46,13 +46,16 @@ export const ConsentCongregationWrapper = ({ children }: ConsentWrapperProps) =>
         toast.promise(acceptConsent({
             congregation_id: congregation!.id,
             accepted_by_user_id: user?.id ?? "",
-            deviceId: deviceId,
+            deviceId: deviceId, 
             type: "congregation",
         }), {
             pending: 'Registrando seu consentimento...',
+        }).then(() => {
+            setConsentCongregation(prev => prev ? { ...prev, hasAccepted: true, isLatestVersion: true } : prev)
+            setIsOpen(false)
+        }).catch(err => {
+            console.log(err)
         })
-        setConsentCongregation(prev => prev ? { ...prev, hasAccepted: true, isLatestVersion: true } : prev)
-        setIsOpen(false)
     }
       // 3️⃣ se não for admin, libera conteúdo normalmente
     if (!shouldFetchConsent) return <>{children}</>;

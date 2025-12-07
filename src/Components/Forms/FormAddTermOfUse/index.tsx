@@ -65,9 +65,12 @@ export default function FormAddTermOfUse() {
         }
         toast.promise(createTermOfUse(payLoad), {
             pending: "Criando novo termo de uso..."
+        }).then(() => {            
+            reset()
+            setType("publisher")
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setType("publisher")
     }
 
     function onError(error: any) {

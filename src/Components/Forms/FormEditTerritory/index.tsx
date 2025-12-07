@@ -74,16 +74,19 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
         setSelectedNumber(number)
     }
 
-    const onSubmit = ({ name, description}: FormValues) => {
+    const onSubmit = ({ name, description }: FormValues) => {
         toast.promise(updateTerritory({
             name,
             number: Number(selectedNumber),
-            description, 
+            description,
             territory_id
         }), {
             pending: "Atualizando território"
+        }).then(() => {
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function onError(error: any) {
@@ -93,7 +96,7 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
     function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
         setUploadedFile(event.target.files?.[0] ?? null)
     }
-  
+
     useEffect(() => {
         if (data) {
             // Set initial form values when data is available

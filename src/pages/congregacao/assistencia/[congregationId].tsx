@@ -12,7 +12,7 @@ import { getYearService } from "@/functions/meses"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IMeetingAssistance } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Document, PDFDownloadLink } from "@react-pdf/renderer"
+import { BlobProvider, Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
 import { FilePlus2Icon } from "lucide-react"
 import moment from "moment"
@@ -66,7 +66,7 @@ function ListReportsPage() {
     }
 
     const PdfLinkComponent = () => (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
                     <S88
@@ -75,19 +75,23 @@ function ListReportsPage() {
                     />
                 </Document>
             }
-            fileName={"Assistência às reuniões.pdf"}
         >
-            {({ blob, url, loading, error }) =>
-                loading ? "" :
-                    <Button outline className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={"Assistência às reuniões.pdf"}>
+                    <Button
+                        outline
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                    >
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
-                            Salvar S-88
+                            {loading ? "Gerando PDF..." : "Salvar S-88"}
                         </span>
                     </Button>
-            }
-        </PDFDownloadLink>
-    )
+                </a>
+            )}
+        </BlobProvider>
+    );
+
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />

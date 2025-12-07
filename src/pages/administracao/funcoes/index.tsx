@@ -38,30 +38,33 @@ function RolesPage() {
     function handleDelete(item_id: string) {
         toast.promise(deleteRole(item_id), {
             pending: "Excluindo permissão..."
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
     return (
-                <ContentDashboard>
-                    <BreadCrumbs crumbs={crumbs} pageActive={"Funções"} />
-                    <section className="flex flex-wrap w-full h-full p-5 ">
-                        <div className="w-full h-full">
-                            <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
-                            <Button outline
-                                onClick={() => {
-                                    Router.push('/administracao/funcoes/add')
-                                }}
-                                className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                                <FunctionSquareIcon />
-                                <span className="text-primary-200 font-semibold">Criar função</span>
-                            </Button>
-                            {roles && (
-                                <ListItems onDelete={(item_id) => { handleDelete(item_id) }} items={roles} label="Funções" path="/administracao/funcoes" />
-                            )}
-                        </div>
-                    </section>
-                </ContentDashboard>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Funções"} />
+            <section className="flex flex-wrap w-full h-full p-5 ">
+                <div className="w-full h-full">
+                    <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Funções</h1>
+                    <Button outline
+                        onClick={() => {
+                            Router.push('/administracao/funcoes/add')
+                        }}
+                        className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
+                        <FunctionSquareIcon />
+                        <span className="text-primary-200 font-semibold">Criar função</span>
+                    </Button>
+                    {roles && (
+                        <ListItems onDelete={(item_id) => { handleDelete(item_id) }} items={roles} label="Funções" path="/administracao/funcoes" />
+                    )}
+                </div>
+            </section>
+        </ContentDashboard>
     )
 }
 

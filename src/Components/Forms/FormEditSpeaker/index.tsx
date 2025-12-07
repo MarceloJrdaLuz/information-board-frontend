@@ -78,8 +78,11 @@ export default function FormEditSpeaker() {
         }
         toast.promise(updateSpeaker(selectedSpeaker?.id ?? "", payload), {
             pending: 'Atualizando orador...',
+        }).then(() => {
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
 
     }
 

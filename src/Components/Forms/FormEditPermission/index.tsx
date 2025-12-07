@@ -21,7 +21,7 @@ export interface IUpdatePermission {
 
 export default function FormEditPermission({ permission_id }: IUpdatePermission) {
 
-    const {updatePermission} = usePermissionsAndRoles()
+    const { updatePermission } = usePermissionsAndRoles()
     const [permissionToUpdate, setPermissionToUpdate] = useState<IPermission>()
 
     const { data } = useFetch(`/permission/${permission_id}`)
@@ -65,6 +65,10 @@ export default function FormEditPermission({ permission_id }: IUpdatePermission)
             ),
             {
                 pending: 'Atualizando permissão'
+            }).then(() => {
+
+            }).catch(err => {
+                console.log(err)
             })
     }
 

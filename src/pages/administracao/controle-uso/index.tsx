@@ -64,6 +64,8 @@ function ControlledUse() {
         allowedRoles: ["ADMIN"]
     })
 
+    console.log(usage)
+
     useEffect(() => {
         setPageActive("Controle de Uso")
     }, [setPageActive])

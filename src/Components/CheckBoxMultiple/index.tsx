@@ -1,48 +1,57 @@
-import { checkbox } from '@material-tailwind/react'
-import React from 'react'
+import { Checkbox } from "../ui/checkbox"
 
 interface ICheckboxMultiple {
   full?: boolean
   options: string[]
   label: string
   visibleLabel?: boolean
-  checkedOptions?: string[] // torna a propriedade opcional
+  checkedOptions?: string[]
   handleCheckboxChange: (selectedOptions: string[]) => void
 }
 
 export default function CheckboxMultiple(props: ICheckboxMultiple) {
   const handleCheckboxChange = (selectedOption: string) => {
     const isChecked = props.checkedOptions?.includes(selectedOption) || false
-    let updatedOptions: string[]
 
-    if (isChecked) {
-      updatedOptions = props.checkedOptions?.filter((option) => option !== selectedOption) || []
-    } else {
-      updatedOptions = [...(props.checkedOptions || []), selectedOption]
-    }
+    const updatedOptions = isChecked
+      ? props.checkedOptions?.filter((o) => o !== selectedOption) || []
+      : [...(props.checkedOptions || []), selectedOption]
 
     props.handleCheckboxChange(updatedOptions)
   }
 
   return (
     <div>
-      <h3 className="my-2 font-semibold text-typography-900 ">{props.visibleLabel && props.label}</h3>
-      <ul className="items-center justify-between flex-wrap text-sm font-medium text-typography-900 bg-surface-100 border border-typography-200 rounded-lg sm:flex">
+      {props.visibleLabel && (
+        <h3 className="my-4 font-semibold text-typography-700">
+          {props.label}
+        </h3>
+      )}
+
+      <ul
+        className="
+          flex flex-wrap items-center justify-between 
+          bg-surface-100 border rounded-lg 
+          text-sm font-medium text-foreground
+        "
+      >
         {props.options.map((option) => (
-          <li key={option} className={`w-full ${!props.full && 'sm:w-1/2'} border-b border-typography-200  sm:border-r `}>
-            <div className="flex items-center pl-3">
-              <input
+          <li
+            key={option}
+            className={`w-full ${!props.full && "sm:w-1/2"
+              } border-b sm:border-r border-border`}
+          >
+            <div className="flex items-center gap-2 pl-3 py-3">
+              <Checkbox
+              className="border-[2px] border-typography-600 bg-surface-100 data-[state=checked]:bg-surface-100 data-[state=checked]:text-primary-200 data-[state=checked]:border-primary-200"
                 id={`${props.label}-${option}`}
-                type="checkbox"
-                name={props.label}
-                value={option}
-                className="w-4 h-4 cursor-pointer text-primary-200 bg-typography-100 border-typography-300 rounded focus:bg-primary-200 accent-primary-200"
                 checked={props.checkedOptions?.includes(option) || false}
-                onChange={() => handleCheckboxChange(option)}
+                onCheckedChange={() => handleCheckboxChange(option)}
               />
+
               <label
                 htmlFor={`${props.label}-${option}`}
-                className="w-full py-3 ml-2 text-sm font-medium text-typography-900"
+                className="text-sm font-semibold text-typography-900 cursor-pointer"
               >
                 {option}
               </label>

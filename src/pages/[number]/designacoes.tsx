@@ -134,102 +134,104 @@ function Designacoes() {
   return !pdfShow ? (
     <div className=" flex flex-col h-screen w-screen bg-typography-200">
       <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
-      <LayoutPrincipal
-        nCong={congregationData?.number}
-        image={
-          <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
-        }
-        congregationName={congregationData?.name ?? ""}
-        circuit={congregationData?.circuit ?? ""}
-        textoHeader="Designações Semanais"
-        heightConteudo={'1/2'}
-        header
-        className='bg-designacoes bg-center bg-cover'
-      >
-        <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
-          <div>
-            <Button outline={isDark}
-              className="w-full"
-              onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
-            >
-              <LifeAndMinistryIcon className="w-5 h-5 sm:w-6 sm:h-6" />Meio de Semana
-            </Button>
-            {lifeAndMinistryOptionsShow && (
-              documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
-                  <div className="flex-1 " key={document.id}>
-                    <Button outline={isDark}
-                      className="w-full"
-                      onClick={() => { handleButtonClick(document.url) }}
-                    >{removeMimeType(document.fileName)}</Button>
-                  </div>
+      <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+        <LayoutPrincipal
+          nCong={congregationData?.number}
+          image={
+            <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
+          }
+          congregationName={congregationData?.name ?? ""}
+          circuit={congregationData?.circuit ?? ""}
+          textoHeader="Designações Semanais"
+          heightConteudo={'1/2'}
+          header
+          className='bg-designacoes bg-center bg-cover'
+        >
+          <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
+            <div>
+              <Button outline={isDark}
+                className="w-full"
+                onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
+              >
+                <LifeAndMinistryIcon className="w-5 h-5 sm:w-6 sm:h-6" />Meio de Semana
+              </Button>
+              {lifeAndMinistryOptionsShow && (
+                documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
+                  {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
+                    <div className="flex-1 " key={document.id}>
+                      <Button outline={isDark}
+                        className="w-full"
+                        onClick={() => { handleButtonClick(document.url) }}
+                      >{removeMimeType(document.fileName)}</Button>
+                    </div>
+                  ))}
+                </div>) : (
+                  <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
                 ))}
-              </div>) : (
-                <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-              ))}
-            {lifeAndMinistryOptionsShow &&
-              <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
-                  <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                    <Button outline={isDark}
-                      onClick={() => { handleButtonClick(document.url) }}
-                      className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
-                  </div>
-                ))}
-              </div>}
-
-            {!lifeAndMinistryOptionsShow ? (
-              <>
-                {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-typography-900">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
-              </>
-            ) : (
-              <>
-                {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length < 1 && documentsOthersFilter && documentsOthersFilter.length < 1 && <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
-              </>
-            )}
-
-          </div>
-          <div>
-            <Button outline={isDark}
-              onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
-              className="w-full"
-            ><PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Fim de Semana
-            </Button>
-            {publicOptionsShow && (
-              documents ? (
+              {lifeAndMinistryOptionsShow &&
                 <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                  {documentsPublicFilter && documentsPublicFilter.length > 0 ? (
-                    documentsPublicFilter.map(document => (
-                      <div
-                        className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`}
-                        key={document.id}
-                      >
-                        <Button outline={isDark}
-                          onClick={() => { handleButtonClick(document.url) }}
-                          className="w-full"
-                        >
-                          {removeMimeType(document.fileName)}
-                        </Button>
-                      </div>
-                    ))
-                  ) : schedules && Object.keys(schedules).length > 0 ? (
-                    <SchedulesCarousel schedules={schedules} />
-                  ) : (
-                    <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />
-                  )}
-                </div>
+                  {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
+                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                      <Button outline={isDark}
+                        onClick={() => { handleButtonClick(document.url) }}
+                        className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
+                    </div>
+                  ))}
+                </div>}
+
+              {!lifeAndMinistryOptionsShow ? (
+                <>
+                  {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-typography-800">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
+                </>
               ) : (
-                <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-              )
-            )}
-            {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-typography-900">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+                <>
+                  {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length < 1 && documentsOthersFilter && documentsOthersFilter.length < 1 && <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
+                </>
+              )}
+
+            </div>
+            <div>
+              <Button outline={isDark}
+                onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
+                className="w-full"
+              ><PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Fim de Semana
+              </Button>
+              {publicOptionsShow && (
+                documents ? (
+                  <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
+                    {documentsPublicFilter && documentsPublicFilter.length > 0 ? (
+                      documentsPublicFilter.map(document => (
+                        <div
+                          className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`}
+                          key={document.id}
+                        >
+                          <Button outline={isDark}
+                            onClick={() => { handleButtonClick(document.url) }}
+                            className="w-full"
+                          >
+                            {removeMimeType(document.fileName)}
+                          </Button>
+                        </div>
+                      ))
+                    ) : schedules && Object.keys(schedules).length > 0 ? (
+                      <SchedulesCarousel schedules={schedules} />
+                    ) : (
+                      <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
+                )
+              )}
+              {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-typography-800">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            </div>
+            <Button outline={isDark}
+              onClick={() => router.push(`/${number}`)}
+              className="w-1/2 mx-auto"
+            ><ChevronsLeftIcon />Voltar</Button>
           </div>
-          <Button outline={isDark}
-            onClick={() => router.push(`/${number}`)}
-            className="w-1/2 mx-auto"
-          ><ChevronsLeftIcon />Voltar</Button>
-        </div>
-      </LayoutPrincipal>
+        </LayoutPrincipal>
+      </div>
     </div>
   ) : (
     <>

@@ -71,7 +71,7 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-        <main className={`flex w-screen h-screen max-h-full overflow-y-auto`}>
+<main className="flex w-screen h-screen">
             <NavBar.Root>
                 {!showMenu && <NavBar.Skeleton items={5} />}
                 <div className={`transition-opacity duration-150 ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>

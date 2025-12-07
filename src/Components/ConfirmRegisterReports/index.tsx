@@ -1,65 +1,59 @@
 import React, { ReactElement } from "react"
 import {
-    Dialog,
-    DialogHeader,
-    DialogBody,
-    DialogFooter,
-} from "@material-tailwind/react"
-import Button from "../Button"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog"
+
 import { AlertTriangleIcon } from "lucide-react"
 
 interface ConfirmRegisterReportsProps {
-    button: ReactElement
-    onRegister: () => void
+  button: ReactElement
+  onRegister: () => void
 }
 
 export function ConfirmRegisterReports({ button, onRegister }: ConfirmRegisterReportsProps) {
-    const [open, setOpen] = React.useState(false)
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <div className="w-fit">
+          {button}
+        </div>
+      </AlertDialogTrigger>
 
-    const handleOpen = () => {
-        setOpen(!open)
-    }
-
-    const handleDelete = () => {
-        onRegister()
-        handleOpen()
-    }
-
-    return (
-        <>
-            <div onClick={handleOpen} className="w-fit">
-                {button}
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-red-500">
+            Registrar relatórios
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-red-400">
+            <div className="flex gap-3 items-center">
+              <AlertTriangleIcon className="text-red-400" />
+              Ao clicar em confirmar isso não poderá ser revertido!
             </div>
-            <Dialog
-                open={open}
-                handler={handleOpen}
-                animate={{
-                    mount: { scale: 1, y: 0 },
-                    unmount: { scale: 0.9, y: -100 },
-                }}
-            >
-                <DialogHeader>
-                    <span className="text-red-400 ">Registrar relatórios</span>
-                    </DialogHeader>
-                <DialogBody divider>
-                    <div className="text-red-400 flex gap-3">
-                        <AlertTriangleIcon/>
-                        Ao clicar em confirmar isso não poderá ser revertido!
-                    </div>
-                </DialogBody>
-                <DialogFooter>
-                    <Button
-                        color="red"
-                        onClick={handleOpen}
-                        className="mr-1"
-                    >
-                        <span>Cancelar</span>
-                    </Button>
-                    <Button onClick={handleDelete}>
-                        <span>Confirmar</span>
-                    </Button>
-                </DialogFooter>
-            </Dialog>
-        </>
-    )
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            Cancelar
+          </AlertDialogCancel>
+
+          <AlertDialogAction
+            onClick={() => {
+              onRegister()
+            }}
+          >
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 }

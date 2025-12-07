@@ -19,7 +19,7 @@ interface FormAddEmergencyContactProps {
 }
 
 export default function FormAddEmergencyContact({ congregation_id }: FormAddEmergencyContactProps) {
-    const  createEmergencyContact  = useSetAtom(createEmergencyContactAtom)
+    const createEmergencyContact = useSetAtom(createEmergencyContactAtom)
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
@@ -45,9 +45,12 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
     function onSubmit(data: FormValues) {
         toast.promise(createEmergencyContact({ ...data, congregation_id }), {
             pending: 'Criando contato de emergência...',
+        }).then(() => {
+            reset()
+            Router.back()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        Router.back()
     }
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
@@ -57,10 +60,10 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
                         <div className="my-6 m-auto w-full font-semibold text-2xl sm:text-3xl text-primary-200">
                             Contato de emergência
                         </div>
-                         <XSquareIcon onClick={() => {
+                        <XSquareIcon onClick={() => {
                             setModalEmergencyContactShow(false)
                             Router.back()
-                            }} className="text-red-400 cursor-pointer rounded-sm hover:scale-110"/>
+                        }} className="text-red-400 cursor-pointer rounded-sm hover:scale-110" />
                     </div>
 
                     <Input

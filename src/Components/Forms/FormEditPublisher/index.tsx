@@ -77,12 +77,22 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
             user_id: selectedUser,
             publisher_id: data.id,
             force
-        }), { pending: 'Vinculando publicador...' })
+        }), {
+            pending: 'Vinculando publicador...'
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     function handleUnLinkPublisherToUser() {
         toast.promise(unlinkPublisherToUser({ publisher_id: data?.id ?? "" }), {
             pending: 'Desvinculando publicador...'
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 
@@ -97,7 +107,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const sortedUsers = usersData ? sortArrayByProperty(usersData, "fullName") : usersData
 
     return (
-        <section className="flex w-full justify-center items-center h-full m-2">
+        <section className="flex w-full justify-center m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 {!data ? (
                     <FormEditPublisherSkeleton />

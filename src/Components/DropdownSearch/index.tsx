@@ -105,7 +105,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
               type="text"
               value={searchQuery}
               onChange={handleInputChange}
-              className="block w-full px-4 py-2 text-sm border border-typography-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100 bg-typography-100 placeholder:text-typography-600"
+              className="block w-full px-4 py-2 text-sm border border-typography-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100 bg-surface-100 placeholder:text-typography-600"
               placeholder="Pesquisar..."
             />
             {filteredOptions.map((option, index) => (
@@ -123,7 +123,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
                         setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
                     }}
                     className={classNames(
-                      active ? 'bg-typography-100 text-typography-900' : 'text-typography-700',
+                      active ? 'bg-surface-200 text-typography-900' : 'text-typography-700',
                       'block px-4 py-2 text-sm'
                     )}
                   >

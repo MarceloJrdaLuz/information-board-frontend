@@ -40,18 +40,24 @@ export default function CleaningScheduleConfigCard() {
             await toast.promise(
                 updateCleaningScheduleConfig(config.id, selectedMode),
                 { pending: "Atualizando configuração..." }
-            );
-            setConfig({ ...config, mode: selectedMode });
+            ).then(() => {
+                setConfig({ ...config, mode: selectedMode });
+            }).catch(err => {
+                console.log(err)
+            })
         } else {
             if (congregation)
                 // criar nova config
                 await toast.promise(
                     createCleaningScheduleConfig(congregation.id, selectedMode),
                     { pending: "Criando configuração..." }
-                );
+                ).then(() => {
+
+                }).catch(err => {
+                    console.log(err)
+                })
         }
     }
-
 
     const [config, setConfig] = useState<ICleaningScheduleConfig | null>(null);
     const [selectedMode, setSelectedMode] = useState<CleaningScheduleMode>(CleaningScheduleMode.WEEKLY);

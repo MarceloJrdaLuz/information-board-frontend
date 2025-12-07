@@ -84,9 +84,9 @@ export default function SpeakersListPdf({
 
     return (
         <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>Oradores da Congregação</Text>
+            <Text fixed style={styles.header}>Oradores da Congregação</Text>
             {congregationName && (
-                <Text style={styles.congregationName}>{congregationName}</Text>
+                <Text fixed style={styles.congregationName}>{congregationName}</Text>
             )}
 
             {sortedSpeakers.map((speaker, idx) => (

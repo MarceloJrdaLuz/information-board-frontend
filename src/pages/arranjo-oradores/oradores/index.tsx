@@ -16,7 +16,7 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { ICongregation, ISpeaker } from "@/types/types"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
+import { BlobProvider, Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import Router from "next/router"
 import { useEffect, useState } from "react"
@@ -83,8 +83,11 @@ function SpeakersPage() {
     function handleDelete(speaker_id: string) {
         toast.promise(deleteSpeaker(speaker_id), {
             pending: 'Excluindo orador...',
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
     let skeletonSpeakersList = Array(6).fill(0)
@@ -98,7 +101,7 @@ function SpeakersPage() {
     }
 
     const PdfLinkComponent = () => (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
                     <SpeakersListPdf
@@ -107,17 +110,21 @@ function SpeakersPage() {
                     />
                 </Document>
             }
-            fileName={`Oradores_${speakerCongregationName || "congregacao"}.pdf`}
         >
-            {({ loading }) => (
-                <Button outline className="bg-surface-100 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                    <PdfIcon />
-                    <span className="text-primary-200 font-semibold">
-                        {loading ? "Gerando PDF..." : "Lista de oradores"}
-                    </span>
-                </Button>
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={`Oradores_${speakerCongregationName || "congregacao"}.pdf`}>
+                    <Button
+                        outline
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                    >
+                        <PdfIcon />
+                        <span className="text-primary-200 font-semibold">
+                            {loading ? "Gerando PDF..." : "Lista de oradores"}
+                        </span>
+                    </Button>
+                </a>
             )}
-        </PDFDownloadLink>
+        </BlobProvider>
     );
 
     return (
@@ -133,7 +140,7 @@ function SpeakersPage() {
                                 Router.push('/arranjo-oradores/oradores/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
+                            <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             <span className="text-primary-200 font-semibold">Criar orador</span>
                         </Button>
                         {speakers && <span className="text-sm text-typography-800">Total: {speakers.length}</span>}

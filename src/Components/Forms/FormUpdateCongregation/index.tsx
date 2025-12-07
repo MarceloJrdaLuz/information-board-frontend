@@ -85,8 +85,11 @@ export default function FormUpdateCongregation() {
 
         toast.promise(updateCongregation(congregationUser?.id ?? "", updateCongregationBody), {
             pending: "Atualizando congregação"
+        }).then(() => {
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {

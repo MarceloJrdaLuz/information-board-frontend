@@ -31,9 +31,13 @@ export default function FormForgotPassword() {
         }, resolver: yupResolver(esquemaValidacao)
     })
 
-   function onSubmit(data: FormValues) {
+    function onSubmit(data: FormValues) {
         toast.promise(forgotMyPassword(data.email), {
             pending: 'Autenticando...',
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 
@@ -46,7 +50,7 @@ export default function FormForgotPassword() {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-primary-200`}>Digite o seu e-mail</div>
-                    <p>Insira o e-mail que você deseja resetar a senha!</p>
+                    <p className='text-typography-700'>Insira o e-mail que você deseja resetar a senha!</p>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
                             { required: "Campo obrigatório" })
@@ -54,7 +58,7 @@ export default function FormForgotPassword() {
                         invalid={errors?.email?.message ? 'invalido' : ''} />
                     {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
                     <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                       
+
                         <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
                     </div>
                 </div>

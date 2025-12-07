@@ -146,7 +146,11 @@ export function useEditPublisherForm(id: string) {
     toast.promise(
       updatePublisher(publisherToUpdate?.id ?? "", payload),
       { pending: "Atualizando publicador" }
-    )
+    ).then(() => {
+
+    }).catch(err => {
+      console.log(err)
+    })
   }
 
   const onError = () => toast.error("Aconteceu algum erro! Confira todos os campos.")

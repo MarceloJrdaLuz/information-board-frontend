@@ -29,7 +29,7 @@ export default function CheckboxUnique(props: ICheckbox) {
                 name={props.label} 
                 value={option}
                 checked={props.checked === option} // Verifica se a opção é a selecionada
-                className="w-4 h-4 cursor-pointer text-primary-200 bg-typography-100  border-typography-300 rounded focus:bg-primary-200 accent-primary-200"
+                className="w-4 h-4 cursor-pointer text-primary-200 bg-surface-100  border-typography-300 rounded focus:bg-primary-200 accent-primary-200"
                 onChange={() => handleCheckboxChange(option)}
                 disabled={props.disabled}
               />

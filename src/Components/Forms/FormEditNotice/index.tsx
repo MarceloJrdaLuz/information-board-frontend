@@ -104,9 +104,12 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     const onSubmit = ({ title, text, startDay, endDay }: FormValues) => {
         toast.promise(updateNotice(notice_id, title, text, startDay, endDay), {
             pending: "Atualizando anúncio"
+        }).then(() => {            
+            reset()
+            setRecurrentNotice(false)
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setRecurrentNotice(false)
     }
 
     function onError(error: any) {

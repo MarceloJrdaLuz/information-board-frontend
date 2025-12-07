@@ -8,14 +8,17 @@ interface IContentDashboard {
 
 export default function ContentDashboard(props: IContentDashboard) {
     return (
-        <section className={`flex flex-col w-[75%] flex-1 justify-between max-h-screen  bg-secondary-100`}>
-            <div >
+<section className="flex flex-col flex-1 min-h-0 bg-secondary-100">
+            <div className="shrink-0">
                 <HeaderDashboard />
             </div>
-            <div className="overflow-y-auto  flex-1 thin-scrollbar">
+
+            {/* ✅ somente aqui terá scroll */}
+            <div className="flex-1 overflow-y-auto min-h-0 thin-scrollbar">
                 {props.children}
             </div>
-            <div>
+
+            <div className="shrink-0">
                 <FooterDashboard />
             </div>
         </section>

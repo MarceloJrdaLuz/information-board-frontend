@@ -95,8 +95,11 @@ function HospitalityWeekendPage() {
         await toast.promise(
             setCreateHospitalityWeekend(congregation_id ?? "", { weekends: alteredWeekends }),
             { pending: "Salvando arranjos..." }
-        );
-        mutate()
+        ).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
+        })
     };
 
     return (

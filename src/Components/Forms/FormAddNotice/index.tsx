@@ -1,22 +1,22 @@
-import FormStyle from "../FormStyle"
-import * as yup from 'yup'
-import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useEffect, useState } from "react"
-import { FormValues, IFormNoticeProps } from "./types"
-import CheckboxBoolean from "@/Components/CheckboxBoolean"
-import InputError from "@/Components/InputError"
-import Input from "@/Components/Input"
-import Calendar from "@/Components/Calendar"
-import Button from "@/Components/Button"
-import ModalHelp from "@/Components/ModalHelp"
-import { HelpCircle } from "lucide-react"
-import { useAtomValue } from "jotai"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
+import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
+import CheckboxBoolean from "@/Components/CheckboxBoolean"
+import Input from "@/Components/Input"
+import InputError from "@/Components/InputError"
 import TextArea from "@/Components/TextArea"
 import { useNotices } from "@/hooks/useNotices"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useAtomValue } from "jotai"
+import { HelpCircle } from "lucide-react"
 import moment from "moment"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import * as yup from 'yup'
+import FormStyle from "../FormStyle"
+import { FormValues, IFormNoticeProps } from "./types"
+import ModalHelp from "@/Components/ModalHelp"
 
 export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) {
 
@@ -52,10 +52,13 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
     function onSubmit({ title, text, startDay, endDay }: FormValues) {
         toast.promise(createNotice(title, text, startDay, endDay), {
             pending: "Criando novo anúncio"
+        }).then(() => {
+            reset()
+            setRecurrentNotice(false)
+            setSelectedDate(null)
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setRecurrentNotice(false)
-        setSelectedDate(null)
     }
 
     function onError(error: any) {
@@ -82,7 +85,9 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
         <section className="flex w-full justify-center items-center h-auto m-2">
             {modalHelpShow &&
                 <ModalHelp
-                    onClick={() => setModalHelpShow(false)}
+                    open={modalHelpShow}
+                    setOpen={setModalHelpShow}
+                    // onClick={() => setModalHelpShow(false)}
                     title="Como criar um anúncio"
                     text={
                         `

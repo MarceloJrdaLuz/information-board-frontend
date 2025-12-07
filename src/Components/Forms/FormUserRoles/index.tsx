@@ -111,12 +111,15 @@ export default function FormUserRoles() {
     function onSubmit() {
         toast.promise(userRoles(userSelectedId, rolesSelectedsIds), {
             pending: "Criando nova função"
+        }).then(() => {
+            reset()
+            setUserSelected("")
+            setUserSelectedId("")
+            setRolesSelectedsIds([])
+            setRolesSelected([])
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setUserSelected("")
-        setUserSelectedId("")
-        setRolesSelectedsIds([])
-        setRolesSelected([])
     }
 
 
@@ -144,7 +147,8 @@ export default function FormUserRoles() {
         <section className="flex w-full justify-center items-center h-full m-2">
             {modalHelpShow &&
                 <ModalHelp
-                    onClick={() => setModalHelpShow(false)}
+                    open={modalHelpShow}
+                    setOpen={setModalHelpShow}
                     title="Como atribuir e remover funções"
                     text={
                         `

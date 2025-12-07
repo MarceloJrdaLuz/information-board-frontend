@@ -19,7 +19,7 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Document, PDFDownloadLink } from '@react-pdf/renderer'
+import { BlobProvider, Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import { HelpCircle } from "lucide-react"
 import { useRouter } from "next/router"
@@ -210,7 +210,7 @@ function PublisherCardPage() {
     }, [totalsFrom, reportsTotalsFrom])
 
     const PdfLinkComponent = () => (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
                     {!totals && filterPublishers && filterPublishers.length > 0 ?
@@ -236,18 +236,22 @@ function PublisherCardPage() {
                     }
                 </Document>
             }
-            fileName={filterPublishers && filterPublishers?.length === 1 ? `${filterPublishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}
         >
-            {({ blob, url, loading, error }) =>
-                loading ? "" :
-                    <Button outline className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                        Salvar S-21
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={filterPublishers && filterPublishers?.length === 1 ? `${filterPublishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}>
+                    <Button
+                        outline
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                    >
                         <PdfIcon />
-
+                        <span className="text-primary-200 font-semibold">
+                            {loading ? "Gerando PDF..." : "Salvar S-21"}
+                        </span>
                     </Button>
-            }
-        </PDFDownloadLink>
-    )
+                </a>
+            )}
+        </BlobProvider>
+    );
 
     return (
         <ContentDashboard>
@@ -262,7 +266,8 @@ function PublisherCardPage() {
                         <div>
                             {modalHelpShow &&
                                 <ModalHelp
-                                    onClick={() => setModalHelpShow(false)}
+                                    open={modalHelpShow}
+                                    setOpen={setModalHelpShow}
                                     title="Como gerar os registros de publicadores (S-21)"
                                     text={
                                         `  

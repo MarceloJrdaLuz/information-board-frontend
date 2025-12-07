@@ -46,7 +46,11 @@ export default function FormResetPassword() {
 
     function onSubmit(data: IFormResetPassword) {
         toast.promise(resetPassword(email?.toString(), token?.toString(), data.password), {
-            pending: 'Autenticando...',
+            pending: 'Enviando...',
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 

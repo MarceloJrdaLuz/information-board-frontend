@@ -178,6 +178,10 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
             endWeek: watchedFieldsEndWeeks
         }), {
             pending: 'Enviando assistência...'
+        }).then(() => {
+            
+        }).catch(err => {
+            console.log(err)
         })
     }
 

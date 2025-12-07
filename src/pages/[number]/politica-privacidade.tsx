@@ -35,19 +35,22 @@ function PoliticaPrivacidade() {
     return (
         <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Política de Privacidade" urlMiniatura={`${domain}/images/miniatura.png`} />
-            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-typography-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
-                <div className="p-10 m-4 bg-surface-100 text-typography-700">
-                    <h1 className="mb-5 font-bold text-2xl">Política sobre coleta e armazenamento de dados</h1>
-                    <ReactMarkdown >
-                        {terms?.content ?? "Nenhuma política de privacidade foi definida pela congregação."}
-                    </ReactMarkdown>
-                    <Button
-                        outline={isDark}
-                        onClick={() => Router.push(`/${number}`)}
-                        className="w-1/2 mx-auto mt-10"
-                    ><ChevronsLeftIcon />Voltar</Button>
-                </div>
-            </LayoutPrincipal>
+            <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+                <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'1/2'} header className="bg-typography-900 bg-left-bottom bg-cover lg:bg-right" textoHeader="Política de Privacidade" >
+                    <div className="p-10 m-4 bg-surface-100 text-typography-700">
+                        <h1 className="mb-5 font-bold text-2xl">Política sobre coleta e armazenamento de dados</h1>
+                        <ReactMarkdown >
+                            {terms?.content ?? "Nenhuma política de privacidade foi definida pela congregação."}
+                        </ReactMarkdown>
+                        <Button
+                            outline={isDark}
+                            onClick={() => Router.push(`/${number}`)}
+                            className="w-1/2 mx-auto mt-10"
+                        ><ChevronsLeftIcon />Voltar</Button>
+                    </div>
+                </LayoutPrincipal>
+            </div>
+
         </div>
     )
 }

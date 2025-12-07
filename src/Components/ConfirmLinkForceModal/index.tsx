@@ -1,65 +1,69 @@
-import React, { ReactElement } from "react"
+"use client";
+
+import { ReactElement } from "react";
 import {
     Dialog,
+    DialogContent,
     DialogHeader,
-    DialogBody,
     DialogFooter,
-} from "@material-tailwind/react"
-import Button from "../Button"
-import { AlertTriangleIcon, Trash } from "lucide-react"
-import { useSetAtom } from "jotai"
-import { showConfirmForceModal } from "@/atoms/atom"
+    DialogTitle,
+    DialogDescription,
+} from "../ui/dialog";
+import { AlertTriangleIcon } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { showConfirmForceModal } from "@/atoms/atom";
+import { Button } from "../ui/button";
 
 interface ConfirmDeleteProps {
-    button: ReactElement
-    onDelete: () => void
-    message?: string
-    canOpen?: boolean
+    button: ReactElement;
+    onDelete: () => void;
+    message?: string;
+    canOpen?: boolean;
 }
 
-export function ConfirmLinkForceModal({ button, onDelete, message, canOpen }: ConfirmDeleteProps) {
-    const setModalForceLink = useSetAtom(showConfirmForceModal)
-
+export function ConfirmLinkForceModal({
+    button,
+    onDelete,
+    message,
+    canOpen,
+}: ConfirmDeleteProps) {
+    const setModalForceLink = useSetAtom(showConfirmForceModal);
 
     const handleDelete = () => {
-        onDelete()
-    }
+        onDelete();
+    };
 
     return (
         <>
-            <div >
-                {button}
-            </div>
-            <Dialog
-                open={canOpen ?? false}
-                handler={() => {}}
-                animate={{
-                    mount: { scale: 1, y: 0 },
-                    unmount: { scale: 0.9, y: -100 },
-                }}
-            >
-                <DialogHeader>
-                    <span className="text-red-400 ">Forçar atualização de vínculo de publicador?</span>
-                </DialogHeader>
-                <DialogBody divider>
-                    <div className="text-red-400 flex gap-3">
-                        <AlertTriangleIcon />
+            {/* BOTÃO QUE ABRE O MODAL */}
+            <div>{button}</div>
+
+            {/* MODAL */}
+            <Dialog open={canOpen ?? false} onOpenChange={setModalForceLink}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-red-500">
+                            Forçar atualização de vínculo?
+                        </DialogTitle>
+                        <DialogDescription>
+                            Isso atualizará o vínculo do publicador imediatamente.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="flex items-start gap-3 text-red-500 text-sm py-4">
+                        <AlertTriangleIcon className="mt-0.5" />
                         {message}
                     </div>
-                </DialogBody>
-                <DialogFooter>
-                    <Button
-                        color="red"
-                        onClick={() => setModalForceLink(false)}
-                        className="mr-1"
-                    >
-                        <span>Cancelar</span>
-                    </Button>
-                    <Button onClick={handleDelete}>
-                        <span>Confirmar</span>
-                    </Button>
-                </DialogFooter>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setModalForceLink(false)}>
+                            Cancelar
+                        </Button>
+
+                        <Button onClick={handleDelete}>Confirmar</Button>
+                    </DialogFooter>
+                </DialogContent>
             </Dialog>
         </>
-    )
+    );
 }

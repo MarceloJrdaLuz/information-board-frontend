@@ -58,8 +58,11 @@ export default function FormAddTerritory() {
             description,
         }), {
             pending: "Criando território"
+        }).then(() => {
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function onError(error: any) {

@@ -113,9 +113,12 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                 memberIds: selectedMembers.map(m => m.id)
             }),
             { pending: "Atualizando família..." }
-        );
+        ).then(() => {
+            mutate();
+        }).catch(err => {
+            console.log(err)
+        })
 
-        mutate();
     }
 
     function onError() {

@@ -17,7 +17,7 @@ import { api } from "@/services/api"
 import { IGroup } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Document, PDFDownloadLink } from "@react-pdf/renderer"
+import { BlobProvider, Document, PDFDownloadLink } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
 import Router from "next/router"
 import { useEffect, useState } from "react"
@@ -30,29 +30,43 @@ interface IGroupPdfLinkComponentProps {
 }
 
 function PdfLinkComponent({ groups, congregation, showInactives }: IGroupPdfLinkComponentProps) {
-    console.log(showInactives)
-    return (<PDFDownloadLink
-        document={
-            <Document>
-                <GroupsFieldServicePdf
-                    groups={groups ?? []}
-                    congregationName={congregation}
-                    showInactives={showInactives}
-                />
-            </Document>
-        }
-        fileName={`Grupos de campo congregacao ${congregation}.pdf`}
-    >
-        {({ loading }) => (
-            <Button outline className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                <PdfIcon />
-                <span className="text-primary-200 font-semibold">
-                    {loading ? "Gerando PDF..." : "Lista de grupos"}
-                </span>
-            </Button>
-        )}
-    </PDFDownloadLink>)
+    return (
+        <BlobProvider
+            document={
+                <Document>
+                    <GroupsFieldServicePdf
+                        groups={groups ?? []}
+                        congregationName={congregation}
+                        showInactives={showInactives}
+                    />
+                </Document>}
+        >
+            {({ blob, url, loading, error }) => {
+                const isDisabled = loading || !!error || !blob;
+
+                return (
+                    <a
+                        href={url || "#"}
+                        download={url ? `Grupos de campo congregacao ${congregation}.pdf` : undefined}
+                        className={isDisabled ? "pointer-events-none" : ""}
+                    >
+                        <Button
+                            outline
+                            className="bg-surface-100 w-56 text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80"
+                            disabled={isDisabled}
+                        >
+                            <PdfIcon />
+                            <span className="text-primary-200 font-semibold">
+                                {loading ? "Gerando PDF..." : "Lista de grupos"}
+                            </span>
+                        </Button>
+                    </a>
+                );
+            }}
+        </BlobProvider>
+    );
 }
+
 function GroupsPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
@@ -95,6 +109,10 @@ function GroupsPage() {
     function handleDelete(group_id: string) {
         toast.promise(deleteGroup(group_id), {
             pending: 'Excluindo grupo...',
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 
@@ -121,7 +139,7 @@ function GroupsPage() {
                                 Router.push('/congregacao/grupos/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
+                            <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             <span className="text-primary-200 font-semibold">Criar grupo</span>
                         </Button>
                         <div className="w-full flex justify-end gap-2 mt-4">

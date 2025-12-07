@@ -90,9 +90,11 @@ function ExternalTalksPage() {
         await toast.promise(
             setCreateExternalTalk(congregation_id ?? "", payload),
             { pending: "Salvando discurso externo..." }
-        )
-
-        mutate()
+        ).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     const handleUpdate = async (externalTalk_id: string, payload: Partial<IExternalTalk>) => {
@@ -105,9 +107,11 @@ function ExternalTalksPage() {
         await toast.promise(
             setUpdateExternalTalk(externalTalk_id ?? "", paylodUpdate),
             { pending: "Salvando discurso externo..." }
-        )
-
-        mutate()
+        ).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     const handleUpdateStatus = async (
@@ -119,8 +123,11 @@ function ExternalTalksPage() {
         await toast.promise(
             setUpdateStatusExternalTalk(externalTalk_id, payload),
             { pending: "Atualizando status do discurso..." }
-        )
-        mutate()
+        ).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     const handleDelete = async (
@@ -129,8 +136,11 @@ function ExternalTalksPage() {
         await toast.promise(
             setDeleteExternalTalk(externalTalk_id),
             { pending: "Excluindo discurso fora..." }
-        )
-        mutate()
+        ).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     const externalTalks = data?.externalTalks ?? []

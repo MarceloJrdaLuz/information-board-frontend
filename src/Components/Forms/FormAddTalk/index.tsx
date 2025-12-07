@@ -39,8 +39,11 @@ export default function FormAddTalk() {
             title: data.title
         }), {
             pending: 'Criando novo discurso...',
+        }).then(() => {            
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function onError(error: any) {
