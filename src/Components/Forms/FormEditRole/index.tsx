@@ -24,7 +24,7 @@ export interface IUpdateRole {
 
 export default function FormEditRole({ role_id }: IUpdateRole) {
 
-    const {updateRole} = usePermissionsAndRoles()
+    const { updateRole } = usePermissionsAndRoles()
     const [roleToUpdate, setRoleToUpdate] = useState<RolesType>()
     const [permissions, setPermissions] = useState<PermissionType[]>([])
     const [optionsDrop, setOptionsDrop] = useState<string[]>()
@@ -109,7 +109,7 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
     }
 
 
-    
+
 
     const onSubmit = (data: FormValues) => {
         toast.promise(
@@ -121,9 +121,12 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
             ),
             {
                 pending: 'Atualizando permissão'
+            }).then(() => {
+                reset()
+                setPermissionsSelected([])
+            }).catch(err => {
+                console.log(err)
             })
-        reset()
-        setPermissionsSelected([])
     }
 
 

@@ -45,6 +45,10 @@ export default function FormRegister() {
     function onSubmit(data: FormValues) {
         toast.promise(signUp(data.email, data.password, data.fullName), {
             pending: 'Autenticando...',
+        }).then(() => {
+            
+        }).catch(err => {
+            console.log(err)
         })
     }
 

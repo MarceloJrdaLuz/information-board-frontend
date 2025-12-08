@@ -86,9 +86,9 @@ export default function PublishersListPdf({
 
     return (
         <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>Publicadores da Congregação</Text>
+            <Text fixed style={styles.header}>Publicadores da Congregação</Text>
             {congregationName && (
-                <Text style={styles.congregationName}>{congregationName}</Text>
+                <Text fixed style={styles.congregationName}>{congregationName}</Text>
             )}
 
             {sortedPublishers.map((publisher, idx) => (

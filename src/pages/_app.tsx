@@ -35,7 +35,18 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <AuthProvider>
       <CongregationProvider>
         <DocumentsProvider>
-          <ToastContainer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+            className="toast-root"
+            toastClassName="toast-item"
+            bodyClassName="toast-body"
+            progressClassName="toast-progress"
+          />
           {getLayout(<Component {...pageProps} />)}
         </DocumentsProvider>
       </CongregationProvider>

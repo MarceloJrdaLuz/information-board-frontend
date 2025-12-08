@@ -102,6 +102,10 @@ export default function FormAddGroup() {
         if (selectedNumber && selectedItem && congregationUser?.id) {
             toast.promise(createGroup(data.name, selectedNumber, selectedItem?.id, congregationUser.id), {
                 pending: 'Criando grupo...',
+            }).then(() => {
+
+            }).catch(err => {
+                console.log(err)
             })
         }
     }

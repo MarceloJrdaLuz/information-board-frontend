@@ -134,7 +134,6 @@ export default function FormReport(props: IRelatorioFormProps) {
     }
 
     function sendSubmit({ hours, month, observations, studies }: FormValues) {
-
         if (publisherToSend !== undefined) {
             if (hours !== null && hours <= 0 && !underAnHour) {
                 setError('hours', {
@@ -153,13 +152,16 @@ export default function FormReport(props: IRelatorioFormProps) {
                 toast.promise(
                     createReport(payload),
                     {
-                        pending: 'Autenticando...'
+                        pending: 'Enviando relatório...'
                     }
-                )
+                ).then(() => {
+                    resetField('hours')
+                    resetField('studies')
+                    resetField('observations')
+                }).catch(err => {
+                    console.log(err)
+                })
             }
-            resetField('hours')
-            resetField('studies')
-            resetField('observations')
         } else {
             toast.error('Publicador não selecionado!')
         }

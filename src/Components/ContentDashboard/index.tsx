@@ -7,17 +7,21 @@ interface IContentDashboard {
 
 
 export default function ContentDashboard(props: IContentDashboard) {
-    return (
-        <section className={`flex flex-col w-[75%] flex-1 justify-between max-h-screen  bg-secondary-100`}>
-            <div >
-                <HeaderDashboard />
-            </div>
-            <div className="overflow-y-auto  flex-1 thin-scrollbar">
-                {props.children}
-            </div>
-            <div>
-                <FooterDashboard />
-            </div>
-        </section>
-    )
+  return (
+    <section className="flex flex-col w-full min-h-screen bg-secondary-100">
+      <div className="shrink-0">
+        <HeaderDashboard />
+      </div>
+
+      {/* área que realmente rola */}
+      <div className="flex-1 overflow-y-auto overscroll-contain">
+        {props.children}
+      </div>
+
+      <div className="shrink-0">
+        <FooterDashboard />
+      </div>
+    </section>
+  );
 }
+

@@ -109,6 +109,10 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
             ),
             {
                 pending: 'Atualizando permissão'
+            }).then(() => {
+
+            }).catch(err => {
+                console.log(err)
             })
     }
     function onError(error: any) {

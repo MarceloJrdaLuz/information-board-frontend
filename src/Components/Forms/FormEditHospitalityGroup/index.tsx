@@ -86,8 +86,11 @@ export default function FormEditHospitalityGroup() {
         }
         toast.promise(updateHospitalityGroup(hospitalityGroup_id, payload), {
             pending: 'Atualizando grupo de hospitalidade...',
+        }).then(() => {
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function onError(error: any) {

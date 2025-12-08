@@ -41,8 +41,11 @@ function AuxiliaryCongregationsPage() {
     function handleDelete(congregation_id: string) {
         toast.promise(deleteAuxiliaryCongregation(congregation_id), {
             pending: 'Excluindo congregação...',
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
     let skeletonSpeakersList = Array(6).fill(0)
@@ -67,7 +70,7 @@ function AuxiliaryCongregationsPage() {
                                 Router.push('/arranjo-oradores/congregacoes/add')
                             }}
                             className="bg-surface-100 text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
-                            <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
+                            <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             <span className="text-primary-200 font-semibold">Criar congregação</span>
                         </Button>
                         {congregations && <span className="text-sm text-typography-800">Total: {congregations.length}</span>}
@@ -91,7 +94,7 @@ function AuxiliaryCongregationsPage() {
                                                 🏠 <span>{congregation.address || "Não cadastrada"}</span>
                                             </div>
                                             <div title="Localização" className="flex items-center gap-2">
-                                                 <span>{<LocationLink longitude={congregation.longitude} latitude={congregation.latitude} />}</span>
+                                                <span>{<LocationLink longitude={congregation.longitude} latitude={congregation.latitude} />}</span>
                                             </div>
                                             <div title="Circuito" className="flex items-center gap-2">
                                                 🔄 <span>{congregation.circuit || "Não cadastrado"}</span>

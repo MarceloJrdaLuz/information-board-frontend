@@ -38,6 +38,10 @@ export default function FormAddPermission() {
     function onSubmit(data: FormPermission) {
         toast.promise(createPermission(data.name, data.description), {
             pending: "Criando nova permissão"
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 

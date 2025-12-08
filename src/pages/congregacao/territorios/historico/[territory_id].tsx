@@ -35,22 +35,31 @@ function EditHistoryTerritoryPage() {
     async function handleCreate(data: CreateTerritoryHistoryArgs) {
         await toast.promise(createTerritoryHistory(data), {
             pending: 'Criando histórico do território...'
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
     async function handleUpdate(data: UpdateTerritoryHistoryArgs) {
         await toast.promise(updateTerritoryHistory(data), {
             pending: 'Atualizando histórico do território...'
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
     async function handleDelete(data: DeleteTerritoryHistoryArgs) {
         await toast.promise(deleteTerritoryHistory(data), {
             pending: 'Excluindo histórico do território...'
+        }).then(() => {
+            mutate()
+        }).catch(err => {
+            console.log(err)
         })
-        mutate()
     }
 
 
@@ -85,7 +94,7 @@ function EditHistoryTerritoryPage() {
                 <section className="flex flex-wrap justify-around ">
                     <div className="w-full m-5 flex justify-start">
                         <div className="flex justify-start items-start flex-wrap">
-                        {getHistory && <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-typography-700 font-semibold">{`${getHistory[0].territory.number} - ${getHistory[0].territory.name}`}</h1>}
+                            {getHistory && <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-typography-700 font-semibold">{`${getHistory[0].territory.number} - ${getHistory[0].territory.name}`}</h1>}
                             <div className="w-full flex flex-start">
                                 {!getHistory?.some(history => history.completion_date === null) &&
                                     <Button

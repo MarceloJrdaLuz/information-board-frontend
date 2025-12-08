@@ -62,9 +62,12 @@ export default function FormAddDomain() {
     function onSubmit(data: { userCode: string }) {
         toast.promise(addDomain(data.userCode, congregationSelectNumber ?? ""), {
             pending: "Adicionando usuário a congregação"
+        }).then(() => {
+            reset()
+            setCongregationSelect('')
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setCongregationSelect('')
     }
 
 

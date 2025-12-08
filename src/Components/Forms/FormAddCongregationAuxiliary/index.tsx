@@ -83,9 +83,12 @@ export default function FormAddCongregationAuxiliary() {
         }
         toast.promise(createAuxiliaryCongregation(payload), {
             pending: "Criando nova congregação..."
+        }).then(() => {
+            reset()
+            setDayMeetingPublic(undefined)
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
-        setDayMeetingPublic(undefined)
     }
 
     function onError(error: any) {

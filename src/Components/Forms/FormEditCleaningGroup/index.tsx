@@ -84,6 +84,10 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
 
         toast.promise(updateCleaningGroup(group_id, payload), {
             pending: "Atualizando grupo de limpeza..."
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 

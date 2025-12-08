@@ -11,17 +11,8 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     const [isMenuOpen, setMenuOpen] = useAtom(toogleMenu)
     const [isDesktop, setIsDesktop] = useAtom(isDesktopAtom)
 
-    useEffect(() => {
-        if (window.innerWidth >= 720) {
-            setIsDesktop(true)
-            setMenuOpen(true)
-        } else {
-            setIsDesktop(false)
-        }
-    }, [])
-
     const checkScreenWidth = useCallback(() => {
-        if (window.innerWidth >= 720) {
+        if (window.innerWidth >= 768) {
             setIsDesktop(true)
             setMenuOpen(true)
         } else {
@@ -30,7 +21,9 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
         }
     }, [setIsDesktop, setMenuOpen])
 
-
+    useEffect(() => {
+        checkScreenWidth() // atualiza inicial
+    }, [checkScreenWidth])
 
     useEffect(() => {
         setMenuOpen(isDesktop)
@@ -47,8 +40,8 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     }, [checkScreenWidth])
 
     return (
-       <nav
-  className={`
+        <nav
+            className={`
     fixed top-0 left-0 h-screen z-40
     bg-gradient-to-b from-primary-200 to-primary-150 
     text-typography-100 shadow-xl
@@ -58,9 +51,9 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
 
     w-2/3 max-w-[300px]
 
-    md:relative md:translate-x-0 md:w-2/12 md:min-w-[185px]
+    md:relative md:translate-x-0 md:w-3/12 md:min-w-[185px] 
   `}
->
+        >
             <div className={`sticky top-0 z-50`}>
                 <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop />
             </div>

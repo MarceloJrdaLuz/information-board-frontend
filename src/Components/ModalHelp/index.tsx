@@ -1,34 +1,25 @@
-import {
-    Card,
-    CardBody,
-    Typography,
-} from "@material-tailwind/react"
-import { XSquareIcon } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
+import { XSquareIcon } from "lucide-react";
 
 interface ModalHelpProps {
-    title?: string
-    text?: string
-    onClick?: () => void
+  title?: string;
+  text?: string;
+  onClick?: () => void;
+  open: boolean;
+  setOpen: (value: boolean) => void;
 }
 
-export default function ModalHelp({ text, title, onClick }: ModalHelpProps) {
-    return (
-        <aside className="flex justify-center items-center bg-typography-900 bg-opacity-50 absolute top-0 left-0 z-50 w-screen h-screen">
-            <Card className="mt-6 w-full max-w-[700px] h-5/6 overflow-auto thin-scrollbar">
-                <CardBody>
-                    <div className="flex justify-between">
-                        <Typography variant="h5" color="blue-gray" >
-                            {title}
-                        </Typography>
-                        <XSquareIcon onClick={onClick} className="text-red-400 cursor-pointer rounded-sm hover:scale-110"/>
-                    </div>
-                    <Typography>
-                        <span className="whitespace-pre-wrap ">{text}</span>
-                    </Typography>
-                </CardBody>
-            </Card>
-        </aside>
-
-
-    )
+export default function ModalHelp({ title, text, onClick, open, setOpen }: ModalHelpProps) {
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="mt-6 w-full max-w-[700px] h-5/6 overflow-auto thin-scrollbar">
+        <div className="flex justify-between items-start mb-4">
+          <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
+        </div>
+        <DialogDescription>
+          <span className="whitespace-pre-wrap">{text}</span>
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
+  );
 }

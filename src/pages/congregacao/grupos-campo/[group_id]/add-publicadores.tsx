@@ -110,7 +110,7 @@ function AddPublishersToGroups() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/congregacao/grupos' }]
+            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/congregacao/grupos-campo' }]
             return updatedCrumbs
         })
 
@@ -138,7 +138,7 @@ function AddPublishersToGroups() {
                         outline
                         className="w-56"
                         onClick={() => Router.push({
-                            pathname: `/congregacao/grupos/${group_id}/mudar-dirigente`,
+                            pathname: `/congregacao/grupos-campo/${group_id}/mudar-dirigente`,
                             query: { group_number: `${group_number}` }
                         })}
                     >

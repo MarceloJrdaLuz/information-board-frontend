@@ -1,12 +1,17 @@
 "use client"
 import { IPublicSchedule } from "@/types/weekendSchedule"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import moment from "moment"
-import "moment/locale/pt-br"
+import dayjs from "dayjs"
+import "dayjs/locale/pt-br"
+import isoWeek from "dayjs/plugin/isoWeek"
+import isBetween from "dayjs/plugin/isBetween"
 import { useEffect, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
-moment.locale("pt-br")
+
+dayjs.extend(isoWeek)
+dayjs.extend(isBetween)
+dayjs.locale("pt-br")
 
 export type ScheduleResponse = Record<string, IPublicSchedule[]>
 
@@ -28,17 +33,26 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
       {/* Botões de navegação */}
       <div className="flex justify-between items-center mb-4">
         <button
+          disabled={activeIndex === 0}
           onClick={() => setActiveIndex((i) => Math.max(i - 1, 0))}
-          className="p-2 rounded-full bg-[#28456C] text-typography-100 shadow hover:bg-[#335784] transition"
+          className="disabled:text-typography-600 p-2 rounded-full text-[#28456C]  transition"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={30} />
         </button>
-        <h2 className="text-xl font-bold text-typography-700">{months[activeIndex]?.[0]}</h2>
+        <h2 className="text-lg font-bold text-typography-700 capitalize">
+          {(() => {
+            const firstItem = months[activeIndex]?.[1]?.[0]
+            if (!firstItem) return ""
+            return dayjs(firstItem.date).format("MMMM YYYY")
+          })()}
+        </h2>
+
         <button
+          disabled={activeIndex === months.length - 1}
           onClick={() => setActiveIndex((i) => Math.min(i + 1, months.length - 1))}
-          className="p-2 rounded-full bg-[#28456C] text-typography-100 shadow hover:bg-[#335784] transition"
+          className="disabled:text-typography-600 p-2 rounded-full text-[#28456C]  transition"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={30} />
         </button>
       </div>
 
@@ -46,123 +60,126 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
       {months.map(([month, items], index) => (
         <div key={month} className={index === activeIndex ? "block" : "hidden"}>
           <div className="grid gap-4">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-xl border border-[#AEAAAA] shadow-md overflow-hidden"
-              >
-                {/* Header */}
-                <div className="bg-[#28456C] text-typography-100 px-4 py-2 font-semibold uppercase">
-                  {moment(item.date, "YYYY-MM-DD").format("dddd, DD/MM")}
-                </div>
+            {items.map((item) => {
+              const date = dayjs(item.date)
 
-                {/* Evento Especial */}
-                {item.specialName && (
-                  <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2 text-center font-semibold text-sm flex items-center justify-center gap-2">
-                    <span>{item.specialName}</span>
+              // Sexta (5) até Domingo (7) da mesma semana ISO
+              const weekendStart = date.isoWeekday(5)
+              const weekendEnd = date.isoWeekday(7)
+
+              const filteredExternalTalks = (item.externalTalks || []).filter((ext) =>
+                dayjs(ext.date).isBetween(weekendStart, weekendEnd, "day", "[]")
+              )
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-xl border border-[#AEAAAA] shadow-md overflow-hidden">
+                  {/* Header */}
+                  <div className="bg-[#28456C] text-typography-100 px-4 py-2 font-semibold uppercase">
+                    {date.format("dddd, DD/MM")}
                   </div>
-                )}
 
-                <div className="p-4 space-y-4">
-                  {/* Presidente */}
-                  {item.chairman && (
-                    <p className="text-sm text-typography-700">
-                      Presidente: {item.chairman.name}
-                    </p>
-                  )}
-                  {/* Discurso Público */}
-                  {(item.talk || item.speaker) && (
-                    <div>
-                      <p className="text-[#28456C] font-bold text-sm mb-1">
-                        DISCURSO PÚBLICO
-                      </p>
-                      {item.talk && (
-                        <p className="font-medium text-typography-800">
-                          {`${item.talk.number ? `${item.talk.number} - ${item.talk.title}` : `${item.talk.title}`}`}
-                        </p>
-                      )}
-                      {item.speaker && (
-                        <p className="text-typography-600 text-sm">
-                          {item.speaker.name}
-                          {item.speaker.congregation && (
-                            <span className="block text-xs text-typography-500">
-                              {item.speaker.congregation}
-                            </span>
-                          )}
-                        </p>
-                      )}
+                  {/* Evento Especial */}
+                  {item.specialName && (
+                    <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2 text-center font-semibold text-sm flex items-center justify-center gap-2">
+                      <span>{item.specialName}</span>
                     </div>
                   )}
 
-                  {/* Estudo de A Sentinela */}
-                  {(item.watchTowerStudyTitle || item.reader) && (
-                    <div>
-                      <p className="text-[#961526] font-bold text-sm mb-1">
-                        ESTUDO DE A SENTINELA
+                  <div className="p-4 space-y-4">
+                    {/* Presidente */}
+                    {item.chairman && (
+                      <p className="text-sm text-typography-700">
+                        Presidente: {item.chairman.name}
                       </p>
-                      {item.watchTowerStudyTitle && (
-                        <p className="font-medium text-typography-800 italic">
-                          {item.watchTowerStudyTitle}
+                    )}
+                    {/* Discurso Público */}
+                    {(item.talk || item.speaker) && (
+                      <div>
+                        <p className="text-[#28456C] font-bold text-sm mb-1">
+                          DISCURSO PÚBLICO
                         </p>
-                      )}
-                      {item.reader && (
-                        <p className="text-sm text-typography-700">
-                          Leitor: {item.reader.name}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                        {item.talk && (
+                          <p className="font-medium text-typography-800">
+                            {`${item.talk.number ? `${item.talk.number} - ${item.talk.title}` : `${item.talk.title}`}`}
+                          </p>
+                        )}
+                        {item.speaker && (
+                          <p className="text-typography-600 text-sm">
+                            {item.speaker.name}
+                            {item.speaker.congregation && (
+                              <span className="block text-xs text-typography-500">
+                                {item.speaker.congregation}
+                              </span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Semana Atual */}
-                  {item.isCurrentWeek && (
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded bg-[#28456C] text-typography-100">
-                      Semana Atual
-                    </span>
+                    {/* Estudo de A Sentinela */}
+                    {(item.watchTowerStudyTitle || item.reader) && (
+                      <div>
+                        <p className="text-[#961526] font-bold text-sm mb-1">
+                          ESTUDO DE A SENTINELA
+                        </p>
+                        {item.watchTowerStudyTitle && (
+                          <p className="font-medium text-typography-800 italic">
+                            {item.watchTowerStudyTitle}
+                          </p>
+                        )}
+                        {item.reader && (
+                          <p className="text-sm text-typography-700">
+                            Leitor: {item.reader.name}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Semana Atual */}
+                    {item.isCurrentWeek && (
+                      <span className="inline-block mt-2 px-2 py-1 text-xs rounded bg-[#28456C] text-typography-100">
+                        Semana Atual
+                      </span>
+                    )}
+                  </div>
+                  {(() => {
+                    return filteredExternalTalks.length > 0 ? (
+                      <div className="mt-3 border-t m-6 border-typography-600">
+                        <p className="font-semibold text-sm text-typography-700 my-2">
+                          Oradores que saem:
+                        </p>
+                        <div className="flex justify-center space-y-2">
+                          {filteredExternalTalks.map((ext) => (
+                            <div key={ext.id} className="flex gap-2 p-2 rounded-md">
+                              <div className="text-sm text-typography-700">
+                                <p className="font-medium">{ext.speaker?.name}</p>
+                                <p className="flex gap-1 justify-center items-center flex-wrap text-typography-600">
+                                  <span>
+                                    {ext.talk?.number
+                                      ? `${ext.talk.number} - ${ext.talk.title}`
+                                      : ext.talk?.title}
+                                  </span>
+                                  {ext.destinationCongregation && (
+                                    <span className="italic text-typography-500">
+                                      {formatNameCongregation(ext.destinationCongregation.name, ext.destinationCongregation.city)}
+                                    </span>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null
+                  })()}
+
+                  {item.hospitality && item.hospitality.length > 0 && (
+                    <HospitalityCard item={item} />
                   )}
                 </div>
-                {(() => {
-                  const weekendStart = moment(item.date).isoWeekday(5)
-                  const weekendEnd = moment(item.date).isoWeekday(7)
-
-                  const filteredExternalTalks = (item.externalTalks || []).filter((ext) =>
-                    moment(ext.date).isBetween(weekendStart, weekendEnd, "day", "[]")
-                  )
-
-                  return filteredExternalTalks.length > 0 ? (
-                    <div className="mt-3 border-t m-6 border-typography-600">
-                      <p className="font-semibold text-sm text-typography-700 my-2">
-                        Oradores que saem:
-                      </p>
-                      <div className="flex flex-col justify-center items-center space-y-2">
-                        {filteredExternalTalks.map((ext) => (
-                          <div key={ext.id} className="flex gap-2 p-2 rounded-md">
-                            <div className="text-sm text-typography-700">
-                              <p className="font-medium">{ext.speaker?.name}</p>
-                              <p className="flex gap-1 justify-center items-center flex-wrap text-typography-600">
-                                <span>
-                                  {ext.talk?.number
-                                    ? `${ext.talk.number} - ${ext.talk.title}`
-                                    : ext.talk?.title}
-                                </span>
-                                {ext.destinationCongregation && (
-                                  <span className="italic text-typography-500">
-                                    {formatNameCongregation(ext.destinationCongregation.name, ext.destinationCongregation.city)}
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null
-                })()}
-
-                {item.hospitality && item.hospitality.length > 0 && (
-                  <HospitalityCard item={item} />
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       ))}

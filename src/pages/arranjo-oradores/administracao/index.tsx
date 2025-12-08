@@ -33,8 +33,11 @@ function AdminSpeakerArrangement() {
         if (speakerCoordinator && user?.congregation) {
             toast.promise(sendSpeakerCoordinator(user?.congregation.id, speakerCoordinator?.id), {
                 pending: 'Adicionando novo coordenador...',
+            }).then(() => {
+                mutate()
+            }).catch(err => {
+                console.log(err)
             })
-            mutate()
         }
     }
 

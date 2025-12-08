@@ -10,7 +10,7 @@ import { useTerritoryContext } from "@/context/TerritoryContext"
 import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout"
 import { ITerritoryWithHistories } from "@/types/territory"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Document, PDFDownloadLink } from '@react-pdf/renderer'
+import { BlobProvider, Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
 import 'moment/locale/pt-br'
 import Router from "next/router"
@@ -72,29 +72,30 @@ function TerritoriesPage() {
         setPageActive('Territórios')
     }, [setPageActive])
 
-
     const PdfLinkComponent = () => (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
-                    <S13 territoriesHistory={territoriesHistoryFilter ?? []} />
+                   <S13 territoriesHistory={territoriesHistoryFilter ?? []} />
                 </Document>
             }
-            fileName={"S-13.pdf"}
         >
-            {({ blob, url, loading, error }) => {
-                return loading ? "" :
-                    <Button outline className=" text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={"S-13.pdf"}>
+                    <Button
+                        outline
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                    >
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
-                            Salvar S-13
+                            {loading ? "Gerando PDF..." : "Salvar S-13"}
                         </span>
                     </Button>
-            }
-            }
-        </PDFDownloadLink>
-    )
-
+                </a>
+            )}
+        </BlobProvider>
+    );
+    
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Territórios"} />

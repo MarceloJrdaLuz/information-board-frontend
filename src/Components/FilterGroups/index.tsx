@@ -1,51 +1,66 @@
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { IGroup } from "@/types/types"
-import {
-    List,
-    Popover,
-    PopoverContent,
-    PopoverHandler,
-} from "@material-tailwind/react"
 import { useEffect, useState } from "react"
-import Button from "../Button"
-import CheckboxGroups from "../CheckBoxGroups"
 import GroupIcon from "../Icons/GroupIcon"
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../ui/popover"
+
+import { ScrollArea } from "../ui/scroll-area"
+
+import CheckboxGroups from "../CheckBoxGroups"
+
 interface IFilterGroupsProps {
-    handleCheckboxChange: (selectedOptions: string[]) => void
-    onClick?: () => void
-    congregation_id: string
-    checkedOptions?: string[] // torna a propriedade opcional
+  handleCheckboxChange: (selectedOptions: string[]) => void
+  onClick?: () => void
+  congregation_id: string
+  checkedOptions?: string[]
 }
 
-export default function FilterGroups({ handleCheckboxChange, checkedOptions, congregation_id, onClick }: IFilterGroupsProps) {
-    const [groups, setGroups] = useState<IGroup[]>([])
+export default function FilterGroups({
+  handleCheckboxChange,
+  checkedOptions,
+  congregation_id,
+  onClick,
+}: IFilterGroupsProps) {
+  const [groups, setGroups] = useState<IGroup[]>([])
 
-    const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
-    const { data: getGroups, mutate } = useFetch<IGroup[]>(fetchConfig)
+  const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
+  const { data: getGroups } = useFetch<IGroup[]>(fetchConfig)
 
-    useEffect(() => {
-        if (getGroups) {
-            const sort = sortArrayByProperty(getGroups, "number")
-            setGroups(sort)
-        }
-    }, [getGroups])
+  useEffect(() => {
+    if (getGroups) {
+      const sort = sortArrayByProperty(getGroups, "number")
+      setGroups(sort)
+    }
+  }, [getGroups])
 
-    return (
-        <Popover placement="bottom-start">
-            <PopoverHandler>
-                <div className="flex justify-end">
-                    <button onClick={onClick} className="bg-transparent border-none shadow-none text-primary-200 hover:text-primary-150 font-bold p-5">
-                        <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6"/>
-                    </button>
-                </div>
-            </PopoverHandler>
-            <PopoverContent className="w-80 bg-surface-100">
-                <List className="p-0 max-h-96 overflow-auto hide-scrollbar" >
-                    <CheckboxGroups full options={groups} label="Filtrar" handleCheckboxChange={(selectedItems) => handleCheckboxChange(selectedItems)} checkedOptions={checkedOptions} />
-                </List>
-            </PopoverContent>
-        </Popover>
-    )
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          onClick={onClick}
+          className="bg-transparent border-none shadow-none text-primary-200 hover:text-primary-150 font-bold p-5"
+        >
+          <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-80 bg-surface-100 p-2">
+        <ScrollArea className="max-h-96">
+          <CheckboxGroups
+            full
+            options={groups}
+            label="Filtrar"
+            handleCheckboxChange={handleCheckboxChange}
+            checkedOptions={checkedOptions}
+          />
+        </ScrollArea>
+      </PopoverContent>
+    </Popover>
+  )
 }

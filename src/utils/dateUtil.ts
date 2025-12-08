@@ -35,34 +35,6 @@ export function getWeekendDays(
   return dates
 }
 
-// export function getRealDateForDestination(
-//   destDay: DayMeetingPublic,
-//   localDate: Date
-// ) {
-//   const base = moment(localDate)
-
-//   const dayMap = {
-//     "Sexta-feira": 5,
-//     "Sábado": 6,
-//     "Domingo": 7,
-//   } as const
-
-//   const destIso = dayMap[destDay]
-
-//   // INÍCIO DO FIM DE SEMANA (sexta)
-//   let weekendStart = base.clone().isoWeekday(5)
-
-//   // Se a Sexta desse "week" já passou da data base, usamos ela
-//   // Caso contrário, vamos para o próximo fim de semana
-//   if (weekendStart.isBefore(base, "day")) {
-//     weekendStart = weekendStart.add(1, "week")
-//   }
-
-//   // Agora weekendStart é a sexta do fim de semana CORRETO
-//   return weekendStart.clone().isoWeekday(destIso)
-// }
-
-
 export function getWeekendRange(localMeetingDate: Date) {
   const base = moment(localMeetingDate);
 
@@ -92,3 +64,14 @@ export function getRealDateForDestination(
 
   return map[destDay];
 }
+
+export const WEEKDAYS_PT: Record<string, string> = {
+  Sunday: "Domingo",
+  Monday: "Segunda-feira",
+  Tuesday: "Terça-feira",
+  Wednesday: "Quarta-feira",
+  Thursday: "Quinta-feira",
+  Friday: "Sexta-feira",
+  Saturday: "Sábado"
+};
+

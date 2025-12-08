@@ -45,19 +45,24 @@ export function CleaningExceptionsCard() {
         await toast.promise(
             createCleaningException(congregation.id, payload),
             { pending: "Salvando..." }
-        );
-
-        setReason("");
-        mutate();
-        setLoading(false);
+        ).then(() => {
+            setReason("");
+            mutate();
+            setLoading(false);
+        }).catch(err => {
+            console.log(err)
+        })
     };
 
     const handleDelete = async (id: string) => {
         await toast.promise(
             deleteCleaningException(id),
             { pending: "Removendo..." }
-        );
-        mutate();
+        ).then(() => {
+            mutate();
+        }).catch(err => {
+            console.log(err)
+        })
     };
 
     return (
@@ -99,7 +104,7 @@ export function CleaningExceptionsCard() {
                             className="text-red-500 hover:underline"
                             onClick={() => handleDelete(exc.id)}
                         >
-                            <Trash className="w-5 h-5"/>
+                            <Trash className="w-5 h-5" />
                         </button>
                     </li>
                 ))}

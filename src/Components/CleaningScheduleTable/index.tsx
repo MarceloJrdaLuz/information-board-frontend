@@ -8,22 +8,22 @@ interface Props {
 export default function CleaningScheduleTable({ schedule }: Props) {
     return (
         <div className="w-full rounded-xl shadow bg-surface-100 p-4">
-            <h3 className="font-semibold text-lg mb-3 text-typography-700">Programação Gerada</h3>
+            <h3 className="font-semibold text-lg mb-3 text-typography-700">Programação da Limpeza</h3>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {schedule.schedules.map((item) => {
-                    const nameCount: Record<string, number> = {};
+                    // const nameCount: Record<string, number> = {};
 
-                    const publishers = item.group.publishers.map(pub => {
-                        const firstName = pub.fullName?.split(" ")[0];
-                        if (nameCount[firstName]) {
-                            nameCount[firstName]++;
-                            return pub.nickname || pub.fullName;
-                        } else {
-                            nameCount[firstName] = 1;
-                            return firstName;
-                        }
-                    }).filter(Boolean);;
+                    // const publishers = item.group.publishers.map(pub => {
+                    //     const firstName = pub.fullName?.split(" ")[0];
+                    //     if (nameCount[firstName]) {
+                    //         nameCount[firstName]++;
+                    //         return pub.nickname || pub.fullName;
+                    //     } else {
+                    //         nameCount[firstName] = 1;
+                    //         return firstName;
+                    //     }
+                    // }).filter(Boolean);;
 
                     return (
                         <div
@@ -39,7 +39,13 @@ export default function CleaningScheduleTable({ schedule }: Props) {
 
                             <p className="mt-1 text-typography-700 text-sm">
                                 <span className="font-semibold">Responsáveis:</span><br />
-                                {publishers.join(", ")}
+                                {item.group.publishers
+                                    .map(pub => {
+                                        if (!pub) return "";
+                                        return (pub.nickname?.trim() || pub.fullName?.trim() || "");
+                                    })
+                                    .filter(Boolean)
+                                    .join(" – ")}
                             </p>
                         </div>
                     );

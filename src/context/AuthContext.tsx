@@ -120,6 +120,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
         }).catch(res => {
             setLoading(false)
+            delete api.defaults.headers['Authorization']
             const { response: { data: { message } } } = res
             if (message === 'Credentials invalid!') {
                 handleSubmitError(messageErrorsSubmit.credentialsInvalid)
@@ -131,6 +132,7 @@ function AuthProvider(props: AuthContextProviderProps) {
         deleteCookie('quadro-token', {
             path: "/"
         })
+        delete api.defaults.headers['Authorization']
         setUser(null)
         Router.push('/login')
     }
@@ -166,8 +168,8 @@ function AuthProvider(props: AuthContextProviderProps) {
                 handleSubmitSuccess(messageSuccessSubmit.registerCreate, '/dashboard')
             }
         }).catch(res => {
-            if (res.response.data.message === 'E-mail already exists') {
-                handleSubmitSuccess(messageErrorsSubmit.emailAlreadyExists, "/login")
+            if (res.response.data.message.includes('already exists')) {
+                handleSubmitError(messageErrorsSubmit.emailAlreadyExists, "/login")
             }
         })
     }

@@ -68,77 +68,79 @@ function Campo() {
     return !pdfShow ? (
         <div className=" flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Designações de Campo" urlMiniatura={`${domain}/images/campo.png`} />
-            <LayoutPrincipal
-                nCong={congregationData?.number}
-                image={
-                    <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
-                }
-                congregationName={congregationData?.name ?? ""}
-                circuit={congregationData?.circuit ?? ""}
-                heightConteudo={'1/2'}
-                header
-                className="bg-designacoes bg-center bg-cover"
-                textoHeader="Designações de Campo"
-            >
-                <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
-                <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
-                    <div>
-                        <Button outline={isDark}
-                            onClick={() => { setFieldServiceOptionsShow(!fieldServiceOptionsShow) }}
-                            className="w-full"
-                        ><PreachingIcon className="w-5 h-5 sm:w-6 sm:h-6"/> Saídas de Campo</Button>
-                        <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                            {fieldServiceOptionsShow && (
-                                documents ? documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
-                                    documentsFieldServiceFilter?.map(document => (
-                                        <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                            <Button outline={isDark}
-                                                className="w-full"
-                                                onClick={() => { handleButtonClick(document.url) }}
-                                            >
-                                                {removeMimeType(document.fileName)}
-                                            </Button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
-                                ) : (
-                                    <div className="w-full"><Spiner size="w-8 h-8" /></div>
-                                )
-                            )}
-                        </div>
-
+            <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+                <LayoutPrincipal
+                    nCong={congregationData?.number}
+                    image={
+                        <Image src={iconPreaching} alt="Icone de uma pessoa pregando" fill />
+                    }
+                    congregationName={congregationData?.name ?? ""}
+                    circuit={congregationData?.circuit ?? ""}
+                    heightConteudo={'1/2'}
+                    header
+                    className="bg-designacoes bg-center bg-cover"
+                    textoHeader="Designações de Campo"
+                >
+                    <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
+                    <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
                         <div>
                             <Button outline={isDark}
-                                onClick={() => { setLPublicServiceOptionsShow(!publicServiceOptionsShow) }}
+                                onClick={() => { setFieldServiceOptionsShow(!fieldServiceOptionsShow) }}
                                 className="w-full"
-                            ><PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Testemunho Público</Button>
+                            ><PreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" /> Saídas de Campo</Button>
                             <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                                {publicServiceOptionsShow && (
-                                    documents ? (
-                                        documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
+                                {fieldServiceOptionsShow && (
+                                    documents ? documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
+                                        documentsFieldServiceFilter?.map(document => (
                                             <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
                                                 <Button outline={isDark}
                                                     className="w-full"
                                                     onClick={() => { handleButtonClick(document.url) }}
-                                                >{removeMimeType(document.fileName)}</Button>
+                                                >
+                                                    {removeMimeType(document.fileName)}
+                                                </Button>
                                             </div>
-                                        )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                        ))
                                     ) : (
-                                        <div className="w-full">
-                                            <Spiner size="w-8 h-8" />
-                                        </div>
+                                        <NotFoundDocument message="Nenhuma programação de saída de campo encontrada!" />
+                                    ) : (
+                                        <div className="w-full"><Spiner size="w-8 h-8" /></div>
                                     )
                                 )}
                             </div>
+
+                            <div>
+                                <Button outline={isDark}
+                                    onClick={() => { setLPublicServiceOptionsShow(!publicServiceOptionsShow) }}
+                                    className="w-full"
+                                ><PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Testemunho Público</Button>
+                                <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
+                                    {publicServiceOptionsShow && (
+                                        documents ? (
+                                            documentsPublicServiceFilter && documentsPublicServiceFilter?.length > 0 ? documentsPublicServiceFilter?.map(document => (
+                                                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
+                                                    <Button outline={isDark}
+                                                        className="w-full"
+                                                        onClick={() => { handleButtonClick(document.url) }}
+                                                    >{removeMimeType(document.fileName)}</Button>
+                                                </div>
+                                            )) : <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                        ) : (
+                                            <div className="w-full">
+                                                <Spiner size="w-8 h-8" />
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        <Button outline={isDark}
+                            onClick={() => router.push(`/${number}`)}
+                            className="w-1/2 mx-auto"
+                        ><ChevronsLeftIcon />Voltar</Button>
                     </div>
-                    <Button outline={isDark}
-                        onClick={() => router.push(`/${number}`)}
-                        className="w-1/2 mx-auto"
-                    ><ChevronsLeftIcon />Voltar</Button>
-                </div>
-            </LayoutPrincipal>
+                </LayoutPrincipal>
+            </div>
         </div>
     ) : (
         <>

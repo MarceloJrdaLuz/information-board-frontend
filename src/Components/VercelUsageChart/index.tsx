@@ -24,7 +24,7 @@ export function VercelUsageChart({ usage }: { usage: IVercelUsageResponse }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-white dark:bg-neutral-900 rounded-2xl shadow-md p-6 mt-8 w-full"
+            className="bg-surface-200  rounded-2xl shadow-md p-6 mt-8 w-full"
         >
             <h2 className="text-xl font-semibold mb-2 text-typography-800">
                 Uso da Aplicação (Vercel)
@@ -38,7 +38,7 @@ export function VercelUsageChart({ usage }: { usage: IVercelUsageResponse }) {
                     <p className="text-sm">Invocações totais</p>
                 </div>
 
-                <div className="bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-200 px-4 py-2 rounded-xl shadow">
+                <div className="bg-primary-200 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-200 px-4 py-2 rounded-xl shadow">
                     <span className="font-bold text-lg">
                         {usage.percent_used}%
                     </span>
@@ -51,8 +51,8 @@ export function VercelUsageChart({ usage }: { usage: IVercelUsageResponse }) {
                     <AreaChart data={chartData}>
                         <defs>
                             <linearGradient id="colorUse" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6} />
-                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+                                <stop offset="5%" stopColor="rgb(var(--color-primary-200))" stopOpacity={0.6} />
+                                <stop offset="95%" stopColor="rgb(var(--color-primary-200))" stopOpacity={0.05} />
                             </linearGradient>
                         </defs>
 
@@ -73,7 +73,7 @@ export function VercelUsageChart({ usage }: { usage: IVercelUsageResponse }) {
                         <Area
                             type="monotone"
                             dataKey="total"
-                            stroke="#3b82f6"
+                            stroke="rgb(var(--color-primary-200))"
                             fill="url(#colorUse)"
                             strokeWidth={3}
                         />

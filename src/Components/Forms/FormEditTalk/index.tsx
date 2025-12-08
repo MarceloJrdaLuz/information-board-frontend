@@ -42,8 +42,11 @@ export default function FormEditTalk() {
 
         toast.promise(updateTalk(selectedTalk?.id ?? "", payload), {
             pending: 'Atualizando discurso...',
+        }).then(() => {            
+            reset()
+        }).catch(err => {
+            console.log(err)
         })
-        reset()
     }
 
     function onError(error: any) {

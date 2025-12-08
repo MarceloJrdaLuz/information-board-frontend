@@ -12,7 +12,7 @@ function AddGroupPage() {
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/congregacao/grupos' }]
+            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/congregacao/grupos-campo' }]
             return updatedCrumbs
         })
 

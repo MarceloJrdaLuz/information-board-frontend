@@ -354,10 +354,18 @@ function ReportsMonthPage() {
         if (!monthAlreadyRegister) {
             toast.promise(updatePrivilegesReports, {
                 pending: "Registrando relatórios..."
+            }).then(() => {
+
+            }).catch(err => {
+                console.log(err)
             })
         }
         toast.promise(sendTotalsReports, {
             pending: "Registrando totais..."
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 

@@ -71,6 +71,10 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     async function onDelete(report_id: string) {
         await toast.promise(deleteReport(report_id), {
             pending: "Excluindo relatório..."
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 
@@ -90,9 +94,13 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
         toast.promise(
             createReportManually(payload),
             {
-                pending: 'Autenticando...'
+                pending: 'Criando relatório...'
             }
-        )
+        ).then(() => {
+
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     function onError(error: any) {

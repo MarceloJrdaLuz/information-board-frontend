@@ -30,7 +30,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         return (
                             <li
                                 key={i}
-                                className="border border-surface-300 rounded-lg p-2.5 hover:bg-surface-200 transition"
+                                className="border border-surface-300 rounded-lg p-2.5 hover:bg-surface-200/30 transition"
                             >
                                 {/* Data */}
                                 <div className="flex items-center justify-between">
@@ -44,6 +44,9 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                                 {/* Conteúdo */}
                                 <div className="text-xs mt-1.5 text-typography-600 space-y-1.5">
+                                    {assignment.role === "Limpeza do Salão" && <strong>Limpeza do salão</strong>}
+
+
                                     {assignment.role === "Presidente" && <strong>Presidente da reunião</strong>}
 
                                     {assignment.role === "Leitor" && <strong>Leitor</strong>}

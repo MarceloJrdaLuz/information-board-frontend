@@ -64,7 +64,7 @@ function ChangeGroupOverseer() {
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
             const updatedCrumbs = [...prevCrumbs,
-            { label: 'Editar grupo', link: `/congregacao/grupos/${group_id}/add-publicadores?group_number=${group_number}` },
+            { label: 'Editar grupo', link: `/congregacao/grupos-campo/${group_id}/add-publicadores?group_number=${group_number}` },
             ]
             return updatedCrumbs
         })

@@ -37,6 +37,8 @@ export interface ICleaningSchedule {
     congregation_id: string
     group_id: string
     date: string
+    weekdayNumber: number,
+    weekdayName: string
     group: {
         id: string
         order: number,

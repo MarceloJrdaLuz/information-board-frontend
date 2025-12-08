@@ -55,6 +55,7 @@ export function usePublisher() {
                 console.log(err)
                 toast.error(messageErrorsSubmit.default)
             }
+            throw err
         })
     }
 

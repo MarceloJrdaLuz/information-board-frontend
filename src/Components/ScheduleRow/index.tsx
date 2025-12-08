@@ -4,7 +4,6 @@ import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
 import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
 import { externalTalkStatusMap } from "@/utils/statusMap"
-import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Switch } from "@material-tailwind/react"
 import { format } from "date-fns"
 import { useAtom, useAtomValue } from "jotai"
 import Link from "next/link"
@@ -12,6 +11,9 @@ import { useEffect, useState } from "react"
 import CheckboxMultiple from "../CheckBoxMultiple"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
+import { Switch } from "../ui/switch"
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../ui/dialog"
+import Button from "../Button"
 
 interface ScheduleRowProps {
   date: Date
@@ -257,17 +259,16 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
   return (
     <div className={`border-2  rounded-xl p-3 flex flex-col gap-2 bg-surface-100 transition-colors duration-300`}>
-      <h2 className="font-semibold text-primary-200">{format(date, "dd/MM/yyyy")}</h2>
+      <h2 className="font-semibold text-primary-200 text-lg">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
         className="
     checked:bg-[rgb(var(--color-primary-100))] 
     checked:before:bg-[rgb(var(--color-primary-200))] 
     !text-typography-100"
-        label="Evento Especial"
-        ripple={false}
+        placeholder="Evento Especial"
         checked={!!current.isSpecial}
-        onChange={(e) => handleToggleSpecial(e.target.checked)}
+        onChange={(e: any) => handleToggleSpecial(e.target.checked)}
       />
 
       {current.isSpecial &&
@@ -469,19 +470,15 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
 
       {/* Modal de confirmação */}
-      <Dialog open={openConfirm} handler={() => setOpenConfirm(false)}>
-        <DialogHeader>Transformar em evento especial?</DialogHeader>
-        <DialogBody>
-          Essa semana já possui programação preenchida. Deseja limpar e marcar como evento especial?
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="text" color="red" onClick={() => setOpenConfirm(false)}>
-            Cancelar
-          </Button>
-          <Button className="bg-primary-200 hover:bg-primary-100 text-surface-100" variant="text" onClick={handleConfirmClear}>
-            Confirmar
-          </Button>
-        </DialogFooter>
+      <Dialog open={openConfirm} onOpenChange={setOpenConfirm}>
+        <DialogContent>
+          <DialogHeader>Transformar em evento especial?</DialogHeader>
+          <p className="py-2">Essa semana já possui programação preenchida. Deseja limpar e marcar como evento especial?</p>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button onClick={() => setOpenConfirm(false)}>Cancelar</Button>
+            <Button onClick={handleConfirmClear}>Confirmar</Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   )

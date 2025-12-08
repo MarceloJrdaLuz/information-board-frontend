@@ -8,6 +8,8 @@ import ScheduleRow from "@/Components/ScheduleRow"
 import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
+import { Card, CardContent } from "@/Components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
     chairmansAtom,
@@ -26,8 +28,7 @@ import { ICongregation, ISpeaker } from "@/types/types"
 import { IRecordWeekendSchedule, IWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { Card, CardBody, Option, Select } from "@material-tailwind/react"
-import { Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
+import { BlobProvider, Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import moment from "moment"
@@ -43,26 +44,24 @@ interface PdfLinkComponentProps {
 
 function PdfSpeakerInvitation({ schedule, congregationLocale }: PdfLinkComponentProps) {
     return (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
-                    <SpeakerInvitationPdf
-                        schedule={schedule}
-                        congregationLocale={congregationLocale}
-                    />
+                    <SpeakerInvitationPdf schedule={schedule} congregationLocale={congregationLocale} />
                 </Document>
             }
-            fileName={`Convite para discurso público - ${schedule.speaker?.fullName}.pdf`}
         >
-            {({ loading }) => (
-                <Button outline className="bg-surface-100 w-[200px] text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
-                    <PdfIcon />
-                    <span className="text-primary-200 font-semibold">
-                        {loading ? "Gerando PDF..." : "Gerar Convite PDF"}
-                    </span>
-                </Button>
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={`Convite - ${schedule.speaker?.fullName}.pdf`}>
+                    <Button outline className="bg-surface-100 w-[200px] text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                        <PdfIcon />
+                        <span className="text-primary-200 font-semibold">
+                            {loading ? "Gerando PDF..." : "Gerar Convite PDF"}
+                        </span>
+                    </Button>
+                </a>
             )}
-        </PDFDownloadLink>
+        </BlobProvider>
     )
 }
 
@@ -252,6 +251,10 @@ function WeekendSchedulePage() {
             if (changedSchedules.length > 0) {
                 await toast.promise(setUpdateWeekendSchedule({ schedules: changedSchedules }), {
                     pending: "Atualizando programações alteradas..."
+                }).then(() => {
+
+                }).catch(err => {
+                    console.log(err)
                 })
             }
 
@@ -259,7 +262,11 @@ function WeekendSchedulePage() {
                 await toast.promise(
                     setCreateWeekendSchedule(congregation_id ?? "", { schedules: newSchedules }),
                     { pending: "Criando novas programações..." }
-                )
+                ).then(() => {
+
+                }).catch(err => {
+                    console.log(err)
+                })
             }
 
             mutate()
@@ -271,23 +278,27 @@ function WeekendSchedulePage() {
 
 
     const PdfLinkComponent = () => (
-        <PDFDownloadLink
+        <BlobProvider
             document={
                 <Document>
                     <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
                 </Document>
             }
-            fileName={"Reunião do fim de semana.pdf"}
         >
-            {({ loading }) => (
-                <Button outline className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]">
-                    <PdfIcon />
-                    <span className="text-primary-200 font-semibold">
-                        {loading ? "Gerando PDF..." : "Baixar PDF"}
-                    </span>
-                </Button>
+            {({ blob, url, loading, error }) => (
+                <a href={url ?? "#"} download={"Reunião do fim de semana.pdf"}>
+                    <Button
+                        outline
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                    >
+                        <PdfIcon />
+                        <span className="text-primary-200 font-semibold">
+                            {loading ? "Gerando PDF..." : "Baixar PDF"}
+                        </span>
+                    </Button>
+                </a>
             )}
-        </PDFDownloadLink>
+        </BlobProvider>
     );
 
 
@@ -361,14 +372,14 @@ function WeekendSchedulePage() {
                                             onClick={() => setMonthOffset((m) => m - 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
-                                            ◀ {prevMonthLabel}
+                                            {prevMonthLabel}
                                         </Button>
 
                                         <Button
                                             onClick={() => setMonthOffset((m) => m + 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
-                                            {nextMonthLabel} ▶
+                                            {nextMonthLabel}
                                         </Button>
                                     </div>
 
@@ -379,7 +390,7 @@ function WeekendSchedulePage() {
                             </div>
 
                             <Card className="w-full bg-surface-100">
-                                <CardBody className="flex flex-wrap justify-around items-center">
+                                <CardContent className="flex flex-col p-5 gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setIsPdfSectionOpen(o => !o)}
@@ -395,17 +406,15 @@ function WeekendSchedulePage() {
                                             <ChevronDown size={20} className="text-typography-700" />
                                         )}
                                     </button>
-                                    {/* Área expansível */}
+
                                     <div className={`transition-all duration-300 ease-out overflow-hidden
-            ${isPdfSectionOpen ? "max-h-[800px] mt-4 opacity-100" : "max-h-0 opacity-0"}
-        `}>
+      ${isPdfSectionOpen ? "max-h-[800px] mt-4 opacity-100" : "max-h-0 opacity-0"}`}>
+
                                         <div className="flex flex-wrap justify-around gap-4 mt-2">
                                             {/* Convite ao Orador */}
-                                            <div className="flex flex-col gap-3 w-full border rounded-md border-surface-300 px-8 py-4">
-                                                <h2 className="font-bold text-md text-primary-200 text-center">
-                                                    Convite ao Orador
-                                                </h2>
-                                                <div className="flex justify-center w-full ">
+                                            <Card className="flex flex-col gap-3 w-full border rounded-md px-8 py-4">
+                                                <h2 className="font-bold text-md text-primary-200 text-center">Convite ao Orador</h2>
+                                                <div className="flex justify-center w-full">
                                                     <div className="w-full min-w-[200px] max-w-[200px]">
                                                         <DropdownObject
                                                             textVisible
@@ -431,12 +440,11 @@ function WeekendSchedulePage() {
                                                         congregationLocale={congregation}
                                                     />
                                                 )}
-                                            </div>
+                                            </Card>
 
-                                            <div className="flex flex-col gap-3 w-full px-8 py-4 border border-surface-300 rounded-md">
-                                                <h2 className="font-bold text-md text-primary-200 text-center">
-                                                    Agenda de Designações
-                                                </h2>
+                                            {/* Agenda de Designações */}
+                                            <Card className="flex flex-col gap-3 w-full px-8 py-4 border rounded-md">
+                                                <h2 className="font-bold text-md text-primary-200 text-center">Agenda de Designações</h2>
                                                 <div className="flex flex-col items-center gap-3 w-full">
                                                     <Calendar
                                                         full
@@ -445,7 +453,6 @@ function WeekendSchedulePage() {
                                                         selectedDate={startDatePdfGenerate}
                                                         handleDateChange={setStartDatePdfGenerate}
                                                     />
-
                                                     <Calendar
                                                         full
                                                         titleHidden
@@ -454,34 +461,29 @@ function WeekendSchedulePage() {
                                                         handleDateChange={setEndDatePdfGenerate}
                                                     />
 
-                                                    <div className="w-fit">
-                                                        <Select
-                                                            label="Escala do PDF"
-                                                            value={pdfScale.toString()}
-                                                            onChange={(value) => setPdfScale(Number(value))}
-                                                        >
-                                                            <Option value="1">100%</Option>
-                                                            <Option value="0.9">90%</Option>
-                                                            <Option value="0.8">80%</Option>
-                                                            <Option value="0.7">70%</Option>
-                                                        </Select>
-                                                    </div>
-                                                    <Button
-                                                        outline
-                                                        onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                                        className="px-4 py-2 border shadow w-fit min-w-[200px]"
-                                                    >
+                                                    <Select value={pdfScale.toString()} onValueChange={v => setPdfScale(Number(v))}>
+                                                        <SelectTrigger className="w-fit">
+                                                            <SelectValue placeholder="Escala do PDF" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="1">100%</SelectItem>
+                                                            <SelectItem value="0.9">90%</SelectItem>
+                                                            <SelectItem value="0.8">80%</SelectItem>
+                                                            <SelectItem value="0.7">70%</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+
+                                                    <Button onClick={() => setShowPdfPreview(!showPdfPreview)} className="px-4 py-2 w-fit min-w-[200px]">
                                                         {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
                                                     </Button>
                                                     {isClient && <PdfLinkComponent />}
                                                 </div>
-                                            </div>
-
+                                            </Card>
                                         </div>
-
                                     </div>
-                                </CardBody>
+                                </CardContent>
                             </Card>
+
                             {showPdfPreview && (
                                 <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
                                     <PDFViewer style={{ width: "100%", height: "100%" }}>

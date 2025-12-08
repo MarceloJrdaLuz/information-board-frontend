@@ -121,7 +121,7 @@ export interface S13Props {
 export default function S13({ territoriesHistory }: S13Props) {
     return (
         <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>REGISTRO DE DESIGNAÇÃO DE TERRITÓRIO</Text>
+            <Text fixed style={styles.header}>REGISTRO DE DESIGNAÇÃO DE TERRITÓRIO</Text>
             <Text style={styles.subHeader}>{`Ano de Serviço: ${getYearService() - 1} -  ${getYearService()}`}</Text>
             <View style={styles.table}>
                 {/* Cabeçalho da Tabela */}

@@ -56,6 +56,10 @@ export default function FormAddCongregation() {
         }
         toast.promise(createCongregation(payload), {
             pending: "Criando nova congregação..."
+        }).then(() => {
+            
+        }).catch(err => {
+            console.log(err)
         })
     }
 

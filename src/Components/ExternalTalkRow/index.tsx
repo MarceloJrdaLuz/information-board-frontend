@@ -75,9 +75,7 @@ export default function ExternalTalkRow({
   return (
     <div className="rounded-xl p-4 flex flex-col gap-6 bg-surface-100 border">
       {/* Data */}
-      <h2 className="font-bold text-xl text-typography-800 border-b pb-2">
-        {format(date, "dd/MM/yyyy")}
-      </h2>
+      <h2 className="font-semibold text-primary-200 text-lg">{format(date, "dd/MM/yyyy")}</h2>
 
       {/* Programações existentes */}
       {externalTalks.length > 0 && (
@@ -95,15 +93,15 @@ export default function ExternalTalkRow({
               {/* Detalhes */}
               <div className="flex flex-col gap-3 w-full">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="font-semibold text-lg text-typography-800">
+                  <span className="font-semibold text-sm sm:text-base text-typography-800">
                     {t.speaker?.fullName || t.manualTalk}
                   </span>
-                  <span className="text-xs bg-surface-200 px-2 py-0.5 rounded text-typography-700">
+                  <span className="text-xs sm:text-sm bg-surface-200 px-2 py-0.5 rounded text-typography-700">
                     {t.destinationCongregation.name}
                   </span>
                 </div>
 
-                <div className="flex justify-between flex-wrap gap-3 text-sm text-typography-700">
+                <div className="flex justify-between flex-wrap gap-3 text-xs sm:text-sm text-typography-700">
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-1">
                       <Calendar size={14} className="text-typography-400" />
@@ -157,7 +155,7 @@ export default function ExternalTalkRow({
                     setNewSpeakerId(t.speaker?.id || "")
                     setNewTalkId(t.talk?.id || "")
                     setNewManualTalk(t.manualTalk || "")
-                    setManualTalkShow(t.manualTalk ? true: false) 
+                    setManualTalkShow(t.manualTalk ? true : false)
                   }}
                 >
                   <EditIcon className="mr-1 w-4" />
@@ -180,7 +178,7 @@ export default function ExternalTalkRow({
 
       {/* Adicionar novo ExternalTalk */}
       <div className="bg-surface-100 rounded-lg p-4 shadow-md border">
-        <h3 className="font-semibold text-lg text-typography-700 mb-3">
+        <h3 className="font-semibold text-sm sm:text-base text-typography-700 mb-3">
           Adicionar discurso fora
         </h3>
         <div className="flex flex-col gap-3">

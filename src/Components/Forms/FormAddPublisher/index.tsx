@@ -40,8 +40,6 @@ export default function FormAddPublisher() {
     const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
     const [additionalsPrivilegeCheckboxSelected, setAdditionalsPrivilegeCheckboxSelected] = useState<string[]>([])
 
-
-
     const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>('')
     const [genderCheckboxSelected, setGenderCheckboxSelected] = useState<string>('')
     const [hopeCheckboxSelected, setHopeCheckboxSelected] = useState<string>('')
@@ -147,17 +145,20 @@ export default function FormAddPublisher() {
         }
         toast.promise(createPublisher(payload), {
             pending: 'Criando novo publicador',
+        }).then(() => {
+            reset()
+            setGenderCheckboxSelected('')
+            setHopeCheckboxSelected('')
+            setAllPrivileges([])
+            setPrivilegeCheckboxSelected('')
+            setPioneerCheckboxSelected('')
+            setStartPioneer(null)
+            setImmersedDate(null)
+            setBirthDate(null)
+            setHopeCheckboxSelected('')
+        }).catch((err) => {
+            console.log(err)
         })
-        reset()
-        setGenderCheckboxSelected('')
-        setHopeCheckboxSelected('')
-        setAllPrivileges([])
-        setPrivilegeCheckboxSelected('')
-        setPioneerCheckboxSelected('')
-        setStartPioneer(null)
-        setImmersedDate(null)
-        setBirthDate(null)
-        setHopeCheckboxSelected('')
     }
 
     useEffect(() => {
@@ -173,7 +174,7 @@ export default function FormAddPublisher() {
     const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
 
     return (
-        <section className="flex w-full justify-center items-center h-auto m-2">
+        <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo publicador</div>

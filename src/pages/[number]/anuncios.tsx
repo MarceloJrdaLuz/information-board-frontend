@@ -41,9 +41,11 @@ function NoticesPage() {
     return (
         <>
             <HeadComponent title="Anuncios" urlMiniatura="https://luisgomes.netlify.app/images/limpeza.jpg" />
-            <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'h-[90vh]'} justifyContent="start">
-                <Notices notices={notices} congregationNumber={number as string} />
-            </LayoutPrincipal>
+            <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+                <LayoutPrincipal nCong={congregationData?.number} congregationName={congregationData?.name ?? ""} circuit={congregationData?.circuit ?? ""} heightConteudo={'h-[90vh]'} justifyContent="start">
+                    <Notices notices={notices} congregationNumber={number as string} />
+                </LayoutPrincipal>
+            </div>
         </>
     )
 }

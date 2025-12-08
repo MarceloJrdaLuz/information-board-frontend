@@ -45,6 +45,10 @@ export default function TransferPublishers({ initialPublisher, allPublishers }: 
         }
         toast.promise(transferPublishers(payload), {
             pending: "Transferindo publicador..."
+        }).then(() => {
+
+        }).catch(err => {
+            console.log(err)
         })
     }
 
