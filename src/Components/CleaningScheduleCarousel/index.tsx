@@ -79,20 +79,13 @@ export default function CleaningScheduleCarousel({ schedule }: Props) {
                 {currentMonthSchedules.map(item => {
                     const nameCount: Record<string, number> = {};
 
-                    const publishers = item.group.publishers
+                    const publishersDisplay = (item.group?.publishers ?? [])
                         .map(pub => {
-                            const firstName = pub.fullName?.split(" ")[0];
-                            if (!firstName) return null;
-
-                            if (nameCount[firstName]) {
-                                nameCount[firstName]++;
-                                return pub.nickname || pub.fullName;
-                            } else {
-                                nameCount[firstName] = 1;
-                                return firstName;
-                            }
+                            if (!pub) return "";
+                            return (pub.nickname?.trim() || pub.fullName?.trim() || "");
                         })
-                        .filter(Boolean);
+                        .filter(Boolean)
+                        .join(" – ");
 
                     return (
                         <div
@@ -109,7 +102,7 @@ export default function CleaningScheduleCarousel({ schedule }: Props) {
 
                             <p className="mt-1 text-typography-700 text-sm">
                                 <span className="font-semibold">Responsáveis:</span><br />
-                                {publishers.join(", ")}
+                                {publishersDisplay}
                             </p>
                         </div>
                     );
