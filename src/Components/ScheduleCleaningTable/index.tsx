@@ -8,7 +8,7 @@ interface Props {
 export default function CleaningScheduleTable({ schedule }: Props) {
     return (
         <div className="w-full rounded-xl shadow bg-surface-100 p-4">
-            <h3 className="font-semibold text-lg mb-3 text-typography-700">Programação Gerada</h3>
+            <h3 className="font-semibold text-lg mb-3 text-typography-700">Programação da Limpeza</h3>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {schedule.schedules.map((item) => {

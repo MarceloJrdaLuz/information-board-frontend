@@ -38,7 +38,7 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
               className="w-fit flex items-center gap-1"
               onClick={() =>
                 Router.push({
-                  pathname: `/congregacao/grupos/${item.id}/add-publicadores`,
+                  pathname: `/congregacao/grupos-campo/${item.id}/add-publicadores`,
                   query: { group_number: `${item.number}` },
                 })
               }

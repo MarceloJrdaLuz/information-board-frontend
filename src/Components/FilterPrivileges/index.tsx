@@ -25,13 +25,12 @@ export default function FilterPrivileges({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex justify-center items-center text-primary-200 hover:text-primary-150 p-2"
+        <button
+          className="flex hover:bg-transparent justify-center items-center text-primary-200 hover:text-primary-150 p-2"
           onClick={onClick}
         >
-          <ListFilterIcon />
-        </Button>
+          <ListFilterIcon className="w-6 h-6 sm:w-6 sm:h-6" />
+        </button>
       </PopoverTrigger>
 
       <PopoverContent className="w-80 bg-surface-100 p-4">

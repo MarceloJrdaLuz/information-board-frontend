@@ -136,7 +136,7 @@ function GroupsPage() {
                         <Button
                             outline
                             onClick={() => {
-                                Router.push('/congregacao/grupos/add')
+                                Router.push('/congregacao/grupos-campo/add')
                             }}
                             className="text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80">
                             <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />

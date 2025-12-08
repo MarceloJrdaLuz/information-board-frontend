@@ -27,7 +27,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
             {reports?.map((report) => (
               <tr
                 key={report.id}
-                className="border-b odd:bg-surface-100 even:bg-surface-200 text-typography-800 hover:bg-primary-100/60 transition-colors duration-200"
+                className="border-b odd:bg-surface-100 even:bg-surface-100/30 text-typography-800 hover:bg-primary-100/10 transition-colors duration-200"
               >
                 <td className="p-3">{`${report.month} ${report.year}`}</td>
                 <td className="p-3 font-medium">{report.hours}</td>

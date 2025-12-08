@@ -50,7 +50,7 @@ export default function FilterGroups({
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-80 bg-white dark:bg-neutral-900 p-2">
+      <PopoverContent className="w-80 bg-surface-100 p-2">
         <ScrollArea className="max-h-96">
           <CheckboxGroups
             full

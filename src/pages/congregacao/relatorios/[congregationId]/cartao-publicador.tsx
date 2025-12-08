@@ -256,7 +256,7 @@ function PublisherCardPage() {
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Criar Cartão de Publicador"} />
-            <section className="flex flex-col justify-center items-center p-5">
+            <section className="flex flex-col items-center p-5 w-full">
                 <div className="flex justify-between w-full mt-5 ">
                     <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
                     <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200  hover:text-primary-150 cursor-pointer" />
@@ -285,16 +285,26 @@ function PublisherCardPage() {
                         <div className="flex justify-between items-center w-full mb-4">
                             <div className="flex flex-col">
                                 <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-                                {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) || (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ?
-                                    <PdfLinkComponent />
-                                    :
-                                    (filterPublishers && filterPublishers?.length > 1 || (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0)) && (
-                                        <Button outline className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
-                                            Preparar registros
-                                        </Button>)
-                                }
+                                <div className="min-h-[56px] flex items-center">
+                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) ||
+                                        (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ? (
+                                        <PdfLinkComponent />
+                                    ) : (
+                                        (filterPublishers && filterPublishers?.length > 1) ||
+                                            (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0) ? (
+                                            <Button
+                                                outline
+                                                className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80"
+                                                onClick={() => setPdfGenerating(true)}
+                                            >
+                                                Preparar registros
+                                            </Button>
+                                        ) : null
+                                    )}
+                                </div>
+
                             </div>
-                            <div className="flex gap-1">
+                            <div className="flex h-1/2 justify-center items-center gap-1">
                                 <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
 
                                 <FilterPrivileges includeOptionAll onClick={() => setPdfGenerating(false)} checkedOptions={filterPrivileges} handleCheckboxChange={(filters) => handleCheckboxChange(filters)} />
@@ -304,14 +314,14 @@ function PublisherCardPage() {
                             <>
                                 <div className="flex justify-between">
                                     <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
-                                    <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>
+                                    {!totals && <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>}
                                 </div>
                                 {!totals ? publishers?.map(publisher => (
                                     <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
                                         {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
-                                            <div>
+                                            <div className="m-2">
                                                 {pdfGenerating ? (
-                                                    <Button outline className="my-3 mx-2 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80" onClick={() => setPdfGenerating(true)}>
+                                                    <Button outline className=" font-semibold text-primary-200 p-3 border-typography-300 rounded-none" onClick={() => setPdfGenerating(true)}>
                                                         Preparar registro
                                                     </Button>
                                                 ) : (
@@ -332,9 +342,9 @@ function PublisherCardPage() {
                                                     setPdfGenerating(false),
                                                         setTotalsFrom(ob)
                                                 }}
-                                                className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-50 to-primary-100" : "bg-surface-100"} `}
+                                                className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-100 to-primary-150" : "bg-surface-100 hover:bg-surface-100/50"} `}
                                             >
-                                                <div className={`flex flex-col p-4 text-typography-700`}>
+                                                <div className={`flex flex-col p-4 text-typography-800`}>
                                                     <span>{ob}</span>
                                                 </div>
 

@@ -80,7 +80,7 @@ function ListReportsPage() {
                 <a href={url ?? "#"} download={"Assistência às reuniões.pdf"}>
                     <Button
                         outline
-                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none"
                     >
                         <PdfIcon />
                         <span className="text-primary-200 font-semibold">
@@ -105,7 +105,7 @@ function ListReportsPage() {
                                 onClick={() => {
                                     router.push(`/congregacao/assistencia/${congregationId}/enviar`)
                                 }}
-                                className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                                className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none">
                                 <FilePlus2Icon />
                                 <span className="text-primary-200 font-semibold">Adicionar</span>
                             </Button>

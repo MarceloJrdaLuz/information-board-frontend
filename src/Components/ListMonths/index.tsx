@@ -29,27 +29,27 @@ export default function ListMonths(props: ListRelatoriosProps) {
                 <FileSpreadsheetIcon />
             </Button>
             <div className="flex justify-evenly items-baseline">
-                <>
-                    <ul className="flex flex-col justify-start w-6/12 h-[65vh] overflow-auto  overflow-x-hidden items-center p-5  hide-scrollbar">
-                        <span className="w-full min-w-[120px] py-5 text-xs sm:surface-100space-nowrap lg:text-lg font-bold bg-primary-100 p-4 text-typography-100">Ano de serviço atual</span>
+                <div className="flex flex-col md:flex-row w-full">
+                    <ul className="flex flex-col justify-start w-full md:w-6/12  overflow-auto overflow-x-hidden  p-5  hide-scrollbar gap-1">
+                        <span className="w-full min-w-[120px] py-5 text-xs space-nowrap lg:text-lg font-bold bg-primary-100 p-4 text-typography-100">Ano de serviço atual</span>
                         {anoServicoAtual?.map(mes =>
                             <li onClick={() => {
                                 Router.push(`/congregacao/relatorios/${props.congregationId}/${mes}`)
-                            }} key={mes} className={`flex justify-between items-center w-full bg-surface-100 hover:bg-sky-100 cursor-pointer m-1  p-3 sm:p-5 min-w-[120px] text-primary-200 font-semibold space-nowrap text-sm sm:text-base`}>
+                            }} key={mes} className={`flex justify-between items-center w-full bg-surface-100 hover:bg-surface-100/50 cursor-pointer p-3 sm:p-5 min-w-[120px] text-primary-200 font-semibold space-nowrap text-sm sm:text-base`}>
                                 {mes}
                             </li>)
                         }
                     </ul>
-                    <ul className="flex flex-col justify-start w-6/12 h-[65vh] overflow-auto overflow-x-hidden items-center p-5 hide-scrollbar">
+                    <ul className="flex flex-col justify-start w-full md:w-6/12  overflow-auto overflow-x-hidden p-5 hide-scrollbar gap-1">
                         <span className="w-full min-w-[120px] py-5 text-xs sm:surface-100space-nowrap lg:text-lg font-bold bg-primary-100 p-4  text-typography-100">Ano de serviço anterior</span>
                         {anoServicoAnterior?.map(mes =>
                             <li onClick={() => {
                                 Router.push(`/congregacao/relatorios/${props.congregationId}/${mes}`)
-                            }} key={mes} className={`flex justify-between items-center w-full bg-surface-100 hover:bg-sky-100 cursor-pointer m-1 h-14 p-3  sm:p-5 min-w-[120px] text-primary-200 font-semibold surface-100 space-nowrap text-sm sm:text-base`}>
+                            }} key={mes} className={`flex justify-between items-center w-full bg-surface-100 hover:bg-surface-100/50 cursor-pointer h-14 p-3  sm:p-5 min-w-[120px] text-primary-200 font-semibold surface-100 space-nowrap text-sm sm:text-base`}>
                                 {mes}
                             </li>)}
                     </ul>
-                </>
+                </div>
             </div>
         </section>
     )

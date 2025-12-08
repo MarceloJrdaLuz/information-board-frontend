@@ -2,15 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
+html, body {
   height: 100%;
-  overflow: hidden;
+  margin: 0;
 }
 
-#__next {
-  height: 100%;
+body {
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
+
+
+#__next {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 
 /* ===== React Toastify Custom Theme ===== */
 

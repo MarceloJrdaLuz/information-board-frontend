@@ -372,14 +372,14 @@ function WeekendSchedulePage() {
                                             onClick={() => setMonthOffset((m) => m - 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
-                                            ◀ {prevMonthLabel}
+                                            {prevMonthLabel}
                                         </Button>
 
                                         <Button
                                             onClick={() => setMonthOffset((m) => m + 1)}
                                             className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                         >
-                                            {nextMonthLabel} ▶
+                                            {nextMonthLabel}
                                         </Button>
                                     </div>
 
@@ -390,15 +390,22 @@ function WeekendSchedulePage() {
                             </div>
 
                             <Card className="w-full bg-surface-100">
-                                <CardContent className="flex flex-col gap-4">
-                                    <Button
-                                        // variant="outline"
-                                        className="w-full flex justify-between items-center"
+                                <CardContent className="flex flex-col p-5 gap-4">
+                                    <button
+                                        type="button"
                                         onClick={() => setIsPdfSectionOpen(o => !o)}
+                                        className="w-full flex justify-between items-center bg-surface-100 px-4 py-2 rounded-md hover:brightness-105 transition"
                                     >
-                                        <span className="font-semibold text-typography-700">Exportar / PDF</span>
-                                        {isPdfSectionOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                    </Button>
+                                        <span className="font-semibold text-typography-700">
+                                            Exportar / PDF
+                                        </span>
+
+                                        {isPdfSectionOpen ? (
+                                            <ChevronUp size={20} className="text-typography-700" />
+                                        ) : (
+                                            <ChevronDown size={20} className="text-typography-700" />
+                                        )}
+                                    </button>
 
                                     <div className={`transition-all duration-300 ease-out overflow-hidden
       ${isPdfSectionOpen ? "max-h-[800px] mt-4 opacity-100" : "max-h-0 opacity-0"}`}>

@@ -155,10 +155,10 @@ export default function Layout(props: LayoutProps) {
                                         title="Grupos de Campo"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push('/congregacao/grupos')
+                                            Router.push('/congregacao/grupos-campo')
                                         }}
                                         icon={() => <GroupIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-                                        active={pageActive.startsWith('/congregacao/grupos')}
+                                        active={pageActive.startsWith('/congregacao/grupos-campo')}
                                     />
                                 }
 

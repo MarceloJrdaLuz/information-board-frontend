@@ -18,7 +18,7 @@ const button = tv({
     },
     outline: {
       false: "bg-gradient-to-tl from-primary-150 to-primary-200  text-surface-100 border-none hover:opacity-90",
-      true: "border-typography-300 hover:border-current bg-surface-100 hover:bg-surface-200 p-3 text-primary-200 font-semibold shadow-none"
+      true: "border-typography-300 hover:border-current bg-surface-100 hover:bg-surface-100 p-3 text-primary-200 font-semibold shadow-none"
     },
     disabled: {
       true: "bg-typography-500 hover:opacity-100 cursor-not-allowed shadow-none"

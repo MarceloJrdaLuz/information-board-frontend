@@ -29,7 +29,7 @@ export default function PublisherItem({ publisher, group_id }: IPublisherItemPro
       className={`my-1 w-full list-none ${(
         groupPublisherListOption === 'add-publishers' ||
         groupPublisherListOption === 'remove-publishers'
-      ) && 'cursor-pointer'} ${isSelected ? `${groupPublisherListOption === 'add-publishers' && 'bg-light-blue-100'} `:"bg-surface-100"} ${isSelected ? `${groupPublisherListOption === 'remove-publishers' && 'bg-red-400 text-surface-100'}`:"bg-surface-100"} ${groupPublisherListOption === "disabled" && "bg-surface-100"} `}
+      ) && 'cursor-pointer'} ${isSelected ? `${groupPublisherListOption === 'add-publishers' && 'bg-gradient-to-br from-primary-100 to-primary-150'} `:"bg-surface-100"} ${isSelected ? `${groupPublisherListOption === 'remove-publishers' && 'bg-red-400 text-surface-100'}`:"bg-surface-100"} ${groupPublisherListOption === "disabled" && "bg-surface-100"} `}
     >
       <div className={`flex flex-col w-full p-4`}>
         <span>{publisher.fullName}</span>

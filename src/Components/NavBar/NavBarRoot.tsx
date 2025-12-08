@@ -12,7 +12,7 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     const [isDesktop, setIsDesktop] = useAtom(isDesktopAtom)
 
     const checkScreenWidth = useCallback(() => {
-        if (window.innerWidth >= 720) {
+        if (window.innerWidth >= 768) {
             setIsDesktop(true)
             setMenuOpen(true)
         } else {

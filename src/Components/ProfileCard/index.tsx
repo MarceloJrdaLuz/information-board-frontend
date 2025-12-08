@@ -127,29 +127,35 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
           </div>
         </div>
       ) : (
-        <Card className="bg-surface-100 rounded-lg p-3 w-full mx-auto text-center shadow-sm">
-          <div className="relative flex justify-center items-center w-28 h-28 mx-auto rounded-full overflow-hidden bg-surface-200">
-            <Image
-              src={avatar_url || avatar}
-              alt="Foto de perfil"
-              fill
-              className="rounded-full object-cover object-top"
-            />
+        <Card className="bg-surface-100 border-none rounded-lg p-3 w-full mx-auto text-center shadow-sm">
+         <div className="relative w-28 h-28 mx-auto">
 
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute -bottom-2 -right-2 bg-primary-200 p-2 rounded-full shadow-md hover:scale-105 transition-all duration-200 border-2 border-surface-100"
-            >
-              <CameraIcon className="w-4 h-4 text-typography-100" />
-            </button>
+  {/* Camada que corta a imagem */}
+  <div className="w-full h-full rounded-full overflow-hidden bg-surface-200 flex justify-center items-center">
+    <Image
+      src={avatar_url || avatar}
+      alt="Foto de perfil"
+      fill
+      className="object-cover object-top rounded-full"
+    />
+  </div>
 
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-          </div>
+  {/* Botão da câmera fora do overflow-hidden */}
+  <button
+    onClick={() => fileInputRef.current?.click()}
+    className="absolute -bottom-2 -right-2 bg-primary-200 p-2 rounded-full shadow-md hover:scale-105 transition-all duration-200 border-2 border-surface-100 z-10"
+  >
+    <CameraIcon className="w-4 h-4 text-typography-100" />
+  </button>
+
+  <input
+    type="file"
+    ref={fileInputRef}
+    style={{ display: "none" }}
+    onChange={handleFileChange}
+  />
+</div>
+
 
           <CardContent className="pt-2 px-2">
             <p className="text-typography-700 text-sm font-semibold truncate">
