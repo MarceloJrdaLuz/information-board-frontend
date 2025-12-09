@@ -1,8 +1,6 @@
-import { IAssignment } from "@/types/assignment"
+import { IAssignment } from "@/types/assignment";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { Calendar, Clock, MapPin } from "lucide-react"
+import { BookOpen, Calendar, CalendarDays, Clock, MapPin, Mic, Sparkles, User } from "lucide-react";
 import moment from "moment";
 import "moment/locale/pt-br"; // importa o idioma
 import { LocationLink } from "../LocationLink";
@@ -30,96 +28,141 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         return (
                             <li
                                 key={i}
-                                className="border border-surface-300 rounded-lg p-2.5 hover:bg-surface-200/30 transition"
+                                className="flex bg-surface-100 border border-surface-300 border-l-4 border-l-primary-200 rounded-sm overflow-hidden hover:bg-surface-200/40 transition"
                             >
-                                {/* Data */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5">
-                                        <Calendar className="text-typography-300" size={15} />
-                                        <span className="text-sm font-bold text-primary-200 leading-loose">
-                                            {formattedDate}
-                                        </span>
-                                    </div>
+                                {/* Barra lateral + data */}
+                                <div className="flex flex-col items-center justify-center w-16 bg-surface-200/40 border-r border-surface-300 py-3">
+                                    <span className="text-lg font-bold text-primary-300">
+                                        {moment(assignment.date).locale("pt-br").format("DD")}
+                                    </span>
+                                    <span className="text-[10px] uppercase text-typography-500 -mt-1">
+                                        {moment(assignment.date).locale("pt-br").format("MMM")}
+                                    </span>
                                 </div>
 
                                 {/* Conteúdo */}
-                                <div className="text-xs mt-1.5 text-typography-600 space-y-1.5">
-                                    {assignment.role === "Limpeza do Salão" && <strong>Limpeza do salão</strong>}
+                                <div className="flex-1 p-3">
+                                    {/* Cabeçalho */}
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-typography-500">
+                                            {moment(assignment.date).locale("pt-br").format("dddd")}
+                                        </span>
 
+                                        {assignment.status && (
+                                            <span
+                                                className={`text-[10px] px-2 py-0.5 rounded-full font-semibold
+            ${assignment.status === "confirmed" && "bg-green-500/10 text-green-400"}
+            ${assignment.status === "pending" && "bg-yellow-500/10 text-yellow-400"}
+            ${assignment.status === "canceled" && "bg-red-500/10 text-red-400"}
+          `}
+                                            >
+                                                {assignment.status === "pending" && "Pendente"}
+                                                {assignment.status === "confirmed" && "Confirmado"}
+                                                {assignment.status === "canceled" && "Cancelado"}
+                                            </span>
+                                        )}
+                                    </div>
 
-                                    {assignment.role === "Presidente" && <strong>Presidente da reunião</strong>}
-
-                                    {assignment.role === "Leitor" && <strong>Leitor</strong>}
-
-                                    {assignment.role === "Orador" && (
-                                        <div className="flex flex-col gap-1">
-                                            <div>
-                                                <strong>Discurso: </strong>
-                                                {assignment.talk?.title || "Tema não informado"}
+                                    {/* Corpo */}
+                                    <div className="mt-2 text-sm text-typography-700 space-y-1">
+                                        {assignment.role === "Limpeza do Salão" && (
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles size={16} className="text-typography-400 flex-shrink-0" />
+                                                <strong className="leading-tight">Limpeza do salão</strong>
                                             </div>
-                                            <div className="flex items-center gap-1">
-                                                <MapPin size={12} className="text-typography-400" />
-                                                <span>
-                                                    {formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
+                                        )}
 
-                                    {assignment.role === "Discurso Externo" && (
-                                        <div className="flex flex-col gap-2">
-                                            <div>
-                                                <strong>Discurso Fora:</strong>{" "}
-                                                {assignment.talk?.title || "Tema não informado"}
+                                        {assignment.role === "Presidente" && (
+                                            <div className="flex items-center gap-2">
+                                                <User size={16} className="text-typography-400 flex-shrink-0" />
+                                                <strong className="leading-tight">Presidente da reunião</strong>
                                             </div>
-                                            {assignment.destinationCongregation && (
-                                                <div className="flex flex-col items-start gap-1">
-                                                    <div className="flex items-center gap-1 ml-4">
-                                                        <MapPin size={12} className="text-typography-400" />
-                                                        <span className="leading-none">
-                                                            {`${assignment.destinationCongregation.address ?? ""} ${formatNameCongregation(assignment.destinationCongregation.name, assignment.destinationCongregation.city)}`}
-                                                        </span>
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <LocationLink latitude={assignment.destinationCongregation.latitude} longitude={assignment.destinationCongregation.longitude} />
-                                                    </div>
+                                        )}
+
+                                        {assignment.role === "Leitor" && (
+                                            <div className="flex items-center gap-2">
+                                                <BookOpen size={16} className="text-typography-400 flex-shrink-0" />
+                                                <strong className="leading-tight">Leitor</strong>
+                                            </div>
+                                        )}
+
+                                        {assignment.role === "Orador" && (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Mic size={16} className="text-typography-400 flex-shrink-0" />
+                                                    <span>
+                                                        <strong>Discurso:</strong>{" "}
+                                                        {assignment.talk?.title || "Tema não informado"}
+                                                    </span>
                                                 </div>
-                                            )}
-                                            <div>
-                                                <strong>Dia / Hora: </strong>
-                                                {assignment.destinationCongregation?.dayMeetingPublic}{" "}
-                                                às {assignment.destinationCongregation?.hourMeetingPublic?.slice(0, 5)}
-                                            </div>
-                                            <div>
-                                                <strong>Status: </strong>
-                                                <span
-                                                    className={`font-medium 
-                                                        ${assignment.status === "confirmed" ? "text-green-500" : ""}
-                                                        ${assignment.status === "pending" ? "text-yellow-500" : ""}
-                                                        ${assignment.status === "canceled" ? "text-red-500" : ""}`}
-                                                >
-                                                    {assignment.status === "pending" && "Pendente"}
-                                                    {assignment.status === "confirmed" && "Confirmado"}
-                                                    {assignment.status === "canceled" && "Cancelado"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
 
-                                    {(assignment.role === "Anfitrião" ||
-                                        assignment.role === "Hospitalidade") && (
-                                            <div className="flex flex-col">
-                                                <strong>{assignment.role}</strong>
-                                                <div>
-                                                    <strong>Tipo: </strong>
-                                                    {assignment.eventType === "DINNER" && "🍽️ Jantar"}
-                                                    {assignment.eventType === "LUNCH" && "🥗 Almoço"}
-                                                    {assignment.eventType === "HOSTING" && "🏡 Hospedagem"}
+                                                <div className="flex items-start gap-1 text-xs text-typography-500 ml-6">
+                                                    <MapPin size={12} className="flex-shrink-0 mt-[2px]" />
+                                                    <span className="leading-tight break-words">
+                                                        {formatNameCongregation(
+                                                            assignment.destinationCongregation.name,
+                                                            assignment.destinationCongregation.city
+                                                        )}
+                                                    </span>
                                                 </div>
                                             </div>
                                         )}
+
+                                        {assignment.role === "Discurso Externo" && (
+                                            <div className="flex flex-col gap-2 space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Mic size={16} className="text-typography-400 flex-shrink-0" />
+                                                    <span className="leading-tight">
+                                                        <strong className="leading-tight">Discurso fora:</strong>{" "}
+                                                        {assignment.talk?.title || "Tema não informado"}
+                                                    </span>
+                                                </div>
+
+                                                {assignment.destinationCongregation && (
+                                                    <div className="text-xs text-typography-500 flex flex-col gap-1 space-y-1 mt-1 ml-2">
+                                                        <div className="flex items-center gap-1">
+                                                            <MapPin size={14} className="flex-shrink-0 mt-[2px]" />
+                                                            <span className="leading-tight break-words">
+                                                                {`${assignment.destinationCongregation.address ?? ""} ${formatNameCongregation(
+                                                                    assignment.destinationCongregation.name,
+                                                                    assignment.destinationCongregation.city
+                                                                )}`}
+                                                            </span>
+                                                        </div>
+
+
+                                                        <LocationLink
+                                                            latitude={assignment.destinationCongregation.latitude}
+                                                            longitude={assignment.destinationCongregation.longitude}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div className="flex flex-start items-center gap-1 text-xs mt-2">
+                                                    <CalendarDays size={14} className="text-typography-500" />
+                                                    <strong className="leading-tight">Dia/Hora:</strong>{" "}
+                                                    {assignment.destinationCongregation?.dayMeetingPublic} às{" "}
+                                                    {assignment.destinationCongregation?.hourMeetingPublic?.slice(0, 5)}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {(assignment.role === "Anfitrião" ||
+                                            assignment.role === "Hospitalidade") && (
+                                                <div className="space-y-0.5">
+                                                    <strong>🏡 {assignment.role}</strong>
+                                                    <div className="text-xs">
+                                                        <strong>Tipo:</strong>{" "}
+                                                        {assignment.eventType === "DINNER" && "🍽️ Jantar"}
+                                                        {assignment.eventType === "LUNCH" && "🥗 Almoço"}
+                                                        {assignment.eventType === "HOSTING" && "🏡 Hospedagem"}
+                                                    </div>
+                                                </div>
+                                            )}
+                                    </div>
                                 </div>
                             </li>
+
                         )
                     })}
                 </ul>

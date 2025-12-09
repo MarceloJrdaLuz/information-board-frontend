@@ -12,7 +12,7 @@ export function LocationLink({ latitude, longitude }: { latitude?: string; longi
       rel="noopener noreferrer"
       className="flex items-center gap-2 text-primary-200 underline"
     >
-       <MapIcon className="text-primary-200 h-4 w-4 font-semibold"/> Ver no mapa
+       <MapIcon className="text-typography-500 h-4 w-4 font-semibold"/> Ver no mapa
     </a>  
   )
 }
