@@ -44,7 +44,7 @@ module.exports = {
 					'300': 'rgb(var(--color-surface-300) / <alpha-value>)'
 				},
 				success: {
-					'100': 'rgb(var(--color-typography-900) / <alpha-value>)'
+					'100': 'rgb(var(--color-success-100) / <alpha-value>)'
 				},
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
