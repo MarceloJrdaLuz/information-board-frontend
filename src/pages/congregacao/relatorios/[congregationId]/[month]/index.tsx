@@ -415,7 +415,9 @@ function ReportsMonthPage() {
                                 {!totalsModalShow ? <EyeIcon className="p-0.5 sm:p-0" /> : <EyeOffIcon className="p-0.5 sm:p-0" />}
                             </span>
                         </div>
+                        <div className="flex flex-1 justify-end">
                         <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
+                        </div>
                         {totalsModalShow ? (
                             <ul>
                                 {<div className="px-5 py-0">
