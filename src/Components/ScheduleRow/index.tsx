@@ -14,6 +14,7 @@ import Input from "../Input"
 import { Switch } from "../ui/switch"
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../ui/dialog"
 import Button from "../Button"
+import { toast } from "react-toastify"
 
 interface ScheduleRowProps {
   date: Date
@@ -63,6 +64,13 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     setSchedules(prev => {
       const current = prev[dateStr] || { date: dateStr } as IRecordWeekendSchedule
       const newValue = typeof value === "object" && value !== null ? value.id : value
+
+      // antes de atualizar:
+      const conflict = detectConflict(newValue, dateStr, prev);
+
+      if (conflict && field !== conflict[0]) {
+        toast.warning(`Atenção: essa pessoa já está designada como  ${conflict.map(c => roleLabels[c]).join(", ")} neste mesmo dia.`);
+      }
 
       let updated: IRecordWeekendSchedule = { ...current, [field]: newValue, id: current.id }
       if (field === "speaker_id") {
@@ -116,6 +124,31 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       handleChange("isSpecial", checked)
     }
   }
+
+  function detectConflict(personId: string | number, dateStr: string, schedules: any) {
+    const schedule = schedules[dateStr];
+    if (!schedule) return false;
+
+    const fields = [
+      "chairman_id",
+      "reader_id",
+    ];
+
+    let conflicts: string[] = [];
+
+    fields.forEach((field) => {
+      if (schedule[field] === personId) {
+        conflicts.push(field);
+      }
+    });
+
+    return conflicts.length > 0 ? conflicts : false;
+  }
+
+  const roleLabels: any = {
+    chairman_id: "Presidente",
+    reader_id: "Leitor"
+  };
 
   const handleSpecialOptionChange = (newCheckedOptions: string[]) => {
     let updatedOptions = [...newCheckedOptions]

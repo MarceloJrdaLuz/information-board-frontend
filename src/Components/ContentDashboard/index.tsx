@@ -14,7 +14,7 @@ export default function ContentDashboard(props: IContentDashboard) {
       </div>
 
       {/* área que realmente rola */}
-      <div className="flex-1 overflow-y-auto overscroll-contain">
+      <div className="flex-1 overflow-y-auto overscroll-contain thin-scrollbar">
         {props.children}
       </div>
 

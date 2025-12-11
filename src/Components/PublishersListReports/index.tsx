@@ -17,6 +17,7 @@ import FilterPrivileges from "../FilterPrivileges"
 import FormReportManually from "../Forms/FormReportManually"
 import SkeletonPublishersWithAvatarList from "../PublishersList/skeletonPublisherWithAvatarList"
 import { API_ROUTES } from "@/constants/apiRoutes"
+import AvatarFemale from "../AvatarFemale"
 
 export default function PublisherListReports() {
     const { user } = useAuthContext()
@@ -128,7 +129,7 @@ export default function PublisherListReports() {
 
     return (
         <>
-            <ul className="flex flex-wrap justify-center items-center w-full">
+            <ul className="flex flex-wrap justify-center items-center w-full p-4">
                 <div className="w-full md:w-10/12 flex justify-between items-center mt-4">
                     <CheckboxBoolean handleCheckboxChange={(check) => setInactivesShow(check)} checked={inactivesShow} label="Inativos" />
                     <FilterPrivileges checkedOptions={filterPrivileges} handleCheckboxChange={filter => handleCheckboxChange(filter)} />
@@ -137,11 +138,13 @@ export default function PublisherListReports() {
                 {filterPublishers && filterPublishers.length > 0 ? filterPublishers?.map(publisher =>
                     <li className={`flex flex-wrap justify-between items-center bg-surface-100 hover:bg-sky-100 cursor-pointer w-full md:w-10/12  m-1 ${selectedPublisher && selectedPublisher.id === publisher.id ? 'h-auto' : ''}`} key={`${publisher.id}`}>
                         <div className="flex w-full justify-between items-center">
-                            <div className="flex items-center p-6 ">
+                            <div className="flex items-center p-4 ">
                                 {publisher.gender === "Masculino" ?
-                                    <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-[#a4e6da]" />
+                                    <Image alt="Avatar de um homem" src={avatarMale} className="w-10 rounded-full bg-primary-100" />
                                     :
-                                    <Image alt="Avatar de uma mulher" src={avatarFemale} className="w-10 rounded-full" />
+                                    <div className="w-fit rounded-full">
+                                        <AvatarFemale className="w-10 h-10 rounded-full bg-primary-100 text-primary-100" />
+                                    </div>
                                 }
                                 <span className="pl-4 font-medium text-typography-700">{publisher.fullName}</span>
                             </div>
