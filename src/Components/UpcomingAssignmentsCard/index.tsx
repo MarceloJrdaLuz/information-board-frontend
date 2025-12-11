@@ -14,6 +14,27 @@ interface UpcomingAssignmentsCardProps {
 export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCardProps) {
     const hasAssignments = assignments && assignments.length > 0
 
+    const getBorderColor = (role: string) => {
+        switch (role) {
+            case "Limpeza do Salão":
+                return "border-l-green-400";
+            case "Presidente":
+                return "border-l-amber-300";
+            case "Leitor":
+                return "border-l-[#961526]";
+            case "Orador":
+                return "border-l-[#28456C]";
+            case "Discurso Externo":
+                return "border-l-indigo-400";
+            case "Anfitrião":
+            case "Hospitalidade":
+                return "border-l-emerald-400";
+            default:
+                return "border-l-primary-200";
+        }
+    };
+
+
     return (
         <div className="bg-surface-100 rounded-xl shadow-sm p-4 w-full">
             <h2 className="text-base font-semibold text-typography-800 mb-3">
@@ -28,11 +49,11 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         return (
                             <li
                                 key={i}
-                                className="flex bg-surface-100 border border-surface-300 border-l-4 border-l-primary-200 rounded-sm overflow-hidden hover:bg-surface-200/40 transition"
+                                className={`flex bg-surface-100 border border-surface-300 border-l-4 rounded-sm overflow-hidden hover:bg-surface-200/40 transition ${getBorderColor(assignment.role)}`}
                             >
                                 {/* Barra lateral + data */}
                                 <div className="flex flex-col items-center justify-center w-16 bg-surface-200/40 border-r border-surface-300 py-3">
-                                    <span className="text-lg font-bold text-primary-300">
+                                    <span className="text-lg font-bold text-typography-700">
                                         {moment(assignment.date).locale("pt-br").format("DD")}
                                     </span>
                                     <span className="text-[10px] uppercase text-typography-500 -mt-1">
@@ -44,7 +65,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                 <div className="flex-1 p-3">
                                     {/* Cabeçalho */}
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs text-typography-500">
+                                        <span className="text-xs text-typography-600">
                                             {moment(assignment.date).locale("pt-br").format("dddd")}
                                         </span>
 

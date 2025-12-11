@@ -135,14 +135,14 @@ function HospitalityWeekendPage() {
                                         onClick={() => setMonthOffset((m) => m - 1)}
                                         className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                     >
-                                        ◀ {prevMonthLabel}
+                                         {prevMonthLabel}
                                     </Button>
 
                                     <Button
                                         onClick={() => setMonthOffset((m) => m + 1)}
                                         className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
                                     >
-                                        {nextMonthLabel} ▶
+                                        {nextMonthLabel} 
                                     </Button>
                                 </div>
 
