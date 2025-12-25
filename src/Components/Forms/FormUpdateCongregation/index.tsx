@@ -151,7 +151,7 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.longitude?.message ? 'invalido' : ''} />
                     {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
 
-                    <Dropdown textAlign='left' selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
+                    <Dropdown selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
 
                     <Input type="time" placeholder="Horário meio de semana" registro={{
                         ...register('hourMeetingLifeAndMinistary')
@@ -159,7 +159,7 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.hourMeetingLifeAndMinistary?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingLifeAndMinistary?.type && <InputError type={errors.hourMeetingLifeAndMinistary.type} field='hourMeetingLifeAndMinistary' />}
 
-                    <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
+                    <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 
                     <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')

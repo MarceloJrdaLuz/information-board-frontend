@@ -284,7 +284,7 @@ function PublisherCardPage() {
                         </div>
                         <div className="flex justify-between items-center w-full mb-4">
                             <div className="flex flex-col">
-                                <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+                                <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
                                 <div className="min-h-[56px] flex items-center">
                                     {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) ||
                                         (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ? (

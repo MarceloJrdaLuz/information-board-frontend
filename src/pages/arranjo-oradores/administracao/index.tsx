@@ -59,7 +59,7 @@ function AdminSpeakerArrangement() {
                             labelKey="fullName"
                             border
                             full
-                            emptyMessage="Nenhum publicador"
+                            emptyMessage="Nenhum publicador encontrado"
                         />
 
                         <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>

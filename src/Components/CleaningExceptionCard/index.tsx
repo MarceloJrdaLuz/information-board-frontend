@@ -2,6 +2,8 @@ import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br"
+dayjs.locale("pt-br")
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Calendar from "../Calendar";
@@ -99,7 +101,11 @@ export function CleaningExceptionsCard() {
                         key={exc.id}
                         className="flex justify-between items-center p-2 border-b text-typography-700"
                     >
-                        <span>{dayjs(exc.date).format("DD/MM/YYYY")} — {exc.reason}</span>
+                        <span>{dayjs(exc.date).format("DD/MM/YYYY")}
+                            {" ("}
+                            {dayjs(exc.date).format("dddd")}
+                            {")"} — {exc.reason}
+                        </span>
                         <button
                             className="text-red-500 hover:underline"
                             onClick={() => handleDelete(exc.id)}

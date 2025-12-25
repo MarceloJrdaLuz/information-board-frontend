@@ -484,6 +484,25 @@ input[type=number] {
   border-color: rgb(var(--color-primary-200)) !important;
 }
 
+/* Datas desabilitadas */
+.react-datepicker__day--disabled {
+  color: #9ca3af !important; /* cinza visível */
+  background-color: #f3f4f6 !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through;
+}
+
+/* Datas fora do mês */
+.react-datepicker__day--outside-month {
+  color: #d1d5db !important;
+}
+
+/* Remove hover em datas desabilitadas */
+.react-datepicker__day--disabled:hover {
+  background-color: #f3f4f6 !important;
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

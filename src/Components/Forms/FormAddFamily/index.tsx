@@ -118,7 +118,6 @@ export default function FormAddFamily() {
                             border
                             textVisible
                             full
-                            textAlign='left'
                             searchable
                         />
                     )}
@@ -133,10 +132,10 @@ export default function FormAddFamily() {
                         border
                         full
                         position="left"
-                        textAlign="left"
                         labelKey="fullName"
                         textVisible
                         searchable
+                        emptyMessage="Nenhum publicador encontrado"
                     />
                 </div>
                 <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">

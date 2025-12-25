@@ -131,14 +131,14 @@ export default function FormAddCleaningGroup() {
                         border
                         full
                         position="left"
-                        textAlign="left"
                         labelKey="fullName"
                         textVisible
                         searchable
+                        emptyMessage="Nenhum publicador encontrado"
                     />
                 </div>
                 <div className="mt-3">
-                    <Dropdown selectedItem={selectedNumber?.toString()} textAlign='left' full border textVisible handleClick={option => setSelectedNumber(Number(option))} title='Número do grupo' options={availableNumbers.map(num => num.toString())} />
+                    <Dropdown selectedItem={selectedNumber?.toString()} full border textVisible handleClick={option => setSelectedNumber(Number(option))} title='Número do grupo' options={availableNumbers.map(num => num.toString())} />
                 </div>
 
                 <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">

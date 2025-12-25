@@ -112,7 +112,7 @@ function ListReportsPage() {
                         )}
                         {pdfGenerating && <PdfLinkComponent />}
                     </div>
-                    <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
+                    <Dropdown textSize="md" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
                     {isLoading || !data || data === undefined ?
                         (
                             renderSkeleton()

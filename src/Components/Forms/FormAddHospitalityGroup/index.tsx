@@ -116,8 +116,7 @@ export default function FormAddHospitalityGroup() {
                         labelKey="fullName"
                         border
                         textVisible
-                        full
-                        textAlign='left'
+                        full                    
                         searchable
                     />
 
@@ -130,10 +129,10 @@ export default function FormAddHospitalityGroup() {
                             border
                             full
                             position="left"
-                            textAlign="left"
                             labelKey="fullName"
                             textVisible
                             searchable
+                            emptyMessage='Nenhum publicador encontrado'
                         />
                     </div>
 

@@ -119,10 +119,10 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
                         border
                         full
                         position="left"
-                        textAlign="left"
                         labelKey="fullName"
                         textVisible
                         searchable
+                        emptyMessage="Nenhum publicador encontrado"
                     />
                 </div>
 

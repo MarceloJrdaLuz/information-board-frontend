@@ -113,8 +113,8 @@ export default function FormEditSpeaker() {
                                 border
                                 textVisible
                                 full
-                                textAlign='left'
                                 searchable
+                                emptyMessage='Nenhum orador encontrado'
                             />
                         </div>
                     )}
@@ -154,8 +154,8 @@ export default function FormEditSpeaker() {
                             border
                             textVisible
                             full
-                            textAlign='left'
                             searchable
+                            emptyMessage='Nenhuma congregação encontrada'
                         />
                     </>}
 
@@ -171,11 +171,11 @@ export default function FormEditSpeaker() {
                             border
                             full
                             position="left"
-                            textAlign="left"
                             labelKey="number"
                             labelKeySecondary='title'
                             textVisible
                             searchable
+                            emptyMessage='Nenhum discurso encontrado'
                         />
                     </div>
 

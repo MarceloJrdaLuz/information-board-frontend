@@ -6,6 +6,8 @@ export interface IAssignment {
     role: string
     talk?: Omit<ITalk, 'id'>
     eventType: IHospitalityEventType
+    fieldServiceLocation?: string
+    fieldServiceHour?: string
     status: string
     destinationCongregation: {
         name: string

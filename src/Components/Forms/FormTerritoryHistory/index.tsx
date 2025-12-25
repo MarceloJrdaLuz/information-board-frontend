@@ -241,8 +241,8 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
                                                     border
                                                     textVisible
                                                     full
-                                                    textAlign='left'
                                                     searchable
+                                                    emptyMessage="Nenhum dirigente encontrado"
                                                 />
                                             </div>
                                         )
@@ -292,6 +292,7 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
                             full
                             handleDateChange={setCompletionDate}
                             selectedDate={completionDate}
+                            minDate={assignmentDate}
                             titleHidden
                         />
                     </div>

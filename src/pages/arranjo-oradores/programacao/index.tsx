@@ -36,6 +36,7 @@ import "moment/locale/pt-br"; // importa o idioma
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import { start } from "repl"
 
 interface PdfLinkComponentProps {
     schedule: IWeekendSchedule
@@ -425,7 +426,7 @@ function WeekendSchedulePage() {
                                                             labelKey="fullName"
                                                             border
                                                             full
-                                                            emptyMessage="Nenhum orador"
+                                                            emptyMessage="Nenhum orador encontrado"
                                                         />
                                                     </div>
                                                 </div>
@@ -459,6 +460,7 @@ function WeekendSchedulePage() {
                                                         label="Data final"
                                                         selectedDate={endDatePdfGenerate}
                                                         handleDateChange={setEndDatePdfGenerate}
+                                                        minDate={startDatePdfGenerate}
                                                     />
 
                                                     <Select value={pdfScale.toString()} onValueChange={v => setPdfScale(Number(v))}>

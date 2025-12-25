@@ -1,14 +1,11 @@
-import ptBR from 'date-fns/locale/pt-BR'
+import ptBR from "date-fns/locale/pt-BR"
+import dayjs from 'dayjs'
 import { CalendarIcon } from 'lucide-react'
-import { forwardRef } from 'react'
+import { forwardRef, useEffect } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css' // Estilos padrão do DatePicker
-registerLocale('pt-BR', ptBR)
-import moment from "moment"
-import 'react-datepicker/dist/react-datepicker.css'
+import 'react-datepicker/dist/react-datepicker.css'; // Estilos padrão do DatePicker
 import { DatePickerHeader } from '../DatePickerHeader'
-
-registerLocale('pt-BR', ptBR)
+registerLocale("pt-BR", ptBR)
 
 interface CalendarProps {
     handleDateChange: (date: string | null) => void
@@ -32,12 +29,24 @@ export default function Calendar({
 
     // Converte string -> Date para exibir no DatePicker
     const parsedSelected = selectedDate
-        ? moment(selectedDate, "YYYY-MM-DD").toDate()
+        ? dayjs(selectedDate, "YYYY-MM-DD").toDate()
         : null
 
     const parsedMin = minDate
-        ? moment(minDate, "YYYY-MM-DD").toDate()
+        ? dayjs(minDate, "YYYY-MM-DD").toDate()
         : null
+
+    useEffect(() => {
+        if (!selectedDate || !minDate) return
+        if (selectedDate === minDate) return
+
+        const selected = dayjs(selectedDate)
+        const min = dayjs(minDate)
+
+        if (selected.isBefore(min, "day")) {
+            handleDateChange(minDate)
+        }
+    }, [selectedDate, minDate, handleDateChange])
 
     return (
         <div>
@@ -57,7 +66,7 @@ export default function Calendar({
                         return
                     }
                     // Date -> "YYYY-MM-DD"
-                    const formatted = moment(date).format("YYYY-MM-DD")
+                    const formatted = dayjs(date).format("YYYY-MM-DD")
                     handleDateChange(formatted)
                 }}
                 showMonthDropdown
