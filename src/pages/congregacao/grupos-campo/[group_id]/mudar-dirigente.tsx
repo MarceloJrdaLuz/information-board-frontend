@@ -105,8 +105,8 @@ function ChangeGroupOverseer() {
                                     border
                                     textVisible
                                     full
-                                    textAlign='left'
                                     searchable
+                                    emptyMessage='Nenhum publicador encontrado'
                                 />
                             )}
                         </div>

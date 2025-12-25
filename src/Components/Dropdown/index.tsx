@@ -14,7 +14,6 @@ interface IDropdown {
   border?: boolean
   full?: boolean
   position?: 'right' | 'left'
-  textAlign?: 'right' | 'left' | 'center'
   textSize?: 'md' | 'lg' | 'xl'
   textVisible?: boolean
   notBorderFocus?: boolean
@@ -25,11 +24,11 @@ export default function Dropdown(props: IDropdown) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button onClick={props.onClick} className={`inline-flex w-full  justify-${props.textAlign ? `${props.textAlign}` : `center`} rounded-md  bg-transparent border px-3 md:px-4 py-2 text-${props.textSize ? props.textSize : "sm"} font-medium text-typography-700  hover:underline focus:outline-none  ${props.border ? "border border-surface-300" : "border-none"} ${!props.notBorderFocus && "focus:ring-1  focus:ring-offset-1 focus:ring-offset-primary-200"}`}>
-          <span className={`${!props.textVisible && 'hidden'} sm:flex`}>
+        <Menu.Button onClick={props.onClick} className={`inline-flex w-full justify-between rounded-md  bg-transparent border px-3 md:px-4 py-2 text-${props.textSize ? props.textSize : "sm"}  text-typography-600  hover:underline focus:outline-none  ${props.border ? "border border-surface-300" : "border-none"} ${!props.notBorderFocus && "focus:ring-1  focus:ring-offset-1 focus:ring-offset-primary-200"}`}>
+          <span className={`${!props.textVisible && 'hidden'} sm:flex `}>
             {props.selectedItem ? props.selectedItem : props.title}
           </span>
-          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5" aria-hidden="true" />
+          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5 text-typography-500" aria-hidden="true" />
         </Menu.Button>
       </div>
 

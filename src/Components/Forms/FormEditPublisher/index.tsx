@@ -184,6 +184,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         labelKey="name"
                                         labelKeySecondary='phone'
                                         searchable
+                                        emptyMessage='Nenhum contato encontrado'
                                         full
                                     />
                                     <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
@@ -205,6 +206,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
                                         labelKey="fullName"
                                         searchable
+                                        emptyMessage='Nenhum usuário encontrado'
                                         full
                                     />
                                     <ConfirmLinkForceModal button={

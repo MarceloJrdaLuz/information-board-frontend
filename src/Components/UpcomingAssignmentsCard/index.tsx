@@ -4,6 +4,9 @@ import { BookOpen, Calendar, CalendarDays, Clock, MapPin, Mic, Sparkles, User } 
 import moment from "moment";
 import "moment/locale/pt-br"; // importa o idioma
 import { LocationLink } from "../LocationLink";
+import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
+import { useState } from "react";
+import { formatHour } from "@/utils/formatTime";
 moment.defineLocale("pt-br", null)
 
 
@@ -13,6 +16,19 @@ interface UpcomingAssignmentsCardProps {
 
 export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCardProps) {
     const hasAssignments = assignments && assignments.length > 0
+    const [expanded, setExpanded] = useState(false);
+
+    const MAX_VISIBLE = 5;
+
+    const visibleAssignments = expanded
+        ? assignments
+        : assignments.slice(0, MAX_VISIBLE);
+
+    const hiddenCount =
+        assignments.length > MAX_VISIBLE
+            ? assignments.length - MAX_VISIBLE
+            : 0;
+
 
     const getBorderColor = (role: string) => {
         switch (role) {
@@ -22,6 +38,8 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                 return "border-l-amber-300";
             case "Leitor":
                 return "border-l-[#961526]";
+            case "Dirigente de Campo":
+                return "border-l-[#c18626]";
             case "Orador":
                 return "border-l-[#28456C]";
             case "Discurso Externo":
@@ -43,7 +61,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
             {hasAssignments ? (
                 <ul className="space-y-2">
-                    {assignments.map((assignment, i) => {
+                    {visibleAssignments.map((assignment, i) => {
                         const formattedDate = moment(assignment.date).locale("pt-br").format("dddd, DD [de] MMMM")
 
                         return (
@@ -129,6 +147,33 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                             </div>
                                         )}
 
+                                        {assignment.role === "Dirigente de Campo" && (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <LifeAndMinistryIcon className="text-typography-400 w-5 h-5 flex-shrink-0" />
+                                                    <strong className="leading-tight">Dirigente de Campo</strong>
+                                                </div>
+
+                                                {assignment.fieldServiceLocation && (
+                                                    <div className="flex items-start gap-1 text-xs text-typography-500 ml-6">
+                                                        <MapPin size={12} className="flex-shrink-0 mt-[2px]" />
+                                                        <span className="leading-tight break-words">
+                                                            {assignment.fieldServiceLocation}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {assignment.fieldServiceHour && (
+                                                    <div className="flex items-center gap-1 text-xs text-typography-500 ml-6 leading-tight">
+                                                        <Clock size={12} />
+                                                        <span>
+                                                            {formatHour(assignment.fieldServiceHour)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
                                         {assignment.role === "Discurso Externo" && (
                                             <div className="flex flex-col gap-2 space-y-1">
                                                 <div className="flex items-center gap-2">
@@ -186,6 +231,19 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                         )
                     })}
+                    {hiddenCount > 0 && (
+                        <div className="mt-3 text-center">
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="text-xs font-medium text-primary-200 hover:underline"
+                            >
+                                {expanded
+                                    ? "Ver menos"
+                                    : `Ver mais (${hiddenCount})`}
+                            </button>
+                        </div>
+                    )}
+
                 </ul>
             ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-typography-400">

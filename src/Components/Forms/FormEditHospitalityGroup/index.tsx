@@ -118,7 +118,6 @@ export default function FormEditHospitalityGroup() {
                         border
                         textVisible
                         full
-                        textAlign='left'
                         searchable
                     />
 
@@ -131,10 +130,10 @@ export default function FormEditHospitalityGroup() {
                             border
                             full
                             position="left"
-                            textAlign="left"
                             labelKey="fullName"
                             textVisible
                             searchable
+                            emptyMessage='Nenhum publicador encontrado'
                         />
                     </div>
 

@@ -136,6 +136,7 @@ export default function TransferPublishers({ initialPublisher, allPublishers }: 
                                     handleChange={(item) => handleAddPublisher(item)}
                                     labelKey="fullName"
                                     searchable
+                                    emptyMessage="Nenhum publicador encontrado"
                                     full
                                 />
                             </div>
@@ -172,6 +173,7 @@ export default function TransferPublishers({ initialPublisher, allPublishers }: 
                             labelKey="name"
                             labelKeySecondary="city"
                             searchable
+                            emptyMessage="Nenhuma congregação encontrada"
                             full
                         />
                     </div>

@@ -91,6 +91,12 @@
     "work_type": {
         "required": "Campo obrigatório quando OUTRA é selecionado"
     },
+    "time": {
+        "required": "Hora é um campo obrigatório"
+    },
+    "location": {
+        "required": "Local é um campo obrigatório"
+    },
     "hourMeetingPublic": {
         "required": "Hora da reunião é um campo obrigatório"
     }

@@ -18,7 +18,7 @@ export default function SpeakerFilters() {
           labelKey="number"
           labelKeySecondary="title"
           border
-          emptyMessage="Nenhum discurso"
+          emptyMessage="Nenhum discurso encontrado"
           textVisible
           searchable
         />

@@ -153,7 +153,6 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                             border
                             textVisible
                             full
-                            textAlign='left'
                             searchable
                         />
                     )}
@@ -168,10 +167,10 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                         border
                         full
                         position="left"
-                        textAlign="left"
                         labelKey="fullName"
                         textVisible
                         searchable
+                        emptyMessage="Nenhum publicador encontrado"
                     />
                 </div>
 

@@ -16,6 +16,7 @@ interface IDropdownSearch {
   handleClick: (option: IPublisherList) => void
   border?: boolean
   full?: boolean
+  emptyMessage?: string
 }
 
 export default function DropdownSearch(props: IDropdownSearch) {
@@ -103,12 +104,18 @@ export default function DropdownSearch(props: IDropdownSearch) {
           <div className="py-1">
             <input
               type="text"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
               value={searchQuery}
               onChange={handleInputChange}
-              className="block w-full px-4 py-2 text-sm border border-typography-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100 bg-surface-100 placeholder:text-typography-600"
+              className="block w-full px-4 py-2 text-sm text-typography-700 border border-typography-300 rounded-md focus:outline-none focus:ring-indigo-400 focus:border-primary-100 bg-surface-100 placeholder:text-typography-600"
               placeholder="Pesquisar..."
             />
-            {filteredOptions.map((option, index) => (
+            {filteredOptions.length === 0 ? (
+              props.emptyMessage ? (
+                <span className="block px-4 py-2 text-sm text-typography-400 italic">{props.emptyMessage}</span>
+              ) : null
+            ) : (filteredOptions.map((option, index) => (
               <Menu.Item key={index}>
                 {({ active }) => (
                   <span
@@ -130,7 +137,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
                     {option.fullName} {option.nickname !== "" && `(${option.nickname})`}
                   </span>
                 )}
-              </Menu.Item>
+              </Menu.Item>)
             ))}
           </div>
           {publisherRecover && (

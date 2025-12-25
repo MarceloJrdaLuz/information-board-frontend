@@ -173,7 +173,7 @@ export default function FormEditCongregationAuxiliary() {
                         invalid={errors?.longitude?.message ? 'invalido' : ''} />
                     {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
 
-                    <Dropdown textAlign='left' selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
+                    <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
 
                     <Input type="time" placeholder="Horário fim de semana" registro={{
                         ...register('hourMeetingPublic')

@@ -338,7 +338,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               labelKey="displayLabel"
               border
               full
-              emptyMessage="Nenhum presidente"
+              emptyMessage="Nenhum presidente encontrado"
               searchable
             />
           </div>
@@ -363,7 +363,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 showSecondaryLabelOnSelected
                 border
                 full
-                emptyMessage="Nenhuma congregação"
+                emptyMessage="Nenhuma congregação encontrada"
                 searchable
               />
             )}
@@ -378,7 +378,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 labelKey="displayLabel"
                 border
                 full
-                emptyMessage="Nenhum orador"
+                emptyMessage="Nenhum orador encontrado"
                 searchable
               />
             )}
@@ -393,7 +393,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 labelKey="displayLabel"
                 border
                 full
-                emptyMessage="Nenhum tema"
+                emptyMessage="Nenhum tema encontrado"
                 searchable
               />
             )}
@@ -439,7 +439,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               labelKey="displayLabel"
               border
               full
-              emptyMessage="Nenhum leitor"
+              emptyMessage="Nenhum leitor encontrado"
               searchable
             />
           }

@@ -160,6 +160,7 @@ function CleaningSchedulePage() {
                                 full
                                 handleDateChange={setEndDate}
                                 selectedDate={endDate}
+                                minDate={startDate}
                             />
                             <Button className="w-full text-typography-200" onClick={handleGenerateSchedule} disabled={loading}>
                                 {loading ? "Gerando..." : "Gerar Programação"}

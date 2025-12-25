@@ -299,7 +299,7 @@ export default function HospitalityRow({ date }: Props) {
               labelKey="displayLabel"
               border
               full
-              emptyMessage="Nenhum grupo"
+              emptyMessage="Nenhum grupo encontrado"
               searchable
             />
 

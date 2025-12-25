@@ -119,7 +119,7 @@ export default function FormEditTerritory({ territory_id }: IUpdateTerritory) {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <Dropdown selectedItem={selectedNumber} textAlign='left' full border textVisible handleClick={option => handleClick(option)} title='Número do território' options={availableNumbers} />
+                    <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do território' options={availableNumbers} />
 
 
                     <TextArea placeholder="Referência" registro={{ ...register('description', { required: "Campo obrigatório" }) }} invalid={errors?.description?.message ? 'invalido' : ''} />

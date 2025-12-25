@@ -78,7 +78,7 @@ export default function FormAddSpeaker() {
             talk_ids
         }), {
             pending: 'Criando novo orador',
-        }).then(() => {            
+        }).then(() => {
             reset()
             setSelectedTalks(null)
             setSelectedSpeakerCongregation(null)
@@ -116,7 +116,6 @@ export default function FormAddSpeaker() {
                                 border
                                 textVisible
                                 full
-                                textAlign='left'
                                 searchable
                             />
                         </div>
@@ -157,7 +156,6 @@ export default function FormAddSpeaker() {
                             border
                             textVisible
                             full
-                            textAlign='left'
                             searchable
                         />
                     </>}
@@ -174,11 +172,11 @@ export default function FormAddSpeaker() {
                             border
                             full
                             position="left"
-                            textAlign="left"
                             labelKey="number"
                             labelKeySecondary='title'
                             textVisible
                             searchable
+                            emptyMessage='Nenhum discurso encontrado'
                         />
                     </div>
 

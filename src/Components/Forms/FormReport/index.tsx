@@ -210,7 +210,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                         <div className={`m-auto w-fit font-semibold text-2xl sm:text-3xl text-primary-200`}>Relatório</div>
                     </div>
 
-                    <DropdownSearch full border title="Nome" handleClick={handleClick} options={optionsDrop} />
+                    <DropdownSearch emptyMessage="Nenhum publicador encontrado" full border title="Nome" handleClick={handleClick} options={optionsDrop} />
 
                     <Input
                         readOnly

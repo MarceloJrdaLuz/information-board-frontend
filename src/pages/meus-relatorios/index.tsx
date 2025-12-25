@@ -44,7 +44,7 @@ function MyReportsPage() {
             <section className="flex flex-wrap w-full h-full p-5 ">
                 <div className="w-full h-full">
                     <h1 className="flex w-full h-10 text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold">Relatórios</h1>
-                    <Dropdown textSize="md" textAlign="left" notBorderFocus selectedItem={serviceYearSelected} handleClick={(select) => setServiceYearSelected(select)} textVisible title="Ano de Serviço" options={yearOptions} />
+                    <Dropdown textSize="md" notBorderFocus selectedItem={serviceYearSelected} handleClick={(select) => setServiceYearSelected(select)} textVisible title="Ano de Serviço" options={yearOptions} />
                     {isLoading ?
                         (
                             <ReportTableSkeleton />

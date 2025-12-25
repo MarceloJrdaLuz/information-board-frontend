@@ -71,7 +71,7 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-<main className="flex w-screen h-screen">
+        <main className="flex w-screen h-screen">
             <NavBar.Root>
                 {!showMenu && <NavBar.Skeleton items={5} />}
                 <div className={`transition-opacity duration-150 ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -247,6 +247,33 @@ export default function Layout(props: LayoutProps) {
                                         }}
                                         icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
                                         active={pageActive.startsWith('/congregacao/programacao-limpeza')}
+                                    />
+                                }
+                                {(isAdminCongregation ||
+                                    roleContains('FIELD_SERVICE_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Saídas de Campo"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/saidas-campo')
+                                        }}
+                                        icon={() => <PrechingHomeIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/saidas-campo')}
+                                    />
+                                }
+
+                                {(isAdminCongregation ||
+                                    roleContains('FIELD_SERVICE_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Programação de Campo"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/programacao-campo')
+                                        }}
+                                        icon={() => <CalendarMicIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/programacao-campo')}
                                     />
                                 }
                             </NavBar.ListOptions>

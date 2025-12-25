@@ -132,7 +132,7 @@ export default function FormAddGroup() {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <Dropdown selectedItem={selectedNumber} textAlign='left' full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
+                    <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
 
                     <div className='mt-2'>
                         {publishers && (
@@ -144,8 +144,7 @@ export default function FormAddGroup() {
                                 labelKey="fullName"
                                 border
                                 textVisible
-                                full
-                                textAlign='left'
+                                full                        
                                 searchable
                             />
                         )}

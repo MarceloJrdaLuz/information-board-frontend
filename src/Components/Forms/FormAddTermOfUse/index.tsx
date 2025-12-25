@@ -87,7 +87,6 @@ export default function FormAddTermOfUse() {
                         <Dropdown
                             selectedItem={type}
                             textVisible
-                            textAlign="left"
                             border
                             title="Tipo do termo"
                             handleClick={(option) => setType(option as "congregation" | "publisher")}
@@ -97,7 +96,6 @@ export default function FormAddTermOfUse() {
                             selectedItem={version}
                             textVisible
                             border
-                            textAlign="left"
                             title="Versão"
                             handleClick={(option) => setVersion(option)}
                             options={optionDropdownVersion}

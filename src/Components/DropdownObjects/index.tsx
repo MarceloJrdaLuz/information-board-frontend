@@ -117,9 +117,11 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
             {searchable && (
               <input
                 type="text"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full px-3 py-2 text-sm border-b border-typography-200 focus:outline-none focus:ring-primary-500"
+                className="block w-full px-3 py-2 text-sm bg-surface-100 text-typography-700 border-b border-typography-200 focus:outline-none focus:ring-primary-500"
                 placeholder="Pesquisar..."
               />
             )}
