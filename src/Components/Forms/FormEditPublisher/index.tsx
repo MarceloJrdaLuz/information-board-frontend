@@ -107,7 +107,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const sortedUsers = usersData ? sortArrayByProperty(usersData, "fullName") : usersData
 
     return (
-        <section className="flex w-full justify-center m-2">
+        <section className="flex w-full justify-center m-2 pb-36 pt-6">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 {!data ? (
                     <FormEditPublisherSkeleton />
@@ -157,9 +157,9 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                         {values.situationPublisherCheckboxSelected === Situation.ATIVO && (
                             <div className="border border-typography-300 my-4 p-4">
                                 {/* Privilegio principal */}
-                                <CheckboxUnique
+                                <CheckboxMultiple
                                     visibleLabel
-                                    checked={values.privilegeCheckboxSelected}
+                                    checkedOptions={values.additionalsPrivilegeCheckboxSelected}
                                     label="Privilégios Adicionais"
                                     options={
                                         values.genderCheckboxSelected === "Feminino"
@@ -168,7 +168,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                             )
                                             : options.additionalsPrivilegeOptions // todos os privilégios para masculino
                                     }
-                                    handleCheckboxChange={handlers.handleCheckboxPrivileges}
+                                    handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
                                 />
 
                                 {/* Privilégios adicionais só para homens */}

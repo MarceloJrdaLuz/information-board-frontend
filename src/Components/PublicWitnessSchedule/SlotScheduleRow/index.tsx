@@ -138,9 +138,14 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
       {selectedPublishers.length > 0 && (
         <div className="mt-2 text-sm text-typography-600 flex flex-wrap gap-1">
           {selectedPublishers.map(p => {
-            // Pegamos o total do dia e subtraímos apenas os publishers que já estão no slot atual
+            // Quantidade total do dia
+            const total = publishersCount?.[p.id] ?? 0
+
+            // Quantidade deste publicador neste slot
             const inThisSlot = selectedPublishers.filter(sp => sp.id === p.id).length
-            const isConflict = (publishersCount?.[p.id] ?? 0) - inThisSlot > 1
+
+            // Só é conflito se estiver em outro slot do mesmo dia
+            const isConflict = total - inThisSlot > 0
 
             return (
               <div key={p.id}
@@ -154,6 +159,7 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
               </div>
             )
           })}
+
         </div>
       )}
     </div>
