@@ -276,6 +276,20 @@ export default function Layout(props: LayoutProps) {
                                         active={pageActive.startsWith('/congregacao/programacao-campo')}
                                     />
                                 }
+
+                                {(isAdminCongregation ||
+                                    roleContains('PUBLIC_WITNESS_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Testemunho Público"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/testemunho-publico')
+                                        }}
+                                        icon={() => <PublicPreachingIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                        active={pageActive.startsWith('/congregacao/testemunho-publico')}
+                                    />
+                                }
                             </NavBar.ListOptions>
                         }
 
