@@ -20,7 +20,7 @@ export function useAuthorizedFetch<Data = any, Error = any>(
   url: string,
   options?: UseFetchOptions
 ) {
-  const { user, roleContains, loading: authLoading } = useAuthContext()
+  const { roleContains, loading: authLoading } = useAuthContext()
 
   // Só ativa o SWR se:
   // - url não estiver vazia

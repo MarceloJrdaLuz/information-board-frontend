@@ -47,6 +47,8 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             case "Anfitrião":
             case "Hospitalidade":
                 return "border-l-emerald-400";
+            case "Testemunho Público":
+                return "border-l-sky-400";
             default:
                 return "border-l-primary-200";
         }
@@ -139,8 +141,8 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                                     <MapPin size={12} className="flex-shrink-0 mt-[2px]" />
                                                     <span className="leading-tight break-words">
                                                         {formatNameCongregation(
-                                                            assignment.destinationCongregation.name,
-                                                            assignment.destinationCongregation.city
+                                                            assignment.destinationCongregation?.name,
+                                                            assignment.destinationCongregation?.city
                                                         )}
                                                     </span>
                                                 </div>
@@ -174,6 +176,33 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                             </div>
                                         )}
 
+                                        {assignment.role === "Testemunho Público" && (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar size={16} className="text-typography-400 flex-shrink-0" />
+                                                    <strong className="leading-tight">
+                                                        Testemunho Público
+                                                    </strong>
+                                                </div>
+
+                                                {assignment.start_time && assignment.end_time && (
+                                                    <div className="flex items-center gap-1 text-xs text-typography-500 ml-6">
+                                                        <Clock size={12} />
+                                                        <span>{`${formatHour(assignment.start_time)} - ${formatHour(assignment.end_time)}`}</span>
+                                                    </div>
+                                                )}
+
+                                                {assignment.publishers && assignment.publishers.length > 0 && (
+                                                    <div className="flex items-start gap-1 text-xs text-typography-500 ml-6">
+                                                        <User size={12} className="mt-[2px]" />
+                                                        <span className="leading-tight">
+                                                            {assignment.publishers.map(p => p.name).join(" • ")}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        
                                         {assignment.role === "Discurso Externo" && (
                                             <div className="flex flex-col gap-2 space-y-1">
                                                 <div className="flex items-center gap-2">

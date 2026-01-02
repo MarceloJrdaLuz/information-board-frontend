@@ -134,7 +134,7 @@ export function FieldServiceSchedulePdf({
             <View style={styles.tableContainer}>
               <View style={[styles.row, styles.headerRow]}>
                 <View style={[styles.cell, styles.w40, styles.borderRight, styles.whiteBorder]}>
-                  <Text style={styles.headerText}>Semana</Text>
+                  <Text style={styles.headerText}>Dia</Text>
                 </View>
                 <View style={[styles.cell, styles.w60]}>
                   <Text style={styles.headerText}>Dirigente</Text>
