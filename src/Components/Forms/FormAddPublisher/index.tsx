@@ -248,17 +248,6 @@ export default function FormAddPublisher() {
                                 }
                                 handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
                             />
-
-                            {/* Privilégios adicionais só para homens */}
-                            {genderCheckboxSelected === "Masculino" && (
-                                <CheckboxMultiple
-                                    visibleLabel
-                                    checkedOptions={additionalsPrivilegeCheckboxSelected}
-                                    label="Privilégios Adicionais"
-                                    options={additionalsPrivilegeOptions}
-                                    handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
-                                />
-                            )}
                         </div>
                     )}
 

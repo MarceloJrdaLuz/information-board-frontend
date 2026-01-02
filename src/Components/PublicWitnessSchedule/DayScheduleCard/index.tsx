@@ -29,14 +29,12 @@ export default function DayScheduleCard({
   const publishersCount = useMemo(() => {
     const count: Record<string, number> = {}
 
-    // Contar publishers dos outros slots do dia (assignmentsBySlot)
     Object.entries(assignmentsBySlot ?? {}).forEach(([slotId, assignment]) => {
       assignment.publishers.forEach(p => {
         count[p.publisher.id] = (count[p.publisher.id] ?? 0) + 1
       })
     })
 
-    // Contar publishers do dirty (frontend)
     const dayDirty = dirty[date]?.slots ?? []
     dayDirty.forEach(slot => {
       slot.publishers.forEach(p => {
@@ -47,7 +45,6 @@ export default function DayScheduleCard({
     return count
   }, [assignmentsBySlot, dirty, date])
 
-
   return (
     <div className="border rounded-xl p-4 space-y-3 bg-surface-100">
       <h3 className="font-semibold text-primary-200">{date}</h3>
@@ -56,19 +53,38 @@ export default function DayScheduleCard({
           {todaysExceptions.map(ex => ex.reason).join(", ")}
         </div>
       )}
-      {arrangement.timeSlots
-        .slice() // cria uma cópia do array para não mutar o original
-        .sort((a, b) => a.start_time.localeCompare(b.start_time))
-        .map(slot => (
-          <SlotScheduleRow
-            key={slot.id}
-            date={date}
-            slot={slot}
-            publishers={publishers}
-            assignment={assignmentsBySlot?.[slot.id]}
-            publishersCount={publishersCount}
-          />
-        ))}
+      {
+        arrangement.timeSlots
+          .slice()
+          .sort((a, b) => a.start_time.localeCompare(b.start_time))
+          .map(slot => {
+            // Cria um publishersCount excluindo o slot atual
+            const countExcludingThisSlot: Record<string, number> = { ...publishersCount }
+
+            assignmentsBySlot?.[slot.id]?.publishers.forEach(p => {
+              countExcludingThisSlot[p.publisher.id] =
+                (countExcludingThisSlot[p.publisher.id] ?? 1) - 1
+            })
+
+            const dayDirtySlot = dirty[date]?.slots.find(s => s.time_slot_id === slot.id)
+            dayDirtySlot?.publishers.forEach(p => {
+              countExcludingThisSlot[p.publisher_id] =
+                (countExcludingThisSlot[p.publisher_id] ?? 1) - 1
+            })
+
+            return (
+              <SlotScheduleRow
+                key={slot.id}
+                date={date}
+                slot={slot}
+                publishers={publishers}
+                assignment={assignmentsBySlot?.[slot.id]}
+                publishersCount={countExcludingThisSlot}
+              />
+            )
+          })
+
+      }
 
     </div>
   )

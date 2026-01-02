@@ -170,17 +170,6 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                     }
                                     handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
                                 />
-
-                                {/* Privilégios adicionais só para homens */}
-                                {values.genderCheckboxSelected === "Masculino" && (
-                                    <CheckboxMultiple
-                                        visibleLabel
-                                        checkedOptions={values.additionalsPrivilegeCheckboxSelected}
-                                        label="Privilégios Adicionais"
-                                        options={options.additionalsPrivilegeOptions}
-                                        handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
-                                    />
-                                )}
                             </div>
                         )}
 
