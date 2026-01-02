@@ -1,4 +1,5 @@
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
+import { IFieldServiceException } from "@/types/fieldService"
 
 export type CreatePublicWitnessMonthSchedulePayload = {
   schedule: PublicWitnessDaySchedulePayload[]
@@ -31,6 +32,7 @@ export interface IPublicWitnessScheduleResponse {
   start_date: string
   end_date: string
   schedule: IPublicWitnessScheduleDay[]
+  exceptions: IFieldServiceException[]
 }
 
 

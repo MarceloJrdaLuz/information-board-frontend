@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom } from "jotai"
+import { useEffect, useMemo, useState } from "react"
 
 import DropdownMulti from "@/Components/DropdownMulti"
-import { dirtyMonthScheduleAtom, publicWitnessSchedulesAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
-import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
-import { IPublisher } from "@/types/types"
+import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
+import { useCongregationContext } from "@/context/CongregationContext"
 import { buildPublicWitnessHistoryOptions } from "@/functions/buildPublicWitnessHistoryOptions"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
-import { useCongregationContext } from "@/context/CongregationContext"
+import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
 import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
+import { IPublisher } from "@/types/types"
+import { AlertCircleIcon } from "lucide-react"
 
 export interface IPublicWitnessAssignment {
   id: string
@@ -30,9 +31,10 @@ interface Props {
   slot: IPublicWitnessTimeSlot
   publishers: IPublisher[]
   assignment?: IPublicWitnessAssignment
+  publishersCount?: Record<string, number>
 }
 
-export default function SlotScheduleRow({ date, slot, publishers, assignment }: Props) {
+export default function SlotScheduleRow({ date, slot, publishers, assignment, publishersCount }: Props) {
   const { congregation } = useCongregationContext()
   const [, setDirty] = useAtom(dirtyMonthScheduleAtom)
   const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([])
@@ -45,8 +47,11 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment }: 
     urlFetch,
     { allowedRoles: ["ADMIN_CONGREGATION", "PUBLIC_WITNESS_MANAGER"] }
   )
-  
-  const options = buildPublicWitnessHistoryOptions(publishers, history, "fullName")
+
+  const options = useMemo(
+    () => buildPublicWitnessHistoryOptions(publishers, history, "fullName"),
+    [publishers, history]
+  )
 
   // 🔄 Inicializa com publishers fixos
   useEffect(() => {
@@ -129,9 +134,26 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment }: 
         emptyMessage="Nenhum publicador encontrado"
       />}
 
+      {/* Publicadores selecionados */}
       {selectedPublishers.length > 0 && (
-        <div className="mt-2 text-sm text-typography-600">
-          <strong>Selecionados:</strong> {selectedPublishers.map(p => p.fullName).join(", ")}
+        <div className="mt-2 text-sm text-typography-600 flex flex-wrap gap-1">
+          {selectedPublishers.map(p => {
+            // Pegamos o total do dia e subtraímos apenas os publishers que já estão no slot atual
+            const inThisSlot = selectedPublishers.filter(sp => sp.id === p.id).length
+            const isConflict = (publishersCount?.[p.id] ?? 0) - inThisSlot > 1
+
+            return (
+              <div key={p.id}
+                className={`flex items-center gap-2 p-2 leading-none rounded ${isConflict ? "bg-red-100 text-red-600 font-semibold" : ""}`}>
+                <span
+                  title={isConflict ? "Este publicador já está escalado em outro slot hoje" : ""}
+                >
+                  {p.fullName}
+                </span>
+                {isConflict && <AlertCircleIcon className="w-4 h-4" />}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

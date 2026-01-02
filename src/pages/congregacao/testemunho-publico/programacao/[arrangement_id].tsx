@@ -173,6 +173,7 @@ function ArrangementMonthSchedulePage() {
                   arrangement={arrangement}
                   publishers={publishers}
                   assignmentsBySlot={assignmentsByDate[date]}
+                  exceptions={scheduleResponse?.exceptions}
                 />
               ))
             ) : (
