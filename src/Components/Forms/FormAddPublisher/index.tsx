@@ -55,7 +55,6 @@ export default function FormAddPublisher() {
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
-    const [modalEmergencyContactShow, setModalEmergencyContactShow] = useAtom(showModalEmergencyContact)
 
     const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
 
@@ -174,7 +173,7 @@ export default function FormAddPublisher() {
     const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
 
     return (
-        <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto m-2">
+        <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto m-2 pb-36 pt-6">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className={`w-full h-fit flex-col justify-center items-center`}>
                     <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo publicador</div>
@@ -232,6 +231,26 @@ export default function FormAddPublisher() {
 
                         {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}
+
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && (
+                        <div className="border border-typography-300 my-4 p-4">
+                            {/* Privilegio principal */}
+                            <CheckboxMultiple
+                                visibleLabel
+                                checkedOptions={additionalsPrivilegeCheckboxSelected}
+                                label="Privilégios Adicionais"
+                                options={
+                                    genderCheckboxSelected === "Feminino"
+                                        ? additionalsPrivilegeOptions.filter(
+                                            p => p === Privileges.TESTEMUNHOPUBLICO // ou outros privilégios válidos para feminino
+                                        )
+                                        : additionalsPrivilegeOptions // todos os privilégios para masculino
+                                }
+                                handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                            />
+                        </div>
+                    )}
+
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />

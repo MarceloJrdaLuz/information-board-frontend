@@ -120,7 +120,7 @@ export interface IGroup {
     publishers: IPublisher[]
 }
 export interface IGroupOverseers extends IPublisher {
-  publisherId: string
+    publisherId: string
 }
 
 export interface IReports {
@@ -258,7 +258,8 @@ export enum Privileges {
     PRESIDENTE = "Presidente",
     INDICADOR = "Indicador",
     MICROFONEVOLANTE = "Microfone Volante",
-    DIRIGENTECAMPO = "Dirigente de Campo"
+    DIRIGENTECAMPO = "Dirigente de Campo",
+    TESTEMUNHOPUBLICO = "Testemunho Público"
 }
 
 export enum PrivilegesMinistry {

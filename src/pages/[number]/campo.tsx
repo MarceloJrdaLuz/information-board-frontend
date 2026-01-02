@@ -22,6 +22,8 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import iconPreaching from '../../../public/images/campo-gray.png'
+import { IPublicWitnessCarouselResponse } from "@/types/publicWitness/schedules"
+import PublicWitnessCarousel from "@/Components/PublicWitnessCarousel"
 function Campo() {
     const router = useRouter()
     const { number } = router.query
@@ -51,7 +53,13 @@ function Campo() {
 
     const { data: allSchedules, isLoading } = useFetch<FieldServicePdfResponse>(
         number ? `${API_ROUTES.FIELD_SERVICE_SCHEDULES}/futures/congregation/${congregation?.id}` : ""
+    )
+
+    const { data: allSchedulesPublicWitness, isLoading: loadingPublicWitness } = useFetch<IPublicWitnessCarouselResponse>(
+        number ? `publicWitness/schedules/futures/congregation/${congregation?.id}` : ""
     );
+
+    console.log(allSchedulesPublicWitness)
 
     useEffect(() => {
         if (number) {
@@ -71,7 +79,7 @@ function Campo() {
         setPdfShow(true)
     }
 
-   return !pdfShow ? (
+    return !pdfShow ? (
         <div className="flex flex-col h-screen w-screen bg-typography-200">
             <HeadComponent title="Designações de Campo" urlMiniatura={`${domain}/images/campo.png`} />
             <div className="flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
@@ -87,7 +95,7 @@ function Campo() {
                 >
                     <div className="linha bg-typography-500 mt-2 w-full h-0.5 md:w-8/12 my-0 m-auto"></div>
                     <div className="overflow-auto hide-scrollbar p-2 w-full md:w-8/12 m-auto ">
-                        
+
                         {/* SEÇÃO: SAÍDAS DE CAMPO */}
                         <div className="mb-4">
                             <Button outline={isDark}
@@ -119,8 +127,8 @@ function Campo() {
                                             documentsFieldServiceFilter && documentsFieldServiceFilter.length > 0 ? (
                                                 <>
                                                     {/* Pequeno título se houver carrossel em cima */}
-                                                    {allSchedules && <p className="w-full text-[10px] text-typography-600 uppercase font-bold mt-2 ml-1">Arquivos para baixar (PDF)</p>}
-                                                    
+                                                    {allSchedules && <p className="w-full text-[10px] text-typography-600 uppercase font-bold mt-2 ml-1"> Ver em PDF</p>}
+
                                                     {documentsFieldServiceFilter.map(document => (
                                                         <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
                                                             <Button outline={isDark}
@@ -154,29 +162,72 @@ function Campo() {
                             >
                                 <PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" /> Testemunho Público
                             </Button>
-                            
-                            <div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                                {publicServiceOptionsShow && (
-                                    documents ? (
-                                        documentsPublicServiceFilter && documentsPublicServiceFilter.length > 0 ? (
-                                            documentsPublicServiceFilter.map(document => (
-                                                <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                                                    <Button outline={isDark}
-                                                        className="w-full"
-                                                        onClick={() => handleButtonClick(document.url)}
-                                                    >
-                                                        {removeMimeType(document.fileName)}
-                                                    </Button>
-                                                </div>
-                                            ))
+
+                            {publicServiceOptionsShow && (
+                                <div className="mt-4 space-y-4">
+
+                                    {/* 1. PRIORIDADE: DADOS DINÂMICOS (CARROSSEL) */}
+                                    {loadingPublicWitness ? (
+                                        <div className="w-full flex justify-center py-4">
+                                            <Spiner size="w-8 h-8" />
+                                        </div>
+                                    ) : allSchedulesPublicWitness &&
+                                        (allSchedulesPublicWitness.rotationBlocks.length > 0 ||
+                                            allSchedulesPublicWitness.fixedSchedules.length > 0) ? (
+                                        <div className="w-full animate-in fade-in duration-500">
+                                            <PublicWitnessCarousel
+                                                fixedSchedules={allSchedulesPublicWitness.fixedSchedules}
+                                                rotationBlocks={allSchedulesPublicWitness.rotationBlocks}
+                                            />
+                                        </div>
+                                    ) : null}
+
+                                    {/* 2. COMPLEMENTO: PDFs */}
+                                    <div className="flex justify-between w-11/12 gap-1 m-auto flex-wrap">
+                                        {documents ? (
+                                            documentsPublicServiceFilter && documentsPublicServiceFilter.length > 0 ? (
+                                                <>
+                                                    {allSchedulesPublicWitness && (
+                                                        <p className="w-full text-[10px] text-typography-600 uppercase font-bold mt-2 ml-1">
+                                                            Ver em PDF
+                                                        </p>
+                                                    )}
+
+                                                    {documentsPublicServiceFilter.map(document => (
+                                                        <div
+                                                            key={document.id}
+                                                            className={`${removeMimeType(document.fileName).length > 10
+                                                                ? "w-full"
+                                                                : "flex-1"
+                                                                } min-w-[120px]`}
+                                                        >
+                                                            <Button
+                                                                outline={isDark}
+                                                                className="w-full"
+                                                                onClick={() => handleButtonClick(document.url)}
+                                                            >
+                                                                {removeMimeType(document.fileName)}
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (
+                                                (!allSchedulesPublicWitness ||
+                                                    (allSchedulesPublicWitness.rotationBlocks.length === 0 &&
+                                                        allSchedulesPublicWitness.fixedSchedules.length === 0)) && (
+                                                    <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
+                                                )
+                                            )
                                         ) : (
-                                            <NotFoundDocument message="Nenhuma programação de testemunho público encontrada!" />
-                                        )
-                                    ) : (
-                                        <div className="w-full"><Spiner size="w-8 h-8" /></div>
-                                    )
-                                )}
-                            </div>
+                                            <div className="w-full">
+                                                <Spiner size="w-8 h-8" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                </div>
+                            )}
+
                         </div>
 
                         <Button outline={isDark}

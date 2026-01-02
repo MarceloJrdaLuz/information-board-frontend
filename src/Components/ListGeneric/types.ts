@@ -8,4 +8,5 @@ export interface IListItemsProps<T> {
   showActions?: boolean        
   showEdit?: boolean           
   showDelete?: boolean
+  paddingBottom?: string
 }

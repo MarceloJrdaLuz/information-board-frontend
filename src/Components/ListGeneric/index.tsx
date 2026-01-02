@@ -12,10 +12,11 @@ export function ListGeneric<T extends { id: string }>({
   onUpdate,
   showActions = true,
   showEdit = true,
-  showDelete = true
+  showDelete = true,
+  paddingBottom = "36"
 }: IListItemsProps<T>) {
   return (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-36 w-full">
+    <ul className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-${paddingBottom} w-full`}>
       {items?.map((item) => (
         <li
           key={item.id}

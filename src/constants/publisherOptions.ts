@@ -16,7 +16,8 @@ export const additionalsPrivilegeOptions: Privileges[] = [
   Privileges.LEITOR,
   Privileges.PRESIDENTE,
   Privileges.ORADOR, 
-  Privileges.DIRIGENTECAMPO
+  Privileges.DIRIGENTECAMPO,
+  Privileges.TESTEMUNHOPUBLICO
 ] as Privileges[]
 
 export const pioneerOptions: Privileges[] = [

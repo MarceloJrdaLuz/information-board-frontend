@@ -5,17 +5,19 @@ interface CollapsibleCardProps {
     title: string
     children: ReactNode
     defaultOpen?: boolean
+    full?: boolean
 }
 
 export function CollapsibleCard({
     title,
     children,
     defaultOpen = false,
+    full
 }: CollapsibleCardProps) {
     const [open, setOpen] = useState(defaultOpen)
 
     return (
-        <div className="bg-surface-100 rounded-md shadow border w-full max-w-[400px]">
+        <div className={`bg-surface-100 rounded-md shadow border w-full ${!full && "max-w-[400px]"}`}>
             <button
                 onClick={() => setOpen(o => !o)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
@@ -25,7 +27,7 @@ export function CollapsibleCard({
                 </h3>
 
                 <ChevronDown
-                    className={`transition-transform ${open ? "rotate-180" : ""}`}
+                    className={`transition-transform text-typography-700 ${open ? "rotate-180" : ""}`}
                     size={18}
                 />
             </button>

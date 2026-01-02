@@ -16,6 +16,7 @@ export const API_ROUTES = {
     CLEANING_SCHEDULES: "/cleaning/schedule",
     CLEANING_EXCEPTIONS: "/cleaning-exception",
     FAMILIES: "/families", 
+    PUBLIC_WITNESS_ARRANGEMENTS: "/public-witness/arrangements",
     FIELD_SERVICE_TEMPLATES: "/field-service/templates",
     FIELD_SERVICE_EXCEPTIONS: "/field-service/exceptions",
     FIELD_SERVICE_SCHEDULES: "/field-service/schedules",
