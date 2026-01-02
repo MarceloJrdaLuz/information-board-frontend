@@ -227,6 +227,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
             <Button
               outline
               type="button"
+              className="text-red-500"
               onClick={() => {
                 remove(index)
                 setSlotPublishers(prev => prev.filter((_, i) => i !== index))

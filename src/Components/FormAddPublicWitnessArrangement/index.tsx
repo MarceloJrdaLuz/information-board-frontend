@@ -177,23 +177,19 @@ export default function FormAddPublicWitnessArrangement() {
                 <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-4">
                         {fields.map((field, index) => (
-                            <div
-                                key={field.id}
-                                className="flex flex-col gap-3 p-3 border rounded-md"
-                            >
+                            <div key={field.id} className="border p-4 rounded flex flex-col gap-3">
                                 {/* Horários */}
-                                <div className="flex gap-2 items-center">
+                                <div className="flex gap-2 flex-wrap items-center">
                                     <Input
+                                        placeholder="Início"
                                         type="time"
                                         registro={{ ...register(`timeSlots.${index}.start_time`) }}
                                     />
                                     <Input
+                                        placeholder="Fim"
                                         type="time"
                                         registro={{ ...register(`timeSlots.${index}.end_time`) }}
                                     />
-                                    <Button outline type="button" onClick={() => remove(index)}>
-                                        X
-                                    </Button>
                                 </div>
 
                                 {/* Rodízio */}
@@ -228,7 +224,16 @@ export default function FormAddPublicWitnessArrangement() {
                                         emptyMessage="Nenhum publicador encontrado"
                                     />
                                 )}
-
+                                <Button
+                                    outline
+                                    className="text-red-500"
+                                    type="button"
+                                    onClick={() => {
+                                        remove(index)
+                                    }}
+                                >
+                                    Remover horário
+                                </Button>
                             </div>
                         ))}
 

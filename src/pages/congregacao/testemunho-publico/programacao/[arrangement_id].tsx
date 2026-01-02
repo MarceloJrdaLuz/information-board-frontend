@@ -117,9 +117,7 @@ function ArrangementMonthSchedulePage() {
     <ContentDashboard>
       <BreadCrumbs crumbs={crumbs} pageActive="Programação Mensal" />
 
-      {!arrangement || !publishers ? (
-        <div>Carregando...</div>
-      ) : (
+      {!arrangement || !publishers ? null : (
         <section className="flex flex-col w-full p-5 gap-4">
           {/* Cabeçalho */}
           <div className="flex flex-col gap-1">
@@ -133,7 +131,6 @@ function ArrangementMonthSchedulePage() {
 
           {/* Navegação de mês */}
           {arrangement.is_fixed && (
-            <div className="w-full space-y-4">
               <div className="sticky top-0 z-30">
                 <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md">
                   <button
@@ -146,7 +143,7 @@ function ArrangementMonthSchedulePage() {
 
                 <div
                   className={`
-                    bg-surface-100 border-b shadow-sm rounded-xl flex flex-col gap-4
+                    bg-surface-100  shadow-sm rounded-xl flex flex-col gap-4
                     transition-all duration-300 overflow-hidden
                     ${showFilters ? "max-h-screen p-4" : "max-h-0 p-0"}
                     md:max-h-screen md:p-4
@@ -165,7 +162,6 @@ function ArrangementMonthSchedulePage() {
                   </Button>
                 </div>
               </div>
-            </div>
           )}
 
           {/* Dias */}
@@ -174,7 +170,7 @@ function ArrangementMonthSchedulePage() {
               dates.map(date => (
                 <DayScheduleCard
                   key={date}
-                  date={date}
+                  date={date} 
                   arrangement={arrangement}
                   publishers={publishers}
                   assignmentsBySlot={assignmentsByDate[date]}

@@ -20,15 +20,19 @@ export default function DayScheduleCard({
     <div className="border rounded-xl p-4 space-y-3 bg-surface-100">
       <h3 className="font-semibold text-primary-200">{date}</h3>
 
-      {arrangement.timeSlots.map(slot => (
-        <SlotScheduleRow
-          key={slot.id}
-          date={date}
-          slot={slot}
-          publishers={publishers}
-          assignment={assignmentsBySlot?.[slot.id]}
-        />
-      ))}
+      {arrangement.timeSlots
+        .slice() // cria uma cópia do array para não mutar o original
+        .sort((a, b) => a.start_time.localeCompare(b.start_time))
+        .map(slot => (
+          <SlotScheduleRow
+            key={slot.id}
+            date={date}
+            slot={slot}
+            publishers={publishers}
+            assignment={assignmentsBySlot?.[slot.id]}
+          />
+        ))}
+
     </div>
   )
 }
