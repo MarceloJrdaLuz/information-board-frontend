@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 
 import DropdownMulti from "@/Components/DropdownMulti"
-import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
+import { dirtyMonthScheduleAtom, publicWitnessSchedulesAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
 import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
 import { IPublisher } from "@/types/types"
+import { buildPublicWitnessHistoryOptions } from "@/functions/buildPublicWitnessHistoryOptions"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { useCongregationContext } from "@/context/CongregationContext"
+import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
 
 export interface IPublicWitnessAssignment {
   id: string
@@ -29,20 +33,35 @@ interface Props {
 }
 
 export default function SlotScheduleRow({ date, slot, publishers, assignment }: Props) {
+  const { congregation } = useCongregationContext()
   const [, setDirty] = useAtom(dirtyMonthScheduleAtom)
   const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([])
   const isEditable = slot.is_rotative
 
+  const urlFetch = congregation ? `public-witness/schedules/congregation/${congregation?.id}/history`
+    : ""
+
+  const { data: history } = useAuthorizedFetch<IAssignmentsHistoryResponse>(
+    urlFetch,
+    { allowedRoles: ["ADMIN_CONGREGATION", "PUBLIC_WITNESS_MANAGER"] }
+  )
+  
+  const options = buildPublicWitnessHistoryOptions(publishers, history, "fullName")
 
   // 🔄 Inicializa com publishers fixos
   useEffect(() => {
     if (assignment?.publishers?.length) {
       const selected = assignment.publishers
         .sort((a, b) => a.order - b.order)
-        .map(p =>
-          publishers.find(pub => pub.id === p.publisher.id)
-        )
-        .filter(Boolean) as IPublisher[]
+        .map(p => {
+          const pub = publishers.find(pub => pub.id === p.publisher.id)
+          if (!pub) return null
+
+          // 🟢 Aqui criamos o displayLabel igual ao options
+          const option = options.find(o => o.id === pub.id)
+          return option || pub
+        })
+        .filter(Boolean) as (IPublisher & { displayLabel: string })[]
 
       setSelectedPublishers(selected)
       return
@@ -50,12 +69,19 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment }: 
 
     if (slot.defaultPublishers?.length) {
       const selected = slot.defaultPublishers
-        .map(dp => publishers.find(pub => pub.id === dp.publisher.id))
-        .filter(Boolean) as IPublisher[]
+        .map(dp => {
+          const pub = publishers.find(pub => pub.id === dp.publisher.id)
+          if (!pub) return null
+
+          const option = options.find(o => o.id === pub.id)
+          return option || pub
+        })
+        .filter(Boolean) as (IPublisher & { displayLabel: string })[]
 
       setSelectedPublishers(selected)
     }
-  }, [assignment, slot.defaultPublishers, publishers])
+  }, [assignment, slot.defaultPublishers, publishers, options])
+
 
   const handleChange = (items: IPublisher[]) => {
     if (!isEditable) return
@@ -91,10 +117,11 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment }: 
 
       {isEditable && <DropdownMulti<IPublisher>
         title="Selecione os publicadores"
-        items={publishers}
+        items={options}
         selectedItems={selectedPublishers}
         handleChange={handleChange}
         labelKey="fullName"
+        labelRenderer={(p) => (p as any).displayLabel}
         border
         full
         textVisible

@@ -154,14 +154,37 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             </>
                         )}
 
-                        {values.situationPublisherCheckboxSelected === Situation.ATIVO && values.genderCheckboxSelected === 'Masculino' && (
-                            <div className='border border-typography-300 my-4 p-4'>
-                                <CheckboxUnique visibleLabel checked={values.privilegeCheckboxSelected} label="Privilégio" options={options.privilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
+                        {values.situationPublisherCheckboxSelected === Situation.ATIVO && (
+                            <div className="border border-typography-300 my-4 p-4">
+                                {/* Privilegio principal */}
+                                <CheckboxUnique
+                                    visibleLabel
+                                    checked={values.privilegeCheckboxSelected}
+                                    label="Privilégios Adicionais"
+                                    options={
+                                        values.genderCheckboxSelected === "Feminino"
+                                            ? options.additionalsPrivilegeOptions.filter(
+                                                p => p === Privileges.TESTEMUNHOPUBLICO // ou outros privilégios válidos para feminino
+                                            )
+                                            : options.additionalsPrivilegeOptions // todos os privilégios para masculino
+                                    }
+                                    handleCheckboxChange={handlers.handleCheckboxPrivileges}
+                                />
 
-                                <CheckboxMultiple visibleLabel checkedOptions={values.additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={options.additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
+                                {/* Privilégios adicionais só para homens */}
+                                {values.genderCheckboxSelected === "Masculino" && (
+                                    <CheckboxMultiple
+                                        visibleLabel
+                                        checkedOptions={values.additionalsPrivilegeCheckboxSelected}
+                                        label="Privilégios Adicionais"
+                                        options={options.additionalsPrivilegeOptions}
+                                        handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                    />
+                                )}
                             </div>
-                        )
-                        }
+                        )}
+
+
                         <div className='border border-typography-300 my-4 p-4'>
                             <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={values.birthDate} />
 

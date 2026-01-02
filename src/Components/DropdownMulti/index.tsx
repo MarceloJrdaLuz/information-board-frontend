@@ -17,6 +17,7 @@ interface IDropdownMulti<T> {
   textVisible?: boolean
   labelKey?: keyof T
   labelKeySecondary?: keyof T
+  labelRenderer?: (item: T) => string
   searchable?: boolean
   emptyMessage?: string
   showOrder?: boolean
@@ -47,11 +48,13 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
   }, [searchQuery, items])
 
   const getLabel = (item: T): string => {
+    if (props.labelRenderer) return props.labelRenderer(item)
     if (props.labelKey && item[props.labelKey]) {
       return String(item[props.labelKey])
     }
     return String(item)
   }
+
 
   const getLabelSecondary = (item: T): string => {
     if (props.labelKeySecondary && item[props.labelKeySecondary]) {

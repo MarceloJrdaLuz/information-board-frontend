@@ -55,7 +55,6 @@ export default function FormAddPublisher() {
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
-    const [modalEmergencyContactShow, setModalEmergencyContactShow] = useAtom(showModalEmergencyContact)
 
     const optionsCheckboxSituationPublisher = useState(Object.values(Situation))
 
@@ -232,6 +231,37 @@ export default function FormAddPublisher() {
 
                         {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}
+
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && (
+                        <div className="border border-typography-300 my-4 p-4">
+                            {/* Privilegio principal */}
+                            <CheckboxUnique
+                                visibleLabel
+                                checked={privilegeCheckboxSelected}
+                                label="Privilégios Adicionais"
+                                options={
+                                    genderCheckboxSelected === "Feminino"
+                                        ? additionalsPrivilegeOptions.filter(
+                                            p => p === Privileges.TESTEMUNHOPUBLICO // ou outros privilégios válidos para feminino
+                                        )
+                                        : additionalsPrivilegeOptions // todos os privilégios para masculino
+                                }
+                                handleCheckboxChange={handlers.handleCheckboxPrivileges}
+                            />
+
+                            {/* Privilégios adicionais só para homens */}
+                            {genderCheckboxSelected === "Masculino" && (
+                                <CheckboxMultiple
+                                    visibleLabel
+                                    checkedOptions={additionalsPrivilegeCheckboxSelected}
+                                    label="Privilégios Adicionais"
+                                    options={additionalsPrivilegeOptions}
+                                    handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                />
+                            )}
+                        </div>
+                    )}
+
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-typography-300 my-4 p-4'>
                         <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />

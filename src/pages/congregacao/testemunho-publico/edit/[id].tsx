@@ -44,7 +44,7 @@ function EditPublicWitnessArrangementPage() {
 
 EditPublicWitnessArrangementPage.getLayout = withProtectedLayout([
   "ADMIN_CONGREGATION",
-  "FIELD_SERVICE_MANAGER"
+  "PUBLIC_WITNESS_MANAGER"
 ])
 
 export default EditPublicWitnessArrangementPage

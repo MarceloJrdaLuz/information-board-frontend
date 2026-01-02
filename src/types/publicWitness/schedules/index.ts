@@ -59,3 +59,34 @@ export interface IPublicWitnessCarouselResponse {
   rotationBlocks: IPublicWitnessRotationBlock[]
 }
 
+
+
+
+
+
+interface IPublisherAssignment {
+  id: string
+  name: string
+}
+
+interface ISlotAssignment {
+  start_time: string // formato "HH:mm:ss"
+  end_time: string   // formato "HH:mm:ss"
+  publishers: IPublisherAssignment[]
+}
+
+interface IDaySchedule {
+  date: string // formato "YYYY-MM-DD"
+  slots: ISlotAssignment[]
+}
+
+interface IArrangementHistory {
+  arrangement_id: string
+  title: string
+  schedule: IDaySchedule[]
+}
+
+export interface IAssignmentsHistoryResponse {
+  history: IArrangementHistory[]
+}
+
