@@ -149,18 +149,18 @@ export default function PublicWitnessCarousel({
 
                             <div className="h-px bg-typography-200 mb-3" />
 
-                            <p className="font-semibold text-sm mb-1">{item.title}</p>
+                            <p className="font-semibold text-sm mb-1 text-typography-700">{item.title}</p>
 
                             <div className="flex items-center gap-2 text-sm">
                                 <Clock size={14} className="text-primary-200" />
-                                <span>
+                                <span className="text-typography-700">
                                     {formatHour(item.start_time)} - {formatHour(item.end_time)}
                                 </span>
                             </div>
 
                             <div className="flex items-start gap-2 text-sm mt-1">
                                 <Users size={14} className="text-primary-200 mt-1" />
-                                <span>
+                                <span className="text-typography-700">
                                     {item.publishers.length
                                         ? item.publishers.join(", ")
                                         : "Sem publicadores"}
@@ -224,14 +224,14 @@ export default function PublicWitnessCarousel({
                                                 >
                                                     <div className="flex items-center gap-2 text-sm">
                                                         <Clock size={14} className="text-primary-200" />
-                                                        <span>
+                                                        <span className="text-typography-700">
                                                             {formatHour(s.start_time)} - {formatHour(s.end_time)}
                                                         </span>
                                                     </div>
 
                                                     <div className="flex items-start gap-2 text-sm mt-1">
                                                         <Users size={14} className="text-primary-200 mt-1" />
-                                                        <span>
+                                                        <span className="text-typography-700">
                                                             {s.publishers.length
                                                                 ? s.publishers.map(p => p.name).join(", ")
                                                                 : "Sem publicadores"}
@@ -279,15 +279,15 @@ export default function PublicWitnessCarousel({
 
                                 <div className="text-xs space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <Clock size={14} />
-                                        <span>
+                                        <Clock size={14} className="text-typography-700" />
+                                        <span className="text-typography-700">
                                             {formatHour(item.start_time)} - {formatHour(item.end_time)}
                                         </span>
                                     </div>
 
                                     <div className="flex items-start gap-2">
-                                        <Users size={14} className="mt-1" />
-                                        <span>
+                                        <Users size={14} className="mt-1 text-typography-700" />
+                                        <span className="text-typography-700">
                                             {item.publishers.length
                                                 ? item.publishers.map(p => p.name).join(", ")
                                                 : "Sem publicadores"}

@@ -136,7 +136,7 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
 
       {/* Publicadores selecionados */}
       {selectedPublishers.length > 0 && (
-        <div className="mt-2 text-sm text-typography-600 flex flex-wrap gap-1">
+        <div className="mt-2 text-sm text-typography-700 flex flex-wrap gap-1">
           {selectedPublishers.map((p, index) => {
             // Quantidade total do dia EXCETO este slot
             const totalInOtherSlots = (publishersCount?.[p.id] ?? 0)

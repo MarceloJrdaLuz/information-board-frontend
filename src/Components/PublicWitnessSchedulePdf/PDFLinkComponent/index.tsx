@@ -94,7 +94,7 @@ export function PublicWitnessPdfDownload({
                         value={pdfScale.toString()}
                         onValueChange={v => setPdfScale(Number(v))}
                     >
-                        <SelectTrigger className="w-full bg-white">
+                        <SelectTrigger className="w-full bg-surface-100 text-typography-700">
                             <SelectValue placeholder="Selecione a escala" />
                         </SelectTrigger>
 

@@ -27,7 +27,7 @@ export function CollapsibleCard({
                 </h3>
 
                 <ChevronDown
-                    className={`transition-transform ${open ? "rotate-180" : ""}`}
+                    className={`transition-transform text-typography-700 ${open ? "rotate-180" : ""}`}
                     size={18}
                 />
             </button>
