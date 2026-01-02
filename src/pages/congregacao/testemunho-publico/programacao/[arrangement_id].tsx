@@ -108,7 +108,6 @@ function ArrangementMonthSchedulePage() {
       )
     } catch (err) {
       console.error(err)
-      toast.error("Erro ao salvar programação")
     }
   }
 
