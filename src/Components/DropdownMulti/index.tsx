@@ -15,6 +15,7 @@ interface IDropdownMulti<T> {
   full?: boolean
   position?: "right" | "left"
   textVisible?: boolean
+  itemKey?: keyof T
   labelKey?: keyof T
   labelKeySecondary?: keyof T
   labelRenderer?: (item: T) => string
@@ -63,17 +64,23 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
     return ""
   }
 
+  const isSameItem = (a: T, b: T) => {
+    if (props.itemKey) {
+      return a[props.itemKey] === b[props.itemKey]
+    }
+
+    // fallback LEGACY (não quebra nada existente)
+    return JSON.stringify(a) === JSON.stringify(b)
+  }
+
+
   const isSelected = (item: T) =>
-    selectedItems.some(
-      (selected) => JSON.stringify(selected) === JSON.stringify(item)
-    )
+    selectedItems.some(selected => isSameItem(selected, item))
 
   const toggleSelect = (item: T) => {
     if (isSelected(item)) {
       props.handleChange(
-        selectedItems.filter(
-          (selected) => JSON.stringify(selected) !== JSON.stringify(item)
-        )
+        selectedItems.filter(selected => !isSameItem(selected, item))
       )
     } else {
       props.handleChange([...selectedItems, item])
@@ -178,7 +185,7 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                     {props.showOrder && isSelected(item) && (
                       <span className="text-xs font-semibold text-primary-200 w-5 text-right">
                         {selectedItems.findIndex(
-                          selected => JSON.stringify(selected) === JSON.stringify(item)
+                          selected => isSameItem(selected, item)
                         ) + 1}º
                       </span>
                     )}

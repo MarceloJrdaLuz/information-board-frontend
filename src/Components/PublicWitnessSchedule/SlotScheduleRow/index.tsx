@@ -76,42 +76,40 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
 
   // 🔄 Inicializa com publishers fixos
   useEffect(() => {
+    if (!options.length) return
+
+    // se já existe dirty para este slot, NÃO sobrescreve
+    const hasDirtyForSlot =
+      dirty?.[date]?.slots?.some(s => s.time_slot_id === slot.id)
+
+    if (hasDirtyForSlot) return
+
+    let initialSelected: IPublisher[] = []
+
     if (assignment?.publishers?.length) {
-      const selected = assignment.publishers
+      initialSelected = assignment.publishers
         .sort((a, b) => a.order - b.order)
-        .map(p => {
-          const pub = publishers.find(pub => pub.id === p.publisher.id)
-          if (!pub) return null
-
-          // 🟢 Aqui criamos o displayLabel igual ao options
-          const option = options.find(o => o.id === pub.id)
-          return option || pub
-        })
-        .filter(Boolean) as (IPublisher & { displayLabel: string })[]
-
-      setSelectedPublishers(selected)
-      return
+        .map(p => options.find(o => o.id === p.publisher.id))
+        .filter(Boolean) as IPublisher[]
+    } else if (slot.defaultPublishers?.length) {
+      initialSelected = slot.defaultPublishers
+        .map(dp => options.find(o => o.id === dp.publisher.id))
+        .filter(Boolean) as IPublisher[]
     }
 
-    if (slot.defaultPublishers?.length) {
-      const selected = slot.defaultPublishers
-        .map(dp => {
-          const pub = publishers.find(pub => pub.id === dp.publisher.id)
-          if (!pub) return null
-
-          const option = options.find(o => o.id === pub.id)
-          return option || pub
-        })
-        .filter(Boolean) as (IPublisher & { displayLabel: string })[]
-
-      setSelectedPublishers(selected)
-    }
-  }, [assignment, slot.defaultPublishers, publishers, options])
+    setSelectedPublishers(initialSelected)
+  }, [
+    assignment,
+    options,
+    slot.id,
+    slot.defaultPublishers,
+    date,
+    dirty
+  ])
 
 
   const handleChange = (items: IPublisher[]) => {
     if (!isEditable) return
-
     setSelectedPublishers(items)
 
     setDirty(prev => ({
@@ -134,9 +132,24 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
     }))
   }
 
+  let borderColor = "border-l-4 border-red-500"
+
+  if (selectedPublishers.length === 1) {
+    borderColor = "border-l-4 border-yellow-500"
+  } else if (selectedPublishers.length >= 2) {
+    borderColor = "border-l-4 border-green-500"
+  }
+
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-3">
+    <div
+      className={`
+    flex flex-col gap-2 rounded-md p-3
+    border 
+    ${borderColor}
+    transition-colors duration-300
+  `}
+    >
       <div className="text-sm text-typography-700">
         {slot.start_time.slice(0, 5)} – {slot.end_time.slice(0, 5)}
       </div>
@@ -146,6 +159,7 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
         items={options}
         selectedItems={selectedPublishers}
         handleChange={handleChange}
+        itemKey="id"
         labelKey="fullName"
         labelRenderer={(p) => (p as any).displayLabel}
         border
