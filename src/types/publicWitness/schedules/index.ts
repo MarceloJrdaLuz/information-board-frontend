@@ -90,3 +90,9 @@ export interface IAssignmentsHistoryResponse {
   history: IArrangementHistory[]
 }
 
+export interface IPublisherUsage {
+  publisher_id: string
+  date: string
+}
+
+

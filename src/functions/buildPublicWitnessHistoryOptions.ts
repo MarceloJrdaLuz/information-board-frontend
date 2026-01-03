@@ -1,4 +1,4 @@
-import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
+import { IAssignmentsHistoryResponse, IPublisherUsage } from "@/types/publicWitness/schedules"
 import { IPublisher } from "@/types/types"
 import dayjs from "dayjs"
 
@@ -10,17 +10,18 @@ interface IPublisherOption extends IPublisher {
 export function buildPublicWitnessHistoryOptions(
   publishers: IPublisher[],
   history: IAssignmentsHistoryResponse | undefined,
-  labelKey: keyof IPublisher
+  labelKey: keyof IPublisher,
+  tempUsage: IPublisherUsage[] = []
 ): IPublisherOption[] {
   const historyMap = new Map<string, string>()
 
-  // Mapear a última vez que cada publisher foi usado
+  // 🔹 Histórico SALVO
   history?.history.forEach(arrangement => {
     arrangement.schedule.forEach(day => {
       day.slots.forEach(slot => {
         slot.publishers.forEach(p => {
           const prevDate = historyMap.get(p.id)
-          if (!prevDate || dayjs(day.date).isAfter(dayjs(prevDate))) {
+          if (!prevDate || dayjs(day.date).isAfter(prevDate)) {
             historyMap.set(p.id, day.date)
           }
         })
@@ -28,13 +29,26 @@ export function buildPublicWitnessHistoryOptions(
     })
   })
 
+  // 🔹 Histórico TEMPORÁRIO (não salvo)
+  tempUsage.forEach(({ publisher_id, date }) => {
+    const prevDate = historyMap.get(publisher_id)
+    if (!prevDate || dayjs(date).isAfter(prevDate)) {
+      historyMap.set(publisher_id, date)
+    }
+  })
+
   return publishers
     .map(p => {
+      const baseLabel = p.nickname?.trim() || p.fullName
       const lastDate = historyMap.get(p.id)
+
       return {
         ...p,
         lastDate,
-        displayLabel: `${p[labelKey]} ${lastDate ? `— [${dayjs(lastDate).format("DD/MM/YYYY")}]` : "— [Nunca]"}`,
+        displayLabel: `${baseLabel} ${lastDate
+            ? `— [${dayjs(lastDate).format("DD/MM/YYYY")}]`
+            : "— [Nunca]"
+          }`,
       }
     })
     .sort((a, b) => {

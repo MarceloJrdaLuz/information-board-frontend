@@ -24,6 +24,7 @@ import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/Slo
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import ArrangementMonthScheduleSkeleton from "@/Components/ArrangementMonthScheduleSkeleton"
 
 dayjs.locale("pt-br")
 
@@ -116,7 +117,7 @@ function ArrangementMonthSchedulePage() {
     <ContentDashboard>
       <BreadCrumbs crumbs={crumbs} pageActive="Programação Mensal" />
 
-      {!arrangement || !publishers ? null : (
+      {!arrangement || !publishers ? <ArrangementMonthScheduleSkeleton /> : (
         <section className="flex flex-col w-full p-5 gap-4">
           {/* Cabeçalho */}
           <div className="flex flex-col gap-1">
@@ -130,46 +131,46 @@ function ArrangementMonthSchedulePage() {
 
           {/* Navegação de mês */}
           {arrangement.is_fixed && (
-              <div className="sticky top-0 z-30">
-                <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md">
-                  <button
-                    onClick={() => setShowFilters(o => !o)}
-                    className="flex items-center gap-2 text-sm text-typography-600"
-                  >
-                    {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </button>
-                </div>
+            <div className="sticky top-0 z-30">
+              <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md">
+                <button
+                  onClick={() => setShowFilters(o => !o)}
+                  className="flex items-center gap-2 text-sm text-typography-600"
+                >
+                  {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+              </div>
 
-                <div
-                  className={`
+              <div
+                className={`
                     bg-surface-100  shadow-sm rounded-xl flex flex-col gap-4
                     transition-all duration-300 overflow-hidden
                     ${showFilters ? "max-h-screen p-4" : "max-h-0 p-0"}
                     md:max-h-screen md:p-4
                   `}
-                >
-                  <div className="flex justify-between gap-4">
-                    <Button onClick={() => setMonthOffset(m => m - 1)} className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200">
-                      {prevMonthLabel}
-                    </Button>
-                    <Button onClick={() => setMonthOffset(m => m + 1)} className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200">
-                      {nextMonthLabel}
-                    </Button>
-                  </div>
-                  <Button className="w-full text-typography-200" onClick={handleSave}>
-                    Salvar todas
+              >
+                <div className="flex justify-between gap-4">
+                  <Button onClick={() => setMonthOffset(m => m - 1)} className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200">
+                    {prevMonthLabel}
+                  </Button>
+                  <Button onClick={() => setMonthOffset(m => m + 1)} className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200">
+                    {nextMonthLabel}
                   </Button>
                 </div>
+                <Button className="w-full text-typography-200" onClick={handleSave}>
+                  Salvar todas
+                </Button>
               </div>
+            </div>
           )}
 
           {/* Dias */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 pb-72">
             {dates.length > 0 ? (
               dates.map(date => (
                 <DayScheduleCard
                   key={date}
-                  date={date} 
+                  date={date}
                   arrangement={arrangement}
                   publishers={publishers}
                   assignmentsBySlot={assignmentsByDate[date]}

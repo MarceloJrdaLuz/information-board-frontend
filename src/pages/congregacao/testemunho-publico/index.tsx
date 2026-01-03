@@ -1,5 +1,6 @@
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deletePublicWitnessArrangementAtom } from "@/atoms/publicWitnessAtoms.ts"
+import ArrangementsPageSkeleton from "@/Components/ArrangementsPageSkeleton"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import { CollapsibleCard } from "@/Components/CollapsibleCard"
@@ -24,7 +25,7 @@ function ArrangementsPage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
     const deleteArrangement = useSetAtom(deletePublicWitnessArrangementAtom)
 
-    const { data: arrangements, mutate } = useArrangements(congregation?.id)
+    const { data: arrangements, mutate, isLoading } = useArrangements(congregation?.id)
 
     useEffect(() => {
         setPageActive("Testemunho Público - Arranjos")
@@ -66,61 +67,38 @@ function ArrangementsPage() {
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Testemunho Público - Arranjos" />
 
-            <section className="flex flex-col w-full p-5 gap-6">
-                {/* Header */}
-                <div className="w-full h-full">
-                    <h1 className="text-xl font-semibold text-primary-200">
-                        Testemunho Público - Arranjos
-                    </h1>
+            {isLoading ? (
+                <ArrangementsPageSkeleton />
+            ) : (
+                <section className="flex flex-col w-full p-5 gap-6">
+                    {/* Header */}
+                    <div className="w-full h-full">
+                        <h1 className="text-xl font-semibold text-primary-200">
+                            Testemunho Público - Arranjos
+                        </h1>
 
-                    <div className="flex justify-between items-center mb-3">
-                        <Button
-                            outline
-                            onClick={() => Router.push("/congregacao/testemunho-publico/add")}
-                        >
-                            Novo arranjo
-                        </Button>
+                        <div className="flex justify-between items-center mb-3">
+                            <Button
+                                outline
+                                onClick={() => Router.push("/congregacao/testemunho-publico/add")}
+                            >
+                                Novo arranjo
+                            </Button>
+                        </div>
                     </div>
-                </div>
 
-                {congregation?.id && (
-                    <PublicWitnessPdfDownload congregationId={congregation.id} />
-                )}
+                    {congregation?.id && (
+                        <PublicWitnessPdfDownload congregationId={congregation.id} />
+                    )}
 
 
-                {/* ================= Arranjos Fixos ================= */}
-                <CollapsibleCard full title="Arranjos Fixos" defaultOpen>
-                    <div className="w-full flex flex-wrap">
-                        {fixedArrangements.length > 0 ? (
-                            <ListGeneric
-                                paddingBottom="8"
-                                items={fixedArrangements}
-                                path="/congregacao/testemunho-publico"
-                                label="do arranjo"
-                                onUpdate={() => { }}
-                                onDelete={handleDelete}
-                                renderItem={(arrangement) => (
-                                    <ArrangementsCard arrangement={arrangement} />
-                                )}
-                            />
-                        ) : (
-                            <EmptyState message="Nenhum arranjo fixo cadastrado" />
-                        )}
-                    </div>
-                </CollapsibleCard>
-
-                {/* ================= Arranjos por Data ================= */}
-                <CollapsibleCard full title="Arranjos especiais" defaultOpen>
-                    {Object.keys(arrangementsByDate).length > 0 ? (
-                        Object.entries(arrangementsByDate).map(([date, items]) => (
-                            <div key={date} className="flex flex-col gap-2 border-b border-surface-200 mt-2">
-                                <h3 className="font-medium text-typography-700 flex items-center gap-1">
-                                    <Calendar className="w-4 h-4" /> {date}
-                                </h3>
-
+                    {/* ================= Arranjos Fixos ================= */}
+                    <CollapsibleCard full title="Arranjos Fixos" defaultOpen>
+                        <div className="w-full flex flex-wrap">
+                            {fixedArrangements.length > 0 ? (
                                 <ListGeneric
                                     paddingBottom="8"
-                                    items={items}
+                                    items={fixedArrangements}
                                     path="/congregacao/testemunho-publico"
                                     label="do arranjo"
                                     onUpdate={() => { }}
@@ -129,13 +107,41 @@ function ArrangementsPage() {
                                         <ArrangementsCard arrangement={arrangement} />
                                     )}
                                 />
-                            </div>
-                        ))
-                    ) : (
-                        <EmptyState message="Nenhum arranjo por data cadastrado" />
-                    )}
-                </CollapsibleCard>
-            </section>
+                            ) : (
+                                <EmptyState message="Nenhum arranjo fixo cadastrado" />
+                            )}
+                        </div>
+                    </CollapsibleCard>
+
+                    {/* ================= Arranjos por Data ================= */}
+                    <CollapsibleCard full title="Arranjos especiais" defaultOpen>
+                        {Object.keys(arrangementsByDate).length > 0 ? (
+                            Object.entries(arrangementsByDate).map(([date, items]) => (
+                                <div key={date} className="flex flex-col gap-2 border-b border-surface-200 mt-2">
+                                    <h3 className="font-medium text-typography-700 flex items-center gap-1">
+                                        <Calendar className="w-4 h-4" /> {date}
+                                    </h3>
+
+                                    <ListGeneric
+                                        paddingBottom="8"
+                                        items={items}
+                                        path="/congregacao/testemunho-publico"
+                                        label="do arranjo"
+                                        onUpdate={() => { }}
+                                        onDelete={handleDelete}
+                                        renderItem={(arrangement) => (
+                                            <ArrangementsCard arrangement={arrangement} />
+                                        )}
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <EmptyState message="Nenhum arranjo por data cadastrado" />
+                        )}
+                    </CollapsibleCard>
+                </section>
+            )}
+
         </ContentDashboard>
     )
 }
