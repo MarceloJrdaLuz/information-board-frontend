@@ -144,7 +144,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                 </span>
                             </div>
 
-                            <div className="flex items-start gap-1 text-xs text-typography-500 ml-6">
+                            <div className="flex items-center gap-1 text-xs text-typography-500 ml-6">
                                 <MapPin size={12} />
                                 <span>
                                     {formatNameCongregation(
@@ -207,14 +207,16 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                     {assignment.role === "Discurso Externo" && (
                         <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <Mic size={16} className="text-typography-400" />
-                                <strong>Discurso fora:</strong>{" "}
-                                {assignment.talk?.title || "Tema não informado"}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-2 items-center">
+                                    <Mic size={16} className="text-typography-400 " />
+                                    <strong>Discurso fora:</strong>{" "}
+                                </div>
+                                <span className="ml-6">{assignment.talk?.title || "Tema não informado"}</span>
                             </div>
 
                             {assignment.destinationCongregation && (
-                                <div className="ml-2 space-y-1 text-xs text-typography-500">
+                                <div className="ml-6 space-y-1 text-xs text-typography-500">
                                     <div className="flex items-center gap-1">
                                         <MapPin size={14} />
                                         {formatNameCongregation(
@@ -230,8 +232,8 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                 </div>
                             )}
 
-                            <div className="flex items-center gap-1 text-xs mt-2">
-                                <CalendarDays size={14} />
+                            <div className="flex items-center gap-1 text-xs mt-2 ml-6">
+                                <CalendarDays size={14} className="text-typography-500" />
                                 {assignment.destinationCongregation?.dayMeetingPublic} às{" "}
                                 {assignment.destinationCongregation?.hourMeetingPublic?.slice(0, 5)}
                             </div>
