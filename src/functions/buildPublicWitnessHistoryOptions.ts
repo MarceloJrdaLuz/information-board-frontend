@@ -39,16 +39,16 @@ export function buildPublicWitnessHistoryOptions(
 
   return publishers
     .map(p => {
+      const baseLabel = p.nickname?.trim() || p.fullName
       const lastDate = historyMap.get(p.id)
 
       return {
         ...p,
         lastDate,
-        displayLabel: `${p[labelKey]} ${
-          lastDate
+        displayLabel: `${baseLabel} ${lastDate
             ? `— [${dayjs(lastDate).format("DD/MM/YYYY")}]`
             : "— [Nunca]"
-        }`,
+          }`,
       }
     })
     .sort((a, b) => {
