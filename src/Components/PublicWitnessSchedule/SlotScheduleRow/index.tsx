@@ -36,9 +36,23 @@ interface Props {
 
 export default function SlotScheduleRow({ date, slot, publishers, assignment, publishersCount }: Props) {
   const { congregation } = useCongregationContext()
-  const [, setDirty] = useAtom(dirtyMonthScheduleAtom)
+  const [dirty, setDirty] = useAtom(dirtyMonthScheduleAtom)
   const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([])
   const isEditable = slot.is_rotative
+
+  const tempUsage = useMemo(() => {
+    if (!dirty) return []
+
+    return Object.values(dirty).flatMap(day =>
+      day.slots.flatMap(slot =>
+        slot.publishers.map(p => ({
+          publisher_id: p.publisher_id,
+          date: day.date,
+        }))
+      )
+    )
+  }, [dirty])
+
 
   const urlFetch = congregation ? `public-witness/schedules/congregation/${congregation?.id}/history`
     : ""
@@ -49,9 +63,16 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
   )
 
   const options = useMemo(
-    () => buildPublicWitnessHistoryOptions(publishers, history, "fullName"),
-    [publishers, history]
+    () =>
+      buildPublicWitnessHistoryOptions(
+        publishers,
+        history,
+        "fullName",
+        tempUsage
+      ),
+    [publishers, history, tempUsage]
   )
+
 
   // 🔄 Inicializa com publishers fixos
   useEffect(() => {
@@ -154,7 +175,7 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
                 <span
                   title={isConflict ? "Este publicador já está escalado em outro slot hoje" : ""}
                 >
-                  {p.fullName}
+                  {p.nickname ? p.nickname : p.fullName}
                 </span>
                 {isConflict && <AlertCircleIcon className="w-4 h-4" />}
               </div>

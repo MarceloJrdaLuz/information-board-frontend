@@ -6,6 +6,7 @@ import { IFieldServiceException } from "@/types/fieldService"
 import { useMemo } from "react"
 import { useAtom } from "jotai"
 import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
+import dayjs from "dayjs"
 
 interface Props {
   date: string
@@ -47,7 +48,7 @@ export default function DayScheduleCard({
 
   return (
     <div className="border rounded-xl p-4 space-y-3 bg-surface-100">
-      <h3 className="font-semibold text-primary-200">{date}</h3>
+      <h3 className="font-semibold text-primary-200">{dayjs(date).format("DD/MM/YYYY")}</h3>
       {todaysExceptions.length > 0 && (
         <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm">
           {todaysExceptions.map(ex => ex.reason).join(", ")}
