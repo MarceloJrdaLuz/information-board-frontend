@@ -1,6 +1,7 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import Calendar from "@/Components/Calendar"
+import { CollapsibleCard } from "@/Components/CollapsibleCard"
 import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import PdfIcon from "@/Components/Icons/PdfIcon"
@@ -390,101 +391,94 @@ function WeekendSchedulePage() {
                                 </div>
                             </div>
 
-                            <Card className="w-full bg-surface-100">
-                                <CardContent className="flex flex-col p-5 gap-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsPdfSectionOpen(o => !o)}
-                                        className="w-full flex justify-between items-center bg-surface-100 px-4 py-2 rounded-md hover:brightness-105 transition"
-                                    >
-                                        <span className="font-semibold text-typography-700">
-                                            Exportar / PDF
-                                        </span>
+                            <CollapsibleCard full title="Convite ao Orador" defaultOpen={false}>
+                                <div className="p-4">
+                                    <DropdownObject
+                                        textVisible
+                                        title="Selecionar Orador"
+                                        items={scheduledSpeakers ?? []}
+                                        selectedItem={
+                                            scheduledSpeakers?.find(s => s.id === selectedSpeaker?.id) ?? null
+                                        }
+                                        handleChange={item => setSelectedSpeaker(item)}
+                                        labelKey="fullName"
+                                        border
+                                        full
+                                        emptyMessage="Nenhum orador encontrado"
+                                    />
+                                    {selectedSchedule && congregation && (
+                                        <div className="flex justify-center mt-2">
+                                            <PdfSpeakerInvitation
+                                                schedule={{
+                                                    ...selectedSchedule,
+                                                    speaker: data?.speakers.find(sp => sp.id === selectedSpeaker?.id),
+                                                    talk: data?.talks.find(t => t.id === selectedSchedule.talk_id),
+                                                    visitingCongregation: data?.congregations.find(
+                                                        c => c.id === selectedSchedule.visitingCongregation_id
+                                                    )
+                                                }}
+                                                congregationLocale={congregation}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </CollapsibleCard>
 
-                                        {isPdfSectionOpen ? (
-                                            <ChevronUp size={20} className="text-typography-700" />
-                                        ) : (
-                                            <ChevronDown size={20} className="text-typography-700" />
-                                        )}
-                                    </button>
+                            <CollapsibleCard full title="Gerar Programação" defaultOpen={false}>
+                                <div className="p-4 flex flex-col gap-4">
+                                    <div className="flex flex-wrap justify-between gap-3">
+                                        <div className="w-full sm:w-fit">
+                                            <Calendar
+                                                full
+                                                titleHidden
+                                                label="Data inicial"
+                                                selectedDate={startDatePdfGenerate}
+                                                handleDateChange={setStartDatePdfGenerate}
+                                            />
+                                        </div>
 
-                                    <div className={`transition-all duration-300 ease-out overflow-hidden
-      ${isPdfSectionOpen ? "max-h-[800px] mt-4 opacity-100" : "max-h-0 opacity-0"}`}>
-
-                                        <div className="flex flex-wrap justify-around gap-4 mt-2">
-                                            {/* Convite ao Orador */}
-                                            <Card className="flex flex-col gap-3 w-full border rounded-md px-8 py-4">
-                                                <h2 className="font-bold text-md text-primary-200 text-center">Convite ao Orador</h2>
-                                                <div className="flex justify-center w-full">
-                                                    <div className="w-full min-w-[200px] max-w-[200px]">
-                                                        <DropdownObject
-                                                            textVisible
-                                                            title="Selecionar Orador"
-                                                            items={scheduledSpeakers ?? []}
-                                                            selectedItem={scheduledSpeakers?.find(s => s.id === selectedSpeaker?.id) ?? null}
-                                                            handleChange={item => setSelectedSpeaker(item)}
-                                                            labelKey="fullName"
-                                                            border
-                                                            full
-                                                            emptyMessage="Nenhum orador encontrado"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {selectedSchedule && congregation && (
-                                                    <PdfSpeakerInvitation
-                                                        schedule={{
-                                                            ...selectedSchedule,
-                                                            speaker: data?.speakers.find(sp => sp.id === selectedSpeaker?.id) ?? undefined,
-                                                            talk: data?.talks.find(t => t.id === selectedSchedule.talk_id) ?? undefined,
-                                                            visitingCongregation: data?.congregations.find(c => c.id === selectedSchedule.visitingCongregation_id) ?? undefined
-                                                        }}
-                                                        congregationLocale={congregation}
-                                                    />
-                                                )}
-                                            </Card>
-
-                                            {/* Agenda de Designações */}
-                                            <Card className="flex flex-col gap-3 w-full px-8 py-4 border rounded-md">
-                                                <h2 className="font-bold text-md text-primary-200 text-center">Agenda de Designações</h2>
-                                                <div className="flex flex-col items-center gap-3 w-full">
-                                                    <Calendar
-                                                        full
-                                                        titleHidden
-                                                        label="Data inicial"
-                                                        selectedDate={startDatePdfGenerate}
-                                                        handleDateChange={setStartDatePdfGenerate}
-                                                    />
-                                                    <Calendar
-                                                        full
-                                                        titleHidden
-                                                        label="Data final"
-                                                        selectedDate={endDatePdfGenerate}
-                                                        handleDateChange={setEndDatePdfGenerate}
-                                                        minDate={startDatePdfGenerate}
-                                                    />
-
-                                                    <Select value={pdfScale.toString()} onValueChange={v => setPdfScale(Number(v))}>
-                                                        <SelectTrigger className="w-fit">
-                                                            <SelectValue placeholder="Escala do PDF" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="1">100%</SelectItem>
-                                                            <SelectItem value="0.9">90%</SelectItem>
-                                                            <SelectItem value="0.8">80%</SelectItem>
-                                                            <SelectItem value="0.7">70%</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-
-                                                    <Button onClick={() => setShowPdfPreview(!showPdfPreview)} className="px-4 py-2 w-fit min-w-[200px]">
-                                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
-                                                    </Button>
-                                                    {isClient && <PdfLinkComponent />}
-                                                </div>
-                                            </Card>
+                                        <div className="w-full sm:w-fit">
+                                            <Calendar
+                                                full
+                                                titleHidden
+                                                label="Data final"
+                                                selectedDate={endDatePdfGenerate}
+                                                handleDateChange={setEndDatePdfGenerate}
+                                                minDate={startDatePdfGenerate}
+                                            />
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
+
+                                    <Select
+                                        value={pdfScale.toString()}
+                                        onValueChange={v => setPdfScale(Number(v))}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Escala do PDF" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">100%</SelectItem>
+                                            <SelectItem value="0.9">90%</SelectItem>
+                                            <SelectItem value="0.8">80%</SelectItem>
+                                            <SelectItem value="0.7">70%</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* ========================= */}
+                                {/* AÇÕES FINAIS */}
+                                {/* ========================= */}
+                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+                                    <Button
+                                        onClick={() => setShowPdfPreview(!showPdfPreview)}
+                                        className="min-w-[200px]"
+                                    >
+                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                    </Button>
+
+                                    {isClient && <PdfLinkComponent />}
+                                </div>
+                            </CollapsibleCard>
 
                             {showPdfPreview && (
                                 <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
