@@ -5,7 +5,7 @@ export default function UpcomingAssignmentsSkeleton() {
       <div className="h-5 bg-surface-200 rounded w-2/3 mb-4 shimmer" />
 
       <ul className="space-y-2">
-        {[...Array(3)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <li
             key={i}
             className="flex bg-surface-100 border border-surface-300 border-l-4 border-l-primary-200 rounded-sm overflow-hidden"
