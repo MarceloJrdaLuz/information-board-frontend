@@ -88,6 +88,10 @@ interface IArrangementHistory {
 
 export interface IAssignmentsHistoryResponse {
   history: IArrangementHistory[]
+  fieldServiceHistory: {
+    date: string
+    leader_id: string
+  }[]
 }
 
 export interface IPublisherUsage {

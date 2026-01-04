@@ -9,7 +9,7 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
 import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
 import { IPublisher } from "@/types/types"
-import { AlertCircleIcon } from "lucide-react"
+import { AlertCircleIcon, CrownIcon } from "lucide-react"
 
 export interface IPublicWitnessAssignment {
   id: string
@@ -107,6 +107,15 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
     dirty
   ])
 
+  const leaderOfDay = useMemo(() => {
+    if (!history?.fieldServiceHistory?.length) return null
+
+    const entry = history.fieldServiceHistory.find(
+      h => h.date === date
+    )
+
+    return entry?.leader_id ?? null
+  }, [history, date])
 
   const handleChange = (items: IPublisher[]) => {
     if (!isEditable) return
@@ -173,28 +182,53 @@ export default function SlotScheduleRow({ date, slot, publishers, assignment, pu
       {selectedPublishers.length > 0 && (
         <div className="mt-2 text-sm text-typography-700 flex flex-wrap gap-1">
           {selectedPublishers.map((p, index) => {
-            // Quantidade total do dia EXCETO este slot
-            const totalInOtherSlots = (publishersCount?.[p.id] ?? 0)
+            const totalInOtherSlots = publishersCount?.[p.id] ?? 0
 
-            // Quantidade deste publicador duplicado dentro deste slot
             const duplicatesInThisSlot = selectedPublishers
               .slice(0, index)
               .filter(sp => sp.id === p.id).length
 
-            const isConflict = totalInOtherSlots > 0 || duplicatesInThisSlot > 0
+            const hasOtherSlotConflict = totalInOtherSlots > 0 || duplicatesInThisSlot > 0
+            const isLeaderOfDay = leaderOfDay === p.id
+
+            const className = `
+    flex items-center gap-2 p-2 leading-none rounded
+    ${isLeaderOfDay
+                ? "bg-yellow-50 text-yellow-500 border border-yellow-300 font-semibold"
+                : hasOtherSlotConflict
+                  ? "bg-red-100 text-red-600 font-semibold"
+                  : ""}
+  `
 
             return (
-              <div key={index}
-                className={`flex items-center gap-2 p-2 leading-none rounded ${isConflict ? "bg-red-100 text-red-600 font-semibold" : ""}`}>
-                <span
-                  title={isConflict ? "Este publicador já está escalado em outro slot hoje" : ""}
-                >
-                  {p.nickname ? p.nickname : p.fullName}
+              <div
+                key={index}
+                className={className}
+                title={
+                  isLeaderOfDay
+                    ? "Este publicador é o dirigente de campo neste dia"
+                    : "Conflito de escala"
+                }
+              >
+                <span>
+                  {p.nickname || p.fullName}
                 </span>
-                {isConflict && <AlertCircleIcon className="w-4 h-4" />}
+
+                {isLeaderOfDay && (
+                  <>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-600 text-typography-200">
+                      Dirigente de Campo
+                    </span>
+                  </>
+                )}
+
+                {!isLeaderOfDay && hasOtherSlotConflict && (
+                  <AlertCircleIcon className="w-4 h-4" />
+                )}
               </div>
             )
           })}
+
         </div>
       )}
     </div>
