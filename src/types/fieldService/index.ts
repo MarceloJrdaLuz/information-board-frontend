@@ -106,7 +106,8 @@ export interface FieldServiceRotationSchedule {
 export interface FieldServiceRotationBlock {
     templateId: string
     title: string
-    weekday: number          // 0-6
+    weekdayIndex: number          // 0-6
+    weekday: string
     time: string             // "08:30"
     location: string
     schedules: FieldServiceRotationSchedule[]
@@ -115,6 +116,7 @@ export interface FieldServiceRotationBlock {
 
 export interface FieldServiceFixedSchedule {
     weekday: string        // "Sábado"
+    weekdayIndex: number
     time: string           // "08:30"
     leader: string         // Nome ou "-"
     location: string
