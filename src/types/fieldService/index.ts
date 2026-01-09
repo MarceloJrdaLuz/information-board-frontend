@@ -34,6 +34,13 @@ export const FIELD_SERVICE_TYPE_LABEL: Record<FieldServiceType, string> = {
 
 export interface ILeader extends IPublisher { }
 
+export interface ITemplateLocationOverride {
+    date: string        // dia real da saída (quinta, sábado, etc)
+    week_start: string  // segunda-feira ISO (controle interno)
+    location: string
+}
+
+
 export interface ITemplateFieldService {
     id: string
     congregation_id: string
@@ -44,6 +51,8 @@ export interface ITemplateFieldService {
     time: string // "08:30:00"
 
     location: string
+    location_rotation: boolean
+    location_overrides?: ITemplateLocationOverride[]
 
     leader_id: string | null
     leader: ILeader | null
@@ -107,16 +116,21 @@ export interface FieldServiceRotationBlock {
 export interface FieldServiceFixedSchedule {
     weekday: string        // "Sábado"
     time: string           // "08:30"
-    location: string
     leader: string         // Nome ou "-"
+    location: string
+    locationRotation?: boolean
+    locationOverrides?: {
+        weekStart: string         // YYYY-MM-DD (segunda ou domingo, padrão único!)
+        location: string
+    }[]
 }
 
 export interface FieldServicePdfResponse {
-  congregationName: string
-  period: {
-    start: string
-    end: string
-  }
-  fixedSchedules: FieldServiceFixedSchedule[]
-  rotationBlocks: FieldServiceRotationBlock[]
+    congregationName: string
+    period: {
+        start: string
+        end: string
+    }
+    fixedSchedules: FieldServiceFixedSchedule[]
+    rotationBlocks: FieldServiceRotationBlock[]
 }

@@ -15,6 +15,7 @@ interface CalendarProps {
     titleHidden?: boolean
     disabled?: boolean
     full?: boolean
+    allowedWeekday?: number
 }
 
 export default function Calendar({
@@ -24,7 +25,8 @@ export default function Calendar({
     label,
     titleHidden,
     disabled = false,
-    full = false
+    full = false,
+    allowedWeekday
 }: CalendarProps) {
 
     // Converte string -> Date para exibir no DatePicker
@@ -53,6 +55,10 @@ export default function Calendar({
             {!titleHidden && <h1 className="font-bold my-2 text-typography-700">{label}</h1>}
 
             <DatePicker
+                filterDate={(date: Date) => {
+                    if (allowedWeekday === undefined) return true
+                    return dayjs(date).day() === allowedWeekday
+                }}
                 wrapperClassName={full ? "w-full" : ""}
                 disabled={disabled}
                 customInput={<CustomInput label={label} disabled={disabled} />}

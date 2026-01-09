@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import * as yup from "yup"
@@ -8,19 +8,21 @@ import Button from "@/Components/Button"
 import Dropdown from "@/Components/Dropdown"
 import DropdownMulti from "@/Components/DropdownMulti"
 import DropdownObject from "@/Components/DropdownObjects"
+import FormStyle from "@/Components/Forms/FormStyle"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
-import FormStyle from "@/Components/Forms/FormStyle"
 
+import { updateFieldServiceAtom, updateFieldServiceLocationRotationAtom } from "@/atoms/fieldServiceAtoms"
+import { UpdateFieldServiceLocationOverridePayload, UpdateFieldServicePayload } from "@/atoms/fieldServiceAtoms/types"
+import Calendar from "@/Components/Calendar"
+import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
-import { updateFieldServiceAtom } from "@/atoms/fieldServiceAtoms"
-import { UpdateFieldServicePayload } from "@/atoms/fieldServiceAtoms/types"
-import { FieldServiceFormData, FieldServiceType, ILeader, IRotationMember, ITemplateFieldService, WEEKDAY_LABEL } from "@/types/fieldService"
+import { FieldServiceFormData, FieldServiceType, ILeader, ITemplateFieldService, WEEKDAY_LABEL } from "@/types/fieldService"
 import { IPublisher } from "@/types/types"
 import { useSetAtom } from "jotai"
-import { te } from "date-fns/locale"
-import { I } from "framer-motion/dist/types.d-DagZKalS"
+import { PlusCircle, Trash } from "lucide-react"
+import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
 
 interface FormValues {
   type: "FIXED" | "ROTATION"
@@ -34,6 +36,11 @@ interface FormEditProps {
   template_id: string
 }
 
+type LocationOverrideForm = {
+  date: string | null
+  location: string
+}
+
 export default function FormEditFieldServiceTemplate({ template_id }: FormEditProps) {
   const { congregation } = useCongregationContext()
   const congregation_id = congregation?.id
@@ -42,8 +49,11 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
   const [weekday, setWeekday] = useState<string>(Object.values(WEEKDAY_LABEL)[0])
   const [type, setType] = useState<"FIXED" | "ROTATION">("FIXED")
   const [leader, setLeader] = useState<ILeader | null>(null)
+  const [locationRotation, setLocationRotation] = useState(false)
+  const [locationOverrides, setLocationOverrides] = useState<LocationOverrideForm[]>([])
 
   const updateFieldService = useSetAtom(updateFieldServiceAtom)
+  const updateFieldServiceLocationOverride = useSetAtom(updateFieldServiceLocationRotationAtom)
 
   const WEEKDAY_OPTIONS = Object.values(WEEKDAY_LABEL)
 
@@ -76,6 +86,13 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
       setType(template.type)
       setWeekday(WEEKDAY_OPTIONS[template.weekday])
       setLeader(template.leader)
+      setLocationRotation(template.location_rotation ?? false)
+      setLocationOverrides(
+        template.location_overrides?.map(o => ({
+          date: o.date,
+          location: o.location,
+        })) ?? []
+      )
 
       // Map rotation_members para IPublisher do formData.publishers
       const members: IPublisher[] = (template.rotation_members ?? [])
@@ -108,12 +125,50 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
         : [],
     }
 
-    console.log(payload)
-
     await toast.promise(
       updateFieldService(template_id, payload),
       { pending: "Atualizando saída de campo..." }
     )
+  }
+
+  async function handleSaveLocationOverride() {
+    if (!congregation_id) return
+
+    const weeks = locationOverrides
+      .filter(o => o.date && o.location.trim() !== "")
+      .map(o => ({
+        date: o.date as string, // seguro após o filter
+        location: o.location.trim(),
+      }))
+
+    if (weeks.length === 0) {
+      toast.warning("Adicione ao menos um local válido por semana.")
+      return
+    }
+
+    const payload: UpdateFieldServiceLocationOverridePayload = {
+      weeks,
+    }
+
+    await toast.promise(
+      updateFieldServiceLocationOverride(template_id, payload),
+      {
+        pending: "Salvando locais das semanas...",
+      }
+    ).then().catch(err => console.log(err))
+  }
+
+  async function handleClearAllLocations() {
+    await toast.promise(
+      updateFieldServiceLocationOverride(template_id, {
+        weeks: [],
+        clear_all: true,
+      }),
+      { pending: "Removendo todos os locais..." }
+    ).then(() => {
+      setLocationOverrides([])
+      setLocationRotation(false)
+    }).catch(err => console.log(err))
   }
 
   return (
@@ -159,13 +214,6 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
         />
         {errors?.time?.type && <InputError type={errors.time.type} field='time' />}
 
-        {/* Local */}
-        <Input
-          type="text"
-          placeholder="Local da saída"
-          registro={{ ...register('location', { required: "Campo obrigatório" }) }}
-          invalid={errors?.location?.message ? 'invalido' : ''}
-        />
         {errors?.location?.type && <InputError type={errors.location.type} field='location' />}
 
         {/* Dirigente fixo / Rodízio */}
@@ -201,7 +249,100 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
             />
 
           )}
+          {/* Local */}
+          <Input
+            type="text"
+            placeholder="Local"
+            registro={{ ...register('location', { required: "Campo obrigatório" }) }}
+            invalid={errors?.location?.message ? 'invalido' : ''}
+          />
+          {type === "FIXED" && (
+            <div className="my-3 flex items-center gap-2">
+              <CheckboxBoolean label="Local variável por semana" checked={locationRotation} handleCheckboxChange={(e) => setLocationRotation(e)} />
+            </div>
+          )}
         </div>
+
+        {type === "FIXED" && locationRotation && (
+          <div className="mt-4 border rounded-lg p-4 bg-surface-100">
+            <h3 className="font-semibold text-sm text-primary-200 mb-3">
+              Locais por semana
+            </h3>
+
+            <div className="flex flex-col items-center gap-3">
+              {locationOverrides && locationOverrides.length > 0 &&
+                <div className="w-full flex justify-end">
+                  <ConfirmDeleteModal
+                    title="Limpar todos os locais"
+                    message="Isso removerá todos os locais programados desta saída. Deseja continuar?"
+                    onDelete={handleClearAllLocations}
+                    button={
+                      <Button type="button" size="sm" outline className="text-red-500 w-fit">
+                        <Trash className="mr-1 w-4" /> Limpar todos
+                      </Button>
+                    }
+                  />
+                </div>}
+              {locationOverrides.map((item, index) => (
+                <div key={index} className="w-full border border-typography-200 rounded-xl p-3 bg-surface-100
+               flex justify-center flex-wrap gap-2">
+                  {/* Data */}
+                  <div className="w-full h-full max-w-[300px]">
+                    <div className="w-full">
+                      <Calendar
+                        label="Dia"
+                        titleHidden
+                        selectedDate={item.date}
+                        handleDateChange={(date) => {
+                          const copy = [...locationOverrides]
+                          copy[index].date = date
+                          setLocationOverrides(copy)
+                        }}
+                        allowedWeekday={WEEKDAY_OPTIONS.indexOf(weekday)}
+                        disabled={false}
+                        full
+                      />
+                    </div>
+
+                    {/* Local */}
+                    <Input
+                      type="text"
+                      placeholder="Local da semana"
+                      value={item.location}
+                      onChange={(e) => {
+                        const copy = [...locationOverrides]
+                        copy[index].location = e.target.value
+                        setLocationOverrides(copy)
+                      }}
+                    />
+
+                    <div className="w-full flex justify-end">
+                      <Button onClick={() =>
+                        setLocationOverrides(prev =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      } size="sm" outline className="text-red-500 w-fit ">
+                        <Trash className="mr-1 w-4" /> Excluir
+                      </Button>
+                    </div>
+                  </div>
+
+                </div>
+              ))}
+              <div className="w-full flex justify-end">
+                <PlusCircle className="cursor-pointer text-primary-200 hover:text-primary-200/80 w-5 h-5 items-end" onClick={() =>
+                  setLocationOverrides(prev => [
+                    ...prev,
+                    { date: null, location: "" }
+                  ])
+                } />
+              </div>
+            </div>
+            {locationOverrides && locationOverrides.length > 0 && <div className="flex justify-center items-center m-auto w-11/12 h-12 my-6 gap-2">
+              <Button onClick={handleSaveLocationOverride} outline type="button">Salvar locais</Button>
+            </div>}
+          </div>
+        )}
 
         <div className="flex justify-center items-center m-auto w-11/12 h-12 my-6">
           <Button type="submit">Atualizar Saída</Button>

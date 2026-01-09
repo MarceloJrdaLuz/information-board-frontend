@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { ChevronLeft, ChevronRight, Clock, MapPin, User } from "lucide-react";
 import { FieldServiceFixedSchedule, FieldServiceRotationBlock } from "@/types/fieldService";
+import { resolveFixedLocation } from "@/utils/resolveFixedLocation";
 dayjs.locale("pt-br");
 // Funções auxiliares (assumindo que existam no seu projeto ou definindo-as)
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -141,7 +142,7 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <MapPin size={14} className="text-primary-200" />
-                                        <span className="truncate">{item.location}</span>
+                                        <span className="truncate">{resolveFixedLocation(item)}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <User size={14} className="text-primary-200" />
