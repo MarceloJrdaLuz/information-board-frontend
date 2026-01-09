@@ -4,6 +4,7 @@ import "dayjs/locale/pt-br";
 import { ChevronLeft, ChevronRight, Clock, MapPin, User } from "lucide-react";
 import { FieldServiceFixedSchedule, FieldServiceRotationBlock } from "@/types/fieldService";
 import { resolveFixedLocation } from "@/utils/resolveFixedLocation";
+import { resolveNextFixedLocations } from "@/utils/resolveNextFixedLocation";
 dayjs.locale("pt-br");
 // Funções auxiliares (assumindo que existam no seu projeto ou definindo-as)
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -52,9 +53,98 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
 
     const next = () => currentIndex < months.length - 1 && setCurrentIndex(prev => prev + 1);
     const prev = () => currentIndex > 0 && setCurrentIndex(prev => prev - 1);
-
+    const [expandedId, setExpandedId] = useState<string | null>(null)
     return (
         <div className="w-full flex justify-around flex-wrap gap-6 mt-4">
+            {/* SEÇÃO: SAÍDAS FIXAS (Sempre visível ou acima do carrossel) */}
+            {fixedSchedules.length > 0 && (
+                <div className="w-full rounded-xl shadow bg-surface-100 p-4 border-l-4 border-primary-200">
+                    <h2 className="font-bold text-primary-200 text-lg mb-3">Saídas Fixas Semanais</h2>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {fixedSchedules.map((item, idx) => (
+                            <div key={idx} className="bg-surface-200/50 p-3 rounded-lg border border-typography-200">
+                                <p className="font-bold text-primary-200 text-sm mb-2">{item.weekday}</p>
+                                <div className="space-y-1 text-typography-700 text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <Clock size={14} className="text-primary-200" />
+                                        <span>{item.time}</span>
+                                    </div>
+                                    {(() => {
+                                        const current = resolveFixedLocation(item)
+                                        const nextLocations = resolveNextFixedLocations(item, 5)
+
+                                        const hasOverrides =
+                                            item.locationRotation && nextLocations.length > 0
+
+                                        const isExpanded = expandedId === item.location
+
+                                        return (
+                                            <div className="flex items-start gap-2">
+                                                <MapPin size={14} className="text-primary-200 mt-0.5 shrink-0" />
+
+                                                <div className="flex flex-col leading-tight">
+                                                    <span className="truncate flex flex-wrap items-center gap-1">
+                                                        {current.location} 
+                                                        {current.isOverride && (
+                                                            <span className="text-[10px] text-typography-500">
+                                                                ({dayjs(current.date).format("DD/MM")})
+                                                            </span>
+                                                        )}
+                                                    </span>
+
+
+                                                    {hasOverrides && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setExpandedId(isExpanded ? null : item.location)
+                                                            }
+                                                            className="text-[10px] text-primary-200 mt-1 hover:underline self-start"
+                                                        >
+                                                            {isExpanded
+                                                                ? "Ocultar próximas semanas"
+                                                                : "Ver próximas semanas"}
+                                                        </button>
+                                                    )}
+
+                                                    {hasOverrides && isExpanded && (
+                                                        <div className="mt-2 space-y-1 text-[11px] text-typography-600">
+                                                            {nextLocations.map(loc => (
+                                                                <div
+                                                                    key={loc.weekStart}
+                                                                    className="flex flex-wrap gap-1"
+                                                                >
+                                                                    <span>
+                                                                        {dayjs(loc.date).format("DD/MM")}
+                                                                    </span>
+
+                                                                    <span
+                                                                        className={`truncate ${loc.isOverride ? "font-semibold" : ""
+                                                                            }`}
+                                                                    >
+                                                                        •{" "}{loc.location}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                        )
+                                    })()}
+
+                                    <div className="flex items-center gap-2">
+                                        <User size={14} className="text-primary-200" />
+                                        <span className="font-medium">{item.leader}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* SEÇÃO: CARROSSEL DE RODÍZIOS (Fim de semana / Datas específicas) */}
             <div className="w-full rounded-xl shadow bg-surface-100 p-4">
 
@@ -127,33 +217,6 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                     )}
                 </div>
             </div>
-            {/* SEÇÃO: SAÍDAS FIXAS (Sempre visível ou acima do carrossel) */}
-            {fixedSchedules.length > 0 && (
-                <div className="w-full rounded-xl shadow bg-surface-100 p-4 border-l-4 border-primary-200">
-                    <h2 className="font-bold text-primary-200 text-lg mb-3">Saídas Fixas Semanais</h2>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {fixedSchedules.map((item, idx) => (
-                            <div key={idx} className="bg-surface-200/50 p-3 rounded-lg border border-typography-200">
-                                <p className="font-bold text-primary-200 text-sm mb-2">{item.weekday}</p>
-                                <div className="space-y-1 text-typography-700 text-xs">
-                                    <div className="flex items-center gap-2">
-                                        <Clock size={14} className="text-primary-200" />
-                                        <span>{item.time}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <MapPin size={14} className="text-primary-200" />
-                                        <span className="truncate">{resolveFixedLocation(item)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <User size={14} className="text-primary-200" />
-                                        <span className="font-medium">{item.leader}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

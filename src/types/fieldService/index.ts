@@ -115,6 +115,7 @@ export interface FieldServiceRotationBlock {
 
 export interface FieldServiceFixedSchedule {
     weekday: string        // "Sábado"
+    weekdayIndex: number
     time: string           // "08:30"
     leader: string         // Nome ou "-"
     location: string
