@@ -2,7 +2,7 @@ import { API_ROUTES } from "@/constants/apiRoutes"
 import { api } from "@/services/api"
 import { atom } from "jotai"
 import { handleSubmitErrorAtom, handleSubmitSuccessAtom } from "../handleSubmitAtom"
-import { CreateFieldServiceExceptionPayload, CreateFieldServicePayload, GenerateFieldService, UpdateFieldServicePayload } from "./types"
+import { CreateFieldServiceExceptionPayload, CreateFieldServicePayload, GenerateFieldService, UpdateFieldServiceLocationOverridePayload, UpdateFieldServicePayload } from "./types"
 
 export const createFieldServiceAtom = atom(
   null, // valor inicial → write-only atom
@@ -68,6 +68,41 @@ export const updateFieldServiceAtom = atom(
       if (message === "Field service template not found") {
         _set(handleSubmitErrorAtom, {
           messageError: "Saída de campo não encontrada."
+        })
+      } else {
+        console.error(err)
+        _set(handleSubmitErrorAtom, {
+          messageError: "Erro ao atualizar a saída de campo."
+        })
+      }
+      throw err
+    }
+  }
+)
+
+export const updateFieldServiceLocationRotationAtom = atom(
+  null, // valor inicial → write-only atom
+  async (_get, _set, template_id: string, payload: UpdateFieldServiceLocationOverridePayload) => {
+    try {
+      const res = await api.post(`${API_ROUTES.FIELD_SERVICE_TEMPLATES}/${template_id}/location-overrides`, payload)
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Locais da saída de campo atualizada com sucesso!",
+      })
+      return res.data
+    } catch (err: any) {
+      const message = err?.response?.data?.message
+
+      if (message === "Field service template not found") {
+        _set(handleSubmitErrorAtom, {
+          messageError: "Saída de campo não encontrada."
+        })
+      } else if (message === "Weeks array is required or use clear_all=true to remove all") {
+        _set(handleSubmitErrorAtom, {
+          messageError: "É necessário algum local selecionado, ou use o botão limpar todos."
+        })
+      } else if (message === "Each week must have date and location") {
+        _set(handleSubmitErrorAtom, {
+          messageError: "Alguma semana ficou sem local definido."
         })
       } else {
         console.error(err)

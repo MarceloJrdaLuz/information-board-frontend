@@ -9,6 +9,15 @@ export type CreateFieldServicePayload = {
 
 export type UpdateFieldServicePayload = Partial<CreateFieldServicePayload>
 
+export type UpdateFieldServiceLocationOverridePayload = {
+      weeks: {
+            date: string
+            location: string
+      }[], 
+      clear_all?: boolean
+}
+
+
 export type GenerateFieldService = {
       startDate: string
       endDate: string

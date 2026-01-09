@@ -59,8 +59,6 @@ function Campo() {
         number ? `publicWitness/schedules/futures/congregation/${congregation?.id}` : ""
     );
 
-    console.log(allSchedulesPublicWitness)
-
     useEffect(() => {
         if (number) {
             setCongregationNumber(number as string)
