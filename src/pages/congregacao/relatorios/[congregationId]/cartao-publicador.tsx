@@ -329,7 +329,7 @@ function PublisherCardPage() {
                                 className="text-primary-200 hover:text-primary-150"
                                 title="Visualizar"
                             >
-                                <Eye className="w-6 h-6" />
+                                <Eye className="w-6 h-6" strokeWidth={1.25} />
                             </button>
                             <PdfLinkComponent
                                 pdfData={{
