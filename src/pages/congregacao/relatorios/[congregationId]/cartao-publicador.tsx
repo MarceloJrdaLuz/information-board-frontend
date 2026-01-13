@@ -320,7 +320,7 @@ function PublisherCardPage() {
                             }
                         </span>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                             <button
                                 onClick={() => {
                                     setPublishersToView(filterPublishers);
@@ -329,7 +329,7 @@ function PublisherCardPage() {
                                 className="text-primary-200 hover:text-primary-150"
                                 title="Visualizar"
                             >
-                                <Eye className="w-5 h-5" />
+                                <Eye className="w-6 h-6" />
                             </button>
                             <PdfLinkComponent
                                 pdfData={{
