@@ -15,12 +15,12 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { Weekday, WEEKDAY_LABEL } from "@/types/fieldService"
 import { createPublicWitnessArrangementAtom } from "@/atoms/publicWitnessAtoms.ts"
 import { CreatePublicWitnessArrangementPayload } from "@/atoms/publicWitnessAtoms.ts/types"
-import FormStyle from "../Forms/FormStyle"
-import InputError from "../InputError"
 import { useFetch } from "@/hooks/useFetch"
 import { IPublisher } from "@/types/types"
-import DropdownMulti from "../DropdownMulti"
-import CheckboxBoolean from "../CheckboxBoolean"
+import InputError from "@/Components/InputError"
+import CheckboxBoolean from "@/Components/CheckboxBoolean"
+import DropdownMulti from "@/Components/DropdownMulti"
+import FormStyle from "../FormStyle"
 
 type FormValues = {
     title: string
@@ -137,7 +137,7 @@ export default function FormAddPublicWitnessArrangement() {
                     registro={{ ...register("title") }}
                     invalid={errors.title ? "invalido" : ""}
                 />
-                {errors.title && <InputError type="" field="title" />}
+                {errors.title && <InputError type={errors.title.type} field="title" />}
 
                 <Dropdown
                     textVisible

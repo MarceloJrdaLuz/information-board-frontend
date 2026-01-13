@@ -4,9 +4,13 @@ import { ProfileCard } from "@/Components/ProfileCard"
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton"
 import { UpcomingAssignmentsCard } from "@/Components/UpcomingAssignmentsCard"
 import UpcomingAssignmentsSkeleton from "@/Components/UpcomingAssignmentsCard/skeleton"
+import { UpcomingRemindersCard } from "@/Components/UpcomingRemindersCard"
+import UpcomingRemindersSkeleton from "@/Components/UpcomingRemindersCard/skeleton"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { useFetch } from "@/hooks/useFetch"
 import { IAssignment } from "@/types/assignment"
+import { IReminder } from "@/types/reminder"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
@@ -17,6 +21,9 @@ function Dashboard() {
 
   const fetchConfig = user?.publisher ? `/publisher/${user.publisher.id}/assignment` : ""
   const { data, isLoading } = useFetch<IAssignment[]>(fetchConfig)
+
+  const fetchRemindersConfig = user?.publisher ? `${API_ROUTES.PUBLISHER_REMINDERS}/publishers/${user.publisher.id}` : ""
+  const { data: reminders, isLoading: isLoadingReminders, mutate } = useFetch<IReminder[]>(fetchRemindersConfig)
 
   useEffect(() => {
     setCrumbs([{ label: "Início", link: "/dashboard" }])
@@ -45,6 +52,13 @@ function Dashboard() {
             <UpcomingAssignmentsSkeleton />
           ) : (
             data && <UpcomingAssignmentsCard assignments={data} />
+          )}
+
+          {/* Reminders Card or Skeleton */}
+          {isLoadingReminders ? (
+            <UpcomingRemindersSkeleton />
+          ) : (
+            reminders && <UpcomingRemindersCard reminders={reminders} mutateReminders={mutate} />
           )}
         </div>
       </section>

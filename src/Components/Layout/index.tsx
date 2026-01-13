@@ -67,7 +67,7 @@ export default function Layout(props: LayoutProps) {
     }
 
     const isAdmin = roleContains('ADMIN')
-
+    const isPublisher = user?.publisher
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
@@ -87,7 +87,7 @@ export default function Layout(props: LayoutProps) {
                     />
 
                     <ConsentCongregationWrapper>
-                        <NavBar.Options
+                        {isPublisher && <NavBar.Options
                             title="Meus relatórios"
                             onClick={() => {
                                 { !isDesktop && setIsMenuOpen(false) }
@@ -95,7 +95,7 @@ export default function Layout(props: LayoutProps) {
                             }}
                             icon={() => <MyReportsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             active={pageActive === '/meus-relatorios'}
-                        />
+                        />}
 
                         {(isAdminCongregation ||
                             roleContains('PUBLISHERS_MANAGER') ||

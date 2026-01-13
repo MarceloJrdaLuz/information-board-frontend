@@ -10,14 +10,15 @@ import {
     Sparkles,
     User
 } from "lucide-react";
-import moment from "moment";
-import "moment/locale/pt-br";
 import { LocationLink } from "../LocationLink";
 import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
 import { useState } from "react";
 import { formatHour } from "@/utils/formatTime";
-
-moment.defineLocale("pt-br", null);
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br"
+import isBetween from "dayjs/plugin/isBetween"
+dayjs.extend(isBetween)
+dayjs.locale("pt-br")
 
 interface UpcomingAssignmentsCardProps {
     assignments: IAssignment[];
@@ -29,15 +30,15 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
     const MAX_VISIBLE = 5;
 
-    const today = moment().startOf("day");
-    const endOfWeek = moment().add(7, "days").endOf("day");
+    const today = dayjs().startOf("day");
+    const endOfWeek = dayjs().add(7, "days").endOf("day");
 
     const thisWeekAssignments = assignments.filter(a =>
-        moment(a.date).isBetween(today, endOfWeek, undefined, "[]")
+        dayjs(a.date).isBetween(today, endOfWeek, undefined, "[]")
     );
 
     const futureAssignments = assignments.filter(a =>
-        moment(a.date).isAfter(endOfWeek)
+        dayjs(a.date).isAfter(endOfWeek)
     );
 
     const visibleFutureAssignments = expanded
@@ -81,10 +82,10 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             {/* Barra lateral + data */}
             <div className="flex flex-col items-center justify-center w-16 bg-surface-200/40 border-r border-surface-300 py-3">
                 <span className="text-lg font-bold text-typography-700">
-                    {moment(assignment.date).locale("pt-br").format("DD")}
+                    {dayjs(assignment.date).locale("pt-br").format("DD")}
                 </span>
                 <span className="text-[10px] uppercase text-typography-500 -mt-1">
-                    {moment(assignment.date).locale("pt-br").format("MMM")}
+                    {dayjs(assignment.date).locale("pt-br").format("MMM")}
                 </span>
             </div>
 
@@ -93,7 +94,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                 {/* Cabeçalho */}
                 <div className="flex items-center justify-between">
                     <span className="text-xs text-typography-600">
-                        {moment(assignment.date).locale("pt-br").format("dddd")}
+                        {dayjs(assignment.date).locale("pt-br").format("dddd")}
                     </span>
 
                     {assignment.status && (

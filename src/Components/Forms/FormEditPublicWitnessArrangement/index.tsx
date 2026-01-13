@@ -1,28 +1,28 @@
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSetAtom, useAtomValue } from "jotai"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useAtomValue, useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
-import * as yup from "yup"
+import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
+import * as yup from "yup"
 
 import Button from "@/Components/Button"
-import Input from "@/Components/Input"
-import InputError from "@/Components/InputError"
 import Dropdown from "@/Components/Dropdown"
 import DropdownMulti from "@/Components/DropdownMulti"
+import Input from "@/Components/Input"
+import InputError from "@/Components/InputError"
 
-import { useFetch } from "@/hooks/useFetch"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import { updatePublicWitnessArrangementAtom } from "@/atoms/publicWitnessAtoms.ts"
 import { UpdatePublicWitnessArrangementPayload } from "@/atoms/publicWitnessAtoms.ts/types"
-import FormStyle from "../Forms/FormStyle"
+import { useFetch } from "@/hooks/useFetch"
+import FormStyle from "../FormStyle"
 
-import {
-  IPublicWitnessArrangement,
-  IPublicWitnessPublisher
-} from "@/types/publicWitness"
 import { Weekday, WEEKDAY_LABEL } from "@/types/fieldService"
-import CheckboxBoolean from "../CheckboxBoolean"
+import {
+    IPublicWitnessArrangement,
+    IPublicWitnessPublisher
+} from "@/types/publicWitness"
+import CheckboxBoolean from "../../CheckboxBoolean"
 
 
 interface Props {
