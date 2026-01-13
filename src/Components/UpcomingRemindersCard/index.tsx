@@ -36,9 +36,11 @@ export function UpcomingRemindersCard({ reminders, mutateReminders }: Props) {
 
     const today = dayjs().startOf("day")
 
-    const upcoming = reminders.filter(r =>
-        dayjs(r.endDate).isSameOrAfter(today, "day")
-    )
+    const upcoming = reminders
+        .filter(r => dayjs(r.endDate).isSameOrAfter(today, "day"))
+        .sort((a, b) =>
+            dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf()
+        )
 
     const visible = expanded
         ? upcoming
