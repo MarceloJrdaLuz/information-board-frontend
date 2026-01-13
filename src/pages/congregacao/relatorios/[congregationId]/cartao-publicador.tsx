@@ -298,7 +298,7 @@ function PublisherCardPage() {
                 {filterPublishers && filterPublishers.length > 0 && (
                     <div
                         className="
-    sticky bottom-2
+    sticky bottom-6
     z-40
     bg-surface-100/95 backdrop-blur
     border border-surface-300
