@@ -169,9 +169,15 @@ export function UpcomingRemindersCard({ reminders, mutateReminders }: Props) {
 
                 </>
             ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-typography-400">
+                <div className="flex flex-col items-center justify-center py-8 text-typography-400 gap-3">
                     <Bell size={28} className="mb-2" />
                     <p className="text-sm">Nenhum lembrete ativo</p>
+                    <button
+                        onClick={() => Router.push("/meus-lembretes")}
+                        className="text-xs font-medium text-primary-200 hover:underline"
+                    >
+                        Ir para página de lembretes
+                    </button>
                 </div>
             )}
         </div>
