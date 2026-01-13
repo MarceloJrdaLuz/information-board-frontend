@@ -14,6 +14,7 @@ import { IReminder } from "@/types/reminder"
 import { toast } from "react-toastify"
 import { deleteReminderAtom } from "@/atoms/remindersAtom"
 import { useAuthContext } from "@/context/AuthContext"
+import dayjs from "dayjs"
 
 export default function RemindersPage() {
     const [crumbs] = useAtom(crumbsAtom)
@@ -57,14 +58,19 @@ export default function RemindersPage() {
                         onDelete={handleDelete}
                         renderItem={(item) => (
                             <div className="flex flex-col gap-1">
-                                <h3 className="font-semibold">{item.title}</h3>
+                                <h3 className="font-semibold text-typography-800">{item.title}</h3>
                                 <span className="text-sm text-typography-700">
-                                    {item.startDate} → {item.endDate}
+                                    {dayjs(item.startDate).format("DD/MM/YYYY")} → {dayjs(item.endDate).format("DD/MM/YYYY")}
                                 </span>
                                 {item.isRecurring && (
                                     <span className="text-xs text-primary-200">
                                         Recorrente
                                     </span>
+                                )}
+                                {item.description && (
+                                    <p className="text-sm text-typography-500">
+                                        {item.description}
+                                    </p>
                                 )}
                             </div>
                         )}
