@@ -12,8 +12,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import CheckboxBoolean from '../CheckboxBoolean'
-import FormStyle from '../Forms/FormStyle'
+import CheckboxBoolean from '../../CheckboxBoolean'
+import FormStyle from '../FormStyle'
 import { FormValues } from './type'
 
 export interface IEmergencyContactProps {

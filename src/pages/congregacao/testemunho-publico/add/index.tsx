@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddPublicWitnessArrangement from "@/Components/FormAddPublicWitnessArrangement"
+import FormAddPublicWitnessArrangement from "@/Components/Forms/FormAddPublicWitnessArrangement"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"

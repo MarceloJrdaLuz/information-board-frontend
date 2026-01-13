@@ -1,6 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditEmergencyContact from "@/Components/FormEditEmergencyContact"
+import FormEditEmergencyContact from "@/Components/Forms/FormEditEmergencyContact"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"

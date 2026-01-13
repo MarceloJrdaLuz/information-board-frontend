@@ -74,6 +74,13 @@
         "required": "Último dia é um campo obrigatório no anúncio corrente",
         "typeError": "Último dia é um campo obrigatório no anúncio corrente"
     },
+    "recurrenceIntervalDays": {
+        "required": "Campo obrigatório no lembrete recorrente",
+        "min": "Deve ser um valor acima de 0"
+    },
+    "recurrenceCount": {
+        "required": "Campo obrigatório no lembrete recorrente"
+    },
     "text": {
         "required": "Texto é um campo obrigatório"
     },

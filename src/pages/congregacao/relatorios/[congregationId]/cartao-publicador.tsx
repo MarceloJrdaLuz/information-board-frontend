@@ -1,31 +1,28 @@
 import { crumbsAtom, pageActiveAtom, selectedPublishersToS21Atom } from "@/atoms/atom"
 import BreadCrumbs from "@/Components/BreadCrumbs"
-import Button from "@/Components/Button"
-import CardTotals from "@/Components/CardTotals"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import ContentDashboard from "@/Components/ContentDashboard"
 import Dropdown from "@/Components/Dropdown"
 import FilterGroups from "@/Components/FilterGroups"
 import FilterPrivileges from "@/Components/FilterPrivileges"
-import PdfIcon from "@/Components/Icons/PdfIcon"
 import ModalHelp from "@/Components/ModalHelp"
-import S21 from "@/Components/PublisherCard"
 import PublishersToGenerateS21 from "@/Components/PublishersToGenerateS21"
 import SkeletonPublishersList from "@/Components/PublishersToGenerateS21/skeletonPublishersList"
+import ReportTable from "@/Components/ReportTable"
+import { Button } from "@/Components/ui/button"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Privileges, Situation, TotalsFrom } from "@/types/types"
+import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Situation, TotalsFrom } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { BlobProvider, Document, PDFDownloadLink } from '@react-pdf/renderer'
 import { useAtom } from "jotai"
-import { HelpCircle } from "lucide-react"
+import { Eye, HelpCircle } from "lucide-react"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useMemo, useState } from "react"
-
-
+import { PdfLinkComponent } from "../../../../Components/PublishersToGenerateS21/PDFLinkComponent"
 function PublisherCardPage() {
     const router = useRouter()
     const { congregationId } = router.query
@@ -47,6 +44,10 @@ function PublisherCardPage() {
     const [totalsFrom, setTotalsFrom] = useState('')
     const [reportsTotalsFrom, setReportsTotalsFrom] = useState<ITotalsReports[]>()
     const [reportsTotalsFromFilter, setReportsTotalsFromFilter] = useState<ITotalsReports[]>()
+    const [isInitialRender, setIsInitialRender] = useState(true)
+    const [modalReportsOpen, setModalReportsOpen] = useState(false);
+    const [publishersToView, setPublishersToView] = useState<IPublisher[]>([])
+    const [modalYearSelected, setModalYearSelected] = useState(yearServiceSelected);
 
     const fetchConfig = congregationId ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}` : ""
     const { data } = useAuthorizedFetch<IPublisher[]>(fetchConfig, {
@@ -61,6 +62,11 @@ function PublisherCardPage() {
     useEffect(() => {
         setPageActive("Registros")
     }, [setPageActive])
+
+    useEffect(() => {
+        setSelectedPublishersToS21([]);
+    }, [congregationId, setSelectedPublishersToS21]);
+
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {
@@ -110,27 +116,22 @@ function PublisherCardPage() {
     }, [getTotals])
 
     useEffect(() => {
-        if (publishers) {
-            const filteredPublishers = publishers.filter(publisher => {
+        if (!publishers) return;
 
-                const belongsToSelectedGroups = groupSelecteds.length === 0 ||
-                    (publisher.group && !groupSelecteds.includes(publisher.group.id))
-                filterPrivileges.some(privilege => {
-                    return publisher.privileges.includes(privilege)
-                })
-                const hasSelectedPrivileges =
-                    filterPrivileges.some(privilege => publisher.privileges.includes(privilege))
+        const filteredPublishers = publishers.filter(publisher => {
+            const belongsToSelectedGroups = groupSelecteds.length === 0 ||
+                (publisher.group && groupSelecteds.includes(publisher.group.id));
 
-                return belongsToSelectedGroups && hasSelectedPrivileges
-            })
+            const hasSelectedPrivileges = filterPrivileges.length === 0 ||
+                filterPrivileges.some(privilege => publisher.privileges.includes(privilege));
 
-            if (filteredPublishers) {
-                const publishersIds: string[] = []
-                filteredPublishers.map(publisher => publishersIds.push(publisher.id))
-                setSelectedPublishersToS21(publishersIds)
-            }
-        }
-    }, [filterPrivileges, groupSelecteds, publishers, setSelectedPublishersToS21])
+            return belongsToSelectedGroups && hasSelectedPrivileges;
+        });
+
+        // Depois da primeira renderização, desativa a flag
+        if (isInitialRender) setIsInitialRender(false);
+
+    }, [filterPrivileges, groupSelecteds, publishers, setSelectedPublishersToS21, isInitialRender]);
 
     useEffect(() => {
         if (publishers && selectedPublishersToS21) {
@@ -167,19 +168,26 @@ function PublisherCardPage() {
         }
     }, [reports, filterPublishers, yearServiceSelected])
 
+    // Filtrar por privilégios
     const handleCheckboxChange = (filter: string[]) => {
-        if (filter.includes(Privileges.PIONEIROAUXILIAR)) {
-            setFilterPrivileges([...filter, Privileges.AUXILIARINDETERMINADO])
-        } else if (filter.includes('Todos')) {
-            setFilterPrivileges([...Object.values(Privileges), ...filter])
-        } else {
-            setFilterPrivileges(filter)
-        }
-    }
+        setFilterPrivileges(filter);
 
-    const handleCheckboxGroupsChange = (filter: string[]) => {
-        setGroupSelecteds(filter)
-    }
+        // Atualiza os selecionados apenas com base no que o usuário marcou
+        const filtered = publishers?.filter(publisher =>
+            filter.some(priv => publisher.privileges.includes(priv))
+        );
+        setSelectedPublishersToS21(filtered?.map(p => p.id) || []);
+    };
+
+    // Filtrar por grupos
+    const handleCheckboxGroupsChange = (groups: string[]) => {
+        setGroupSelecteds(groups);
+
+        const filtered = publishers?.filter(publisher =>
+            groups.includes(publisher.group?.id || '')
+        );
+        setSelectedPublishersToS21(filtered?.map(p => p.id) || []);
+    };
 
     const handleCheckboxTotalsChange = (check: boolean) => {
         setPdfGenerating(false)
@@ -209,54 +217,10 @@ function PublisherCardPage() {
         setReportsTotalsFromFilter(filter)
     }, [totalsFrom, reportsTotalsFrom])
 
-    const PdfLinkComponent = () => (
-        <BlobProvider
-            document={
-                <Document>
-                    {!totals && filterPublishers && filterPublishers.length > 0 ?
-                        filterPublishers.map((publisher, index) => {
-                            const reports = reportsFiltered.filter(report => report.publisher.id === publisher.id)
-                            return (
-                                (
-                                    <S21
-                                        key={index}
-                                        publisher={publisher}
-                                        reports={reports}
-                                        monthsWithYear={monthsServiceYears}
-                                    />
-                                )
-                            )
-                        }) : reportsTotalsFromFilter && (
-                            (
-                                <CardTotals
-                                    months={monthsServiceYears}
-                                    reports={reportsTotalsFromFilter ?? []}
-                                />
-                            ))
-                    }
-                </Document>
-            }
-        >
-            {({ blob, url, loading, error }) => (
-                <a href={url ?? "#"} download={filterPublishers && filterPublishers?.length === 1 ? `${filterPublishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}>
-                    <Button
-                        outline
-                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
-                    >
-                        <PdfIcon />
-                        <span className="text-primary-200 font-semibold">
-                            {loading ? "Gerando PDF..." : "Salvar S-21"}
-                        </span>
-                    </Button>
-                </a>
-            )}
-        </BlobProvider>
-    );
-
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Criar Cartão de Publicador"} />
-            <section className="flex flex-col items-center p-5 w-full">
+            <section className="flex flex-col items-center p-5 pb-36 w-full">
                 <div className="flex justify-between w-full mt-5 ">
                     <h2 className="text-lg sm:text-xl md:text-2xl text-primary-200 font-semibold mb-4">Registro de publicadores</h2>
                     <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200  hover:text-primary-150 cursor-pointer" />
@@ -285,24 +249,6 @@ function PublisherCardPage() {
                         <div className="flex justify-between items-center w-full mb-4">
                             <div className="flex flex-col">
                                 <Dropdown onClick={() => setPdfGenerating(false)} textSize="md" notBorderFocus selectedItem={yearServiceSelected} handleClick={(select) => setYearServiceSelected(select)} textVisible title="Ano de Serviço" options={[yearService, (Number(yearService) - 1).toString(), (Number(yearService) - 2).toString()]} />
-                                <div className="min-h-[56px] flex items-center">
-                                    {(!totals && pdfGenerating && filterPublishers && filterPublishers.length > 1) ||
-                                        (totals && pdfGenerating && reportsTotalsFromFilter && reportsTotalsFromFilter.length > 1) ? (
-                                        <PdfLinkComponent />
-                                    ) : (
-                                        (filterPublishers && filterPublishers?.length > 1) ||
-                                            (reportsTotalsFromFilter && reportsTotalsFromFilter?.length > 0) ? (
-                                            <Button
-                                                outline
-                                                className="my-3 font-semibold text-primary-200 p-3 border-typography-300 rounded-none hover:opacity-80"
-                                                onClick={() => setPdfGenerating(true)}
-                                            >
-                                                Preparar registros
-                                            </Button>
-                                        ) : null
-                                    )}
-                                </div>
-
                             </div>
                             <div className="flex h-1/2 justify-center items-center gap-1">
                                 <FilterGroups onClick={() => setPdfGenerating(false)} checkedOptions={groupSelecteds} congregation_id={congregationId as string} handleCheckboxChange={(groups) => handleCheckboxGroupsChange(groups)} />
@@ -316,50 +262,143 @@ function PublisherCardPage() {
                                     <CheckboxBoolean handleCheckboxChange={(check) => handleCheckboxTotalsChange(check)} checked={totals} label="Totais" />
                                     {!totals && <span className="flex justify-end text-primary-200 text-sm md:text-base font-semibold">{`Registros selecionados: ${!totals ? filterPublishers?.length : reportsTotalsFromFilter?.length}`}</span>}
                                 </div>
-                                {!totals ? publishers?.map(publisher => (
-                                    <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} >
-                                        {filterPublishers && filterPublishers?.length < 2 && filterPublishers?.some(publisherFilter => publisherFilter.id === publisher.id) &&
-                                            <div className="m-2">
-                                                {pdfGenerating ? (
-                                                    <Button outline className=" font-semibold text-primary-200 p-3 border-typography-300 rounded-none" onClick={() => setPdfGenerating(true)}>
-                                                        Preparar registro
-                                                    </Button>
-                                                ) : (
-                                                    <div className="px-2">
-                                                        <PdfLinkComponent />
+                                {!totals ?
+                                    publishers?.map(publisher => (
+                                        <div key={publisher.id} className="flex items-center justify-between">
+                                            <PublishersToGenerateS21 onClick={() => setPdfGenerating(false)} key={publisher.id} publisher={publisher} />
+                                        </div>
+                                    )) : (
+                                        <ul>
+                                            {Object.values(TotalsFrom).map(ob => (
+                                                <li
+                                                    key={ob}
+                                                    onClick={() => {
+                                                        setPdfGenerating(false),
+                                                            setTotalsFrom(ob)
+                                                    }}
+                                                    className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-100 to-primary-150" : "bg-surface-100 hover:bg-surface-100/50"} `}
+                                                >
+                                                    <div className={`flex flex-col p-4 text-typography-800`}>
+                                                        <span>{ob}</span>
                                                     </div>
-                                                )}
 
-                                            </div>
-                                        }
-                                    </PublishersToGenerateS21>
-                                )) : (
-                                    <ul>
-                                        {Object.values(TotalsFrom).map(ob => (
-                                            <li
-                                                key={ob}
-                                                onClick={() => {
-                                                    setPdfGenerating(false),
-                                                        setTotalsFrom(ob)
-                                                }}
-                                                className={`flex justify-between flex-wrap  my-1 w-full list-none cursor-pointer ${totalsFrom?.includes(ob) ? "bg-gradient-to-br from-primary-100 to-primary-150" : "bg-surface-100 hover:bg-surface-100/50"} `}
-                                            >
-                                                <div className={`flex flex-col p-4 text-typography-800`}>
-                                                    <span>{ob}</span>
-                                                </div>
+                                                </li>
 
-                                            </li>
-
-                                        ))}
-                                    </ul>
-                                )}
+                                            ))}
+                                        </ul>
+                                    )}
                             </>
                         ) : (
                             renderSkeleton()
                         )}
                     </div>
                 )}
+
+                {/* Botão Visualizar */}
+                {filterPublishers && filterPublishers.length > 0 && (
+                    <div
+                        className="
+    sticky bottom-6
+    z-40
+    bg-surface-100/95 backdrop-blur
+    border border-surface-300
+    rounded-2xl shadow-xl
+    px-6 py-3
+    flex flex-nowrap justify-between items-center gap-6
+
+    w-[92%] sm:w-auto
+    max-w-[420px]
+    mx-auto
+  "
+                    >
+
+
+                        <span className="text-sm text-typography-700 font-medium">
+                            {totals
+                                ? `${reportsTotalsFromFilter?.length ?? 0} totais selecionados`
+                                : `${filterPublishers.length} publicador(es) selecionado(s)`
+                            }
+                        </span>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setPublishersToView(filterPublishers);
+                                    setModalReportsOpen(true);
+                                }}
+                                className="text-primary-200 hover:text-primary-150"
+                                title="Visualizar"
+                            >
+                                <Eye className="w-6 h-6" strokeWidth={1.25} />
+                            </button>
+                            <PdfLinkComponent
+                                pdfData={{
+                                    publishers: !totals ? filterPublishers : undefined,
+                                    reportsFiltered: !totals ? reportsFiltered : undefined,
+                                    monthsServiceYears,
+                                    totals,
+                                    reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
+
             </section>
+            {/* ---------- MODAL DE RELATÓRIOS ---------- */}
+            <Dialog open={modalReportsOpen} onOpenChange={setModalReportsOpen}>
+                <DialogContent className="max-w-4xl w-full bg-surface-100 max-h-[90vh] overflow-y-auto p-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-typography-700">Visualizar relatórios</DialogTitle>
+                    </DialogHeader>
+                    <Dropdown
+                        textSize="md"
+                        notBorderFocus
+                        selectedItem={modalYearSelected}
+                        handleClick={(year) => setModalYearSelected(year)}
+                        textVisible
+                        title="Ano de Serviço"
+                        options={[yearServiceSelected, (Number(yearServiceSelected) - 1).toString(), (Number(yearServiceSelected) - 2).toString()]}
+                    />
+
+                    <div className="flex flex-col gap-6 mt-4">
+                        {publishersToView?.map(publisher => {
+                            const monthsWithYear = getMonthsByYear(modalYearSelected)
+
+                            const reportsFilter = monthsWithYear.months
+                                .map(monthYear => {
+                                    const [month, year] = monthYear.split(" ");
+                                    return reportsFiltered?.find(
+                                        r =>
+                                            r.publisher.id === publisher.id &&
+                                            r.month === month &&
+                                            r.year === year
+                                    )
+                                })
+                                .filter((r): r is IReports => r !== undefined)
+
+                            return (
+                                <div className="flex flex-col gap-6 mt-4">
+                                    <div key={publisher.id}>
+                                        <h3 className="text-lg font-semibold text-primary-200 mb-2">{publisher.fullName}</h3>
+                                        <ReportTable
+                                            key={publisher.id}
+                                            reports={reportsFilter}
+                                        />
+                                    </div>
+
+                                </div>
+                            )
+                        })}
+                    </div>
+
+                    <DialogFooter>
+                        <Button className="bg-primary-200 hover:bg-primary-200/80" onClick={() => setModalReportsOpen(false)}>Fechar</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </ContentDashboard>
     )
 }

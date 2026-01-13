@@ -1,50 +1,59 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormEditPublicWitnessArrangement from "@/Components/Forms/FormEditPublicWitnessArrangement"
+import FormEditReminder from "@/Components/Forms/FormEditReminder"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-function EditPublicWitnessArrangementPage() {
+function EditReminderPage() {
   const [crumbs, setCrumbs] = useAtom(crumbsAtom)
   const [, setPageActive] = useAtom(pageActiveAtom)
 
   const router = useRouter()
-  const { id } = router.query
+  const { reminder_id } = router.query
 
+  /* ======================
+   * Breadcrumbs
+   ====================== */
   useEffect(() => {
     setCrumbs(prev => [
       ...prev,
       {
-        label: "Testemunho Público - Arranjos",
-        link: "/congregacao/testemunho-publico"
-      }
+        label: "Lembretes",
+        link: "/meus-lembretes",
+      },
     ])
 
-    return () => setCrumbs(prev => prev.slice(0, -1))
+    return () => {
+      setCrumbs(prev => prev.slice(0, -1))
+    }
   }, [setCrumbs])
 
+  /* ======================
+   * Page title
+   ====================== */
   useEffect(() => {
-    setPageActive("Editar arranjo")
+    setPageActive("Editar lembrete")
   }, [setPageActive])
 
-  if (!id) return null
+  if (!reminder_id) return null
 
   return (
     <ContentDashboard>
-      <BreadCrumbs crumbs={crumbs} pageActive="Editar Arranjo" />
+      <BreadCrumbs
+        crumbs={crumbs}
+        pageActive="Editar lembrete"
+      />
+
       <section className="flex m-10 justify-center items-center">
-        <FormEditPublicWitnessArrangement arrangement_id={String(id)} />
+        <FormEditReminder reminder_id={String(reminder_id)} />
       </section>
     </ContentDashboard>
   )
 }
 
-EditPublicWitnessArrangementPage.getLayout = withProtectedLayout([
-  "ADMIN_CONGREGATION",
-  "PUBLIC_WITNESS_MANAGER"
-])
+EditReminderPage.getLayout = withProtectedLayout()
 
-export default EditPublicWitnessArrangementPage
+export default EditReminderPage
