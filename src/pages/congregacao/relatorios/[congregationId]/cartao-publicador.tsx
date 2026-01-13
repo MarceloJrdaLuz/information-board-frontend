@@ -357,8 +357,11 @@ function PublisherCardPage() {
                                 .map(monthYear => {
                                     const [month, year] = monthYear.split(" ");
                                     return reportsFiltered?.find(
-                                        r => r.month === month && r.year === year
-                                    );
+                                        r =>
+                                            r.publisher.id === publisher.id &&
+                                            r.month === month &&
+                                            r.year === year
+                                    )
                                 })
                                 .filter((r): r is IReports => r !== undefined)
 
