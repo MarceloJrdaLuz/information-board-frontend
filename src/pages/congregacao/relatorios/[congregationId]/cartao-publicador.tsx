@@ -296,10 +296,22 @@ function PublisherCardPage() {
 
                 {/* Botão Visualizar */}
                 {filterPublishers && filterPublishers.length > 0 && (
-                    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 
-                  bg-surface-100 border border-surface-300 
-                  rounded-xl shadow-lg px-4 py-2 
-                  flex items-center gap-4">
+                    <div
+                        className="
+    sticky bottom-2
+    z-40
+    bg-surface-100/95 backdrop-blur
+    border border-surface-300
+    rounded-2xl shadow-xl
+    px-6 py-3
+    flex flex-nowrap justify-between items-center gap-6
+
+    w-[92%] sm:w-auto
+    max-w-[420px]
+    mx-auto
+  "
+                    >
+
 
                         <span className="text-sm text-typography-700 font-medium">
                             {totals
@@ -308,26 +320,27 @@ function PublisherCardPage() {
                             }
                         </span>
 
-                        <button
-                            onClick={() => {
-                                setPublishersToView(filterPublishers);
-                                setModalReportsOpen(true);
-                            }}
-                            className="text-primary-200 hover:text-primary-150"
-                            title="Visualizar"
-                        >
-                            <Eye className="w-5 h-5" />
-                        </button>
-
-                        <PdfLinkComponent
-                            pdfData={{
-                                publishers: !totals ? filterPublishers : undefined,
-                                reportsFiltered: !totals ? reportsFiltered : undefined,
-                                monthsServiceYears,
-                                totals,
-                                reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
-                            }}
-                        />
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setPublishersToView(filterPublishers);
+                                    setModalReportsOpen(true);
+                                }}
+                                className="text-primary-200 hover:text-primary-150"
+                                title="Visualizar"
+                            >
+                                <Eye className="w-5 h-5" />
+                            </button>
+                            <PdfLinkComponent
+                                pdfData={{
+                                    publishers: !totals ? filterPublishers : undefined,
+                                    reportsFiltered: !totals ? reportsFiltered : undefined,
+                                    monthsServiceYears,
+                                    totals,
+                                    reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
+                                }}
+                            />
+                        </div>
                     </div>
                 )}
 
