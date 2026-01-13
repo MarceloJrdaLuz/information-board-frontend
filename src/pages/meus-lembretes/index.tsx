@@ -22,7 +22,7 @@ export default function RemindersPage() {
     const deleteReminder = useSetAtom(deleteReminderAtom)
 
     const { data, mutate } = useAuthorizedFetch<IReminder[]>(
-        `${API_ROUTES.PUBLISHER_REMINDERS}/publishers/${user?.publisher?.id}`
+        `${API_ROUTES.PUBLISHER_REMINDERS}/publishers/${user?.publisher?.id}/all`
     )
 
     async function handleDelete(reminder_id: string) {
