@@ -75,6 +75,7 @@ export default function FormAddReminder() {
     }
 
     function onError(error: any) {
+        console.log(error)
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
@@ -106,11 +107,12 @@ export default function FormAddReminder() {
                                 label="Data inicial"
                                 selectedDate={startDate}
                                 handleDateChange={(date) => {
-                                    setValue("startDate", date)
+                                    setValue("startDate", date, { shouldValidate: true, shouldTouch: true })
                                     if (endDate && date && dayjs(endDate).isBefore(date)) {
-                                        setValue("endDate", date)
+                                        setValue("endDate", date, { shouldValidate: true, shouldTouch: true })
                                     }
                                 }}
+                                error={errors.startDate?.message}
                             />
                         </div>
 
@@ -120,7 +122,8 @@ export default function FormAddReminder() {
                                 label="Data final"
                                 selectedDate={endDate}
                                 minDate={startDate}
-                                handleDateChange={(date) => setValue("endDate", date)}
+                                handleDateChange={(date) => setValue("endDate", date, { shouldValidate: true, shouldTouch: true })}
+                                error={errors.endDate?.message}
                             />
                         </div>
                     </div>
@@ -172,7 +175,7 @@ export default function FormAddReminder() {
                                     }}
                                 />
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                                 <div className="flex-1">
                                     <Dropdown

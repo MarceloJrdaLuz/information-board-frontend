@@ -126,12 +126,13 @@ export default function FormEditReminder({ reminder_id }: Props) {
                                 label="Data inicial"
                                 selectedDate={startDate}
                                 handleDateChange={(date) => {
-                                    setValue("startDate", date)
+                                    setValue("startDate", date, { shouldValidate: true, shouldTouch: true })
                                     if (endDate && date && dayjs(endDate).isBefore(date)) {
-                                        setValue("endDate", date)
+                                        setValue("endDate", date, { shouldValidate: true, shouldTouch: true })
                                     }
                                 }}
                                 full
+                                error={errors.startDate?.message}
                             />
                         </div>
 
@@ -140,8 +141,9 @@ export default function FormEditReminder({ reminder_id }: Props) {
                                 label="Data final"
                                 selectedDate={endDate}
                                 minDate={startDate}
-                                handleDateChange={(date) => setValue("endDate", date)}
+                                handleDateChange={(date) => setValue("endDate", date, { shouldValidate: true, shouldTouch: true })}
                                 full
+                                error={errors.endDate?.message}
                             />
                         </div>
                     </div>
