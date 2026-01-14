@@ -16,6 +16,7 @@ interface CalendarProps {
     disabled?: boolean
     full?: boolean
     allowedWeekday?: number
+    error?: string | null
 }
 
 export default function Calendar({
@@ -26,7 +27,8 @@ export default function Calendar({
     titleHidden,
     disabled = false,
     full = false,
-    allowedWeekday
+    allowedWeekday,
+    error
 }: CalendarProps) {
 
     // Converte string -> Date para exibir no DatePicker
@@ -61,7 +63,7 @@ export default function Calendar({
                 }}
                 wrapperClassName={full ? "w-full" : ""}
                 disabled={disabled}
-                customInput={<CustomInput label={label} disabled={disabled} />}
+                customInput={<CustomInput label={label} disabled={disabled} error={error} />}
                 locale="pt-BR"
                 selected={parsedSelected}
                 minDate={parsedMin}
@@ -94,24 +96,27 @@ export default function Calendar({
     )
 }
 
-
-
-const CustomInput = forwardRef(({ value, onClick, label, disabled }: any, ref: any) => (
-    <button
-        type="button"
-        onClick={!disabled ? onClick : undefined}
-        disabled={disabled}
-        ref={ref}
-        className={`flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] border text-sm rounded-lg
-        ${disabled
-                ? "bg-surface-300 text-typography-700 border-transparent  cursor-not-allowed"
-                : "bg-transparent text-typography-700 border-blue-gray-200 cursor-pointer"
-            }
-      `}
-    >
-        <span>{value || label}</span>
-        <CalendarIcon className={`w-4 h-4 text-typography-700`} />
-    </button>
+const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleHidden }: any, ref: any) => (
+    <div className="w-full">
+        <button
+            type="button"
+            onClick={!disabled ? onClick : undefined}
+            disabled={disabled}
+            ref={ref}
+            className={`flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] border text-sm rounded-lg
+             ${disabled
+                    ? "bg-surface-300 text-typography-700 border-transparent cursor-not-allowed"
+                    : error
+                        ? "border-red-500 text-typography-700 bg-transparent cursor-pointer"
+                        : "bg-transparent text-typography-700 border-blue-gray-200 cursor-pointer"
+                }
+          `}
+        >
+            <span className={`${error ? "text-red-500" : "text-typography-700"}`}>{value || (titleHidden ? label : "Selecione uma data")}</span>
+            <CalendarIcon className={`w-4 h-4 ${error ? "text-red-500" : "text-typography-700"}`} />
+        </button>
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
 ))
 
 CustomInput.displayName = "CustomInput"

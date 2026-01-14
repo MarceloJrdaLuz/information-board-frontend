@@ -13,14 +13,19 @@ interface IDropdown {
   onClick?: () => void
   border?: boolean
   full?: boolean
-  position?: 'right' | 'left'
+  position?: 'right' | 'left' | 'center'
   textSize?: 'md' | 'lg' | 'xl'
   textVisible?: boolean
   notBorderFocus?: boolean
 }
 
 export default function Dropdown(props: IDropdown) {
-
+  const positionClasses = {
+    left: 'left-0 origin-top-left',
+    right: 'right-0 origin-top-right',
+    center: 'left-1/2 -translate-x-1/2 origin-top' // Centralização perfeita
+  };
+  const currentPosition = props.position ? positionClasses[props.position] : positionClasses.left;
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
@@ -41,7 +46,7 @@ export default function Dropdown(props: IDropdown) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${props.position}-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
+        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${currentPosition} z-10 mt-2 w-56 origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`} >
           <div className="py-1">
             {props.options.map((option, index) => (
               <Menu.Item key={index}>

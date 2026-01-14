@@ -29,24 +29,29 @@ export const createReminderSchema = yup.object({
 
   isRecurring: yup.boolean().required(),
 
-  recurrenceIntervalDays: yup
+  recurrenceType: yup.string().when("isRecurring", {
+    is: true,
+    then: (schema) => schema.required("Selecione o tipo de repetição"),
+    otherwise: (schema) => schema.nullable().strip()
+  }),
+
+  recurrenceInterval: yup
     .number()
+    .transform((value) => (isNaN(value) ? null : value))
     .nullable()
     .when("isRecurring", {
       is: true,
-      then: (schema) =>
-        schema
-          .required("Campo obrigatório")
-          .min(1, "Mínimo 1 dia"),
+      then: (schema) => schema.required("Obrigatório").min(1, "Mínimo 1"),
       otherwise: (schema) => schema.nullable().strip()
     }),
 
   recurrenceCount: yup
     .number()
+    .transform((value) => (isNaN(value) ? null : value))
     .nullable()
     .when("isRecurring", {
       is: true,
       then: (schema) => schema.min(1, "Mínimo 1"),
-      otherwise: (schema) => schema.nullable().strip()
+      otherwise: (schema) => schema.nullable().strip() // Remove do objeto apenas se NÃO for recorrente
     })
 })

@@ -25,20 +25,26 @@ export const editReminderSchema = yup.object({
 
     isRecurring: yup.boolean().required(),
 
-    recurrenceIntervalDays: yup
+    recurrenceType: yup.string().when("isRecurring", {
+        is: true,
+        then: (schema) => schema.required("Obrigatório"),
+        otherwise: (schema) => schema.nullable().strip()
+    }),
+
+    // Renomeado e com tratamento para NaN
+    recurrenceInterval: yup
         .number()
+        .transform((value) => (isNaN(value) ? null : value))
         .nullable()
         .when("isRecurring", {
             is: true,
-            then: (schema) =>
-                schema
-                    .required("Campo obrigatório")
-                    .min(1, "Mínimo 1 dia"),
+            then: (schema) => schema.required("Obrigatório").min(1, "Mínimo 1"),
             otherwise: (schema) => schema.nullable().strip()
         }),
 
     recurrenceCount: yup
         .number()
+        .transform((value) => (isNaN(value) ? null : value))
         .nullable()
         .when("isRecurring", {
             is: true,

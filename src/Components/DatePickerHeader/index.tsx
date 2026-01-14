@@ -19,8 +19,8 @@ export function DatePickerHeader({
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 150 }, (_, i) => currentYear - i);
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 150 }, (_, i) => currentYear - i);
 
     function handleMonthChange(month: string) {
         changeMonth(months.indexOf(month));
@@ -46,6 +46,7 @@ const years = Array.from({ length: 150 }, (_, i) => currentYear - i);
                 textVisible
                 title={months[date.getMonth()]}
                 selectedItem={months[date.getMonth()]}
+                position="left"
                 options={months}
                 handleClick={handleMonthChange}
             />
@@ -56,6 +57,7 @@ const years = Array.from({ length: 150 }, (_, i) => currentYear - i);
                 title={date.getFullYear().toString()}
                 selectedItem={date.getFullYear().toString()}
                 options={years.map(y => y.toString())}
+                position="right"
                 handleClick={handleYearChange}
             />
 

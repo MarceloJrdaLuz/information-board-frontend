@@ -1,27 +1,35 @@
-import { useForm } from "react-hook-form"
-import dayjs from "dayjs"
-import Button from "@/Components/Button"
-import Input from "@/Components/Input"
-import Calendar from "@/Components/Calendar"
-import { useSetAtom } from "jotai"
 import { createReminderAtom } from "@/atoms/remindersAtom"
-import { CreateReminderPayload } from "@/atoms/remindersAtom/types"
-import TextArea from "@/Components/TextArea"
-import { Checkbox } from "@radix-ui/react-checkbox"
-import FormStyle from "../FormStyle"
+import { CreateReminderPayload, RecurrenceType } from "@/atoms/remindersAtom/types"
+import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
+import Dropdown from "@/Components/Dropdown"
+import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
-import { toast } from "react-toastify"
-import * as yup from 'yup'
-import { yupResolver } from "@hookform/resolvers/yup"
-import { createReminderSchema } from "./validations"
+import TextArea from "@/Components/TextArea"
 import { useAuthContext } from "@/context/AuthContext"
+import { yupResolver } from "@hookform/resolvers/yup"
+import dayjs from "dayjs"
+import { useSetAtom } from "jotai"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import FormStyle from "../FormStyle"
+import { createReminderSchema } from "./validations"
 
 
 export default function FormAddReminder() {
     const createReminder = useSetAtom(createReminderAtom)
     const { user } = useAuthContext()
 
+    const recurrenceOptions = [
+        { value: RecurrenceType.DAILY, singular: "Dia", plural: "Dias" },
+        { value: RecurrenceType.WEEKLY, singular: "Semana", plural: "Semanas" },
+        { value: RecurrenceType.MONTHLY, singular: "Mês", plural: "Meses" },
+        { value: RecurrenceType.YEARLY, singular: "Ano", plural: "Anos" },
+    ]
+
+    const intervalOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString())
+    const countOptions = ["Sempre", ...Array.from({ length: 12 }, (_, i) => (i + 1).toString())]
 
     const {
         register,
@@ -35,13 +43,27 @@ export default function FormAddReminder() {
         defaultValues: {
             isRecurring: false,
             startDate: null,
-            endDate: null
+            endDate: null,
+            recurrenceInterval: 1,
+            recurrenceCount: null
         }
     })
 
     const isRecurring = watch("isRecurring")
     const startDate = watch("startDate")
     const endDate = watch("endDate")
+    const recurrenceType = watch("recurrenceType")
+    const recurrenceInterval = watch("recurrenceInterval") ?? 1
+    const recurrenceCount = watch("recurrenceCount")
+
+    // Função de auxílio para pegar o label correto (singular/plural)
+    const getLabel = (type: RecurrenceType | undefined, interval: number) => {
+        const option = recurrenceOptions.find(opt => opt.value === type)
+        if (!option) return ""
+        return interval > 1 ? option.plural : option.singular
+    }
+
+    const selectedRecurrenceLabel = getLabel(recurrenceType, recurrenceInterval)
 
     async function onSubmit(data: CreateReminderPayload) {
         await toast.promise(
@@ -53,6 +75,7 @@ export default function FormAddReminder() {
     }
 
     function onError(error: any) {
+        console.log(error)
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
@@ -78,23 +101,31 @@ export default function FormAddReminder() {
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
                     <div className="flex justify-around flex-wrap">
-                        <Calendar
-                            label="Data inicial"
-                            selectedDate={startDate}
-                            handleDateChange={(date) => {
-                                setValue("startDate", date)
-                                if (endDate && date && dayjs(endDate).isBefore(date)) {
-                                    setValue("endDate", date)
-                                }
-                            }}
-                        />
+                        <div className="w-full sm:w-44">
+                            <Calendar
+                                full
+                                label="Data inicial"
+                                selectedDate={startDate}
+                                handleDateChange={(date) => {
+                                    setValue("startDate", date, { shouldValidate: true, shouldTouch: true })
+                                    if (endDate && date && dayjs(endDate).isBefore(date)) {
+                                        setValue("endDate", date, { shouldValidate: true, shouldTouch: true })
+                                    }
+                                }}
+                                error={errors.startDate?.message}
+                            />
+                        </div>
 
-                        <Calendar
-                            label="Data final"
-                            selectedDate={endDate}
-                            minDate={startDate}
-                            handleDateChange={(date) => setValue("endDate", date)}
-                        />
+                        <div className="w-full sm:w-44">
+                            <Calendar
+                                full
+                                label="Data final"
+                                selectedDate={endDate}
+                                minDate={startDate}
+                                handleDateChange={(date) => setValue("endDate", date, { shouldValidate: true, shouldTouch: true })}
+                                error={errors.endDate?.message}
+                            />
+                        </div>
                     </div>
 
                     <div className="my-2">
@@ -103,39 +134,74 @@ export default function FormAddReminder() {
                             checked={isRecurring}
                             handleCheckboxChange={(checked) => {
                                 setValue("isRecurring", checked)
-                                if (!checked) {
-                                    setValue("recurrenceIntervalDays", undefined)
-                                    setValue("recurrenceCount", undefined)
+                                if (checked) {
+                                    setValue("recurrenceType", RecurrenceType.DAILY)
+                                    setValue("recurrenceInterval", 1)
+                                } else {
+                                    setValue("recurrenceInterval", null)
+                                    setValue("recurrenceType", undefined)
                                 }
                             }}
                         />
                     </div>
-
-
                     {isRecurring && (
-                        // <div className="grid grid-cols-2 gap-4">
-                        <>
+                        <div className="flex flex-col gap-2 p-4 bg-surface-50 rounded-md border border-surface-300 mb-8">
+                            <span className="text-sm text-typography-800 shrink-0">Repetir a cada</span>
+                            <div className="flex items-center gap-4">
+                                <div className="w-20">
+                                    <Dropdown
+                                        full
+                                        textVisible
+                                        border
+                                        title="Selecione"
+                                        selectedItem={recurrenceInterval?.toString() || "Selecione"}
+                                        options={intervalOptions}
+                                        handleClick={(val) => setValue("recurrenceInterval", Number(val))}
+                                    />
+                                </div>
 
-                            <Input type="text" placeholder="Repetir a cada (dias)" registro={{
-                                ...register('recurrenceIntervalDays',
-                                    {
-                                        required: "Campo obrigatório",
-                                        min: { value: 1, message: "Mínimo 1 dia" }
-                                    })
-                            }}
-                                invalid={errors?.recurrenceIntervalDays?.message ? 'invalido' : ''} />
-                            {errors?.recurrenceIntervalDays?.type && <InputError type={errors.recurrenceIntervalDays.type} field='recurrenceIntervalDays' />}
+                                <Dropdown
+                                    title="Selecione"
+                                    full
+                                    textVisible
+                                    border
+                                    selectedItem={selectedRecurrenceLabel}
+                                    options={recurrenceOptions.map(opt =>
+                                        recurrenceInterval > 1 ? opt.plural : opt.singular
+                                    )}
+                                    handleClick={(label) => {
+                                        const found = recurrenceOptions.find(o => o.singular === label || o.plural === label)
+                                        if (found) setValue("recurrenceType", found.value)
+                                    }}
+                                />
+                            </div>
 
-                            <Input
-                                type="number"
-                                placeholder="Quantidade de repetições"
-                                {...register("recurrenceCount")}
-                            />
-                        </>
-                        // </div>
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1">
+                                    <Dropdown
+                                        full
+                                        textVisible
+                                        border
+                                        title="Selecione a quantidade"
+                                        selectedItem={recurrenceCount === null ? "Sempre" : recurrenceCount?.toString()}
+                                        options={countOptions}
+                                        handleClick={(val) => {
+                                            setValue("recurrenceCount", val === "Sempre" ? null : Number(val))
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <p className="text-[11px] text-typography-500 bg-surface-100 p-2 rounded border border-dashed border-surface-300">
+                                💡 <strong>Resumo:</strong> O lembrete irá se repetir a cada <strong>{recurrenceInterval} {selectedRecurrenceLabel.toLowerCase()}</strong>.
+                                {recurrenceCount
+                                    ? ` O ciclo se encerrará após ${recurrenceCount} execuções.`
+                                    : " Este lembrete não tem data de término definida (sempre ativo)."}
+                            </p>
+                        </div>
                     )}
 
-                    <Button type="submit">
+                    <Button className="text-typography-200" type="submit">
                         Criar lembrete
                     </Button>
                 </div>
