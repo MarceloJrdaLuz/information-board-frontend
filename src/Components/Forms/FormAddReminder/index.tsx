@@ -1,22 +1,20 @@
-import { useForm } from "react-hook-form"
-import dayjs from "dayjs"
-import Button from "@/Components/Button"
-import Input from "@/Components/Input"
-import Calendar from "@/Components/Calendar"
-import { useSetAtom } from "jotai"
 import { createReminderAtom } from "@/atoms/remindersAtom"
 import { CreateReminderPayload, RecurrenceType } from "@/atoms/remindersAtom/types"
-import TextArea from "@/Components/TextArea"
-import { Checkbox } from "@radix-ui/react-checkbox"
-import FormStyle from "../FormStyle"
+import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
-import InputError from "@/Components/InputError"
-import { toast } from "react-toastify"
-import * as yup from 'yup'
-import { yupResolver } from "@hookform/resolvers/yup"
-import { createReminderSchema } from "./validations"
-import { useAuthContext } from "@/context/AuthContext"
 import Dropdown from "@/Components/Dropdown"
+import Input from "@/Components/Input"
+import InputError from "@/Components/InputError"
+import TextArea from "@/Components/TextArea"
+import { useAuthContext } from "@/context/AuthContext"
+import { yupResolver } from "@hookform/resolvers/yup"
+import dayjs from "dayjs"
+import { useSetAtom } from "jotai"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import FormStyle from "../FormStyle"
+import { createReminderSchema } from "./validations"
 
 
 export default function FormAddReminder() {
@@ -24,14 +22,14 @@ export default function FormAddReminder() {
     const { user } = useAuthContext()
 
     const recurrenceOptions = [
-        { label: "Dia", value: RecurrenceType.DAILY },
-        { label: "Semana", value: RecurrenceType.WEEKLY },
-        { label: "Mês", value: RecurrenceType.MONTHLY },
-        { label: "Ano", value: RecurrenceType.YEARLY },
+        { value: RecurrenceType.DAILY, singular: "Dia", plural: "Dias" },
+        { value: RecurrenceType.WEEKLY, singular: "Semana", plural: "Semanas" },
+        { value: RecurrenceType.MONTHLY, singular: "Mês", plural: "Meses" },
+        { value: RecurrenceType.YEARLY, singular: "Ano", plural: "Anos" },
     ]
 
-    const intervalOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-    const countOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+    const intervalOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString())
+    const countOptions = ["Sempre", ...Array.from({ length: 12 }, (_, i) => (i + 1).toString())]
 
     const {
         register,
@@ -45,7 +43,9 @@ export default function FormAddReminder() {
         defaultValues: {
             isRecurring: false,
             startDate: null,
-            endDate: null
+            endDate: null,
+            recurrenceInterval: 1,
+            recurrenceCount: null
         }
     })
 
@@ -53,9 +53,17 @@ export default function FormAddReminder() {
     const startDate = watch("startDate")
     const endDate = watch("endDate")
     const recurrenceType = watch("recurrenceType")
-    const selectedRecurrenceLabel = recurrenceOptions.find(opt => opt.value === recurrenceType)?.label
-    const recurrenceInterval = watch("recurrenceInterval");
-    const recurrenceCount = watch("recurrenceCount");
+    const recurrenceInterval = watch("recurrenceInterval") ?? 1
+    const recurrenceCount = watch("recurrenceCount")
+
+    // Função de auxílio para pegar o label correto (singular/plural)
+    const getLabel = (type: RecurrenceType | undefined, interval: number) => {
+        const option = recurrenceOptions.find(opt => opt.value === type)
+        if (!option) return ""
+        return interval > 1 ? option.plural : option.singular
+    }
+
+    const selectedRecurrenceLabel = getLabel(recurrenceType, recurrenceInterval)
 
     async function onSubmit(data: CreateReminderPayload) {
         await toast.promise(
@@ -150,36 +158,42 @@ export default function FormAddReminder() {
                                 </div>
 
                                 <Dropdown
+                                    title="Selecione"
                                     full
                                     textVisible
                                     border
-                                    title="Selecione o período"
                                     selectedItem={selectedRecurrenceLabel}
-                                    options={recurrenceOptions.map(opt => opt.label)}
+                                    options={recurrenceOptions.map(opt =>
+                                        recurrenceInterval > 1 ? opt.plural : opt.singular
+                                    )}
                                     handleClick={(label) => {
-                                        const value = recurrenceOptions.find(opt => opt.label === label)?.value
-                                        setValue("recurrenceType", value)
+                                        const found = recurrenceOptions.find(o => o.singular === label || o.plural === label)
+                                        if (found) setValue("recurrenceType", found.value)
                                     }}
                                 />
                             </div>
-                            {errors?.recurrenceInterval && <InputError type="required" field="intervalo" />}
-
+                            
                             <div className="flex items-center gap-2">
                                 <div className="flex-1">
                                     <Dropdown
                                         full
                                         textVisible
                                         border
-                                        title="Quantidade de repetições"
-                                        selectedItem={recurrenceCount?.toString() || "Quantidade de repetições"}
+                                        title="Selecione a quantidade"
+                                        selectedItem={recurrenceCount === null ? "Sempre" : recurrenceCount?.toString()}
                                         options={countOptions}
-                                        handleClick={(val) => setValue("recurrenceCount", Number(val))}
+                                        handleClick={(val) => {
+                                            setValue("recurrenceCount", val === "Sempre" ? null : Number(val))
+                                        }}
                                     />
                                 </div>
                             </div>
 
-                            <p className="text-[10px] text-typography-400 italic mt-1 text-center">
-                                O lembrete será gerado por {recurrenceCount || 'X'} vez(es). Se deixar vazio, ele repetirá sempre no intervalo escolhido.
+                            <p className="text-[11px] text-typography-500 bg-surface-100 p-2 rounded border border-dashed border-surface-300">
+                                💡 <strong>Resumo:</strong> O lembrete irá se repetir a cada <strong>{recurrenceInterval} {selectedRecurrenceLabel.toLowerCase()}</strong>.
+                                {recurrenceCount
+                                    ? ` O ciclo se encerrará após ${recurrenceCount} execuções.`
+                                    : " Este lembrete não tem data de término definida (sempre ativo)."}
                             </p>
                         </div>
                     )}

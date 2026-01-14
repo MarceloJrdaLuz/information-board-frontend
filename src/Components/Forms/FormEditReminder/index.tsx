@@ -2,22 +2,22 @@ import { updateReminderAtom } from "@/atoms/remindersAtom"
 import { RecurrenceType, UpdateReminderPayload } from "@/atoms/remindersAtom/types"
 import Button from "@/Components/Button"
 import Calendar from "@/Components/Calendar"
-import Input from "@/Components/Input"
-import TextArea from "@/Components/TextArea"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
+import Dropdown from "@/Components/Dropdown"
+import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
-import { useFetch } from "@/hooks/useFetch"
+import TextArea from "@/Components/TextArea"
 import { API_ROUTES } from "@/constants/apiRoutes"
+import { useFetch } from "@/hooks/useFetch"
 import { IReminder } from "@/types/reminder"
+import { yupResolver } from "@hookform/resolvers/yup"
 import dayjs from "dayjs"
 import { useSetAtom } from "jotai"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { editReminderSchema } from "./validations"
 import { toast } from "react-toastify"
 import FormStyle from "../FormStyle"
-import Dropdown from "@/Components/Dropdown"
+import { editReminderSchema } from "./validations"
 
 interface Props {
     reminder_id: string
@@ -27,14 +27,14 @@ export default function FormEditReminder({ reminder_id }: Props) {
     const updateReminder = useSetAtom(updateReminderAtom)
 
     const recurrenceOptions = [
-        { label: "Dia", value: RecurrenceType.DAILY },
-        { label: "Semana", value: RecurrenceType.WEEKLY },
-        { label: "Mês", value: RecurrenceType.MONTHLY },
-        { label: "Ano", value: RecurrenceType.YEARLY },
+        { value: RecurrenceType.DAILY, singular: "Dia", plural: "Dias" },
+        { value: RecurrenceType.WEEKLY, singular: "Semana", plural: "Semanas" },
+        { value: RecurrenceType.MONTHLY, singular: "Mês", plural: "Meses" },
+        { value: RecurrenceType.YEARLY, singular: "Ano", plural: "Anos" },
     ]
 
     const intervalOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-    const countOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+    const countOptions = ["Sempre", ...Array.from({ length: 12 }, (_, i) => (i + 1).toString())];
 
     const { data: reminder } = useFetch<IReminder>(
         `${API_ROUTES.PUBLISHER_REMINDERS}/${reminder_id}`
@@ -65,8 +65,8 @@ export default function FormEditReminder({ reminder_id }: Props) {
             startDate: reminder.startDate,
             endDate: reminder.endDate,
             isRecurring: reminder.isRecurring,
-            recurrenceType: reminder.recurrenceType, // Adicionado
-            recurrenceInterval: reminder.recurrenceInterval ?? null, // Nome corrigido
+            recurrenceType: reminder.recurrenceType,
+            recurrenceInterval: reminder.recurrenceInterval ?? 1,
             recurrenceCount: reminder.recurrenceCount ?? null,
             isActive: reminder.isActive
         })
@@ -76,10 +76,16 @@ export default function FormEditReminder({ reminder_id }: Props) {
     const startDate = watch("startDate") ?? null
     const endDate = watch("endDate") ?? null
     const recurrenceType = watch("recurrenceType")
-    const recurrenceInterval = watch("recurrenceInterval");
-    const recurrenceCount = watch("recurrenceCount");
+    const recurrenceInterval = watch("recurrenceInterval") ?? 1
+    const recurrenceCount = watch("recurrenceCount")
 
-    const selectedRecurrenceLabel = recurrenceOptions.find(opt => opt.value === recurrenceType)?.label
+    const getLabel = (type: RecurrenceType | undefined, interval: number) => {
+        const option = recurrenceOptions.find(opt => opt.value === type)
+        if (!option) return "Selecione o período"
+        return interval > 1 ? option.plural : option.singular
+    }
+
+    const selectedRecurrenceLabel = getLabel(recurrenceType, recurrenceInterval)
 
     async function onSubmit(data: UpdateReminderPayload) {
         console.log(data)
@@ -158,69 +164,73 @@ export default function FormEditReminder({ reminder_id }: Props) {
                     </div>
 
                     {isRecurring && (
-                        <div className="flex flex-col gap-2 p-4 bg-surface-50 rounded-md border border-surface-200">
-                            <span className="text-sm text-typography-800 shrink-0">Repetir a cada</span>
-                                <div className="flex items-center gap-4">
-                                <div className="w-20">
+                        <div className="flex flex-col gap-4 p-4 bg-surface-50 rounded-md border border-surface-300">
+                            <span className="text-sm text-typography-800 font-medium">Repetir a cada</span>
+
+                            <div className="flex items-center gap-4">
+                                <div className="w-24">
                                     <Dropdown
+                                        title=""
                                         full
                                         textVisible
                                         border
-                                        title="Selecione"
-                                        selectedItem={recurrenceInterval?.toString() || "Selecione"}
+                                        selectedItem={recurrenceInterval.toString()}
                                         options={intervalOptions}
                                         handleClick={(val) => setValue("recurrenceInterval", Number(val))}
                                     />
                                 </div>
 
+                                <div className="flex-1">
+                                    <Dropdown
+                                        title=""
+                                        full
+                                        textVisible
+                                        border
+                                        selectedItem={selectedRecurrenceLabel}
+                                        options={recurrenceOptions.map(opt =>
+                                            recurrenceInterval > 1 ? opt.plural : opt.singular
+                                        )}
+                                        handleClick={(label) => {
+                                            const found = recurrenceOptions.find(o => o.singular === label || o.plural === label)
+                                            if (found) setValue("recurrenceType", found.value)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="w-full">
                                 <Dropdown
                                     full
                                     textVisible
                                     border
-                                    title="Selecione o período"
-                                    selectedItem={selectedRecurrenceLabel}
-                                    options={recurrenceOptions.map(opt => opt.label)}
-                                    handleClick={(label) => {
-                                        const value = recurrenceOptions.find(opt => opt.label === label)?.value
-                                        setValue("recurrenceType", value)
-                                    }}
+                                    title="Quantidade de repetições"
+                                    selectedItem={recurrenceCount === null ? "Sempre" : recurrenceCount?.toString()}
+                                    options={countOptions}
+                                    handleClick={(val) => setValue("recurrenceCount", val === "Sempre" ? null : Number(val))}
                                 />
-                        </div>
-                            {errors?.recurrenceInterval && <InputError type="required" field="intervalo" />}
+                            </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="flex-1">
-                            <Dropdown
-                                full
-                                textVisible
-                                border
-                                title="Quantidade de repetições"
-                                selectedItem={recurrenceCount?.toString() || "Quantidade de repetições"}
-                                options={countOptions}
-                                handleClick={(val) => setValue("recurrenceCount", Number(val))}
-                            />
+                            <p className="text-[11px] text-typography-500 bg-surface-100 p-2 rounded border border-dashed border-surface-300">
+                                💡 <strong>Resumo:</strong> O lembrete irá se repetir a cada <strong>{recurrenceInterval} {selectedRecurrenceLabel.toLowerCase()}</strong>.
+                                {recurrenceCount
+                                    ? ` O ciclo se encerrará após ${recurrenceCount} execuções.`
+                                    : " Este lembrete não tem data de término definida (sempre ativo)."}
+                            </p>
                         </div>
+                    )}
+                    <div className="my-2">
+                        <CheckboxBoolean
+                            label="Lembrete ativo"
+                            checked={watch("isActive")}
+                            handleCheckboxChange={(checked) => setValue("isActive", checked)}
+                        />
                     </div>
 
-                    <p className="text-[10px] text-typography-400 italic mt-1 text-center">
-                        O lembrete será gerado por {recurrenceCount || 'X'} vez(es). Se deixar vazio, ele repetirá <strong>sempre</strong> no intervalo escolhido.
-                    </p>
+                    <Button className="text-typography-200" type="submit">
+                        Salvar alterações
+                    </Button>
                 </div>
-                    )}
-
-                <div className="my-2">
-                    <CheckboxBoolean
-                        label="Lembrete ativo"
-                        checked={watch("isActive")}
-                        handleCheckboxChange={(checked) => setValue("isActive", checked)}
-                    />
-                </div>
-
-                <Button className="text-typography-200" type="submit">
-                    Salvar alterações
-                </Button>
-            </div>
-        </FormStyle>
+            </FormStyle>
         </section >
 
     )
