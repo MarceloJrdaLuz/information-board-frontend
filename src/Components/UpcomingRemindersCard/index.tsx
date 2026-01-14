@@ -103,7 +103,7 @@ export function UpcomingRemindersCard({ reminders, mutateReminders }: Props) {
                                         </strong>
 
                                         <button
-                                            onClick={() => Router.push(`/meus-lembretes//edit/${reminder.id}`)}
+                                            onClick={() => Router.push(`/meus-lembretes/edit/${reminder.id}`)}
                                             className="ml-auto text-typography-400 hover:text-primary-200 transition"
                                             aria-label="Editar lembrete"
                                         >

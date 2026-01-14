@@ -1,3 +1,5 @@
+import { RecurrenceType } from "@/atoms/remindersAtom/types"
+
 export interface IReminder {
   id: string
   title: string
@@ -7,7 +9,8 @@ export interface IReminder {
   endDate: string
 
   isRecurring: boolean
-  recurrenceIntervalDays?: number | null
+  recurrenceType?: RecurrenceType 
+  recurrenceInterval?: number | null 
   recurrenceCount?: number | null
   completed_until?: string | null
   isActive: boolean
