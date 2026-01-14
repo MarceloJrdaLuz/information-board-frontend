@@ -96,7 +96,7 @@ export default function Calendar({
     )
 }
 
-const CustomInput = forwardRef(({ value, onClick, label, disabled, error }: any, ref: any) => (
+const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleHidden }: any, ref: any) => (
     <div className="w-full">
         <button
             type="button"
@@ -112,7 +112,7 @@ const CustomInput = forwardRef(({ value, onClick, label, disabled, error }: any,
                 }
           `}
         >
-            <span className={`${error ? "text-red-500" : "text-typography-700"}`}>{value || label}</span>
+            <span className={`${error ? "text-red-500" : "text-typography-700"}`}>{value || (titleHidden ? label : "Selecione uma data")}</span>
             <CalendarIcon className={`w-4 h-4 ${error ? "text-red-500" : "text-typography-700"}`} />
         </button>
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
