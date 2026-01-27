@@ -39,7 +39,7 @@ export function UpcomingRemindersCard({ reminders, mutateReminders }: Props) {
     const upcoming = reminders
         .filter(r => dayjs(r.endDate).isSameOrAfter(today, "day"))
         .sort((a, b) =>
-            dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf()
+            dayjs(a.endDate).valueOf() - dayjs(b.endDate).valueOf()
         )
 
     const visible = expanded
@@ -83,10 +83,10 @@ export function UpcomingRemindersCard({ reminders, mutateReminders }: Props) {
                                 {/* Data */}
                                 <div className="flex flex-col items-center justify-center w-16 bg-surface-200/40 border-r border-surface-300 py-3">
                                     <span className="text-lg font-bold text-typography-700">
-                                        {dayjs(reminder.startDate).format("DD")}
+                                        {dayjs(reminder.endDate).format("DD")}
                                     </span>
                                     <span className="text-[10px] uppercase text-typography-500 -mt-1">
-                                        {dayjs(reminder.startDate).format("MMM")}
+                                        {dayjs(reminder.endDate).format("MMM")}
                                     </span>
                                 </div>
 
