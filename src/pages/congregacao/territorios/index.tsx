@@ -122,7 +122,7 @@ function TerritoriesPage() {
 }
 
 TerritoriesPage.getLayout = (page: ReactElement) =>
-  withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER"])(
+  withProtectedLayout(["ADMIN_CONGREGATION", "TERRITORIES_MANAGER", "TERRITORIES_VIEWER"])(
     <TerritoriesProviderLayout>{page}</TerritoriesProviderLayout>
   )
 
