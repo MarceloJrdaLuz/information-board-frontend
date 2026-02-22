@@ -2,6 +2,7 @@ import { useAuthContext } from "@/context/AuthContext"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import LayoutSkeleton from "../Layout/layoutSkeleton"
+import { toast } from "react-toastify"
 
 interface ProtectedRouteProps {
   allowedRoles?: string[]
@@ -32,6 +33,7 @@ export function ProtectedRoute({ allowedRoles = [], children }: ProtectedRoutePr
     // checa permissões
     const hasPermission = allowedRoles.some(role => roleContains(role))
     if (!hasPermission) {
+      toast.error("Você não tem permissão para acessar esta página.")
       router.replace("/dashboard")
       return
     }

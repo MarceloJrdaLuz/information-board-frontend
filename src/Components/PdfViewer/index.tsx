@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, Undo2Icon } from 'lucide-react'
+import { Calendar, ChevronLeftIcon, ChevronRightIcon, Undo2Icon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import Spiner from '../Spiner'
@@ -8,13 +8,13 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 interface PdfViewerProps {
     url: string
+    initialPage?: number
     setPdfShow: React.Dispatch<boolean>
 }
 
-export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
+export default function PdfViewer({ url, setPdfShow, initialPage = 1 }: PdfViewerProps) {
     const [numPages, setNumPages] = useState<number | null>(null)
-    const [pageNumber, setPageNumber] = useState<number>(1)
-    const touchStartX = useRef<number | null>(null)
+    const [pageNumber, setPageNumber] = useState<number>(initialPage)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const lastPage = numPages
     const firstPage = numPages! - numPages! + 1
@@ -22,6 +22,11 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
     function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
         setNumPages(numPages)
         setIsLoading(false)
+
+        // garante que não passe do limite
+        if (initialPage > numPages) {
+            setPageNumber(1)
+        }
     }
 
     const handleClickLeft = () => {
@@ -62,14 +67,23 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
         <div className='flex flex-col justify-start items-center w-screen h-screen lg:p-5 overflow-auto bg-typography-900 '>
             <div className='mb-4'>
                 {!isLoading && (
-                    <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>
-                        <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)} />
-                        <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickLeft} />
-                        <span>
-                            Página {pageNumber} / {numPages}
-                        </span>
-                        <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickRight} />
-                    </div>
+                    <>
+                        <div className='flex justify-center items-center gap-4 m-4 text-secondary-100'>
+                            <Undo2Icon className='cursor-pointer hover:text-primary-100' onClick={() => setPdfShow(false)} />
+                            <ChevronLeftIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickLeft} />
+                            <span>
+                                Página {pageNumber} / {numPages}
+                            </span>
+                            <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickRight} />
+                        </div>
+
+                        {pageNumber === initialPage && (
+                            <div className="flex gap-2 justify-center items-center text-primary-100 font-semibold text-md text-center">
+                                <Calendar className='w-4 h-4' />
+                                Semana atual
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
             <div
