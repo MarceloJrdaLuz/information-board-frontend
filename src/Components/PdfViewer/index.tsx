@@ -8,13 +8,13 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 interface PdfViewerProps {
     url: string
+    initialPage?: number
     setPdfShow: React.Dispatch<boolean>
 }
 
-export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
+export default function PdfViewer({ url, setPdfShow, initialPage = 1 }: PdfViewerProps) {
     const [numPages, setNumPages] = useState<number | null>(null)
-    const [pageNumber, setPageNumber] = useState<number>(1)
-    const touchStartX = useRef<number | null>(null)
+    const [pageNumber, setPageNumber] = useState<number>(initialPage)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const lastPage = numPages
     const firstPage = numPages! - numPages! + 1
@@ -22,6 +22,11 @@ export default function PdfViewer({ url, setPdfShow }: PdfViewerProps) {
     function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
         setNumPages(numPages)
         setIsLoading(false)
+
+        // garante que não passe do limite
+        if (initialPage > numPages) {
+            setPageNumber(1)
+        }
     }
 
     const handleClickLeft = () => {

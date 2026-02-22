@@ -24,6 +24,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import iconDesignacoes from '../../../public/images/designacoes-gray.png'
+import { getWeekPageOfMonth } from '@/functions/getWeekPageOfMonth'
 
 function Designacoes() {
   const router = useRouter()
@@ -36,6 +37,7 @@ function Designacoes() {
   const [publicOptionsShow, setPublicOptionsShow] = useState(false)
   const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
   const [pdfUrl, setPdfUrl] = useState('')
+  const [pdfInitialPage, setPdfInitialPage] = useState(1)
   const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
   const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
@@ -112,9 +114,36 @@ function Designacoes() {
       }
     }
   }, [documentsLifeAndMinistryFilter])
+  function handleButtonClick(
+    url: string,
+    fileName?: string,
+    autoDetectPage: boolean = false
+  ) {
+    let finalUrl = url
 
-  function handleButtonClick(url: string) {
-    setPdfUrl(url)
+    // 🔥 Se estiver em DEV, usar pasta local
+    if (process.env.NODE_ENV === 'development' && fileName) {
+      const cleanName = removeMimeType(fileName)
+      finalUrl = `/pdfs/${cleanName}.pdf`
+    }
+
+    if (autoDetectPage && fileName) {
+      const monthClicked = removeMimeType(fileName)
+      const currentMonth = DateConverter('mes')
+
+      if (monthClicked === currentMonth) {
+        const page = getWeekPageOfMonth()
+        setPdfInitialPage(page)
+        finalUrl = `${finalUrl}`
+      } else {
+        setPdfInitialPage(1)
+        finalUrl = `${finalUrl}`
+      }
+    } else {
+      finalUrl = `${finalUrl}`
+    }
+
+    setPdfUrl(finalUrl)
     setPdfShow(true)
   }
 
@@ -161,7 +190,7 @@ function Designacoes() {
                     <div className="flex-1 " key={document.id}>
                       <Button outline={isDark}
                         className="w-full"
-                        onClick={() => { handleButtonClick(document.url) }}
+                        onClick={() => { handleButtonClick(document.url, document.fileName, true) }}
                       >{removeMimeType(document.fileName)}</Button>
                     </div>
                   ))}
@@ -173,7 +202,7 @@ function Designacoes() {
                   {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
                     <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
                       <Button outline={isDark}
-                        onClick={() => { handleButtonClick(document.url) }}
+                        onClick={() => { handleButtonClick(document.url, document.fileName, true) }}
                         className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
                     </div>
                   ))}
@@ -235,7 +264,7 @@ function Designacoes() {
     </div>
   ) : (
     <>
-      <PdfViewer url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+      <PdfViewer initialPage={pdfInitialPage} url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
     </>
   )
 }
