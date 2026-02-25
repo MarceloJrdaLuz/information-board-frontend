@@ -1,26 +1,35 @@
 import dayjs from 'dayjs'
+import isoWeek from 'dayjs/plugin/isoWeek'
 
-export function getWeekPageOfMonth(): number {
+dayjs.extend(isoWeek)
+
+export function getWeekPageOfMonth(pdfMonth: number) {
   const today = dayjs()
+  const year = today.year()
 
-  // Primeiro dia do mês
-  const firstDayOfMonth = today.startOf('month')
+  const firstDayOfPdfMonth = dayjs(new Date(year, pdfMonth, 1))
 
-  // Encontrar a primeira segunda-feira do mês
-  let firstMonday = firstDayOfMonth
+  let firstMonday = firstDayOfPdfMonth.startOf('isoWeek')
 
-  while (firstMonday.day() !== 1) {
-    firstMonday = firstMonday.add(1, 'day')
+  if (firstMonday.month() !== pdfMonth) {
+    firstMonday = firstMonday.add(1, 'week')
   }
 
-  // Se hoje for antes da primeira segunda
-  if (today.isBefore(firstMonday)) {
-    return 1
+  const currentMonday = today.startOf('isoWeek')
+  const currentSunday = currentMonday.add(6, 'day')
+
+  // 👇 VERDADEIRO controle
+  const weekBelongsToPdfMonth =
+    currentMonday.month() === pdfMonth
+
+  if (!weekBelongsToPdfMonth) {
+    return { page: 1, isCurrentWeek: false }
   }
 
-  const diffDays = today.diff(firstMonday, 'day')
-  const weekNumber = Math.floor(diffDays / 7) + 1
+  const diffWeeks = currentMonday.diff(firstMonday, 'week')
 
-  // Limita entre 1 e 5
-  return Math.min(Math.max(weekNumber, 1), 5)
+  return {
+    page: Math.min(diffWeeks + 1, 5),
+    isCurrentWeek: true,
+  }
 }

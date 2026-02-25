@@ -9,10 +9,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface PdfViewerProps {
     url: string
     initialPage?: number
+    isCurrentWeek?: boolean
     setPdfShow: React.Dispatch<boolean>
 }
 
-export default function PdfViewer({ url, setPdfShow, initialPage = 1 }: PdfViewerProps) {
+export default function PdfViewer({ url, setPdfShow, initialPage = 1, isCurrentWeek }: PdfViewerProps) {
     const [numPages, setNumPages] = useState<number | null>(null)
     const [pageNumber, setPageNumber] = useState<number>(initialPage)
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -77,7 +78,7 @@ export default function PdfViewer({ url, setPdfShow, initialPage = 1 }: PdfViewe
                             <ChevronRightIcon className='cursor-pointer hover:text-primary-100' onClick={handleClickRight} />
                         </div>
 
-                        {pageNumber === initialPage && (
+                        {isCurrentWeek && pageNumber === initialPage && (
                             <div className="flex gap-2 justify-center items-center text-primary-100 font-semibold text-md text-center">
                                 <Calendar className='w-4 h-4' />
                                 Semana atual
@@ -92,8 +93,7 @@ export default function PdfViewer({ url, setPdfShow, initialPage = 1 }: PdfViewe
             >
 
                 <Document
-
-                    file={{ url: url }}
+                    file={url}
                     onLoadSuccess={onDocumentLoadSuccess}
                     loading={<Spiner />}
                 >

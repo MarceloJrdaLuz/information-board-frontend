@@ -38,6 +38,7 @@ function Designacoes() {
   const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
   const [pdfUrl, setPdfUrl] = useState('')
   const [pdfInitialPage, setPdfInitialPage] = useState(1)
+  const [isCurrentWeek, setIsCurrentWeek] = useState(false)
   const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
   const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
   const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
@@ -114,6 +115,7 @@ function Designacoes() {
       }
     }
   }, [documentsLifeAndMinistryFilter])
+  
   function handleButtonClick(
     url: string,
     fileName?: string,
@@ -121,7 +123,6 @@ function Designacoes() {
   ) {
     let finalUrl = url
 
-    // 🔥 Se estiver em DEV, usar pasta local
     if (process.env.NODE_ENV === 'development' && fileName) {
       const cleanName = removeMimeType(fileName)
       finalUrl = `/pdfs/${cleanName}.pdf`
@@ -129,18 +130,15 @@ function Designacoes() {
 
     if (autoDetectPage && fileName) {
       const monthClicked = removeMimeType(fileName)
-      const currentMonth = DateConverter('mes')
+      const monthIndex = meses.indexOf(monthClicked)
 
-      if (monthClicked === currentMonth) {
-        const page = getWeekPageOfMonth()
-        setPdfInitialPage(page)
-        finalUrl = `${finalUrl}`
-      } else {
-        setPdfInitialPage(1)
-        finalUrl = `${finalUrl}`
-      }
+      const result = getWeekPageOfMonth(monthIndex)
+
+      setPdfInitialPage(result.page)
+      setIsCurrentWeek(result.isCurrentWeek)
     } else {
-      finalUrl = `${finalUrl}`
+      setPdfInitialPage(1)
+      setIsCurrentWeek(false) // 🔥 importante
     }
 
     setPdfUrl(finalUrl)
@@ -264,7 +262,7 @@ function Designacoes() {
     </div>
   ) : (
     <>
-      <PdfViewer initialPage={pdfInitialPage} url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
+      <PdfViewer isCurrentWeek={isCurrentWeek} initialPage={pdfInitialPage} url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
     </>
   )
 }
