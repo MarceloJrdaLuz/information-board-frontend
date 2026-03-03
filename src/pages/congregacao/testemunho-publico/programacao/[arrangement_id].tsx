@@ -66,7 +66,7 @@ function ArrangementMonthSchedulePage() {
     if (!arrangement) return []
     if (arrangement.is_fixed) {
       if (arrangement.weekday === undefined || arrangement.weekday === null) return []
-      return getDatesForMonth(baseDate.month(), arrangement.weekday)
+      return getDatesForMonth(monthOffset, arrangement.weekday)
     }
     return arrangement.date ? [arrangement.date] : []
   }, [arrangement, baseDate])
