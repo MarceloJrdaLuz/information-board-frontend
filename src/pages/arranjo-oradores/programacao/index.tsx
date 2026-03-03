@@ -405,6 +405,7 @@ function WeekendSchedulePage() {
                                         border
                                         full
                                         emptyMessage="Nenhum orador encontrado"
+                                        searchable
                                     />
                                     {selectedSchedule && congregation && (
                                         <div className="flex justify-center mt-2">
