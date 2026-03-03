@@ -12,8 +12,6 @@ import { IPublisher, WORKTYPESTERRITORY } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtom, useAtomValue } from "jotai"
 import { EditIcon, Trash } from "lucide-react"
-import moment from "moment"
-import 'moment/locale/pt-br'
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useForm } from 'react-hook-form'
@@ -23,6 +21,7 @@ import Input from "../../Input"
 import InputError from "../../InputError"
 import FormStyle from "../FormStyle"
 import { FormValues, ITerritoryHiistoryFormProps } from "./types"
+import dayjs from "dayjs"
 
 
 export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpdate, onDelete }: ITerritoryHiistoryFormProps) {
@@ -65,6 +64,13 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
             setFieldConductors(sorted)
         }
     }, [data])
+
+    useEffect(() => {
+        if (territoryHistory) {
+            setAssignmentDate(territoryHistory.assignment_date || null)
+            setCompletionDate(territoryHistory.completion_date || null)
+        }
+    }, [territoryHistory])
 
     const validationSchema = yup.object({
         caretaker: yup.string().when([], {
@@ -277,7 +283,7 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
                     <div className="flex flex-col w-full gap-2">
                         <Calendar
                             key="assignmentDate"
-                            label={territoryHistory?.assignment_date ? moment(territoryHistory?.assignment_date).format("DD/MM/YYYY") : "Data da designação"}
+                            label={territoryHistory?.assignment_date ? dayjs(territoryHistory?.assignment_date).format("DD/MM/YYYY") : "Data da designação"}
                             disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                             titleHidden
                             full
@@ -287,7 +293,7 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
 
                         <Calendar
                             key="completionDate"
-                            label={territoryHistory?.completion_date ? moment(territoryHistory?.completion_date).format("DD/MM/YYYY") : "Data da conclusão"}
+                            label={territoryHistory?.completion_date ? dayjs(territoryHistory?.completion_date).format("DD/MM/YYYY") : "Data da conclusão"}
                             disabled={territoryHistory ? territoryHistory.id !== territoryHistoryToUpdateId : false}
                             full
                             handleDateChange={setCompletionDate}
