@@ -166,8 +166,8 @@ export default function S13({ territoriesHistory }: S13Props) {
                                 <View key={colIndex} style={[styles.tableColl, { backgroundColor: "white" }]}>
                                     <View style={styles.row}>
                                         <View style={styles.rowDesignadoPara}>
-                                            <Text>{history?.caretaker || ''}</Text>
-                                            <Text>- {history?.work_type || ''}</Text>
+                                            <Text style={{ transform: 'scale(0.9)' }}>{history?.caretaker || ''}</Text>
+                                            <Text style={{ transform: 'scale(0.7)' }}> {history?.work_type ? `[${history.work_type}]` : ''}</Text>
                                         </View>
                                         <View style={styles.rowTwoColl}>
                                             <Text style={styles.rowLeft}>
