@@ -153,6 +153,7 @@ export default function FormAddSpeaker() {
                             handleChange={setSelectedSpeakerCongregation}
                             labelKey="name"
                             labelKeySecondary='city'
+                            showSecondaryLabelOnSelected
                             border
                             textVisible
                             full
