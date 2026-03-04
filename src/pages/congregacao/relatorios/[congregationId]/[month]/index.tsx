@@ -18,22 +18,28 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
+import { InactiveCandidate } from "@/types/publishers"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import { EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react"
-import moment from "moment"
+import { AlertTriangle, EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { v4 } from "uuid"
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import "dayjs/locale/pt-br"
+import Link from "next/link"
+dayjs.extend(customParseFormat)
+dayjs.locale("pt-br")
 
 function ReportsMonthPage() {
 
     const router = useRouter()
     const { month, congregationId } = router.query
-    const date = moment().date()
+    const date = dayjs().date()
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
@@ -76,6 +82,7 @@ function ReportsMonthPage() {
     const [yearSelected, setYearSelected] = useState('')
     const [monthSelected, setMonthSelected] = useState('')
     const [dateFormat, setDateFormat] = useState<Date>()
+    const [inactiveCandidates, setInactiveCandidates] = useState<InactiveCandidate[]>([])
 
     const monthParam = month as string
 
@@ -108,6 +115,62 @@ function ReportsMonthPage() {
             setMeetingAssistanceEndWeek(filterAssistanceMeetingEndWeek[0]?.endWeekAverage)
         }
     }, [getAssistance, monthSelected, yearSelected])
+
+    useEffect(() => {
+        if (!publishers || !reports || !monthSelected || !yearSelected) return
+
+        const currentDate = dayjs(`${monthSelected.toLocaleLowerCase()} ${yearSelected}`, "MMMM YYYY", "pt-br")
+
+        const publishersInactive = publishers.map(publisher => {
+
+            const publisherReports = reports.filter(r => r.publisher.id === publisher.id)
+
+            // 👇 CASO A PESSOA NUNCA TENHA RELATADO
+            if (publisherReports.length === 0) {
+
+                const createdDate = dayjs(publisher.created_at)
+
+                const monthsSinceCreated = currentDate.diff(createdDate, "month")
+
+                if (monthsSinceCreated >= 6) {
+                    return {
+                        publisher,
+                        lastReport: undefined
+                    }
+                }
+
+                return null
+            }
+
+            // 👇 AQUI CONTINUA SUA LÓGICA NORMAL
+            const lastReport = publisherReports.reduce((latest, report) => {
+                const reportDate = dayjs(`${report.month.toLocaleLowerCase()} ${report.year}`, "MMMM YYYY", "pt-br")
+                const latestDate = dayjs(`${latest.month.toLocaleLowerCase()} ${latest.year}`, "MMMM YYYY", "pt-br")
+
+                return reportDate.isAfter(latestDate) ? report : latest
+            })
+
+            const lastReportDate = dayjs(`${lastReport.month.toLocaleLowerCase()} ${lastReport.year}`, "MMMM YYYY", "pt-br")
+
+            const monthsWithoutReport = currentDate.diff(lastReportDate, "month")
+
+            if (monthsWithoutReport >= 6) {
+                return {
+                    publisher,
+                    lastReport: {
+                        month: lastReport.month,
+                        year: lastReport.year
+                    }
+                }
+            }
+
+            return null
+
+        }).filter(Boolean) as InactiveCandidate[]
+
+        setInactiveCandidates(publishersInactive)
+
+    }, [publishers, reports, monthSelected, yearSelected])
 
     useEffect(() => {
         const someTotals = (reports: IReports[]) => {
@@ -416,8 +479,66 @@ function ReportsMonthPage() {
                             </span>
                         </div>
                         <div className="flex flex-1 justify-end">
-                        <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
+                            <MissingReportsModal missingReportsNumber={missingReportsCount} missingReports={missingReports} />
                         </div>
+                        {inactiveCandidates.length > 0 && (
+                            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 my-6">
+
+                                <div className="flex gap-3">
+
+
+                                    <div className="flex-1">
+                                        <div className="flex gap-2">
+                                            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                                            <div>
+                                                <p className="font-semibold text-amber-800">
+                                                    Possíveis publicadores inativos
+                                                </p>
+                                                <p className="text-sm text-amber-700 mb-3">
+                                                    Os publicadores abaixo estão há 6 meses ou mais sem relatar.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+
+                                            {inactiveCandidates.map(item => (
+                                                <div
+                                                    key={item.publisher.id}
+                                                    className="flex items-center justify-between bg-white border border-amber-100 rounded-lg px-3 py-2"
+                                                >
+
+                                                    <div className="flex flex-col gap-2 text-sm">
+                                                        <Link
+                                                            href={`/congregacao/publicadores/edit/${item.publisher.id}`}
+                                                            className="font-medium text-gray-800 hover:text-primary-200"
+                                                        >
+                                                            {item.publisher.nickname ? item.publisher.nickname : item.publisher.fullName}
+                                                        </Link>
+
+                                                        <span className="text-gray-500">
+                                                            Último relatório:{" "}
+                                                            {item.lastReport
+                                                                ? `${item.lastReport.month} ${item.lastReport.year}`
+                                                                : "Nunca relatou"}
+                                                        </span>
+                                                    </div>
+
+                                                    <Link
+                                                        href={`/congregacao/publicadores/edit/${item.publisher.id}`}
+                                                        className="text-xs font-medium text-primary-200 hover:underline"
+                                                    >
+                                                        Atualizar
+                                                    </Link>
+
+                                                </div>
+                                            ))}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {totalsModalShow ? (
                             <ul>
                                 {<div className="px-5 py-0">

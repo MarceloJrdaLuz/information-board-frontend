@@ -1,3 +1,5 @@
+import { IPublisher } from "../types"
+
 export interface IPayloadCreatePublisher {
     fullName: string,
     congregation_id: string,
@@ -29,5 +31,13 @@ export interface IPayloadUpdatePublisher {
     address?: string,
     phone?: string,
     emergencyContact_id?: string | undefined
+}
+
+export type InactiveCandidate = {
+    publisher: IPublisher
+    lastReport?: {
+        month: string
+        year: string
+    }
 }
 
