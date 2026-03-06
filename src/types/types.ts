@@ -173,6 +173,7 @@ export interface IPublisher {
     emergencyContact?: IEmergencyContact
     user?: UserTypes
     hospitalityGroup?: IHospitalityGroup
+    created_at: string
     updated_at: string
 }
 
