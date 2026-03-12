@@ -112,51 +112,35 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
    * Submit
    ====================== */
   async function onSubmit(values: FormValues) {
-    if (!congregation_id) return
+  if (!congregation_id) return
 
-    const payload: UpdateFieldServicePayload = {
-      type,
-      weekday: WEEKDAY_OPTIONS.indexOf(weekday),
-      time: values.time,
-      location: values.location,
-      leader_id: type === "FIXED" ? leader?.id ?? null : null,
-      rotation_members: type === "ROTATION"
-        ? rotationMembers.map(p => p.id) // pega só o ID do publisher
-        : [],
-    }
+  const payload: UpdateFieldServicePayload = {
+    type,
+    weekday: WEEKDAY_OPTIONS.indexOf(weekday),
+    time: values.time,
+    location: values.location,
+    leader_id: type === "FIXED" ? leader?.id ?? null : null,
+    rotation_members: type === "ROTATION"
+      ? rotationMembers.map(p => p.id)
+      : [],
+  }
 
-    await toast.promise(
+  const weeks = locationOverrides
+    .filter(o => o.date && o.location.trim() !== "")
+    .map(o => ({
+      date: o.date as string,
+      location: o.location.trim(),
+    }))
+
+  await toast.promise(
+    Promise.all([
       updateFieldService(template_id, payload),
-      { pending: "Atualizando saída de campo..." }
-    )
-  }
+      updateFieldServiceLocationOverride(template_id, { weeks })
+    ]),
+    { pending: "Salvando alterações..." }
+  )
+}
 
-  async function handleSaveLocationOverride() {
-    if (!congregation_id) return
-
-    const weeks = locationOverrides
-      .filter(o => o.date && o.location.trim() !== "")
-      .map(o => ({
-        date: o.date as string, // seguro após o filter
-        location: o.location.trim(),
-      }))
-
-    if (weeks.length === 0) {
-      toast.warning("Adicione ao menos um local válido por semana.")
-      return
-    }
-
-    const payload: UpdateFieldServiceLocationOverridePayload = {
-      weeks,
-    }
-
-    await toast.promise(
-      updateFieldServiceLocationOverride(template_id, payload),
-      {
-        pending: "Salvando locais das semanas...",
-      }
-    ).then().catch(err => console.log(err))
-  }
 
   async function handleClearAllLocations() {
     await toast.promise(
@@ -338,9 +322,6 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
                 } />
               </div>
             </div>
-            {locationOverrides && locationOverrides.length > 0 && <div className="flex justify-center items-center m-auto w-11/12 h-12 my-6 gap-2">
-              <Button onClick={handleSaveLocationOverride} outline type="button">Salvar locais</Button>
-            </div>}
           </div>
         )}
 
