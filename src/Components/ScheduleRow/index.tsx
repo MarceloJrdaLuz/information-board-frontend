@@ -295,15 +295,14 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
       <h2 className="font-semibold text-primary-200 text-lg">{format(date, "dd/MM/yyyy")}</h2>
 
       <Switch
+      title="Evento Especial"
         className="
-    checked:bg-[rgb(var(--color-primary-100))] 
-    checked:before:bg-[rgb(var(--color-primary-200))] 
-    !text-typography-100"
-        placeholder="Evento Especial"
+    data-[state=checked]:bg-[rgb(var(--color-primary-100))]
+    [&>span]:data-[state=checked]:bg-[rgb(var(--color-primary-200))]
+  "
         checked={!!current.isSpecial}
-        onChange={(e: any) => handleToggleSpecial(e.target.checked)}
+        onCheckedChange={(checked) => handleToggleSpecial(checked)}
       />
-
       {current.isSpecial &&
         <>
           <Input
