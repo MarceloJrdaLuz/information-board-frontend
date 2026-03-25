@@ -58,7 +58,7 @@ export default function FormEditCongregationAuxiliary() {
             circuit: selectedAuxiliaryCongregation?.circuit,
             number: selectedAuxiliaryCongregation?.number,
             city: selectedAuxiliaryCongregation?.city,
-            address: selectedAuxiliaryCongregation?.address,
+            address: selectedAuxiliaryCongregation?.address ?? "",
             latitude: selectedAuxiliaryCongregation?.latitude,
             longitude: selectedAuxiliaryCongregation?.longitude,
             hourMeetingPublic: selectedAuxiliaryCongregation?.hourMeetingPublic
@@ -88,6 +88,7 @@ export default function FormEditCongregationAuxiliary() {
     }
 
     function onError(error: any) {
+        console.log(error)
         toast.error('Aconteceu algum erro! Confira todos os campos.')
     }
 
