@@ -39,8 +39,22 @@ export default function DropdownSearch(props: IDropdownSearch) {
     if (publisherData && !addPublisher) {
       const parsed: IPublisherList[] = JSON.parse(publisherData)
 
+      // 🔥 pega só ids válidos
+      const validIds = parsed
+        .map(p => p?.id)
+        .filter(Boolean)
+
+      // 🔥 se não tiver nenhum id válido → mostra lista completa
+      if (validIds.length === 0) {
+        const sorted = sortArrayByProperty(props.options, "fullName")
+        setFilteredOptions(sorted)
+        setPublisherRecover(undefined)
+        return
+      }
+
+      // 🔥 filtra usando SOMENTE id
       const filtered = props.options.filter(option =>
-        parsed.some(stored => stored.id === option.id)
+        validIds.includes(option.id)
       )
 
       const sorted = sortArrayByProperty(filtered, "fullName")
@@ -59,29 +73,37 @@ export default function DropdownSearch(props: IDropdownSearch) {
     const query = event.target.value
     setSearchQuery(query)
 
+    let baseList: IPublisherList[] = props.options
+
+    // 🔥 se estiver no modo "só storage"
     if (localStorage.getItem('publisher') && !addPublisher) {
-      // Se houver dados no localStorage, filtrar com base neles
       const publisherData = localStorage.getItem('publisher')
+
       if (publisherData) {
-        const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
-        const filtered = parsedPublishers.filter(option => {
-          const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-          const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
-          const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
-          return fullNameMatch || nicknameMatch || congregationIdMatch
-        })
-        setFilteredOptions(filtered)
+        const parsed: IPublisherList[] = JSON.parse(publisherData)
+
+        const validIds = parsed
+          .map(p => p?.id)
+          .filter(Boolean)
+
+        if (validIds.length > 0) {
+          baseList = props.options.filter(option =>
+            validIds.includes(option.id)
+          )
+        }
       }
-    } else {
-      // Caso contrário, filtrar com base no props.options
-      const filtered = props.options.filter(option => {
-        const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-        const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
-        const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
-        return fullNameMatch || nicknameMatch || congregationIdMatch
-      })
-      setFilteredOptions(filtered)
     }
+
+    // 🔥 filtro único (serve pros dois casos)
+    const filtered = baseList.filter(option => {
+      const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
+      const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
+      const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
+
+      return fullNameMatch || nicknameMatch || congregationIdMatch
+    })
+
+    setFilteredOptions(filtered)
   }
 
   return (
