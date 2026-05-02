@@ -39,7 +39,6 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [publisherToSend, setPublisherToSend] = useState<IPublisherList>()
     const [underAnHour, setUnderAnHour] = useState(false)
     const [consentAcceptedShow, setConsentAcceptedShow] = useState(false)
-    const [consentRecords, setConsentRecords] = useState<IPublisherList[]>()
     const [submittedData, setSubmittedData] = useState<FormValues>()
     const [deviceId, setDeviceId] = useState<string | undefined>()
 
@@ -52,41 +51,6 @@ export default function FormReport(props: IRelatorioFormProps) {
             setOptionsDrop(data)
         }
     }, [data])
-
-    useEffect(() => {
-        const publisher = localStorage.getItem('publisher')
-
-        if (publisher) {
-            const parse: IPublisherList[] = JSON.parse(publisher)
-            // Corrigir registros antigos sem id
-            if (data) {
-                const updated = parse.map(consentRecord => {
-                    if (!consentRecord.id) {
-                        const match = data.find(
-                            pub =>
-                                pub.fullName === consentRecord.fullName &&
-                                pub.congregation_id === consentRecord.congregation_id
-                        )
-                        if (match) {
-                            return { ...consentRecord, id: match.id }
-                        }
-                    }
-                    return consentRecord
-                })
-                // Atualiza no state e no localStorage
-                setConsentRecords(updated)
-                localStorage.setItem('publisher', JSON.stringify(updated))
-
-                if (updated[0]?.deviceId) {
-                    setDeviceId(updated[0].deviceId)
-                }
-            } else {
-                setConsentRecords(parse)
-                setDeviceId(parse[0].deviceId)
-            }
-        }
-    }, [data])
-
 
     useEffect(() => {
         const today = moment()
@@ -124,9 +88,18 @@ export default function FormReport(props: IRelatorioFormProps) {
 
     const handleConsentRecordsCreate = async () => {
         setConsentAcceptedShow(false)
-        if (publisherToSend) {
-            createConsentRecord(publisherToSend.id, deviceId)
+
+        if (!publisherToSend) return
+
+        let deviceIdToUse = deviceId
+
+        if (!deviceIdToUse) {
+            deviceIdToUse = crypto.randomUUID()
+            setDeviceId(deviceIdToUse)
+            localStorage.setItem('deviceId', deviceIdToUse)
         }
+
+        await createConsentRecord(publisherToSend.id, deviceIdToUse)
 
         if (submittedData) {
             sendSubmit(submittedData)
@@ -170,25 +143,53 @@ export default function FormReport(props: IRelatorioFormProps) {
     async function onSubmit(data: FormValues) {
         setSubmittedData(data)
 
-        const filterPublisherConsent = consentRecords?.filter(consentRecord =>
-            consentRecord.id === publisherToSend?.id
+        if (!publisherToSend?.id) {
+            toast.error('Publicador não selecionado!')
+            return
+        }
+
+        // 🔥 sempre pega do localStorage (fonte real)
+        const publisherStorage = localStorage.getItem('publisher')
+
+        const parsedStorage: IPublisherList[] = publisherStorage
+            ? JSON.parse(publisherStorage)
+            : []
+
+        // 🔥 só considera válido se tiver deviceId
+        const consentRecord = parsedStorage.find(
+            record =>
+                record?.id === publisherToSend.id &&
+                record?.deviceId
         )
 
-        if (filterPublisherConsent?.length) {
-            const response = await api.get<ICheckPublisherConsent>(`/consent/check?publisher_id=${filterPublisherConsent[0].id}&type=publisher`)
+        if (consentRecord) {
+            try {
+                const response = await api.get<ICheckPublisherConsent>(
+                    `/consent/check?publisher_id=${consentRecord.id}&type=publisher`
+                )
 
-            if (response.status === 200) {
-                if (response.data.hasAccepted && response.data.isLatestVersion) {
+                if (
+                    response.status === 200 &&
+                    response.data.hasAccepted &&
+                    response.data.isLatestVersion
+                ) {
                     sendSubmit(data)
                     return
                 }
-            } else {
+
+                // precisa aceitar novamente
+                setConsentAcceptedShow(true)
+
+            } catch (error) {
+                console.log(error)
                 setConsentAcceptedShow(true)
             }
+
+            return
         }
-        if (publisherToSend?.id) {
-            setConsentAcceptedShow(true)
-        }
+
+        // 🔥 não tem consentimento válido
+        setConsentAcceptedShow(true)
     }
 
     function onError(error: any) {

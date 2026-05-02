@@ -127,45 +127,61 @@ export function usePublisher() {
 
     }
 
-    async function createConsentRecord(publisher_id: string, deviceId?: string) {
-        await api.post<IConsentRecordTypes>('/consent/accept', {
+   async function createConsentRecord(publisher_id: string, deviceId?: string) {
+    try {
+        const response = await api.post<IConsentRecordTypes>('/consent/accept', {
             publisher_id,
             deviceId,
             type: "publisher"
-        }).then(suc => {
-            const { data: { deviceId, publisher, accepted_at } } = suc
-            const storage = localStorage.getItem('publisher')
-
-            let jsonSave = []
-
-            if (storage) {
-                const parse = JSON.parse(storage)
-                const filtered = parse.filter((p: any) => p.id !== publisher.id)
-
-                jsonSave = [
-                    ...filtered,
-                    {
-                        ...publisher,
-                        deviceId,
-                        accepted_at
-                    }
-                ]
-            } else {
-                jsonSave = [{
-                    ...publisher,
-                    deviceId,
-                    accepted_at
-                }]
-            }
-
-            localStorage.setItem('publisher', JSON.stringify(jsonSave))
-            localStorage.setItem('deviceId', deviceId)
-            handleSubmitSuccess(messageSuccessSubmit.consentCreate)
-        }).catch(err => {
-            console.log(err)
-            handleSubmitError(messageErrorsSubmit.default)
         })
+
+        const data: any = response.data
+
+        // 🔥 trata os dois formatos de resposta
+        const accepted_at =
+            data?.accepted_at ??
+            data?.agreement?.accepted_at
+
+        const deviceIdFromApi = data?.deviceId
+
+        const finalDeviceId = deviceIdFromApi ?? deviceId
+
+        // 🔥 pega dados já existentes do storage
+        const storage = localStorage.getItem('publisher')
+        const parsed: any[] = storage ? JSON.parse(storage) : []
+
+        // 🔥 tenta reaproveitar publisher existente
+        let existingPublisher = parsed.find(p => p?.id === publisher_id)
+
+        // 🔥 fallback mínimo
+        if (!existingPublisher) {
+            existingPublisher = { id: publisher_id }
+        }
+
+        // 🔥 remove inválidos
+        const filtered = parsed.filter(p => p?.id && p.id !== publisher_id)
+
+        const newRecord = {
+            ...existingPublisher,
+            deviceId: finalDeviceId,
+            accepted_at
+        }
+
+        const jsonSave = [...filtered, newRecord]
+
+        localStorage.setItem('publisher', JSON.stringify(jsonSave))
+
+        if (finalDeviceId) {
+            localStorage.setItem('deviceId', finalDeviceId)
+        }
+
+        handleSubmitSuccess(messageSuccessSubmit.consentCreate)
+
+    } catch (err) {
+        console.log(err)
+        handleSubmitError(messageErrorsSubmit.default)
     }
+}
 
     async function deletePublisher(publisher_id: string) {
         api.delete(`/publisher/${publisher_id}`).then(res => {
