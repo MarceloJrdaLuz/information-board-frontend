@@ -145,10 +145,15 @@ export default function DropdownSearch(props: IDropdownSearch) {
               </Menu.Item>)
             ))}
           </div>
-          {publisherRecover && (
-            <div className='flex justify-center items-center gap-2 p-1' onClick={() => { setAddPublisher(true) }}>
+          {publisherRecover && !addPublisher && (
+            <div
+              className='flex justify-center items-center gap-2 p-1 cursor-pointer'
+              onClick={() => setAddPublisher(true)}
+            >
               <span>{iconeAddPessoa("#178582")}</span>
-              <span className='text-typography-700 italic'>Adicionar mais um publicador</span>
+              <span className='text-typography-700 italic'>
+                Adicionar mais um publicador
+              </span>
             </div>
           )}
         </Menu.Items>
