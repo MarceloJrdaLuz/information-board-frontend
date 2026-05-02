@@ -36,19 +36,24 @@ export default function DropdownSearch(props: IDropdownSearch) {
   useEffect(() => {
     const publisherData = localStorage.getItem('publisher')
 
-    if (publisherData) {
-      const parsedPublishers: IPublisherList[] = JSON.parse(publisherData)
-      const filterToCongregation = parsedPublishers.filter(parsed => (parsed.congregation_number === number))
-      if (filterToCongregation.length > 0) {
-        const sortOptions = sortArrayByProperty(filterToCongregation, "fullName")
-        setFilteredOptions(sortOptions)
-        setPublisherRecover(sortOptions)
-      }
+    if (publisherData && !addPublisher) {
+      const parsed: IPublisherList[] = JSON.parse(publisherData)
+
+      const filtered = props.options.filter(option =>
+        parsed.some(stored => stored.id === option.id)
+      )
+
+      const sorted = sortArrayByProperty(filtered, "fullName")
+
+      setFilteredOptions(sorted)
+      setPublisherRecover(sorted)
+
     } else {
-      const sortOptions = sortArrayByProperty(props.options, "fullName")
-      setFilteredOptions(sortOptions)
+      const sorted = sortArrayByProperty(props.options, "fullName")
+      setFilteredOptions(sorted)
     }
-  }, [props.options, number])
+
+  }, [props.options, number, addPublisher])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
