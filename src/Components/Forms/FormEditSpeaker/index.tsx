@@ -29,10 +29,9 @@ export default function FormEditSpeaker() {
 
     const { data: speakerFormData } = useFetch<SpeakerFormData>(`/form-data?form=speaker`)
     const sortedCongregations = sortArrayByProperty(speakerFormData?.congregations ?? [], "name")
-
-    const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(false)
+    const [speakerIsPublisher, setSpeakerIsPublisher] = useState<boolean>(!!selectedSpeaker?.publisher)
     const [selectedTalks, setSelectedTalks] = useState<ITalk[] | null>(selectedSpeaker?.talks ?? null)
-    const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(null)
+    const [selectedPublisher, setSelectedPublisher] = useState<IPublisher | null>(selectedSpeaker?.publisher ?? null)
     const [selectedSpeakerCongregation, setSelectedSpeakerCongregation] = useState<ICongregation | null>(selectedSpeaker?.originCongregation ?? null)
     const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
         defaultValues: {
