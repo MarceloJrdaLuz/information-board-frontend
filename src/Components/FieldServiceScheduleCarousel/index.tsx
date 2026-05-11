@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, Clock, MapPin, User } from "lucide-react";
 import { FieldServiceFixedSchedule, FieldServiceRotationBlock } from "@/types/fieldService";
 import { resolveFixedLocation } from "@/utils/resolveFixedLocation";
 import { resolveNextFixedLocations } from "@/utils/resolveNextFixedLocation";
-import { Item } from "@radix-ui/react-select";
 dayjs.locale("pt-br");
 // Funções auxiliares (assumindo que existam no seu projeto ou definindo-as)
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -95,8 +94,9 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                                 ? resolveFixedLocation(item as FieldServiceFixedSchedule)
                                 : null
 
+                            const nextLocationsCout = 8
                             const nextLocations = isFixedWithRotation
-                                ? resolveNextFixedLocations(item as FieldServiceFixedSchedule, 5)
+                                ? resolveNextFixedLocations(item as FieldServiceFixedSchedule, nextLocationsCout)
                                 : []
 
                             const hasOverrides = isFixedWithRotation && nextLocations.length > 0
