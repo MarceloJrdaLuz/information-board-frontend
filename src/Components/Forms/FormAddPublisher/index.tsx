@@ -232,28 +232,29 @@ export default function FormAddPublisher() {
                         {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}
 
-                    {situationPublisherCheckboxSelected === Situation.ATIVO && (
-                        <div className="border border-typography-300 my-4 p-4">
-                            {/* Privilegio principal */}
-                            <CheckboxMultiple
-                                visibleLabel
-                                checkedOptions={additionalsPrivilegeCheckboxSelected}
-                                label="Privilégios Adicionais"
-                                options={
-                                    genderCheckboxSelected === "Feminino"
-                                        ? additionalsPrivilegeOptions.filter(
-                                            p => p === Privileges.TESTEMUNHOPUBLICO // ou outros privilégios válidos para feminino
-                                        )
-                                        : additionalsPrivilegeOptions // todos os privilégios para masculino
-                                }
-                                handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
-                            />
-                        </div>
-                    )}
+                    {situationPublisherCheckboxSelected === Situation.ATIVO &&
+                        genderCheckboxSelected === 'Feminino' && (
+                            <div className="border border-typography-300 my-4 p-4">
+                                {/* Privilegio principal */}
+                                <CheckboxMultiple
+                                    visibleLabel
+                                    checkedOptions={additionalsPrivilegeCheckboxSelected}
+                                    label="Privilégios Adicionais"
+                                    options={
+                                        genderCheckboxSelected === "Feminino"
+                                            ? additionalsPrivilegeOptions.filter(
+                                                p => p === Privileges.TESTEMUNHOPUBLICO // ou outros privilégios válidos para feminino
+                                            )
+                                            : additionalsPrivilegeOptions // todos os privilégios para masculino
+                                    }
+                                    handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                />
+                            </div>
+                        )}
 
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-typography-300 my-4 p-4'>
-                        <CheckboxUnique visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
+                        <CheckboxUnique allowUncheck visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
                         <CheckboxMultiple visibleLabel checkedOptions={additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
                     </div>}
 

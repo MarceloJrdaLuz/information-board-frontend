@@ -6,6 +6,7 @@ interface ICheckbox {
   label: string
   visibleLabel?: boolean
   checked?: string
+  allowUncheck?: boolean
   disabled?: boolean
   handleCheckboxChange: (selectedOption: string) => void
   children?: ReactElement | null
@@ -13,6 +14,14 @@ interface ICheckbox {
 
 export default function CheckboxUnique(props: ICheckbox) {
   const handleCheckboxChange = (selectedOption: string) => {
+    if (
+      props.allowUncheck &&
+      props.checked === selectedOption
+    ) {
+      props.handleCheckboxChange("")
+      return
+    }
+
     props.handleCheckboxChange(selectedOption)
   }
 
@@ -26,11 +35,12 @@ export default function CheckboxUnique(props: ICheckbox) {
               <input
                 id={`${props.label}-${option}`}
                 type="radio"
-                name={props.label} 
+                name={props.label}
                 value={option}
                 checked={props.checked === option} // Verifica se a opção é a selecionada
                 className="w-4 h-4 cursor-pointer text-primary-200 bg-surface-100  border-typography-300 rounded focus:bg-primary-200 accent-primary-200"
-                onChange={() => handleCheckboxChange(option)}
+                onClick={() => handleCheckboxChange(option)}
+                onChange={() => { }}
                 disabled={props.disabled}
               />
               <label
