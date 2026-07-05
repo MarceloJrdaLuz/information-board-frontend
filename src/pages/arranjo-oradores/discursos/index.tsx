@@ -13,7 +13,7 @@ import { ITalk } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
 import Router from "next/router"
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
 function TalksPage() {
@@ -22,10 +22,28 @@ function TalksPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
     const deleteTalk = useSetAtom(deleteTalkAtom)
     const setTalkUpdate = useSetAtom(selectedTalkAtom)
+    const [search, setSearch] = useState("")
 
     const { data: talks, mutate } = useAuthorizedFetch<ITalk[]>("/talks", {
         allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "TALK_MANAGER"]
     })
+
+    const normalize = (text: string) =>
+        text
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+
+    const filteredTalks = useMemo(() => {
+        if (!talks) return []
+
+        const term = normalize(search.trim())
+
+        return talks.filter(talk =>
+            talk.number.toString().includes(term) ||
+            normalize(talk.title ?? "").includes(term)
+        )
+    }, [talks, search])
 
     useEffect(() => {
         setPageActive('Discursos')
@@ -67,15 +85,30 @@ function TalksPage() {
                                 <span className="text-primary-200 font-semibold">Criar discurso</span>
                             </Button>
                         )}
-                        {talks && <span className="text-sm text-typography-800">Total: {talks.length}</span>}
+                        {talks && (
+                            <span className="text-sm text-typography-800">
+                                {search
+                                    ? `${filteredTalks.length} de ${talks.length}`
+                                    : `Total: ${talks.length}`}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4">
+                        <input
+                            type="text"
+                            placeholder="Buscar por número ou título..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full sm:max-w-md border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                        />
                     </div>
 
-                    {talks && talks.length > 0 ? (
+                    {filteredTalks.length > 0 ? (
                         <ListGeneric
                             showActions={!roleContains('ADMIN') ? false : true}
                             onDelete={(item_id) => handleDelete(item_id)}
                             onUpdate={(talk) => setTalkUpdate(talk)}
-                            items={talks}
+                            items={filteredTalks}
                             path="/arranjo-oradores/discursos"
                             label="do Discurso"
                             renderItem={(talk) => (
@@ -93,7 +126,11 @@ function TalksPage() {
                     )
                         : (
                             <>
-                                {!talks ? renderSkeleton() : <EmptyState message="Nenhum discurso cadastrado" />}
+                                {!talks ? renderSkeleton() : <EmptyState message={
+                                    search
+                                        ? "Nenhum discurso encontrado."
+                                        : "Nenhum discurso cadastrado."
+                                } />}
                             </>
                         )
                     }
