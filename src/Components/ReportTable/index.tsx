@@ -17,10 +17,10 @@ export default function ReportTable({ reports }: ReportTableProps) {
         <table className="w-full border-collapse rounded-xl shadow-md overflow-hidden">
           <thead className="bg-gradient-to-r from-primary-100 to-primary-150 text-typography-900">
             <tr>
-              <th className="p-3 text-left font-semibold">Mês</th>
-              <th className="p-3 text-left font-semibold">Horas</th>
-              <th className="p-3 text-left font-semibold">Estudos</th>
-              <th className="p-3 text-left font-semibold">Observações</th>
+              <th className="p-3 text-left font-semibold text-typography-800">Mês</th>
+              <th className="p-3 text-left font-semibold text-typography-800">Horas</th>
+              <th className="p-3 text-left font-semibold text-typography-800">Estudos</th>
+              <th className="p-3 text-left font-semibold text-typography-800">Observações</th>
             </tr>
           </thead>
           <tbody>
@@ -46,9 +46,12 @@ export default function ReportTable({ reports }: ReportTableProps) {
                       <span className="text-sm text-typography-700">Atual</span>
                       <span className="font-bold">{totalHours}</span>
                     </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-sm text-typography-700">Esperado</span>
-                      <span className="font-bold">{totalExpected}</span>
+                    <div className="flex gap-2">
+                      <div className="flex flex-col items-center">
+                        <span className="text-sm text-typography-700">Esperado</span>
+                        <span className="font-bold">{totalExpected}</span>
+                      </div>
+                      <span className={`text-sm self-end pb-0.5 ${totalHours < totalExpected ? "text-red-500" : "text-green-600"}`}>{totalHours - totalExpected < 0 ? totalHours - totalExpected : "+" + (totalHours - totalExpected)}</span>
                     </div>
                   </div>
                 ) : (
@@ -92,9 +95,12 @@ export default function ReportTable({ reports }: ReportTableProps) {
                   <span className="text-sm">Atual</span>
                   <span className="font-bold">{totalHours}h</span>
                 </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm">Esperado</span>
-                  <span className="font-bold">{totalExpected}h</span>
+                <div className="flex gap-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-sm">Esperado</span>
+                    <span className="font-bold">{totalExpected}h</span>
+                  </div>
+                  <span className={`text-sm font-bold self-end pb-0.5 ${totalHours < totalExpected ? "text-red-500" : "text-green-600"}`}>{totalHours - totalExpected < 0 ? totalHours - totalExpected : "+" + (totalHours - totalExpected)}</span>
                 </div>
               </div>
             ) : (

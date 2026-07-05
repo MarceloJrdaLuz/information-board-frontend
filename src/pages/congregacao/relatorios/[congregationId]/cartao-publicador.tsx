@@ -295,9 +295,12 @@ function PublisherCardPage() {
                 )}
 
                 {/* Botão Visualizar */}
-                {filterPublishers && filterPublishers.length > 0 && (
-                    <div
-                        className="
+                {(
+                    (!totals && (filterPublishers?.length ?? 0) > 0) ||
+                    (totals && (reportsTotalsFromFilter?.length ?? 0) > 0)
+                ) && (
+                        <div
+                            className="
     sticky bottom-6
     z-40
     bg-surface-100/95 backdrop-blur
@@ -310,39 +313,39 @@ function PublisherCardPage() {
     max-w-[420px]
     mx-auto
   "
-                    >
+                        >
 
 
-                        <span className="text-sm text-typography-700 font-medium">
-                            {totals
-                                ? `${reportsTotalsFromFilter?.length ?? 0} totais selecionados`
-                                : `${filterPublishers.length} publicador(es) selecionado(s)`
-                            }
-                        </span>
+                            <span className="text-sm text-typography-700 font-medium">
+                                {totals
+                                    ? `Total: ${totalsFrom || "Nenhum"}`
+                                    : `${filterPublishers?.length ?? 0} publicador(es) selecionado(s)`
+                                }
+                            </span>
 
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => {
-                                    setPublishersToView(filterPublishers);
-                                    setModalReportsOpen(true);
-                                }}
-                                className="text-primary-200 hover:text-primary-150"
-                                title="Visualizar"
-                            >
-                                <Eye className="w-6 h-6" strokeWidth={1.25} />
-                            </button>
-                            <PdfLinkComponent
-                                pdfData={{
-                                    publishers: !totals ? filterPublishers : undefined,
-                                    reportsFiltered: !totals ? reportsFiltered : undefined,
-                                    monthsServiceYears,
-                                    totals,
-                                    reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
-                                }}
-                            />
+                            <div className="flex gap-3">
+                                {!totals && (
+                                    <button
+                                        onClick={() => {
+                                            setPublishersToView(filterPublishers ?? []);
+                                            setModalReportsOpen(true);
+                                        }}
+                                    >
+                                        <Eye className="w-6 h-6 text-primary-200" strokeWidth={1.25} />
+                                    </button>
+                                )}
+                                <PdfLinkComponent
+                                    pdfData={{
+                                        publishers: !totals ? filterPublishers : undefined,
+                                        reportsFiltered: !totals ? reportsFiltered : undefined,
+                                        monthsServiceYears,
+                                        totals,
+                                        reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
+                                    }}
+                                />
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
 
             </section>
@@ -377,7 +380,6 @@ function PublisherCardPage() {
                                     )
                                 })
                                 .filter((r): r is IReports => r !== undefined)
-
                             return (
                                 <div className="flex flex-col gap-6 mt-4">
                                     <div key={publisher.id}>
