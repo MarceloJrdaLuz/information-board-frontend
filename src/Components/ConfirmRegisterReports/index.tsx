@@ -41,11 +41,12 @@ export function ConfirmRegisterReports({ button, onRegister }: ConfirmRegisterRe
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>
+          <AlertDialogCancel className="hover:bg-gray-100">
             Cancelar
           </AlertDialogCancel>
 
           <AlertDialogAction
+          className="bg-primary-200 hover:bg-primary-100"
             onClick={() => {
               onRegister()
             }}
