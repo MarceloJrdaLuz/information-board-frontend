@@ -1,6 +1,7 @@
 'use-client'
 import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
+import Head from 'next/head'
 import CleanIcon from "@/Components/Icons/CleanIcon"
 import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
@@ -58,6 +59,12 @@ function Home() {
 
     return (
         <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
+            <Head>
+                <link
+                    rel="manifest"
+                    href={`/api/manifest?number=${number}`}
+                />
+            </Head>
             {notices && notices.length > 0 && <NoticesModal notices={notices} congregationNumber={number as string} />}
             <HeadComponent title="Quadro de Anúncios" urlMiniatura={`${domain}/images/miniatura.png`} />
             <LayoutPrincipal loading={isFetching} nCong={congregationData?.number} image={(
