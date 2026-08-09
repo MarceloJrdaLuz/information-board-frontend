@@ -15,8 +15,8 @@ export default function handler(
   res.setHeader('Content-Type', 'application/manifest+json')
 
   return res.status(200).json({
-    name: 'Information Board',
-    short_name: 'Information Board',
+    name: 'Quadro de Anúncios',
+    short_name: 'Quadro de Anúncios',
     description: 'Quadro de Anúncios',
     start_url: `/${number}`,
     scope: `/${number}`,
@@ -25,12 +25,12 @@ export default function handler(
     theme_color: '#178582',
     icons: [
       {
-        src: '/images/pwa-192.png',
+        src: '/icons/pwa-192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/images/pwa-512.png',
+        src: '/icons/pwa-512.png',
         sizes: '512x512',
         type: 'image/png',
       },

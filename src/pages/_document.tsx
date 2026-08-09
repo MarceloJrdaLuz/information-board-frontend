@@ -31,7 +31,7 @@ export default function Document() {
 
         <link
           rel="apple-touch-icon"
-          href="/images/pwa-192.png"
+          href="/icons/pwa-192.png"
         />
       </Head>
 
