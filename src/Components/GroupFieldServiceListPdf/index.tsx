@@ -98,19 +98,19 @@ export default function GroupsFieldServicePdf({
 
             <View style={styles.table}>
                 {groups.map(group => {
-                    const leaderId = group.groupOverseers.publisherId
+                    const leaderId = group.groupOverseers?.publisherId
+                    const publishers = group.publishers ?? []
                     // Remove o dirigente da lista
-                    const publishersWithoutLeader = group.publishers.filter(
+                    const publishersWithoutLeader = group.publishers?.filter(
                         pub => pub.id !== leaderId
                     )
-                    console.log(publishersWithoutLeader)
                     const activeMembers = publishersWithoutLeader
                         .filter(pub => pub.situation === Situation.ATIVO)
-                        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+                        .sort((a, b) =>  (a.fullName ?? "").localeCompare(b.fullName ?? ""))
 
                     const inactiveMembers = publishersWithoutLeader
                         .filter(pub => pub.situation !== Situation.ATIVO)
-                        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+                        .sort((a, b) =>  (a.fullName ?? "").localeCompare(b.fullName ?? ""))
 
                     const totalCount =
                         activeMembers.length +
@@ -130,7 +130,7 @@ export default function GroupsFieldServicePdf({
                             {/* Dirigente */}
                             <Text style={styles.overseerTitle}>Dirigente:</Text>
                             <Text style={styles.overseerName}>
-                                {group.groupOverseers.fullName}
+                                {group.groupOverseers?.fullName ?? "Sem dirigente"}
                             </Text>
 
                             {/* Publicadores ativos */}

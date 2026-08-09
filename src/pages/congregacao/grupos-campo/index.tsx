@@ -144,7 +144,7 @@ function GroupsPage() {
                         </Button>
                         <div className="w-full flex justify-end gap-2 mt-4">
                             <div className="flex flex-col gap-2">
-                                {false && <PdfLinkComponent showInactives={showInactives} groups={groups} congregation={congregation?.name ?? ""} />}
+                                {groups && <PdfLinkComponent showInactives={showInactives} groups={groups} congregation={congregation?.name ?? ""} />}
                                 <CheckboxBoolean handleCheckboxChange={setShowInactives} checked={showInactives} label="Incluir inativos" />
                             </div>
                         </div>
