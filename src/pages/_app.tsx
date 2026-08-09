@@ -4,7 +4,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
 import { DocumentsProvider } from '@/context/DocumentsContext'
 import '@/styles/globals.css'
-import { useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { ReactElement, ReactNode, useEffect } from 'react'
@@ -20,6 +20,7 @@ type AppPropsWithLayout = AppProps & {
 }
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const theme = useAtomValue(themeAtom)
   const setTheme = useSetAtom(themeAtom)
   const getLayout =
     Component.getLayout ??
@@ -30,6 +31,21 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     document.documentElement.className = savedTheme
     setTheme(savedTheme as any)
   }, [setTheme])
+
+  useEffect(() => {
+    const themeColors: Record<string, string> = {
+      '': '#178582',
+      'theme-dark': '#6F4EA1',
+      'theme-blue': '#3E6BA3',
+      'theme-purple': '#62468C',
+    }
+
+    const color = themeColors[theme] || '#178582'
+
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', color)
+  }, [theme])
 
   return (
     <AuthProvider>
@@ -52,5 +68,4 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       </CongregationProvider>
     </AuthProvider>
   )
-
 }
