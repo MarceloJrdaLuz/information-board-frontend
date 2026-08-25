@@ -1,16 +1,18 @@
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useSubmit } from "@/hooks/useSubmitForms";
 import { api } from "@/services/api";
 import { UserTypes } from "@/types/types";
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit";
-import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
-import { CameraIcon, ZoomIn, ZoomOutIcon } from "lucide-react";
+import { BellOff, BellRing, CameraIcon, ZoomIn, ZoomOutIcon } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 import { useSwipeable } from "react-swipeable";
 import { toast } from "react-toastify";
 import avatar from '../../../public/images/avatar-male.png';
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Switch } from "../ui/switch";
 
 interface ProfileCardProps {
   fullName: string;
@@ -95,6 +97,8 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
     },
   });
 
+  const { isSubscribed, loading: pushLoading, subscribe, unsubscribe, sendTestNotification, supported } = usePushNotifications();
+
   return (
     <>
       {newAvatarUrl ? (
@@ -128,39 +132,80 @@ export function ProfileCard({ avatar_url, email, fullName, user }: ProfileCardPr
         </div>
       ) : (
         <Card className="bg-surface-100 border-none rounded-lg p-3 w-full mx-auto text-center shadow-sm">
-         <div className="relative w-28 h-28 mx-auto">
+          <div className="relative w-28 h-28 mx-auto">
 
-  {/* Camada que corta a imagem */}
-  <div className="w-full h-full rounded-full overflow-hidden bg-surface-200 flex justify-center items-center">
-    <Image
-      src={avatar_url || avatar}
-      alt="Foto de perfil"
-      fill
-      className="object-cover object-top rounded-full"
-    />
-  </div>
+            {/* Camada que corta a imagem */}
+            <div className="w-full h-full rounded-full overflow-hidden bg-surface-200 flex justify-center items-center">
+              <Image
+                src={avatar_url || avatar}
+                alt="Foto de perfil"
+                fill
+                className="object-cover object-top rounded-full"
+              />
+            </div>
 
-  {/* Botão da câmera fora do overflow-hidden */}
-  <button
-    onClick={() => fileInputRef.current?.click()}
-    className="absolute -bottom-2 -right-2 bg-primary-200 p-2 rounded-full shadow-md hover:scale-105 transition-all duration-200 border-2 border-surface-100 z-10"
-  >
-    <CameraIcon className="w-4 h-4 text-typography-100" />
-  </button>
+            {/* Botão da câmera fora do overflow-hidden */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-2 -right-2 bg-primary-200 p-2 rounded-full shadow-md hover:scale-105 transition-all duration-200 border-2 border-surface-100 z-10"
+            >
+              <CameraIcon className="w-4 h-4 text-typography-100" />
+            </button>
 
-  <input
-    type="file"
-    ref={fileInputRef}
-    style={{ display: "none" }}
-    onChange={handleFileChange}
-  />
-</div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </div>
 
 
           <CardContent className="pt-2 px-2">
             <p className="text-typography-700 text-sm font-semibold truncate">
               {fullName ? `Bem-Vindo, ${fullName?.split(" ")[0]}!` : "Bem-Vindo"}
             </p>
+
+            {/* Controle de Notificações Push */}
+            {supported && (
+              <div className="mt-3 pt-3 border-t border-surface-300 flex items-center justify-between gap-2 px-1">
+                <div className="flex items-center gap-1.5 text-left">
+                  {isSubscribed ? (
+                    <BellRing className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  ) : (
+                    <BellOff className="w-3.5 h-3.5 text-typography-400 shrink-0" />
+                  )}
+                  <span className="text-[11px] font-medium text-typography-600">
+                    {isSubscribed ? "Notificações ativas" : "Notificações push"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  {isSubscribed && (
+                    <button
+                      onClick={sendTestNotification}
+                      disabled={pushLoading}
+                      title="Enviar notificação de teste"
+                      className="text-[10px] text-primary-200 hover:text-primary-300 px-1.5 py-0.5 rounded hover:bg-surface-200 transition"
+                    >
+                      Testar
+                    </button>
+                  )}
+                  <Switch
+                    className="
+    data-[state=checked]:bg-[rgb(var(--color-primary-100))]
+    [&>span]:data-[state=checked]:bg-[rgb(var(--color-primary-200))]
+  "
+                    checked={isSubscribed}
+                    onCheckedChange={(checked) => {
+                      if (checked) subscribe();
+                      else unsubscribe();
+                    }}
+                    disabled={pushLoading}
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
