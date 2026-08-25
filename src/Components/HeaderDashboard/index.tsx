@@ -1,9 +1,9 @@
+import { isDesktopAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
+import { useAtomValue } from "jotai"
 import Avatar from "../Avatar"
 import AvatarCongregation from "../AvatarCongregation"
 import ButtonHamburguer from "../ButtonHamburguer"
-import { useAtomValue } from "jotai"
-import { isDesktopAtom, toogleMenu } from "@/atoms/atom"
 
 
 export default function HeaderDashboard() {

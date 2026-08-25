@@ -20,5 +20,7 @@ export const API_ROUTES = {
     FIELD_SERVICE_TEMPLATES: "/field-service/templates",
     FIELD_SERVICE_EXCEPTIONS: "/field-service/exceptions",
     FIELD_SERVICE_SCHEDULES: "/field-service/schedules",
-    PUBLISHER_REMINDERS: "/reminders"
+    PUBLISHER_REMINDERS: "/reminders",
+    PUSH: "/push",
+    NOTIFICATIONS: "/notifications"
 }
