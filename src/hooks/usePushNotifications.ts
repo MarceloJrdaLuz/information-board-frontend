@@ -92,12 +92,20 @@ export function usePushNotifications() {
             }
             registration = await navigator.serviceWorker.ready
 
-            // 3. Obtém chave pública VAPID do backend
-            const { data } = await api.get(`${API_ROUTES.PUSH}/public-key`)
-            const vapidPublicKey = data?.publicKey
+            // 3. Obtém chave pública VAPID do backend (ou do env do frontend)
+            let vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
             if (!vapidPublicKey) {
-                throw new Error("Chave pública VAPID não configurada no servidor.")
+                try {
+                    const { data } = await api.get(`${API_ROUTES.PUSH}/public-key`)
+                    vapidPublicKey = data?.publicKey
+                } catch (err) {
+                    console.error("Erro ao buscar chave pública do backend:", err)
+                }
+            }
+
+            if (!vapidPublicKey) {
+                throw new Error("Chave pública VAPID não configurada no servidor ou no frontend.")
             }
 
             // 4. Cria inscrição no PushManager do navegador
@@ -165,8 +173,6 @@ export function usePushNotifications() {
     const sendTestNotification = useCallback(async () => {
         setLoading(true)
         try {
-            await api.post(`${API_ROUTES.PUSH}/test`)
-            toast.success("Notificação de teste disparada! Verifique seu dispositivo.")
             // Dispara teste no backend
             const response = await api.post(`${API_ROUTES.PUSH}/test`)
 
