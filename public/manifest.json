@@ -3,6 +3,7 @@
   "short_name": "Quadro de Anúncios",
   "description": "Quadro de Anúncios",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#208a88",
   "theme_color": "#208a88",
