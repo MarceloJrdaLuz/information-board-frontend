@@ -71,10 +71,20 @@ export function usePushNotifications() {
             setPermission(perm)
 
             if (perm === "denied") {
-                toast.warn(
-                    "As notificações estão bloqueadas no navegador. Clique no ícone ao lado da URL (cadeado/configurações) para permitir notificações neste site.",
-                    { autoClose: 6000 }
-                )
+                const isStandalone = typeof window !== "undefined" && (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone)
+                const isMobile = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
+                if (isStandalone || isMobile) {
+                    toast.warn(
+                        "Notificações bloqueadas no Android. Segure o ícone do aplicativo na tela inicial > 'Informações do App' (ℹ️) > 'Notificações' e ative 'Permitir notificações'.",
+                        { autoClose: 9000 }
+                    )
+                } else {
+                    toast.warn(
+                        "As notificações estão bloqueadas no navegador. Clique no ícone ao lado da URL (cadeado/configurações) para permitir notificações neste site.",
+                        { autoClose: 6000 }
+                    )
+                }
                 setLoading(false)
                 return false
             }
@@ -183,7 +193,7 @@ export function usePushNotifications() {
                     reg.showNotification("Notificações Ativadas! 🎉", {
                         body: "Você começará a receber suas designações e lembretes aqui.",
                         icon: "/icons/pwa-192.png",
-                        badge: "/icons/pwa-192.png",
+                        badge: "/icons/badge.png", // Usando o novo badge monocromático
                         data: { url: "/dashboard" },
                     })
                 }
