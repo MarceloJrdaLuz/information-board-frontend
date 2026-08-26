@@ -19,7 +19,6 @@ export default function handler(
     short_name: 'Quadro de Anúncios',
     description: 'Quadro de Anúncios',
     start_url: `/${number}`,
-    scope: `/${number}`,
     scope: `/`,
     display: 'standalone',
     background_color: '#178582',
