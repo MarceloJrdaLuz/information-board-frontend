@@ -9,7 +9,6 @@ import ScheduleRow from "@/Components/ScheduleRow"
 import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
-import { Card, CardContent } from "@/Components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
@@ -25,19 +24,25 @@ import {
 import { useAuthContext } from "@/context/AuthContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IExternalTalk } from "@/types/externalTalks"
-import { ICongregation, ISpeaker } from "@/types/types"
+import { ICongregation } from "@/types/types"
 import { IRecordWeekendSchedule, IWeekendSchedule, IWeekendScheduleFormData, IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule"
 import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
-import { BlobProvider, Document, PDFDownloadLink, PDFViewer } from "@react-pdf/renderer"
+import { BlobProvider, Document, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronDown, ChevronUp } from "lucide-react"
-import moment from "moment"
-import "moment/locale/pt-br"; // importa o idioma
+import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
-import { start } from "repl"
+import "dayjs/locale/pt-br";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import isoWeek from "dayjs/plugin/isoWeek";
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(isoWeek);
+dayjs.extend(isBetween);
 
 interface PdfLinkComponentProps {
     schedule: IWeekendSchedule
@@ -68,7 +73,7 @@ function PdfSpeakerInvitation({ schedule, congregationLocale }: PdfLinkComponent
 }
 
 function WeekendSchedulePage() {
-    moment.defineLocale("pt-br", null)
+    dayjs.locale("pt-br")
     const router = useRouter()
     const { date } = router.query
     const { user } = useAuthContext()
@@ -92,11 +97,10 @@ function WeekendSchedulePage() {
     const setUpdateWeekendSchedule = useSetAtom(updateWeekendScheduleAtom)
     const [startDatePdfGenerate, setStartDatePdfGenerate] = useState<string | null>(null)
     const [endDatePdfGenerate, setEndDatePdfGenerate] = useState<string | null>(null)
-    const baseDate = moment().add(monthOffset, "months")
+    const baseDate = dayjs().add(monthOffset, "month")
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const [showFilters, setShowFilters] = useState(true);
-    const [selectedSpeaker, setSelectedSpeaker] = useState<ISpeaker | null>(null)
     const [isPdfSectionOpen, setIsPdfSectionOpen] = useState(false)
 
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
@@ -112,19 +116,19 @@ function WeekendSchedulePage() {
         const dateParam = Array.isArray(date) ? date[0] : date
         if (!dateParam) return
 
-        const target = moment(dateParam, "YYYY-MM-DD", true)
+        const target = dayjs(dateParam, "YYYY-MM-DD", true)
         if (!target.isValid()) {
 
-            const alt = moment(dateParam)
+            const alt = dayjs(dateParam)
             if (!alt.isValid()) return
 
             const monthDiffAlt =
-                (alt.year() - moment().year()) * 12 + (alt.month() - moment().month())
+                (alt.year() - dayjs().year()) * 12 + (alt.month() - dayjs().month())
             setMonthOffset(monthDiffAlt)
             return
         }
 
-        const now = moment()
+        const now = dayjs()
         const monthDiff =
             (target.year() - now.year()) * 12 + (target.month() - now.month())
         setMonthOffset(monthDiff)
@@ -164,10 +168,10 @@ function WeekendSchedulePage() {
         if (data) {
             const schedulesWithTalks = (data.weekendSchedules ?? []).map(sched => {
                 // Para cada schedule, pega os external talks que caem dentro do fim de semana da congregação local
-                const weekendStartDate = moment(sched.date).isoWeekday(5)
-                const weekendEndDate = moment(sched.date).isoWeekday(7)
+                const weekendStartDate = dayjs(sched.date).isoWeekday(5)
+                const weekendEndDate = dayjs(sched.date).isoWeekday(7)
                 const talksForWeekend = externalData.filter(t =>
-                    moment(t.date).isBetween(weekendStartDate, weekendEndDate, "day", "[]")
+                    dayjs(t.date).isBetween(weekendStartDate, weekendEndDate, "day", "[]")
                 )
                 return {
                     ...sched,
@@ -312,34 +316,40 @@ function WeekendSchedulePage() {
         return schedDate >= startFilter && schedDate <= endFilter
     })
 
-    // Filtrar `weekendSchedules` com speaker_id preenchido
-    const scheduledSpeakers = useMemo(() => {
+    // Opções de convite (orador + data)
+    const scheduledOptions = useMemo(() => {
         if (!data?.speakers) return [];
 
-        const now = moment().startOf("day"); // evita problemas com hora
+        const now = dayjs().startOf("day"); // evita problemas com hora
 
-        const ids = new Set<string>();
+        const options: { label: string, schedule: IRecordWeekendSchedule, id: string }[] = [];
 
         Object.values(weekendSchedules).forEach(s => {
             if (!s?.date || !s?.speaker_id) return;
 
-            const scheduleDate = moment(s.date).startOf("day");
+            const scheduleDate = dayjs(s.date).startOf("day");
 
-            if (scheduleDate.isSameOrAfter(now)) {
-                ids.add(s.speaker_id);
+            if (scheduleDate.valueOf() >= now.valueOf()) {
+                const speaker = data.speakers.find(sp => sp.id === s.speaker_id);
+                if (speaker) {
+                    options.push({
+                        label: `${speaker.fullName} - ${scheduleDate.format("DD/MM/YYYY")}`,
+                        schedule: s,
+                        id: s.id || s.date
+                    });
+                }
             }
         });
 
-        return data.speakers.filter(sp => ids.has(sp.id));
+        return options.sort((a, b) => dayjs(a.schedule.date).valueOf() - dayjs(b.schedule.date).valueOf());
     }, [weekendSchedules, data?.speakers]);
 
+    const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
     const selectedSchedule = useMemo(() => {
-        if (!selectedSpeaker) return null;
-        return Object.values(weekendSchedules).find(
-            (s) => s.speaker_id === selectedSpeaker.id
-        ) ?? null;
-    }, [selectedSpeaker, weekendSchedules]);
+        if (!selectedOptionId) return null;
+        return scheduledOptions.find(opt => opt.id === selectedOptionId)?.schedule ?? null;
+    }, [selectedOptionId, scheduledOptions]);
 
     return (
         <ContentDashboard>
@@ -395,16 +405,16 @@ function WeekendSchedulePage() {
                                 <div className="p-4">
                                     <DropdownObject
                                         textVisible
-                                        title="Selecionar Orador"
-                                        items={scheduledSpeakers ?? []}
+                                        title="Selecionar Orador e Data"
+                                        items={scheduledOptions ?? []}
                                         selectedItem={
-                                            scheduledSpeakers?.find(s => s.id === selectedSpeaker?.id) ?? null
+                                            scheduledOptions.find(opt => opt.id === selectedOptionId) ?? null
                                         }
-                                        handleChange={item => setSelectedSpeaker(item)}
-                                        labelKey="fullName"
+                                        handleChange={item => setSelectedOptionId(item?.id ?? null)}
+                                        labelKey="label"
                                         border
                                         full
-                                        emptyMessage="Nenhum orador encontrado"
+                                        emptyMessage="Nenhuma designação futura encontrada"
                                         searchable
                                     />
                                     {selectedSchedule && congregation && (
@@ -412,7 +422,7 @@ function WeekendSchedulePage() {
                                             <PdfSpeakerInvitation
                                                 schedule={{
                                                     ...selectedSchedule,
-                                                    speaker: data?.speakers.find(sp => sp.id === selectedSpeaker?.id),
+                                                    speaker: data?.speakers.find(sp => sp.id === selectedSchedule.speaker_id),
                                                     talk: data?.talks.find(t => t.id === selectedSchedule.talk_id),
                                                     visitingCongregation: data?.congregations.find(
                                                         c => c.id === selectedSchedule.visitingCongregation_id
@@ -493,10 +503,10 @@ function WeekendSchedulePage() {
 
                             <div className="space-y-4 mt-6 pb-36 h-fit">
                                 {weekendMeetingDay.map((d) => {
-                                    const weekend = getWeekendRange(d) // { friday, saturday, sunday } (Moment objects)
+                                    const weekend = getWeekendRange(d) // { friday, saturday, sunday }
 
                                     const externalForDate = (externalData ?? []).filter((t) =>
-                                        moment(t.date).isBetween(weekend.friday, weekend.sunday, "day", "[]")
+                                        dayjs(t.date).isBetween(weekend.friday.toDate(), weekend.sunday.toDate(), "day", "[]")
                                     )
                                     return (
                                         <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
