@@ -8,6 +8,7 @@ self.addEventListener('push', function (event) {
       body: payload.body || '',
       icon: payload.icon || '/icons/pwa-192.png',
       badge: payload.badge || '/icons/pwa-192.png',
+      badge: payload.badge || '/icons/badge.png', // Ícone específico monocromático para a barra de status
       vibrate: [100, 50, 100],
       data: payload.data || { url: '/dashboard' },
     }
@@ -20,6 +21,7 @@ self.addEventListener('push', function (event) {
         body: text,
         icon: '/icons/pwa-192.png',
         badge: '/icons/pwa-192.png',
+        badge: '/icons/badge.png', // Ícone específico monocromático para a barra de status
         data: { url: '/dashboard' },
       })
     )
