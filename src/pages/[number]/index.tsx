@@ -2,6 +2,7 @@
 import Button from "@/Components/Button"
 import HeadComponent from "@/Components/HeadComponent"
 import Head from 'next/head'
+import { GetServerSideProps } from 'next'
 import CleanIcon from "@/Components/Icons/CleanIcon"
 import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
@@ -19,9 +20,13 @@ import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import quadro from '../../../public/images/miniatura-gray.png'
 
-function Home() {
+interface HomeProps {
+    serverNumber?: string
+}
+
+function Home({ serverNumber }: HomeProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || router.query.number
     const domain = useAtomValue(domainUrl)
 
     const [notices, setNotices] = useState<INotice[]>()
@@ -103,3 +108,13 @@ Home.getLayout = (page: React.ReactElement) => {
 
 export default Home
 
+
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { number } = context.params as { number: string }
+    return {
+        props: {
+            serverNumber: number
+        }
+    }
+}
