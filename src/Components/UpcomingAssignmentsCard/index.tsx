@@ -132,6 +132,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         <div className="flex items-center gap-2">
                             <BookOpen size={16} className="text-typography-400" />
                             <strong>Leitor</strong>
+                            <strong>Leitor da Sentinela</strong>
                         </div>
                     )}
 
