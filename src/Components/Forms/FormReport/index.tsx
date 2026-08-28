@@ -1,5 +1,6 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import Button from "@/Components/Button"
+import { API_ROUTES } from "@/constants/apiRoutes"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
@@ -10,8 +11,8 @@ import { IPublisherList } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtomValue } from "jotai"
 import { ArrowLeftIcon } from "lucide-react"
-import moment from "moment"
-import 'moment/locale/pt-br'
+import dayjs from "dayjs"
+import 'dayjs/locale/pt-br'
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useForm } from 'react-hook-form'
@@ -24,7 +25,6 @@ import Input from "../../Input"
 import InputError from "../../InputError"
 import FormStyle from "../FormStyle"
 import { FormValues } from "./types"
-import { API_ROUTES } from "@/constants/apiRoutes"
 
 interface IRelatorioFormProps {
     congregationNumber: string
@@ -53,10 +53,10 @@ export default function FormReport(props: IRelatorioFormProps) {
     }, [data])
 
     useEffect(() => {
-        const today = moment()
+        const today = dayjs().locale('pt-br')
         const isFirstHalfOfMonth = today.date() >= 1 && today.date() <= 25
 
-        const newDate = isFirstHalfOfMonth ? today.clone().subtract(1, 'month') : today
+        const newDate = isFirstHalfOfMonth ? today.subtract(1, 'month') : today
         setMonth(capitalizeFirstLetter(newDate.format('MMMM')))
         setYear(newDate.format('YYYY'))
     }, [])

@@ -1,8 +1,8 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import LayoutSkeleton from "../Layout/layoutSkeleton"
 import { toast } from "react-toastify"
+import LayoutSkeleton from "../Layout/layoutSkeleton"
 
 interface ProtectedRouteProps {
   allowedRoles?: string[]
@@ -20,7 +20,7 @@ export function ProtectedRoute({ allowedRoles = [], children }: ProtectedRoutePr
 
     // usuário não autenticado
     if (!user) {
-      router.replace("/login")
+      router.replace(`/login?callbackUrl=${encodeURIComponent(router.asPath)}`)
       return
     }
 

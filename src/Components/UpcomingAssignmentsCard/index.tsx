@@ -1,5 +1,9 @@
 import { IAssignment } from "@/types/assignment";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
+import { formatHour } from "@/utils/formatTime";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+import isBetween from "dayjs/plugin/isBetween";
 import {
     BookOpen,
     Calendar,
@@ -10,13 +14,9 @@ import {
     Sparkles,
     User
 } from "lucide-react";
-import { LocationLink } from "../LocationLink";
-import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
 import { useState } from "react";
-import { formatHour } from "@/utils/formatTime";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br"
-import isBetween from "dayjs/plugin/isBetween"
+import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
+import { LocationLink } from "../LocationLink";
 dayjs.extend(isBetween)
 dayjs.locale("pt-br")
 
@@ -131,7 +131,6 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     {assignment.role === "Leitor" && (
                         <div className="flex items-center gap-2">
                             <BookOpen size={16} className="text-typography-400" />
-                            <strong>Leitor</strong>
                             <strong>Leitor da Sentinela</strong>
                         </div>
                     )}
