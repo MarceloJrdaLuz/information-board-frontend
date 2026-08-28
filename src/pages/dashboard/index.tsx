@@ -1,4 +1,5 @@
 import { crumbsAtom } from "@/atoms/atom"
+import { CongregationReportsChart } from "@/Components/CongregationReportsChart"
 import ContentDashboard from "@/Components/ContentDashboard"
 import { ProfileCard } from "@/Components/ProfileCard"
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton"
@@ -60,6 +61,9 @@ function Dashboard() {
           ) : (
             reminders && <UpcomingRemindersCard reminders={reminders} mutateReminders={mutate} />
           )}
+
+          {/* Congregation Reports Chart & Summary */}
+          <CongregationReportsChart />
         </div>
       </section>
     </ContentDashboard>
