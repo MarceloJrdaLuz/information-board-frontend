@@ -48,9 +48,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
             throw new Error("Invalid token")
         }
 
+        const { callbackUrl } = ctx.query;
+
         return {
             redirect: {
-                destination: "/dashboard",
+                destination: callbackUrl ? String(callbackUrl) : "/dashboard",
                 permanent: false,
             },
         }
