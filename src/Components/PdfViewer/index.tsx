@@ -4,9 +4,11 @@ import {
     ChevronLeft,
     ChevronRight,
     Download,
+    MoveHorizontal,
     ZoomIn,
     ZoomOut
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { useSwipeable } from 'react-swipeable'
@@ -34,8 +36,17 @@ export default function PdfViewer({
     const [scale, setScale] = useState<number>(1.0)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [containerWidth, setContainerWidth] = useState<number>(800)
+    const [showSwipeHint, setShowSwipeHint] = useState<boolean>(true)
 
     const viewerRef = useRef<HTMLDivElement>(null)
+
+    // Desaparece com a dica de deslizar após 4 segundos
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowSwipeHint(false)
+        }, 4000)
+        return () => clearTimeout(timer)
+    }, [])
 
     // Ajusta a largura base da folha com base no tamanho da tela do dispositivo
     useEffect(() => {
@@ -65,12 +76,14 @@ export default function PdfViewer({
     const handlePrevPage = () => {
         if (pageNumber > 1) {
             setPageNumber((prev) => prev - 1)
+            setShowSwipeHint(false)
         }
     }
 
     const handleNextPage = () => {
         if (numPages && pageNumber < numPages) {
             setPageNumber((prev) => prev + 1)
+            setShowSwipeHint(false)
         }
     }
 
@@ -98,7 +111,7 @@ export default function PdfViewer({
 
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-typography-950 text-white select-none overflow-hidden animate-fadeIn">
-            {/* Header / Barra de Ferramentas Superior */}
+            {/* Header Superior Limpo */}
             <header className="shrink-0 bg-typography-900/95 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shadow-lg z-30">
                 {/* Botão Voltar */}
                 <div className="flex items-center gap-2 shrink-0">
@@ -112,7 +125,7 @@ export default function PdfViewer({
                     </button>
 
                     {title && (
-                        <span className="text-xs sm:text-sm font-medium text-typography-300 truncate max-w-[100px] sm:max-w-xs hidden sm:inline ml-1">
+                        <span className="text-xs sm:text-sm font-medium text-typography-300 truncate max-w-[120px] sm:max-w-xs hidden sm:inline ml-1">
                             {title}
                         </span>
                     )}
@@ -145,48 +158,18 @@ export default function PdfViewer({
                     </button>
                 </div>
 
-                {/* Controles de Zoom e Download (Direita) */}
-                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                    {/* Zoom Out */}
-                    <button
-                        onClick={handleZoomOut}
-                        disabled={scale <= 0.5}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition"
-                        title="Diminuir Zoom"
-                    >
-                        <ZoomOut size={16} />
-                    </button>
-
-                    {/* Porcentagem / Reset */}
-                    <button
-                        onClick={handleResetZoom}
-                        className="text-xs font-semibold px-2 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 transition min-w-[45px] text-center"
-                        title="Restaurar Zoom (100%)"
-                    >
-                        {Math.round(scale * 100)}%
-                    </button>
-
-                    {/* Zoom In */}
-                    <button
-                        onClick={handleZoomIn}
-                        disabled={scale >= 3.0}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition"
-                        title="Aumentar Zoom"
-                    >
-                        <ZoomIn size={16} />
-                    </button>
-
-                    {/* Baixar PDF */}
+                {/* Botão de Download (Direita) */}
+                <div className="flex items-center gap-2 shrink-0">
                     <a
                         href={url}
                         download
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition active:scale-95"
+                        className="px-3 py-1.5 rounded-xl bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition active:scale-95"
                         title="Baixar PDF"
                     >
                         <Download size={15} />
-                        <span className="hidden md:inline">Baixar</span>
+                        <span className="hidden sm:inline">Baixar</span>
                     </a>
                 </div>
             </header>
@@ -194,7 +177,7 @@ export default function PdfViewer({
             {/* Badge de "Semana Atual" em destaque */}
             {isCurrentWeek && pageNumber === initialPage && (
                 <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-                    <div className="bg-primary-200 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20 flex items-center gap-1.5 animate-bounce">
+                    <div className="bg-primary-200 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white/20 flex items-center gap-1.5">
                         <Calendar size={13} />
                         <span>Semana Atual</span>
                     </div>
@@ -204,7 +187,7 @@ export default function PdfViewer({
             {/* Área Central de Visualização com Scroll Suave */}
             <div
                 ref={viewerRef}
-                className="flex-1 w-full overflow-auto flex justify-center items-start p-3 sm:p-6 md:p-8 scroll-smooth"
+                className="flex-1 w-full overflow-auto flex justify-center items-start p-3 sm:p-6 md:p-8 scroll-smooth pb-24"
             >
                 <div
                     {...handlers}
@@ -240,6 +223,53 @@ export default function PdfViewer({
                         </div>
                     </Document>
                 </div>
+            </div>
+
+            {/* Dica Flutuante Temporária: Deslize para os lados (desaparece após alguns segundos) */}
+            <AnimatePresence>
+                {showSwipeHint && numPages && numPages > 1 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 15, x: "-50%" }}
+                        animate={{ opacity: 1, y: 0, x: "-50%" }}
+                        exit={{ opacity: 0, y: 10, x: "-50%" }}
+                        transition={{ duration: 0.35 }}
+                        className="fixed bottom-16 left-1/2 z-30 pointer-events-none w-max max-w-[90vw]"
+                    >
+                        <div className="bg-typography-900/90 backdrop-blur-md text-typography-200 text-[11px] sm:text-xs font-medium px-4 py-2 rounded-full shadow-2xl border border-white/15 flex items-center gap-2">
+                            <MoveHorizontal size={14} className="text-primary-200 shrink-0 animate-pulse" />
+                            <span>Deslize para os lados para trocar de página</span>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Controles Flutuantes de Zoom no Canto Inferior Direito */}
+            <div className="fixed bottom-4 right-4 z-40 bg-typography-900/90 backdrop-blur-md border border-white/15 px-2.5 py-1.5 rounded-full shadow-2xl flex items-center gap-1 sm:gap-1.5">
+                <button
+                    onClick={handleZoomOut}
+                    disabled={scale <= 0.5}
+                    className="p-1.5 rounded-full hover:bg-white/15 text-typography-200 disabled:opacity-30 transition active:scale-95"
+                    title="Diminuir Zoom"
+                >
+                    <ZoomOut size={15} />
+                </button>
+
+                <button
+                    onClick={handleResetZoom}
+                    className="text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-md hover:bg-white/15 text-typography-200 transition min-w-[42px] text-center"
+                    title="Restaurar Zoom (100%)"
+                >
+                    {Math.round(scale * 100)}%
+                </button>
+
+                <button
+                    onClick={handleZoomIn}
+                    disabled={scale >= 3.0}
+                    className="p-1.5 rounded-full hover:bg-white/15 text-typography-200 disabled:opacity-30 transition active:scale-95"
+                    title="Aumentar Zoom"
+                >
+                    <ZoomIn size={15} />
+                </button>
             </div>
         </div>
     )
