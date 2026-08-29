@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
 
-function classNames(...classes: any) {
+function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -109,12 +109,9 @@ export default function DropdownSearch(props: IDropdownSearch) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button className={`inline-flex w-full justify-between rounded-md  bg-transparent border px-4 py-4 text-sm font-medium text-typography-500 shadow-sm hover:underline focus:outline-none focus:ring-1 focus:ring-primary-100   ${props.border ? "border border-blue-gray-200" : "border-none"} `}>
-          <div className='flex'>
-            <span>{props.title}</span>
-            <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
-          </div>
-          <span>{publisherSelected}</span>
+        <Menu.Button className={`inline-flex w-full justify-between items-center rounded-xl bg-surface-100 border px-4 py-2.5 text-sm font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary-200 ${publisherSelected ? "border-primary-200 text-typography-800 font-semibold" : "border-surface-300 text-typography-500 hover:border-primary-200"}`}>
+          <span className="truncate">{publisherSelected || props.title}</span>
+          <ChevronDownIcon className="ml-2 h-5 w-5 text-typography-400 shrink-0" aria-hidden="true" />
         </Menu.Button>
       </div>
 
@@ -127,7 +124,7 @@ export default function DropdownSearch(props: IDropdownSearch) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute cursor-pointer left-0 z-10  w-full origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-blac-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto hide-scrollbar">
+        <Menu.Items className="absolute cursor-pointer left-0 z-10 w-full origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto hide-scrollbar">
           <div className="py-1">
             <input
               type="text"
@@ -147,14 +144,8 @@ export default function DropdownSearch(props: IDropdownSearch) {
                 {({ active }) => (
                   <span
                     onClick={() => {
-                      props.handleClick({
-                        id: option.id,
-                        fullName: option.fullName,
-                        nickname: option.nickname,
-                        congregation_id: option.congregation_id,
-                        congregation_number: option.congregation_number
-                      }),
-                        setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
+                      props.handleClick(option)
+                      setPublisherSelected(`${option.fullName} ${option.nickname && `(${option.nickname})`}`)
                     }}
                     className={classNames(
                       active ? 'bg-surface-200 text-typography-900' : 'text-typography-700',
@@ -179,7 +170,6 @@ export default function DropdownSearch(props: IDropdownSearch) {
             </div>
           )}
         </Menu.Items>
-
       </Transition>
     </Menu>
   )

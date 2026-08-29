@@ -1,16 +1,17 @@
-'use-client'
+'use client'
+
 import { domainUrl } from '@/atoms/atom'
 import { themeAtom } from '@/atoms/themeAtoms'
-import Button from '@/Components/Button'
+import Footer from '@/Components/Footer'
 import HeadComponent from '@/Components/HeadComponent'
 import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
 import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon'
-import LayoutPrincipal from '@/Components/LayoutPrincipal'
 import NotFoundDocument from '@/Components/NotFoundDocument'
 import PdfViewer from '@/Components/PdfViewer'
 import SchedulesCarousel from '@/Components/SchedulesCarousel'
 import Spiner from '@/Components/Spiner'
 import { usePublicDocumentsContext } from '@/context/PublicDocumentsContext'
+import { getWeekPageOfMonth } from '@/functions/getWeekPageOfMonth'
 import DateConverter, { meses } from '@/functions/meses'
 import { removeMimeType } from '@/functions/removeMimeType'
 import { threeMonths } from '@/functions/threeMonths'
@@ -18,262 +19,410 @@ import { useFetch } from '@/hooks/useFetch'
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { Categories, ICongregation, IDocument } from '@/types/types'
 import { IPublicSchedule } from '@/types/weekendSchedule'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
-import { ChevronsLeftIcon } from 'lucide-react'
-import Image from 'next/image'
+import {
+    ArrowLeft,
+    Calendar,
+    ChevronRight,
+    Clock,
+    FileText,
+    Sparkles,
+    Users
+} from 'lucide-react'
+import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import iconDesignacoes from '../../../public/images/designacoes-gray.png'
-import { getWeekPageOfMonth } from '@/functions/getWeekPageOfMonth'
 
 function Designacoes() {
-  const router = useRouter()
-  const { number } = router.query
-  const domain = useAtomValue(domainUrl)
+    const router = useRouter()
+    const { number } = router.query
+    const domain = useAtomValue(domainUrl)
 
-  const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
+    const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
 
-  const [pdfShow, setPdfShow] = useState(false)
-  const [publicOptionsShow, setPublicOptionsShow] = useState(false)
-  const [lifeAndMinistryOptionsShow, setLifeAndMinistryOptionsShow] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState('')
-  const [pdfInitialPage, setPdfInitialPage] = useState(1)
-  const [isCurrentWeek, setIsCurrentWeek] = useState(false)
-  const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
-  const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
-  const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
-  const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
-  const [congregationData, setCongregationData] = useState<ICongregation>()
-  const themeAtomValue = useAtomValue(themeAtom)
-  const isDark = themeAtomValue === "theme-dark"
+    const [activeTab, setActiveTab] = useState<'midweek' | 'weekend'>('midweek')
+    const [pdfShow, setPdfShow] = useState(false)
+    const [pdfUrl, setPdfUrl] = useState('')
+    const [pdfInitialPage, setPdfInitialPage] = useState(1)
+    const [isCurrentWeek, setIsCurrentWeek] = useState(false)
+    const [documentsLifeAndMinistryFilter, setDocumentsLifeAndMinistryFilter] = useState<IDocument[]>()
+    const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
+    const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
+    const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
+    const [congregationData, setCongregationData] = useState<ICongregation>()
 
-  const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-  const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
+    const { data: congregation, isLoading: isLoadingCongregation } = useFetch<ICongregation>(fetchConfigCongregationData)
 
-  const fetchConfigWeekendSchedulesData = number && congregation?.id
-    ? `/congregation/${congregation.id}/weekendSchedules/public`
-    : ""
+    const fetchConfigWeekendSchedulesData =
+        number && congregation?.id
+            ? `/congregation/${congregation.id}/weekendSchedules/public`
+            : ""
 
-  const { data: schedules } = useFetch<Record<string, IPublicSchedule[]>>(fetchConfigWeekendSchedulesData)
+    const { data: schedules, isLoading: isLoadingSchedules } =
+        useFetch<Record<string, IPublicSchedule[]>>(fetchConfigWeekendSchedulesData)
 
+    useEffect(() => {
+        if (congregation) {
+            setCongregationData(congregation)
+        }
+    }, [congregation])
 
-  useEffect(() => {
-    if (congregation) {
-      setCongregationData(congregation)
-    }
-  }, [congregation])
+    useEffect(() => {
+        if (number) {
+            setCongregationNumber(number as string)
+        }
+    }, [number, setCongregationNumber])
 
+    useEffect(() => {
+        if (documents) {
+            setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana))
+            setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana))
+        }
+    }, [documents, filterDocuments])
 
-  useEffect(() => {
-    if (number) {
-      setCongregationNumber(number as string)
-    }
-  }, [number, setCongregationNumber])
+    useEffect(() => {
+        const others = documentsLifeAndMinistryFilter?.filter((document) => {
+            return !meses.includes(removeMimeType(document.fileName))
+        })
 
-  useEffect(() => {
-    if (documents) {
-      setDocumentsLifeAndMinistryFilter(filterDocuments(Categories.meioDeSemana))
-      setDocumentsPublicFilter(filterDocuments(Categories.fimDeSemana))
-    }
-  }, [documents, filterDocuments])
+        setDocumentsOthersFilter(others)
 
-  useEffect(() => {
-    const others = documentsLifeAndMinistryFilter?.filter(document => {
-      return !meses.includes(removeMimeType(document.fileName))
-    })
+        let threeMonthsShow = false
 
-    setDocumentsOthersFilter(others)
+        if (new Date().getDate() <= 6 && new Date().getDay() <= 4) {
+            threeMonthsShow = threeMonths()
+        }
 
-    let threeMonthsShow = false
-
-    if (new Date().getDate() <= 6 && new Date().getDay() <= 4) {
-      threeMonthsShow = threeMonths()
-    }
-
-    if (!threeMonthsShow) {
-      const filterTwoMonths = documentsLifeAndMinistryFilter?.filter(document => {
-        return (
-          removeMimeType(document.fileName) === DateConverter('mes') ||
-          removeMimeType(document.fileName) === DateConverter('mes+1')
-        )
-      })
-
-      if (filterTwoMonths) {
-        setDocumentsLifeAndMinistryFilterMonths(filterTwoMonths)
-      }
-    } else {
-      const filterThreeMonths = documentsLifeAndMinistryFilter?.filter(document => {
-        return (
-          removeMimeType(document.fileName) === DateConverter('mes-1') ||
-          removeMimeType(document.fileName) === DateConverter('mes') ||
-          removeMimeType(document.fileName) === DateConverter('mes+1')
-        )
-      })
-
-      if (filterThreeMonths) {
-        setDocumentsLifeAndMinistryFilterMonths(filterThreeMonths)
-      }
-    }
-  }, [documentsLifeAndMinistryFilter])
-  
-  function handleButtonClick(
-    url: string,
-    fileName?: string,
-    autoDetectPage: boolean = false
-  ) {
-    let finalUrl = url
-
-    if (process.env.NODE_ENV === 'development' && fileName) {
-      const cleanName = removeMimeType(fileName)
-      finalUrl = `/pdfs/${cleanName}.pdf`
-    }
-
-    if (autoDetectPage && fileName) {
-      const monthClicked = removeMimeType(fileName)
-      const monthIndex = meses.indexOf(monthClicked)
-
-      const result = getWeekPageOfMonth(monthIndex)
-
-      setPdfInitialPage(result.page)
-      setIsCurrentWeek(result.isCurrentWeek)
-    } else {
-      setPdfInitialPage(1)
-      setIsCurrentWeek(false) // 🔥 importante
-    }
-
-    setPdfUrl(finalUrl)
-    setPdfShow(true)
-  }
-
-  function compareDocumentsByMonth(a: IDocument, b: IDocument) {
-    const monthA = meses.indexOf(a.fileName.split(".")[0])
-    const monthB = meses.indexOf(b.fileName.split(".")[0])
-
-    if (monthA < monthB) {
-      return -1
-    } else if (monthA > monthB) {
-      return 1
-    } else {
-      return 0
-    }
-  }
-
-  return !pdfShow ? (
-    <div className=" flex flex-col h-screen w-screen bg-typography-200">
-      <HeadComponent title="Designações" urlMiniatura={`${domain}/images/designacoes.png`} />
-      <div className=" flex flex-col h-screen w-screen bg-typography-200 overflow-auto">
-        <LayoutPrincipal
-          nCong={congregationData?.number}
-          image={
-            <Image src={iconDesignacoes} alt="Icone de uma pessoa na tribuna" fill />
-          }
-          congregationName={congregationData?.name ?? ""}
-          circuit={congregationData?.circuit ?? ""}
-          textoHeader="Designações Semanais"
-          heightConteudo={'1/2'}
-          header
-          className='bg-designacoes bg-center bg-cover'
-        >
-          <div className="overflow-auto hide-scrollbar p-2 w-full md:w-9/12 m-auto ">
-            <div>
-              <Button outline={isDark}
-                className="w-full"
-                onClick={() => { setLifeAndMinistryOptionsShow(!lifeAndMinistryOptionsShow) }}
-              >
-                <LifeAndMinistryIcon className="w-5 h-5 sm:w-6 sm:h-6" />Meio de Semana
-              </Button>
-              {lifeAndMinistryOptionsShow && (
-                documents ? (<div className="flex justify-between w-11/12 gap-1 my-2 m-auto flex-wrap">
-                  {lifeAndMinistryOptionsShow && documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && documentsLifeAndMinistryFilterMonths?.map(document => (
-                    <div className="flex-1 " key={document.id}>
-                      <Button outline={isDark}
-                        className="w-full"
-                        onClick={() => { handleButtonClick(document.url, document.fileName, true) }}
-                      >{removeMimeType(document.fileName)}</Button>
-                    </div>
-                  ))}
-                </div>) : (
-                  <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
-                ))}
-              {lifeAndMinistryOptionsShow &&
-                <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                  {lifeAndMinistryOptionsShow && documentsOthersFilter && documentsOthersFilter.map(document => (
-                    <div className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`} key={document.id}>
-                      <Button outline={isDark}
-                        onClick={() => { handleButtonClick(document.url, document.fileName, true) }}
-                        className="w-full text-sm" >{removeMimeType(document.fileName)}</Button>
-                    </div>
-                  ))}
-                </div>}
-
-              {!lifeAndMinistryOptionsShow ? (
-                <>
-                  {!lifeAndMinistryOptionsShow && congregationData?.dayMeetingLifeAndMinistary && congregationData?.hourMeetingLifeAndMinistary ? <p className="font-bold my-2 text-lg text-typography-800">{`${congregationData?.dayMeetingLifeAndMinistary} ${congregationData?.hourMeetingLifeAndMinistary?.split(":").slice(0, 2).join(":")}`}</p> : null}
-                </>
-              ) : (
-                <>
-                  {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length < 1 && documentsOthersFilter && documentsOthersFilter.length < 1 && <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />}
-                </>
-              )}
-
-            </div>
-            <div>
-              <Button outline={isDark}
-                onClick={() => { setPublicOptionsShow(!publicOptionsShow) }}
-                className="w-full"
-              ><PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />Fim de Semana
-              </Button>
-              {publicOptionsShow && (
-                documents ? (
-                  <div className="flex justify-between w-11/12 gap-1  my-2 m-auto flex-wrap">
-                    {documentsPublicFilter && documentsPublicFilter.length > 0 ? (
-                      documentsPublicFilter.map(document => (
-                        <div
-                          className={`${removeMimeType(document.fileName).length > 10 ? 'w-full' : 'flex-1'} min-w-[120px]`}
-                          key={document.id}
-                        >
-                          <Button outline={isDark}
-                            onClick={() => { handleButtonClick(document.url) }}
-                            className="w-full"
-                          >
-                            {removeMimeType(document.fileName)}
-                          </Button>
-                        </div>
-                      ))
-                    ) : schedules && Object.keys(schedules).length > 0 ? (
-                      <SchedulesCarousel schedules={schedules} />
-                    ) : (
-                      <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-full my-2"><Spiner size="w-8 h-8" /></div>
+        if (!threeMonthsShow) {
+            const filterTwoMonths = documentsLifeAndMinistryFilter?.filter((document) => {
+                return (
+                    removeMimeType(document.fileName) === DateConverter('mes') ||
+                    removeMimeType(document.fileName) === DateConverter('mes+1')
                 )
-              )}
-              {!publicOptionsShow && congregationData?.dayMeetingPublic && congregationData?.hourMeetingPublic ? <p className="font-bold text-lg my-2 text-typography-800">{`${congregationData?.dayMeetingPublic} ${congregationData?.hourMeetingPublic?.split(":").slice(0, 2).join(":")}`}</p> : null}
+            })
+
+            if (filterTwoMonths) {
+                setDocumentsLifeAndMinistryFilterMonths(filterTwoMonths)
+            }
+        } else {
+            const filterThreeMonths = documentsLifeAndMinistryFilter?.filter((document) => {
+                return (
+                    removeMimeType(document.fileName) === DateConverter('mes-1') ||
+                    removeMimeType(document.fileName) === DateConverter('mes') ||
+                    removeMimeType(document.fileName) === DateConverter('mes+1')
+                )
+            })
+
+            if (filterThreeMonths) {
+                setDocumentsLifeAndMinistryFilterMonths(filterThreeMonths)
+            }
+        }
+    }, [documentsLifeAndMinistryFilter])
+
+    function handleButtonClick(
+        url: string,
+        fileName?: string,
+        autoDetectPage: boolean = false
+    ) {
+        let finalUrl = url
+
+        if (process.env.NODE_ENV === 'development' && fileName) {
+            const cleanName = removeMimeType(fileName)
+            finalUrl = `/pdfs/${cleanName}.pdf`
+        }
+
+        if (autoDetectPage && fileName) {
+            const monthClicked = removeMimeType(fileName)
+            const monthIndex = meses.indexOf(monthClicked)
+
+            const result = getWeekPageOfMonth(monthIndex)
+
+            setPdfInitialPage(result.page)
+            setIsCurrentWeek(result.isCurrentWeek)
+        } else {
+            setPdfInitialPage(1)
+            setIsCurrentWeek(false)
+        }
+
+        setPdfUrl(finalUrl)
+        setPdfShow(true)
+    }
+
+    const isLoading = isLoadingCongregation
+
+    return !pdfShow ? (
+        <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
+            <Head>
+                <link rel="manifest" href={`/api/manifest?number=${number}`} />
+            </Head>
+
+            <HeadComponent
+                title={`Reuniões - Congregação ${congregationData?.name ?? ""}`}
+                urlMiniatura={`${domain}/images/designacoes.png`}
+            />
+
+            {/* Top Bar de Navegação */}
+            <div className="w-full bg-surface-100 border-b border-surface-300/80 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-surface-100/90">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+                    <Link
+                        href={`/${number}`}
+                        className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-primary-200 hover:text-primary-150 transition active:scale-95 px-2.5 py-1.5 rounded-lg hover:bg-surface-200"
+                    >
+                        <ArrowLeft size={17} />
+                        <span>Voltar ao Quadro</span>
+                    </Link>
+
+                    {congregationData?.name && (
+                        <span className="text-xs text-typography-500 font-medium hidden sm:inline-block">
+                            Congregação {congregationData.name}
+                        </span>
+                    )}
+                </div>
             </div>
-            <Button outline={isDark}
-              onClick={() => router.push(`/${number}`)}
-              className="w-1/2 mx-auto"
-            ><ChevronsLeftIcon />Voltar</Button>
-          </div>
-        </LayoutPrincipal>
-      </div>
-    </div>
-  ) : (
-    <>
-      <PdfViewer isCurrentWeek={isCurrentWeek} initialPage={pdfInitialPage} url={pdfUrl} setPdfShow={() => setPdfShow(false)} />
-    </>
-  )
+
+            {/* Conteúdo Principal */}
+            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
+                {/* Título da Seção */}
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-primary-200 font-bold text-xs uppercase tracking-wider">
+                        <Users size={15} />
+                        <span>Programações Semanais</span>
+                    </div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-typography-800 tracking-tight">
+                        Reuniões e Designações
+                    </h1>
+                    <p className="text-xs sm:text-sm text-typography-500">
+                        Consulte a programação da reunião de meio de semana e fim de semana
+                    </p>
+                </div>
+
+                {/* Alternador de Abas (Tabs) Moderno */}
+                <div className="flex bg-surface-100 border border-surface-300 rounded-xl p-1 shadow-sm">
+                    <button
+                        onClick={() => setActiveTab('midweek')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+                            activeTab === 'midweek'
+                                ? 'bg-primary-200 text-white shadow-sm'
+                                : 'text-typography-600 hover:text-typography-900 hover:bg-surface-200/60'
+                        }`}
+                    >
+                        <LifeAndMinistryIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span>Meio de Semana</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab('weekend')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+                            activeTab === 'weekend'
+                                ? 'bg-primary-200 text-white shadow-sm'
+                                : 'text-typography-600 hover:text-typography-900 hover:bg-surface-200/60'
+                        }`}
+                    >
+                        <PublicMeetingIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span>Fim de Semana</span>
+                    </button>
+                </div>
+
+                {/* Horário da Reunião Selecionada */}
+                <div className="bg-surface-100 border border-surface-300 rounded-xl p-3.5 sm:p-4 shadow-sm flex items-center justify-between text-xs sm:text-sm">
+                    <div className="flex items-center gap-2 text-primary-200 font-bold">
+                        <Clock size={16} />
+                        <span>
+                            {activeTab === 'midweek' ? 'Reunião Vida e Ministério:' : 'Reunião Pública e Sentinela:'}
+                        </span>
+                    </div>
+
+                    <div className="font-semibold text-typography-800">
+                        {activeTab === 'midweek' ? (
+                            congregationData?.dayMeetingLifeAndMinistary ? (
+                                <span>
+                                    {congregationData.dayMeetingLifeAndMinistary}
+                                    {congregationData.hourMeetingLifeAndMinistary
+                                        ? ` às ${congregationData.hourMeetingLifeAndMinistary.slice(0, 5)}`
+                                        : ''}
+                                </span>
+                            ) : (
+                                <span className="text-typography-400 font-normal">Não informado</span>
+                            )
+                        ) : congregationData?.dayMeetingPublic ? (
+                            <span>
+                                {congregationData.dayMeetingPublic}
+                                {congregationData.hourMeetingPublic
+                                    ? ` às ${congregationData.hourMeetingPublic.slice(0, 5)}`
+                                    : ''}
+                            </span>
+                        ) : (
+                            <span className="text-typography-400 font-normal">Não informado</span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Conteúdo da Aba Meio de Semana */}
+                {activeTab === 'midweek' && (
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-sm font-bold text-typography-700 uppercase tracking-wider">
+                            Apostilas e Programações
+                        </h2>
+
+                        {!documents ? (
+                            <div className="py-12 flex flex-col items-center justify-center gap-2 text-typography-400">
+                                <Spiner size="w-8 h-8" />
+                                <span className="text-xs">Carregando documentos...</span>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                {/* Programações dos Meses Atuais */}
+                                {documentsLifeAndMinistryFilterMonths &&
+                                documentsLifeAndMinistryFilterMonths.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {documentsLifeAndMinistryFilterMonths.map((doc) => {
+                                            const monthName = removeMimeType(doc.fileName)
+                                            return (
+                                                <motion.button
+                                                    key={doc.id}
+                                                    whileHover={{ scale: 1.015, y: -2 }}
+                                                    whileTap={{ scale: 0.985 }}
+                                                    onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                    className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
+                                                >
+                                                    <div className="flex items-center gap-3.5">
+                                                        <div className="w-12 h-12 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                            <FileText size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-[11px] font-bold uppercase tracking-wider text-primary-200 block mb-0.5">
+                                                                Programação
+                                                            </span>
+                                                            <h3 className="font-bold text-base sm:text-lg text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                                {monthName}
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-typography-400 group-hover:text-primary-200 group-hover:bg-primary-200/10 transition-all">
+                                                        <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                                                    </div>
+                                                </motion.button>
+                                            )
+                                        })}
+                                    </div>
+                                ) : null}
+
+                                {/* Outros Documentos de Meio de Semana */}
+                                {documentsOthersFilter && documentsOthersFilter.length > 0 && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                        {documentsOthersFilter.map((doc) => (
+                                            <motion.button
+                                                key={doc.id}
+                                                whileHover={{ scale: 1.015, y: -2 }}
+                                                whileTap={{ scale: 0.985 }}
+                                                onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                className="flex items-center justify-between p-4 rounded-xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-surface-200 text-typography-600 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                        <FileText size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-semibold text-sm text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                            {removeMimeType(doc.fileName)}
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <ChevronRight size={16} className="text-typography-400 group-hover:text-primary-200 transition-colors" />
+                                            </motion.button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Mensagem se nenhum documento existir */}
+                                {(!documentsLifeAndMinistryFilterMonths || documentsLifeAndMinistryFilterMonths.length === 0) &&
+                                    (!documentsOthersFilter || documentsOthersFilter.length === 0) && (
+                                        <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />
+                                    )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Conteúdo da Aba Fim de Semana */}
+                {activeTab === 'weekend' && (
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-sm font-bold text-typography-700 uppercase tracking-wider">
+                            Discursos e Sentinela
+                        </h2>
+
+                        {!documents ? (
+                            <div className="py-12 flex flex-col items-center justify-center gap-2 text-typography-400">
+                                <Spiner size="w-8 h-8" />
+                                <span className="text-xs">Carregando programação...</span>
+                            </div>
+                        ) : documentsPublicFilter && documentsPublicFilter.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {documentsPublicFilter.map((doc) => (
+                                    <motion.button
+                                        key={doc.id}
+                                        whileHover={{ scale: 1.015, y: -2 }}
+                                        whileTap={{ scale: 0.985 }}
+                                        onClick={() => handleButtonClick(doc.url)}
+                                        className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
+                                    >
+                                        <div className="flex items-center gap-3.5">
+                                            <div className="w-12 h-12 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                <FileText size={24} />
+                                            </div>
+                                            <div>
+                                                <span className="text-[11px] font-bold uppercase tracking-wider text-primary-200 block mb-0.5">
+                                                    Programação
+                                                </span>
+                                                <h3 className="font-bold text-base sm:text-lg text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                    {removeMimeType(doc.fileName)}
+                                                </h3>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-typography-400 group-hover:text-primary-200 group-hover:bg-primary-200/10 transition-all">
+                                            <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                                        </div>
+                                    </motion.button>
+                                ))}
+                            </div>
+                        ) : schedules && Object.keys(schedules).length > 0 ? (
+                            <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
+                                <SchedulesCarousel schedules={schedules} />
+                            </div>
+                        ) : (
+                            <NotFoundDocument message="Nenhuma programação da Reunião Pública encontrada!" />
+                        )}
+                    </div>
+                )}
+            </main>
+
+            {/* Footer Oficial */}
+            <Footer
+                nCong={number as string}
+                ano={new Date().getFullYear()}
+                nomeCongregacao={`Congregação ${congregationData?.name ?? ""} ${
+                    congregationData?.circuit ? `- ${congregationData.circuit}` : ""
+                }`}
+                aviso="Atenção: favor não compartilhar acesso ao site para outros que não pertencem à congregação."
+            />
+        </div>
+    ) : (
+        <PdfViewer
+            isCurrentWeek={isCurrentWeek}
+            initialPage={pdfInitialPage}
+            url={pdfUrl}
+            setPdfShow={() => setPdfShow(false)}
+        />
+    )
 }
 
 Designacoes.getLayout = (page: React.ReactElement) => {
-  return (
-    <PublicDocumentsProviderLayout>
-      {page}
-    </PublicDocumentsProviderLayout>
-  )
+    return <PublicDocumentsProviderLayout>{page}</PublicDocumentsProviderLayout>
 }
 
 export default Designacoes
-
