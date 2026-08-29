@@ -15,6 +15,7 @@ import {
     ArrowRight,
     BookOpen,
     Calendar,
+    Check,
     Clock,
     FileText,
     MessageSquare,
@@ -262,26 +263,34 @@ export default function FormReport(props: IRelatorioFormProps) {
                 </div>
 
                 {/* Opção: Participou (Menos de 1 hora) */}
-                <div className="bg-surface-200/60 border border-surface-300/80 rounded-xl p-3.5 flex items-start gap-3 transition-colors hover:bg-surface-200">
-                    <input
-                        type="checkbox"
-                        id="underAnHour"
-                        checked={underAnHour}
-                        onChange={(e) => {
-                            setUnderAnHour(e.target.checked)
-                            clearErrors("hours")
-                        }}
-                        className="mt-0.5 w-4 h-4 rounded text-primary-200 border-typography-300 focus:ring-primary-200 cursor-pointer"
-                    />
-                    <label
-                        htmlFor="underAnHour"
-                        className="text-xs sm:text-sm text-typography-700 cursor-pointer leading-snug select-none"
+                <div
+                    onClick={() => {
+                        setUnderAnHour(!underAnHour)
+                        clearErrors("hours")
+                    }}
+                    className={`border rounded-xl p-3.5 flex items-start gap-3 transition-all cursor-pointer select-none ${
+                        underAnHour
+                            ? "bg-primary-200/10 border-primary-200 shadow-sm"
+                            : "bg-surface-200/60 border-surface-300/80 hover:bg-surface-200"
+                    }`}
+                >
+                    {/* Checkbox customizado na cor primary-200 */}
+                    <div
+                        className={`w-5 h-5 rounded-md flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
+                            underAnHour
+                                ? "bg-primary-200 text-white shadow-sm"
+                                : "border-2 border-typography-400/60 bg-surface-100"
+                        }`}
                     >
+                        {underAnHour && <Check size={13} className="stroke-[3]" />}
+                    </div>
+
+                    <div className="text-xs sm:text-sm text-typography-700 leading-snug">
                         <strong className="block text-typography-800 font-semibold mb-0.5">
                             Sou publicador, participei na pregação
                         </strong>
                         Marque aqui caso tenha participado no ministério mas não tenha completado horas inteiras.
-                    </label>
+                    </div>
                 </div>
 
                 {/* Campo de Horas */}
@@ -351,7 +360,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                     <input
                         type="text"
                         maxLength={50}
-                        placeholder="Ex: Pioneiro auxiliar neste mês..."
+                        placeholder="Ex: Crédito de horas..."
                         {...register("observations")}
                         className="w-full px-4 py-2.5 rounded-xl border border-surface-300 bg-surface-100 text-typography-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-200 transition"
                     />
