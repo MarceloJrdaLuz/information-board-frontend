@@ -37,7 +37,7 @@ export default function PdfViewer({
 
     const viewerRef = useRef<HTMLDivElement>(null)
 
-    // Ajusta a largura da página baseando-se no tamanho da tela
+    // Ajusta a largura base da folha com base no tamanho da tela do dispositivo
     useEffect(() => {
         const updateWidth = () => {
             if (viewerRef.current) {
@@ -75,11 +75,11 @@ export default function PdfViewer({
     }
 
     const handleZoomIn = () => {
-        setScale((prev) => Math.min(prev + 0.2, 2.4))
+        setScale((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.0))
     }
 
     const handleZoomOut = () => {
-        setScale((prev) => Math.max(prev - 0.2, 0.6))
+        setScale((prev) => Math.max(Number((prev - 0.25).toFixed(2)), 0.5))
     }
 
     const handleResetZoom = () => {
@@ -94,23 +94,25 @@ export default function PdfViewer({
         preventScrollOnSwipe: true
     })
 
+    const computedWidth = Math.round(containerWidth * scale)
+
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-typography-950 text-white select-none overflow-hidden animate-fadeIn">
             {/* Header / Barra de Ferramentas Superior */}
-            <header className="shrink-0 bg-typography-900/90 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shadow-lg z-30">
+            <header className="shrink-0 bg-typography-900/95 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shadow-lg z-30">
                 {/* Botão Voltar */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                     <button
                         onClick={() => setPdfShow(false)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs sm:text-sm font-semibold transition active:scale-95 text-white"
                         title="Fechar visualizador"
                     >
                         <ArrowLeft size={16} />
-                        <span className="hidden sm:inline">Voltar</span>
+                        <span>Voltar</span>
                     </button>
 
                     {title && (
-                        <span className="text-xs sm:text-sm font-medium text-typography-300 truncate max-w-[140px] sm:max-w-xs ml-1">
+                        <span className="text-xs sm:text-sm font-medium text-typography-300 truncate max-w-[100px] sm:max-w-xs hidden sm:inline ml-1">
                             {title}
                         </span>
                     )}
@@ -127,9 +129,9 @@ export default function PdfViewer({
                         <ChevronLeft size={18} />
                     </button>
 
-                    <span className="text-xs sm:text-sm font-semibold px-1 min-w-[75px] sm:min-w-[90px] text-center tracking-tight text-typography-200">
+                    <span className="text-xs sm:text-sm font-semibold px-1 min-w-[65px] sm:min-w-[85px] text-center tracking-tight text-typography-200">
                         {isLoading
-                            ? "Carregando..."
+                            ? "..."
                             : `${pageNumber} / ${numPages || 1}`}
                     </span>
 
@@ -143,13 +145,13 @@ export default function PdfViewer({
                     </button>
                 </div>
 
-                {/* Controles de Zoom e Ações Rápidas (Direita) */}
-                <div className="flex items-center gap-1 sm:gap-1.5">
+                {/* Controles de Zoom e Download (Direita) */}
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                     {/* Zoom Out */}
                     <button
                         onClick={handleZoomOut}
-                        disabled={scale <= 0.6}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition hidden sm:inline-flex"
+                        disabled={scale <= 0.5}
+                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition"
                         title="Diminuir Zoom"
                     >
                         <ZoomOut size={16} />
@@ -158,7 +160,7 @@ export default function PdfViewer({
                     {/* Porcentagem / Reset */}
                     <button
                         onClick={handleResetZoom}
-                        className="text-xs font-semibold px-2 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 transition hidden sm:inline-flex"
+                        className="text-xs font-semibold px-2 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 transition min-w-[45px] text-center"
                         title="Restaurar Zoom (100%)"
                     >
                         {Math.round(scale * 100)}%
@@ -167,8 +169,8 @@ export default function PdfViewer({
                     {/* Zoom In */}
                     <button
                         onClick={handleZoomIn}
-                        disabled={scale >= 2.4}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition hidden sm:inline-flex"
+                        disabled={scale >= 3.0}
+                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-typography-200 disabled:opacity-30 transition"
                         title="Aumentar Zoom"
                     >
                         <ZoomIn size={16} />
@@ -206,7 +208,8 @@ export default function PdfViewer({
             >
                 <div
                     {...handlers}
-                    className="flex flex-col items-center justify-center min-h-full py-2 w-full"
+                    className="flex flex-col items-center justify-center min-h-full py-2"
+                    style={{ width: `${computedWidth}px`, maxWidth: 'none' }}
                 >
                     <Document
                         file={url}
@@ -225,67 +228,19 @@ export default function PdfViewer({
                             </div>
                         }
                     >
-                        <div className="shadow-2xl rounded-lg overflow-hidden border border-white/10 bg-white transition-transform duration-150">
+                        <div className="shadow-2xl rounded-lg overflow-hidden border border-white/10 bg-white transition-all duration-150">
                             <Page
+                                key={`page_${pageNumber}_w_${computedWidth}`}
                                 pageNumber={pageNumber}
                                 renderTextLayer={false}
                                 renderAnnotationLayer={false}
-                                width={containerWidth}
-                                scale={scale}
+                                width={computedWidth}
                                 className="overflow-hidden"
                             />
                         </div>
                     </Document>
                 </div>
             </div>
-
-            {/* Barra Flutuante de Atalhos Rápidos para Celular (Bottom Bar) */}
-            <footer className="sm:hidden shrink-0 bg-typography-900/95 backdrop-blur-md border-t border-white/10 px-4 py-2 flex items-center justify-between gap-3 shadow-lg z-30">
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={handleZoomOut}
-                        disabled={scale <= 0.6}
-                        className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 transition"
-                        title="Diminuir Zoom"
-                    >
-                        <ZoomOut size={16} />
-                    </button>
-                    <button
-                        onClick={handleResetZoom}
-                        className="text-xs font-bold px-2.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
-                    >
-                        {Math.round(scale * 100)}%
-                    </button>
-                    <button
-                        onClick={handleZoomIn}
-                        disabled={scale >= 2.4}
-                        className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 transition"
-                        title="Aumentar Zoom"
-                    >
-                        <ZoomIn size={16} />
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={handlePrevPage}
-                        disabled={pageNumber <= 1 || isLoading}
-                        className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 text-xs font-semibold flex items-center gap-1"
-                    >
-                        <ChevronLeft size={15} />
-                        <span>Ant.</span>
-                    </button>
-
-                    <button
-                        onClick={handleNextPage}
-                        disabled={!numPages || pageNumber >= numPages || isLoading}
-                        className="px-3 py-1.5 rounded-xl bg-primary-200 hover:bg-primary-150 disabled:opacity-30 text-white text-xs font-semibold flex items-center gap-1 shadow-sm"
-                    >
-                        <span>Próx.</span>
-                        <ChevronRight size={15} />
-                    </button>
-                </div>
-            </footer>
         </div>
     )
 }
