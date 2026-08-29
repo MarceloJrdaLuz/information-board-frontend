@@ -14,7 +14,6 @@ import {
     Calculator as CalculatorIcon,
     CalendarDays as CalendarDaysIcon,
     ChevronRight,
-    Clock,
     LogIn,
     MapPin
 } from "lucide-react"
@@ -278,54 +277,10 @@ function Home({ serverNumber }: HomeProps) {
                         )}
                     </div>
                 </div>
-
-                {/* Barra com Horários das Reuniões (perfeitamente alinhada e simétrica em qualquer celular) */}
-                {(congregation?.dayMeetingLifeAndMinistary || congregation?.dayMeetingPublic) && (
-                    <div className="max-w-4xl mx-auto px-4 -mt-2 mb-3 relative z-20 w-full">
-                        <div className="bg-surface-100 border border-surface-300 rounded-xl p-3.5 sm:p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs sm:text-sm text-typography-700">
-                            {/* Título com ícone */}
-                            <div className="flex items-center justify-center md:justify-start gap-2 text-primary-200 font-bold shrink-0">
-                                <Clock size={16} />
-                                <span>Reuniões da Semana:</span>
-                            </div>
-
-                            {/* Horários: Grid responsivo de 1 coluna em celular e 2 colunas em telas maiores */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full md:w-auto">
-                                {congregation?.dayMeetingLifeAndMinistary && (
-                                    <div className="flex items-center justify-center sm:justify-start gap-1.5 bg-surface-200/80 px-3 py-2 rounded-lg border border-surface-300/40 text-center sm:text-left">
-                                        <span className="font-semibold text-typography-800 shrink-0">
-                                            Meio de Semana:
-                                        </span>
-                                        <span className="text-typography-600 truncate">
-                                            {congregation.dayMeetingLifeAndMinistary}
-                                            {congregation.hourMeetingLifeAndMinistary
-                                                ? ` às ${congregation.hourMeetingLifeAndMinistary.slice(0, 5)}`
-                                                : ""}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {congregation?.dayMeetingPublic && (
-                                    <div className="flex items-center justify-center sm:justify-start gap-1.5 bg-surface-200/80 px-3 py-2 rounded-lg border border-surface-300/40 text-center sm:text-left">
-                                        <span className="font-semibold text-typography-800 shrink-0">
-                                            Fim de Semana:
-                                        </span>
-                                        <span className="text-typography-600 truncate">
-                                            {congregation.dayMeetingPublic}
-                                            {congregation.hourMeetingPublic
-                                                ? ` às ${congregation.hourMeetingPublic.slice(0, 5)}`
-                                                : ""}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* Conteúdo Principal / Grid dos Botões do Quadro */}
-            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-3 sm:py-5 flex flex-col justify-center">
+            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
                 {isFetching ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
