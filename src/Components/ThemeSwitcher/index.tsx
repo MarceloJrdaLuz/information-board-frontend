@@ -13,7 +13,12 @@ const themes: { name: string; class: ThemeType; color: string }[] = [
   { name: 'Roxo', class: 'theme-purple', color: '#746B84' },
 ]
 
-export default function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  className?: string
+  showLabel?: boolean
+}
+
+export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwitcherProps) {
   const [open, setOpen] = useState(false)
   const setThemeAtom = useSetAtom(themeAtom)
 
@@ -39,13 +44,19 @@ export default function ThemeSwitcher() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative inline-flex items-center">
       <button
         onClick={() => setOpen(!open)}
-        className="w-9 h-9 flex items-center justify-center  text-typography-100 rounded-full shadow-md hover:brightness-95 transition-all"
+        className={
+          className ||
+          (showLabel
+            ? "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white font-medium text-xs transition-all shadow-sm"
+            : "w-9 h-9 flex items-center justify-center text-typography-100 rounded-full shadow-md hover:brightness-95 transition-all")
+        }
         title="Mudar tema"
       >
-        <Palette size={18} />
+        <Palette size={15} />
+        {showLabel && <span>Tema</span>}
       </button>
 
       <AnimatePresence>
@@ -55,7 +66,7 @@ export default function ThemeSwitcher() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-surface-100 shadow-md rounded-full px-3 py-2 flex gap-2 z-50"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-surface-100 shadow-xl border border-surface-300 rounded-full px-3 py-2 flex gap-2 z-50"
           >
             {themes.map((t) => (
               <motion.button

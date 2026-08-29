@@ -1,5 +1,4 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import Button from "@/Components/Button"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
@@ -9,32 +8,43 @@ import { ICheckPublisherConsent } from "@/types/consent"
 import { IPayloadCreateReport } from "@/types/reports"
 import { IPublisherList } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useAtomValue } from "jotai"
-import { ArrowLeftIcon } from "lucide-react"
 import dayjs from "dayjs"
-import 'dayjs/locale/pt-br'
+import "dayjs/locale/pt-br"
+import { useAtomValue } from "jotai"
+import {
+    ArrowRight,
+    BookOpen,
+    Calendar,
+    Check,
+    Clock,
+    FileText,
+    MessageSquare,
+    Send,
+    User
+} from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
-import * as yup from 'yup'
-import CheckboxBoolean from "../../CheckboxBoolean"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import * as yup from "yup"
 import ConsentMessage from "../../ConsentMessage"
 import DropdownSearch from "../../DropdownSearch"
-import Input from "../../Input"
-import InputError from "../../InputError"
-import FormStyle from "../FormStyle"
 import { FormValues } from "./types"
+
+dayjs.locale("pt-br")
 
 interface IRelatorioFormProps {
     congregationNumber: string
 }
 
 export default function FormReport(props: IRelatorioFormProps) {
-    const { data } = useFetch<IPublisherList[]>(`${API_ROUTES.PUBLISHERS}/congregationNumber/${props.congregationNumber}`)
+    const { data } = useFetch<IPublisherList[]>(
+        `${API_ROUTES.PUBLISHERS}/congregationNumber/${props.congregationNumber}`
+    )
     const { createReport, createConsentRecord } = usePublisher()
-    const [month, setMonth] = useState('')
-    const [year, setYear] = useState('')
+
+    const [month, setMonth] = useState("")
+    const [year, setYear] = useState("")
     const [optionsDrop, setOptionsDrop] = useState<IPublisherList[]>([])
     const [publisherToSend, setPublisherToSend] = useState<IPublisherList>()
     const [underAnHour, setUnderAnHour] = useState(false)
@@ -53,12 +63,12 @@ export default function FormReport(props: IRelatorioFormProps) {
     }, [data])
 
     useEffect(() => {
-        const today = dayjs().locale('pt-br')
+        const today = dayjs().locale("pt-br")
         const isFirstHalfOfMonth = today.date() >= 1 && today.date() <= 25
 
-        const newDate = isFirstHalfOfMonth ? today.subtract(1, 'month') : today
-        setMonth(capitalizeFirstLetter(newDate.format('MMMM')))
-        setYear(newDate.format('YYYY'))
+        const newDate = isFirstHalfOfMonth ? today.subtract(1, "month") : today
+        setMonth(capitalizeFirstLetter(newDate.format("MMMM")))
+        setYear(newDate.format("YYYY"))
     }, [])
 
     const handleClick = (option: IPublisherList | undefined) => {
@@ -67,23 +77,34 @@ export default function FormReport(props: IRelatorioFormProps) {
 
     const validationSchema = yup.object({
         month: yup.string().required(),
-        hours: yup.number(),
-        studies: yup.number().transform((value) => (isNaN(value) ? 0 : value)).nullable(),
+        hours: yup.number().transform((value) => (isNaN(value) ? 0 : value)),
+        studies: yup
+            .number()
+            .transform((value) => (isNaN(value) ? 0 : value))
+            .nullable(),
         observations: yup.string()
     })
 
-    const { register, handleSubmit, formState: { errors }, setValue, setError, clearErrors, resetField } = useForm({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        setValue,
+        setError,
+        clearErrors,
+        resetField
+    } = useForm({
         defaultValues: {
-            month: '',
+            month: "",
             hours: 0,
-            studies: '',
-            observations: ''
+            studies: "",
+            observations: ""
         },
         resolver: yupResolver(validationSchema)
     })
 
     useEffect(() => {
-        setValue('month', month)
+        setValue("month", month)
     }, [month, setValue])
 
     const handleConsentRecordsCreate = async () => {
@@ -96,7 +117,7 @@ export default function FormReport(props: IRelatorioFormProps) {
         if (!deviceIdToUse) {
             deviceIdToUse = crypto.randomUUID()
             setDeviceId(deviceIdToUse)
-            localStorage.setItem('deviceId', deviceIdToUse)
+            localStorage.setItem("deviceId", deviceIdToUse)
         }
 
         await createConsentRecord(publisherToSend.id, deviceIdToUse)
@@ -109,34 +130,37 @@ export default function FormReport(props: IRelatorioFormProps) {
     function sendSubmit({ hours, month, observations, studies }: FormValues) {
         if (publisherToSend !== undefined) {
             if (hours !== null && hours <= 0 && !underAnHour) {
-                setError('hours', {
-                    type: 'min',
+                setError("hours", {
+                    type: "min",
+                    message: "Informe as horas ou marque a opção de participação"
                 })
             } else {
                 const payload: IPayloadCreateReport = {
                     publisher_id: publisherToSend?.id ?? "",
-                    hours: hours ?? 0,
+                    hours: underAnHour ? 0 : hours ?? 0,
                     month,
                     observations,
-                    studies: Number(studies),
+                    studies: Number(studies) || 0,
                     year
                 }
 
-                toast.promise(
-                    createReport(payload),
-                    {
-                        pending: 'Enviando relatório...'
-                    }
-                ).then(() => {
-                    resetField('hours')
-                    resetField('studies')
-                    resetField('observations')
-                }).catch(err => {
-                    console.log(err)
-                })
+                toast
+                    .promise(createReport(payload), {
+                        pending: "Enviando relatório...",
+                        success: "Relatório enviado com sucesso! 🎉",
+                        error: "Erro ao enviar relatório."
+                    })
+                    .then(() => {
+                        resetField("hours")
+                        resetField("studies")
+                        resetField("observations")
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
             }
         } else {
-            toast.error('Publicador não selecionado!')
+            toast.error("Publicador não selecionado!")
         }
     }
 
@@ -144,22 +168,17 @@ export default function FormReport(props: IRelatorioFormProps) {
         setSubmittedData(data)
 
         if (!publisherToSend?.id) {
-            toast.error('Publicador não selecionado!')
+            toast.error("Por favor, selecione seu nome!")
             return
         }
 
-        // 🔥 sempre pega do localStorage (fonte real)
-        const publisherStorage = localStorage.getItem('publisher')
-
+        const publisherStorage = localStorage.getItem("publisher")
         const parsedStorage: IPublisherList[] = publisherStorage
             ? JSON.parse(publisherStorage)
             : []
 
-        // 🔥 só considera válido se tiver deviceId
         const consentRecord = parsedStorage.find(
-            record =>
-                record?.id === publisherToSend.id &&
-                record?.deviceId
+            (record) => record?.id === publisherToSend.id && record?.deviceId
         )
 
         if (consentRecord) {
@@ -177,9 +196,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                     return
                 }
 
-                // precisa aceitar novamente
                 setConsentAcceptedShow(true)
-
             } catch (error) {
                 console.log(error)
                 setConsentAcceptedShow(true)
@@ -188,108 +205,199 @@ export default function FormReport(props: IRelatorioFormProps) {
             return
         }
 
-        // 🔥 não tem consentimento válido
         setConsentAcceptedShow(true)
     }
 
-    function onError(error: any) {
-        toast.error('Aconteceu algum erro! Confira todos os campos.')
+    function onError() {
+        toast.error("Confira todos os campos antes de enviar!")
     }
 
     return (
-        <section className="flex justify-center ">
-            <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-auto flex-col justify-center items-center`}>
-                    <div className="flex items-center mb-6">
-                        <div className=" w-10 h-10">
-                            <Link href={`/${props.congregationNumber}`} passHref>
-                                <div className=" rounded-full bg-primary-200 p-2 hover:border hover:border-teste-100">
-                                    <ArrowLeftIcon color="white" />
-                                </div>
-                            </Link>
-                        </div>
-                        <div className={`m-auto w-fit font-semibold text-2xl sm:text-3xl text-primary-200`}>Relatório</div>
+        <div className="w-full flex justify-center">
+            <form
+                onSubmit={handleSubmit(onSubmit, onError)}
+                className="w-full max-w-lg bg-surface-100 border border-surface-300 rounded-2xl p-5 sm:p-7 shadow-sm flex flex-col gap-5"
+            >
+                {/* Header do Card de Relatório com Mês em Destaque */}
+                <div className="flex flex-col gap-2 border-b border-surface-300/60 pb-4">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1.5">
+                            <FileText size={15} />
+                            <span>Envio de Atividade</span>
+                        </span>
+
+                        {month && year && (
+                            <span className="bg-primary-200/10 text-primary-200 text-xs font-bold px-3 py-1 rounded-full border border-primary-200/20 flex items-center gap-1">
+                                <Calendar size={13} />
+                                <span>
+                                    {month}/{year}
+                                </span>
+                            </span>
+                        )}
                     </div>
 
-                    <DropdownSearch emptyMessage="Nenhum publicador encontrado" full border title="Nome" handleClick={handleClick} options={optionsDrop} />
+                    <h2 className="text-xl sm:text-2xl font-bold text-typography-800 tracking-tight">
+                        Relatório Mensal de Campo
+                    </h2>
+                    <p className="text-xs text-typography-500">
+                        Preencha seus dados de atividade para a congregação
+                    </p>
+                </div>
 
-                    <Input
-                        readOnly
-                        type="text"
-                        placeholder={month}
-                        registro={{
-                            ...register('month', { required: "Campo obrigatório" }),
-                        }}
-                    />
+                {/* Seleção de Publicador */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-typography-700 flex items-center gap-1.5">
+                        <User size={14} className="text-primary-200" />
+                        <span>Publicador(a) *</span>
+                    </label>
+                    <div className="w-full">
+                        <DropdownSearch
+                            emptyMessage="Nenhum publicador encontrado"
+                            full
+                            border
+                            title="Selecione seu nome..."
+                            handleClick={handleClick}
+                            options={optionsDrop}
+                        />
+                    </div>
+                </div>
 
-                    <CheckboxBoolean
-                        checked={underAnHour}
-                        label="Sou publicador, participei na pregação"
-                        handleCheckboxChange={(isChecked) => {
-                            setUnderAnHour(isChecked)
-                            clearErrors('hours')
-                        }}
-                    />
+                {/* Opção: Participou (Menos de 1 hora) */}
+                <div
+                    onClick={() => {
+                        setUnderAnHour(!underAnHour)
+                        clearErrors("hours")
+                    }}
+                    className={`border rounded-xl p-3.5 flex items-start gap-3 transition-all cursor-pointer select-none ${
+                        underAnHour
+                            ? "bg-primary-200/10 border-primary-200 shadow-sm"
+                            : "bg-surface-200/60 border-surface-300/80 hover:bg-surface-200"
+                    }`}
+                >
+                    {/* Checkbox customizado na cor primary-200 */}
+                    <div
+                        className={`w-5 h-5 rounded-md flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
+                            underAnHour
+                                ? "bg-primary-200 text-white shadow-sm"
+                                : "border-2 border-typography-400/60 bg-surface-100"
+                        }`}
+                    >
+                        {underAnHour && <Check size={13} className="stroke-[3]" />}
+                    </div>
 
-                    <Input
-                        type={underAnHour ? 'text' : 'number'}
-                        placeholder="Horas"
-                        registro={{
-                            ...register('hours', {
-                                required: 'Campo Obrigatório'
-                            })
-                        }}
-                        invalid={errors?.hours ? 'invalido' : ''}
-                        readOnly={underAnHour}
-                    />
-                    {errors?.hours?.type && <InputError type={errors?.hours?.type} field='hours' />}
+                    <div className="text-xs sm:text-sm text-typography-700 leading-snug">
+                        <strong className="block text-typography-800 font-semibold mb-0.5">
+                            Sou publicador, participei na pregação
+                        </strong>
+                        Marque aqui caso tenha participado no ministério mas não tenha completado horas inteiras.
+                    </div>
+                </div>
 
-                    <Input
+                {/* Campo de Horas */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-typography-700 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                            <Clock size={14} className="text-primary-200" />
+                            <span>Horas {underAnHour ? "(Dispensado)" : "*"}</span>
+                        </span>
+                        {!underAnHour && (
+                            <span className="text-[11px] text-typography-400">
+                                Apenas números inteiros
+                            </span>
+                        )}
+                    </label>
+
+                    <div className="relative">
+                        <input
+                            type={underAnHour ? "text" : "number"}
+                            disabled={underAnHour}
+                            placeholder={underAnHour ? "Participou na pregação" : "Ex: 10"}
+                            {...register("hours", {
+                                required: !underAnHour ? "Informe as horas" : false
+                            })}
+                            className={`w-full px-4 py-2.5 rounded-xl border bg-surface-100 text-typography-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 transition ${
+                                errors?.hours
+                                    ? "border-red-500 focus:ring-red-400"
+                                    : "border-surface-300 focus:border-primary-200"
+                            } ${underAnHour ? "opacity-60 bg-surface-200/50 cursor-not-allowed" : ""}`}
+                        />
+                    </div>
+                    {errors?.hours && (
+                        <span className="text-xs text-red-500 font-medium">
+                            Por favor, informe a quantidade de horas.
+                        </span>
+                    )}
+                </div>
+
+                {/* Campo de Estudos Bíblicos */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-typography-700 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                            <BookOpen size={14} className="text-primary-200" />
+                            <span>Estudos Bíblicos Dirigidos</span>
+                        </span>
+                        <span className="text-[11px] text-typography-400">Opcional</span>
+                    </label>
+
+                    <input
                         type="number"
-                        placeholder="Estudos"
-                        registro={{
-                            ...register('studies')
-                        }}
-                        invalid={errors?.studies?.message ? 'invalido' : ''}
+                        placeholder="Ex: 1"
+                        {...register("studies")}
+                        className="w-full px-4 py-2.5 rounded-xl border border-surface-300 bg-surface-100 text-typography-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-200 transition"
                     />
-                    {errors?.studies?.type && <InputError type={errors?.studies?.type} field='studies' />}
+                </div>
 
-                    <Input
+                {/* Campo de Observações */}
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-typography-700 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                            <MessageSquare size={14} className="text-primary-200" />
+                            <span>Observações</span>
+                        </span>
+                        <span className="text-[11px] text-typography-400">Máx. 50 caracteres</span>
+                    </label>
+
+                    <input
                         type="text"
-                        placeholder="Observações"
                         maxLength={50}
-                        registro={{
-                            ...register('observations')
-                        }}
-                        invalid={errors?.observations?.message ? 'invalido' : ''}
+                        placeholder="Ex: Crédito de horas..."
+                        {...register("observations")}
+                        className="w-full px-4 py-2.5 rounded-xl border border-surface-300 bg-surface-100 text-typography-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-200 transition"
                     />
-                    {errors?.observations?.type && <InputError type={errors?.observations?.type} field='observations' />}
+                </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button
-                            className="text-typography-200"
-                            size="lg"
-                            disabled={disabled}
-                            error={dataError}
-                            success={dataSuccess}
-                            type='submit'
-                        >Enviar</Button>
-                    </div>
-                    <Link className="text-primary-200 hover:underline font-semibold" href={"/meus-relatorios"}>
-                        Meus Relatórios
+                {/* Botão de Submissão */}
+                <button
+                    type="submit"
+                    disabled={disabled || isSubmitting}
+                    className="w-full mt-2 py-3 px-4 rounded-xl bg-primary-200 hover:bg-primary-150 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <Send size={16} />
+                    <span>{isSubmitting ? "Enviando..." : "Enviar Relatório"}</span>
+                </button>
+
+                {/* Link para Meus Relatórios */}
+                <div className="text-center pt-1 border-t border-surface-300/40">
+                    <Link
+                        href="/meus-relatorios"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-primary-200 hover:underline hover:opacity-90 transition py-1"
+                    >
+                        <span>Acessar Meus Relatórios</span>
+                        <ArrowRight size={14} />
                     </Link>
                 </div>
-            </FormStyle>
-            {consentAcceptedShow &&
+            </form>
+
+            {/* Modal de Termo de Consentimento LGPD */}
+            {consentAcceptedShow && (
                 <ConsentMessage
-                    text="Essa é a primeira vez que você manda seu relatório
-                    nesse dispositivo, é necessário aceitar o termo de consentimento!"
+                    text="Essa é a primeira vez que você manda seu relatório nesse dispositivo, é necessário aceitar o termo de consentimento!"
                     name={publisherToSend?.fullName}
                     onAccepted={handleConsentRecordsCreate}
                     onDecline={() => setConsentAcceptedShow(false)}
                     congregatioNumber={props.congregationNumber}
                 />
-            }
-        </section>
+            )}
+        </div>
     )
 }
