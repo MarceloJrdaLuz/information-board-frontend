@@ -87,12 +87,14 @@ export default function PdfViewer({
         }
     }
 
+    // Aumenta o zoom com passos de 50% para ser bem evidente
     const handleZoomIn = () => {
-        setScale((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.0))
+        setScale((prev) => Math.min(Number((prev + 0.5).toFixed(1)), 3.0))
     }
 
+    // Diminui o zoom com passos de 50%
     const handleZoomOut = () => {
-        setScale((prev) => Math.max(Number((prev - 0.25).toFixed(2)), 0.5))
+        setScale((prev) => Math.max(Number((prev - 0.5).toFixed(1)), 0.5))
     }
 
     const handleResetZoom = () => {
@@ -184,15 +186,19 @@ export default function PdfViewer({
                 </div>
             )}
 
-            {/* Área Central de Visualização com Scroll Suave */}
+            {/* Área Central de Visualização com Scroll Suave e Suporte a Pan/Zoom Amplo */}
             <div
                 ref={viewerRef}
-                className="flex-1 w-full overflow-auto flex justify-center items-start p-3 sm:p-6 md:p-8 scroll-smooth pb-24"
+                className="flex-1 w-full overflow-auto p-3 sm:p-6 md:p-8 scroll-smooth pb-24"
             >
                 <div
                     {...handlers}
-                    className="flex flex-col items-center justify-center min-h-full py-2"
-                    style={{ width: `${computedWidth}px`, maxWidth: 'none' }}
+                    className="flex flex-col items-center justify-center min-h-full py-2 mx-auto"
+                    style={{
+                        width: `${computedWidth}px`,
+                        minWidth: `${computedWidth}px`,
+                        maxWidth: 'none'
+                    }}
                 >
                     <Document
                         file={url}
@@ -211,7 +217,10 @@ export default function PdfViewer({
                             </div>
                         }
                     >
-                        <div className="shadow-2xl rounded-lg overflow-hidden border border-white/10 bg-white transition-all duration-150">
+                        <div
+                            style={{ width: `${computedWidth}px` }}
+                            className="shadow-2xl rounded-lg overflow-hidden border border-white/10 bg-white transition-all duration-150"
+                        >
                             <Page
                                 key={`page_${pageNumber}_w_${computedWidth}`}
                                 pageNumber={pageNumber}
@@ -249,7 +258,7 @@ export default function PdfViewer({
                     onClick={handleZoomOut}
                     disabled={scale <= 0.5}
                     className="p-1.5 rounded-full hover:bg-white/15 text-typography-200 disabled:opacity-30 transition active:scale-95"
-                    title="Diminuir Zoom"
+                    title="Diminuir Zoom (-50%)"
                 >
                     <ZoomOut size={15} />
                 </button>
@@ -266,7 +275,7 @@ export default function PdfViewer({
                     onClick={handleZoomIn}
                     disabled={scale >= 3.0}
                     className="p-1.5 rounded-full hover:bg-white/15 text-typography-200 disabled:opacity-30 transition active:scale-95"
-                    title="Aumentar Zoom"
+                    title="Aumentar Zoom (+50%)"
                 >
                     <ZoomIn size={15} />
                 </button>
