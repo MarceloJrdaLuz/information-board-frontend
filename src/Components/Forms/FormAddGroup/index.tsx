@@ -11,7 +11,7 @@ import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
 import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
-import { IPublisher } from '@/types/types'
+import { IPublisher, Situation } from '@/types/types'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
@@ -59,8 +59,23 @@ export default function FormAddGroup() {
 
     useEffect(() => {
         if (publishersData) {
-            const filterPublishersMale = publishersData.filter(publisher => (publisher.gender === 'Masculino'))
-            const sort = sortArrayByProperty(filterPublishersMale, "fullName")
+            const qualifiedPublishers = publishersData.filter((publisher) => {
+                if (publisher.gender !== "Masculino") return false
+                if (publisher.situation && publisher.situation !== Situation.ATIVO) return false
+
+                return publisher.privileges?.some((priv) => {
+                    const normalized = priv
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                    return (
+                        normalized.includes("anciao") ||
+                        normalized.includes("servo ministerial") ||
+                        normalized === "sm"
+                    )
+                })
+            })
+            const sort = sortArrayByProperty(qualifiedPublishers, "fullName")
             setPublishers(sort)
         }
     }, [publishersData])
@@ -146,6 +161,7 @@ export default function FormAddGroup() {
                                 textVisible
                                 full                        
                                 searchable
+                                emptyMessage="Nenhum Ancião ou Servo Ministerial encontrado"
                             />
                         )}
                     </div>
