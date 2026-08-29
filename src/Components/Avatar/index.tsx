@@ -4,6 +4,8 @@ import Image from "next/image"
 import { IAvatar } from "./types"
 import { getInitials } from "@/functions/getInitials"
 import SkeletonAvatar from "./skeletonAvatar"
+import avatarFemale from "../../../public/images/avatar-female.png"
+import avatarMale from "../../../public/images/avatar-male.png"
 
 export default function Avatar(props: IAvatar) {
   const { logout } = useAuthContext()
@@ -21,21 +23,30 @@ export default function Avatar(props: IAvatar) {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  const defaultAvatar = props.gender === "Feminino" ? avatarFemale : avatarMale
+
   return (
     <div className="relative" ref={ref}>
       {/* Avatar */}
       <div
-        className="relative w-10 h-10 overflow-hidden bg-primary-50 rounded-full cursor-pointer hover:opacity-90 transition"
+        className="relative w-10 h-10 overflow-hidden bg-primary-50 rounded-full cursor-pointer hover:opacity-90 transition shadow-sm border border-white/20"
         onClick={() => setOpen(!open)}
       >
         {props.loading ? (
           <SkeletonAvatar />
         ) : props.avatar_url ? (
           <Image
-            style={{ objectFit: "cover", objectPosition: "top center" }}
+            style={{ objectFit: "cover", objectPosition: "center" }}
             src={props.avatar_url}
             fill
             alt="Foto de perfil"
+          />
+        ) : props.gender ? (
+          <Image
+            style={{ objectFit: "cover", objectPosition: "center" }}
+            src={defaultAvatar}
+            fill
+            alt={`Avatar de um(a) ${props.gender === "Feminino" ? "mulher" : "homem"}`}
           />
         ) : (
           <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-primary-200 rounded-full">
@@ -51,7 +62,7 @@ export default function Avatar(props: IAvatar) {
         <div
           className="absolute right-0 mt-2 w-60 bg-surface-100 border border-surface-200 rounded-xl shadow-xl z-50 p-2 animate-fade-in"
         >
-          <p className="text-sm text-typography-700 font-medium px-3 py-2 border-b border-surface-200 ">
+          <p className="text-sm text-typography-700 font-medium px-3 py-2 border-b border-surface-200">
             {props.userName}
           </p>
           <button

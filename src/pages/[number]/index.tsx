@@ -14,8 +14,7 @@ import {
     Calculator as CalculatorIcon,
     CalendarDays as CalendarDaysIcon,
     ChevronRight,
-    LogIn,
-    MapPin
+    LogIn
 } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
@@ -253,7 +252,7 @@ function Home({ serverNumber }: HomeProps) {
 
                     {/* Conteúdo Central do Header */}
                     <div className="relative z-20 text-center px-4 max-w-3xl flex flex-col items-center mt-3">
-                        <span className="text-2xl sm:text-3xl md:text-4xl titulo text-white font-bold tracking-wide drop-shadow-md">
+                        <span className="text-2xl sm:text-3xl md:text-4xl titulo text-secondary-100 font-bold tracking-wide drop-shadow-md">
                             Quadro de Anúncios
                         </span>
 
@@ -261,18 +260,18 @@ function Home({ serverNumber }: HomeProps) {
                             <div className="h-6 w-48 shimmer rounded-md mt-2" />
                         ) : (
                             <div className="mt-1 flex flex-col items-center gap-1">
-                                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-white/95 drop-shadow">
+                                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-secondary-100 drop-shadow">
                                     Congregação {congregation?.name}
                                 </h1>
-                                {congregation?.circuit && (
-                                    <p className="text-xs sm:text-sm text-typography-300 flex items-center gap-1">
+                                {/* {congregation?.circuit && (
+                                    <p className="text-xs sm:text-sm text-secondary-100 flex items-center gap-1">
                                         <MapPin size={13} className="text-primary-100" />
                                         <span>
                                             {congregation?.circuit}
                                             {congregation?.city ? ` • ${congregation.city}` : ""}
                                         </span>
                                     </p>
-                                )}
+                                )} */}
                             </div>
                         )}
                     </div>
@@ -280,7 +279,7 @@ function Home({ serverNumber }: HomeProps) {
             </div>
 
             {/* Conteúdo Principal / Grid dos Botões do Quadro */}
-            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
+            <main className="flex-1 bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
                 {isFetching ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
