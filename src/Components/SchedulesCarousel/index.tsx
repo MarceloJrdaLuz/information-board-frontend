@@ -1,13 +1,12 @@
 ﻿"use client"
 
-import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons"
 import { IPublicSchedule } from "@/types/weekendSchedule"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { Calendar, ChevronLeft, ChevronRight, MapPin, Send, Sparkles, Users } from "lucide-react"
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 
@@ -148,7 +147,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
         </div>
       )}
 
-      {/* 3. Card da Semana Ativa com Identidade Visual Oficial */}
+      {/* 3. Card da Semana Ativa */}
       {currentWeeks.map((item, idx) => {
         if (idx !== activeWeekIndex) return null
 
@@ -209,10 +208,10 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
 
             {/* CORPO DO CARD COM AS 3 SEÇÕES DEFINIDAS */}
             <div className="p-4 sm:p-6 flex flex-col gap-6 divide-y divide-surface-300">
-              {/* SEÇÃO 1: DISCURSO PÚBLICO (Cor de Tesouros: #2F7682) */}
+              {/* SEÇÃO 1: DISCURSO PÚBLICO (Azul Tesouros #2F7682 com ícone de Microfone) */}
               <div className="pt-1 flex flex-col gap-3">
                 <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#2F7682] text-white shadow-2xs">
-                  <MidweekTreasuresIcon className="h-5 w-5" size={20} />
+                  <Mic className="h-5 w-5" size={20} />
                   <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
                     Discurso Público
                   </h4>
@@ -248,10 +247,10 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                 </div>
               </div>
 
-              {/* SEÇÃO 2: ESTUDO DE A SENTINELA (Cor de Nossa Vida Cristã: #961526) */}
+              {/* SEÇÃO 2: ESTUDO DE A SENTINELA (Vermelho Vida Cristã #961526 com ícone de Livro/Sentinela) */}
               <div className="pt-5 flex flex-col gap-3">
                 <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#961526] text-white shadow-2xs">
-                  <MidweekLivingIcon className="h-5 w-5" size={20} />
+                  <BookOpen className="h-5 w-5" size={20} />
                   <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
                     Estudo de A Sentinela
                   </h4>
@@ -277,12 +276,12 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                 </div>
               </div>
 
-              {/* SEÇÃO 3: HOSPITALIDADE E ARRANJOS (Cor de Faça Seu Melhor: #C28100) */}
+              {/* SEÇÃO 3: HOSPITALIDADE E ARRANJOS (Amarelo/Dourado #C28100 com ícone de Utensils) */}
               {(filteredExternalTalks.length > 0 ||
                 (item.hospitality && item.hospitality.length > 0)) && (
                 <div className="pt-5 flex flex-col gap-3">
                   <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#C28100] text-white shadow-2xs">
-                    <MidweekMinistryIcon className="h-5 w-5" size={20} />
+                    <Utensils className="h-5 w-5" size={20} />
                     <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
                       Hospitalidade e Arranjos
                     </h4>
@@ -327,7 +326,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                       </div>
                     )}
 
-                    {/* Cards de Hospitalidade */}
+                    {/* Cards de Hospitalidade (Sempre abertos) */}
                     {item.hospitality && item.hospitality.length > 0 && (
                       <HospitalityCard item={item} />
                     )}
