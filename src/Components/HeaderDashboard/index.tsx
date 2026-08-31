@@ -1,3 +1,5 @@
+﻿'use client'
+
 import { isDesktopAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtomValue } from "jotai"
@@ -10,20 +12,21 @@ export default function HeaderDashboard() {
     const isDesktop = useAtomValue(isDesktopAtom)
 
     return (
-        <header className={`flex w-full justify-between items-center h-20 bg-gradient-to-r from-primary-100 to-primary-150 px-4 shadow-md ${!isDesktop ? "pl-14" : "pl-0"}`}>
-            {!isDesktop && <ButtonHamburguer />}
-            <div className="flex w-full justify-between pl-3">
-                <div className="flex justify-center items-center">
-                    <AvatarCongregation loading={!user} />
-                </div>
-                <div className="flex justify-center items-center">
-                    <Avatar
-                        loading={!user}
-                        userName={user?.fullName}
-                        avatar_url={user?.profile?.avatar_url}
-                        gender={user?.publisher?.gender}
-                    />
-                </div>
+        <header className="sticky top-0 z-30 flex w-full items-center justify-between h-18 sm:h-20 bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 px-3.5 sm:px-6 shadow-md border-b border-white/10">
+            {/* Lado Esquerdo: Hambúrguer (mobile) + Congregação */}
+            <div className="flex items-center gap-2 sm:gap-4">
+                {!isDesktop && <ButtonHamburguer />}
+                <AvatarCongregation loading={!user} />
+            </div>
+
+            {/* Lado Direito: Avatar do Usuário */}
+            <div className="flex items-center gap-2 sm:gap-3">
+                <Avatar
+                    loading={!user}
+                    userName={user?.fullName}
+                    avatar_url={user?.profile?.avatar_url}
+                    gender={user?.publisher?.gender}
+                />
             </div>
         </header>
     )

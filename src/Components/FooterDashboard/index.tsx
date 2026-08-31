@@ -1,4 +1,7 @@
+﻿'use client'
+
 import { useAuthContext } from "@/context/AuthContext"
+import { Hash, Shield } from "lucide-react"
 import Link from "next/link"
 import ThemeSwitcher from "../ThemeSwitcher"
 
@@ -6,37 +9,31 @@ export default function FooterDashboard() {
   const { user } = useAuthContext()
 
   return (
-    <footer
-      className="
-        w-full bg-gradient-to-r from-primary-100 to-primary-150 shadow-md py-3
-      "
-    >
-      <div
-        className="
-          container mx-auto flex items-center justify-between
-          px-4 text-sm text-typography-800
-        "
-      >
-        <ThemeSwitcher />
+    <footer className="w-full bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 text-white shadow-md border-t border-white/10 py-3 sm:py-3.5 px-4 sm:px-6">
+      <div className="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+        {/* Lado Esquerdo: Seletor de Tema */}
+        <div className="flex items-center gap-2">
+          <ThemeSwitcher showLabel />
+        </div>
 
-        <span
-          className="
-            bg-secondary-200 border border-typography-400
-            rounded-md px-3 py-1 font-medium text-typography-900
-          "
-        >
-          {user?.code ?? "Sem código"}
-        </span>
+        {/* Centro: Código do Usuário em Chip Moderno */}
+        <div className="flex items-center justify-center">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/15 border border-white/20 text-white font-mono text-xs font-semibold shadow-2xs backdrop-blur-xs">
+            <Hash size={13} className="text-white/70" />
+            <span>Código: {user?.code ?? "—"}</span>
+          </span>
+        </div>
 
-        <Link
-          href="/termos-de-uso"
-          className="
-            text-typography-200 hover:opacity-80 hover:underline
-            transition-colors duration-200
-          "
-        >
-          Política de Privacidade
-        </Link>
+        {/* Lado Direito: Links de Privacidade e Termos */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/termos-de-uso"
+            className="inline-flex items-center gap-1.5 text-white/85 hover:text-white hover:underline transition-colors font-medium"
+          >
+            <Shield size={13} />
+            <span>Termos e Privacidade</span>
+          </Link>
+        </div>
       </div>
     </footer>
   )
