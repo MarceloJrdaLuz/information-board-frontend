@@ -14,15 +14,20 @@ import { useEffect, useState } from "react"
 function MeetingMidWeekPage() {
     const [category, setCategory] = useState<ICategory>()
     const { uploadedFiles, setDocumentCategoryId, loading } = useDocumentsContext()
-    const [crumbs,] = useAtom(crumbsAtom)
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const { data: categories } = useAuthorizedFetch<ICategory[]>('/categories', {
         allowedRoles: ["ADMIN_CONGREGATION", "DOCUMENTS_MANAGER"]
     })
+
     useEffect(() => {
         setPageActive('Meio de semana')
-    }, [setPageActive])
+        setCrumbs([
+            { label: 'Início', link: '/dashboard' },
+            { label: 'Reuniões', link: '/reunioes/meiodesemana' }
+        ])
+    }, [setPageActive, setCrumbs])
 
     useEffect(() => {
         const categoryFilter = categories?.filter(category => category.name === Categories.meioDeSemana)
@@ -37,7 +42,7 @@ function MeetingMidWeekPage() {
 
     function renderSkeleton() {
         return (
-            <ul className="flex flex-col w-11/12 md:w-9/12 m-auto  justify-between items-center cursor-pointer gap-2">
+            <ul className="flex flex-col w-11/12 md:w-9/12 m-auto justify-between items-center cursor-pointer gap-2">
                 {skeletonFileList.map((a, i) => (<SkeletonFileList key={i + 'skeleton'} />))}
             </ul>
         )
@@ -49,7 +54,7 @@ function MeetingMidWeekPage() {
             <BreadCrumbs crumbs={crumbs} pageActive={"Reunião do Meio de Semana"} />
             <section className="flex flex-wrap w-full h-full p-5">
                 <div className="w-full h-full">
-                    <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto  justify-between items-center  cursor-pointer mb-3">
+                    <div className="flex flex-col w-11/12 md:w-9/12 h-24 m-auto justify-between items-center cursor-pointer mb-3">
                         <Upload acceptFiles={{
                             'application/pdf': []
                         }} />

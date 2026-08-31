@@ -396,7 +396,7 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
 
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER') || roleContains('MIDWEEK_MANAGER')) &&
                             <NavBar.ListOptions
                                 key={"submenuReunioes"}
                                 showList={openSubMenu === 'reunioes'}
@@ -406,7 +406,18 @@ export default function Layout(props: LayoutProps) {
                             >
                                 <NavBar.Options
                                     isSubItem
-                                    title="Meio de semana"
+                                    title="Programação Meio de Semana"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push(`/reunioes/programacao-meiodesemana`)
+                                    }}
+                                    icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/reunioes/programacao-meiodesemana')}
+                                />
+
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Meio de semana (PDF)"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/reunioes/meiodesemana`)

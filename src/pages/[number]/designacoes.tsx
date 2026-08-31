@@ -1,11 +1,11 @@
 'use client'
 
 import { domainUrl } from '@/atoms/atom'
-import { themeAtom } from '@/atoms/themeAtoms'
 import Footer from '@/Components/Footer'
 import HeadComponent from '@/Components/HeadComponent'
 import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
 import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon'
+import MidweekPublicCarousel, { MidweekScheduleResponse } from '@/Components/Midweek/MidweekPublicCarousel'
 import NotFoundDocument from '@/Components/NotFoundDocument'
 import PdfViewer from '@/Components/PdfViewer'
 import SchedulesCarousel from '@/Components/SchedulesCarousel'
@@ -19,15 +19,13 @@ import { useFetch } from '@/hooks/useFetch'
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { Categories, ICongregation, IDocument } from '@/types/types'
 import { IPublicSchedule } from '@/types/weekendSchedule'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import {
     ArrowLeft,
-    Calendar,
     ChevronRight,
     Clock,
     FileText,
-    Sparkles,
     Users
 } from 'lucide-react'
 import Head from 'next/head'
@@ -63,6 +61,14 @@ function Designacoes() {
 
     const { data: schedules, isLoading: isLoadingSchedules } =
         useFetch<Record<string, IPublicSchedule[]>>(fetchConfigWeekendSchedulesData)
+
+    const fetchConfigMidweekSchedulesData =
+        number && congregation?.id
+            ? `/congregation/${congregation.id}/midweekSchedules/public`
+            : ""
+
+    const { data: midweekSchedules, isLoading: isLoadingMidweekSchedules } =
+        useFetch<MidweekScheduleResponse>(fetchConfigMidweekSchedulesData)
 
     useEffect(() => {
         if (congregation) {
@@ -262,88 +268,150 @@ function Designacoes() {
 
                 {/* Conteúdo da Aba Meio de Semana */}
                 {activeTab === 'midweek' && (
-                    <div className="flex flex-col gap-4">
-                        <h2 className="text-sm font-bold text-typography-700 uppercase tracking-wider">
-                            Apostilas e Programações
-                        </h2>
-
-                        {!documents ? (
+                    <div className="flex flex-col gap-5">
+                        {isLoadingMidweekSchedules && !documents ? (
                             <div className="py-12 flex flex-col items-center justify-center gap-2 text-typography-400">
                                 <Spiner size="w-8 h-8" />
-                                <span className="text-xs">Carregando documentos...</span>
+                                <span className="text-xs">Carregando programação...</span>
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-3">
-                                {/* Programações dos Meses Atuais */}
-                                {documentsLifeAndMinistryFilterMonths &&
-                                documentsLifeAndMinistryFilterMonths.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        {documentsLifeAndMinistryFilterMonths.map((doc) => {
-                                            const monthName = removeMimeType(doc.fileName)
-                                            return (
-                                                <motion.button
-                                                    key={doc.id}
-                                                    whileHover={{ scale: 1.015, y: -2 }}
-                                                    whileTap={{ scale: 0.985 }}
-                                                    onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
-                                                    className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
-                                                >
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className="w-12 h-12 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
-                                                            <FileText size={24} />
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-[11px] font-bold uppercase tracking-wider text-primary-200 block mb-0.5">
-                                                                Programação
-                                                            </span>
-                                                            <h3 className="font-bold text-base sm:text-lg text-typography-800 group-hover:text-primary-200 transition-colors">
-                                                                {monthName}
-                                                            </h3>
-                                                        </div>
-                                                    </div>
+                            <>
+                                {/* 1. Se houver programação no sistema, exibe o carrossel interativo */}
+                                {midweekSchedules && Object.keys(midweekSchedules).length > 0 && Object.values(midweekSchedules).some(weeks => weeks.length > 0) ? (
+                                    <div className="flex flex-col gap-4">
+                                        <MidweekPublicCarousel schedules={midweekSchedules} />
 
-                                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-typography-400 group-hover:text-primary-200 group-hover:bg-primary-200/10 transition-all">
-                                                        <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
-                                                    </div>
-                                                </motion.button>
-                                            )
-                                        })}
-                                    </div>
-                                ) : null}
+                                        {/* Se também houver PDFs anexados pela congregação, exibe como opção complementar */}
+                                        {((documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0) || (documentsOthersFilter && documentsOthersFilter.length > 0)) && (
+                                            <div className="mt-4 pt-4 border-t border-surface-300 flex flex-col gap-3">
+                                                <h3 className="text-xs font-bold text-typography-600 uppercase tracking-wider flex items-center gap-2">
+                                                    <FileText size={15} />
+                                                    <span>Ou consulte os arquivos e apostilas em PDF</span>
+                                                </h3>
 
-                                {/* Outros Documentos de Meio de Semana */}
-                                {documentsOthersFilter && documentsOthersFilter.length > 0 && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                                        {documentsOthersFilter.map((doc) => (
-                                            <motion.button
-                                                key={doc.id}
-                                                whileHover={{ scale: 1.015, y: -2 }}
-                                                whileTap={{ scale: 0.985 }}
-                                                onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
-                                                className="flex items-center justify-between p-4 rounded-xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-lg bg-surface-200 text-typography-600 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
-                                                        <FileText size={20} />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-sm text-typography-800 group-hover:text-primary-200 transition-colors">
-                                                            {removeMimeType(doc.fileName)}
-                                                        </h4>
-                                                    </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    {(documentsLifeAndMinistryFilterMonths || []).map((doc) => {
+                                                        const monthName = removeMimeType(doc.fileName);
+                                                        return (
+                                                            <motion.button
+                                                                key={doc.id}
+                                                                whileHover={{ scale: 1.01, y: -1 }}
+                                                                whileTap={{ scale: 0.99 }}
+                                                                onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                                className="flex items-center justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300 hover:border-primary-200 shadow-2xs text-left group transition-all"
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-9 h-9 rounded-lg bg-primary-200/10 text-primary-200 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                                        <FileText size={18} />
+                                                                    </div>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[10px] uppercase font-bold text-primary-200">Apostila PDF</span>
+                                                                        <span className="font-bold text-xs sm:text-sm text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                                            {monthName}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <ChevronRight size={16} className="text-typography-400 group-hover:text-primary-200 group-hover:translate-x-0.5 transition-transform" />
+                                                            </motion.button>
+                                                        );
+                                                    })}
+
+                                                    {(documentsOthersFilter || []).map((doc) => (
+                                                        <motion.button
+                                                            key={doc.id}
+                                                            whileHover={{ scale: 1.01, y: -1 }}
+                                                            whileTap={{ scale: 0.99 }}
+                                                            onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                            className="flex items-center justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300 hover:border-primary-200 shadow-2xs text-left group transition-all"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-9 h-9 rounded-lg bg-surface-200 text-typography-600 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                                    <FileText size={18} />
+                                                                </div>
+                                                                <span className="font-bold text-xs text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                                    {removeMimeType(doc.fileName)}
+                                                                </span>
+                                                            </div>
+                                                            <ChevronRight size={16} className="text-typography-400 group-hover:text-primary-200 group-hover:translate-x-0.5 transition-transform" />
+                                                        </motion.button>
+                                                    ))}
                                                 </div>
-                                                <ChevronRight size={16} className="text-typography-400 group-hover:text-primary-200 transition-colors" />
-                                            </motion.button>
-                                        ))}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                ) : (documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0) || (documentsOthersFilter && documentsOthersFilter.length > 0) ? (
+                                    /* 2. Se não houver dados no sistema, exibe os PDFs como principal */
+                                    <div className="flex flex-col gap-3">
+                                        <h2 className="text-sm font-bold text-typography-700 uppercase tracking-wider">
+                                            Apostilas e Programações em PDF
+                                        </h2>
 
-                                {/* Mensagem se nenhum documento existir */}
-                                {(!documentsLifeAndMinistryFilterMonths || documentsLifeAndMinistryFilterMonths.length === 0) &&
-                                    (!documentsOthersFilter || documentsOthersFilter.length === 0) && (
-                                        <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />
-                                    )}
-                            </div>
+                                        {documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0 && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {documentsLifeAndMinistryFilterMonths.map((doc) => {
+                                                    const monthName = removeMimeType(doc.fileName)
+                                                    return (
+                                                        <motion.button
+                                                            key={doc.id}
+                                                            whileHover={{ scale: 1.015, y: -2 }}
+                                                            whileTap={{ scale: 0.985 }}
+                                                            onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                            className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
+                                                        >
+                                                            <div className="flex items-center gap-3.5">
+                                                                <div className="w-12 h-12 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                                    <FileText size={24} />
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary-200 block mb-0.5">
+                                                                        Programação
+                                                                    </span>
+                                                                    <h3 className="font-bold text-base sm:text-lg text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                                        {monthName}
+                                                                    </h3>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-typography-400 group-hover:text-primary-200 group-hover:bg-primary-200/10 transition-all">
+                                                                <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                                                            </div>
+                                                        </motion.button>
+                                                    )
+                                                })}
+                                            </div>
+                                        )}
+
+                                        {documentsOthersFilter && documentsOthersFilter.length > 0 && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                                {documentsOthersFilter.map((doc) => (
+                                                    <motion.button
+                                                        key={doc.id}
+                                                        whileHover={{ scale: 1.015, y: -2 }}
+                                                        whileTap={{ scale: 0.985 }}
+                                                        onClick={() => handleButtonClick(doc.url, doc.fileName, true)}
+                                                        className="flex items-center justify-between p-4 rounded-xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all text-left group"
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-lg bg-surface-200 text-typography-600 flex items-center justify-center group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                                                <FileText size={20} />
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="font-semibold text-sm text-typography-800 group-hover:text-primary-200 transition-colors">
+                                                                    {removeMimeType(doc.fileName)}
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                        <ChevronRight size={16} className="text-typography-400 group-hover:text-primary-200 transition-colors" />
+                                                    </motion.button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    /* 3. Se não houver nenhum dos dois */
+                                    <NotFoundDocument message="Nenhuma programação da reunião Vida e Ministério encontrada!" />
+                                )}
+                            </>
                         )}
                     </div>
                 )}

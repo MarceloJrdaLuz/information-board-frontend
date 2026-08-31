@@ -1,33 +1,45 @@
-import Link from "next/link"
-import { IBreadCrumbsProps } from "./types"
+import React from "react";
+import Link from "next/link";
+import { IBreadCrumbsProps } from "./types";
+import { ChevronRight, Home } from "lucide-react";
 
 export default function BreadCrumbs({ crumbs, pageActive }: IBreadCrumbsProps) {
     return (
+        <nav
+            aria-label="Breadcrumb"
+            className="flex items-center w-full px-4 sm:px-6 py-2 bg-surface-100/90 dark:bg-surface-100/70 border-b border-surface-300 backdrop-blur-sm overflow-x-auto whitespace-nowrap scroll-smooth transition-colors"
+        >
+            <ol className="inline-flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                {crumbs.map((crumb, index) => {
+                    const isFirst = index === 0;
+                    const isHomeLabel = crumb.label.toLowerCase() === "início" || crumb.label.toLowerCase() === "inicio" || crumb.label.toLowerCase() === "home";
 
-        <nav className="flex py-2 bg-surface-200 border-b  overflow-x-auto hide-scrollbar whitespace-nowrap" aria-label="Breadcrumb">
-            <ol className="inline-flex items-center space-x-1 md:space-x-3">
-                {crumbs.map((crumb, index) => (
-                    <li key={index}>
-                        <div className="flex items-center ">
-                            {index > 0 && <svg className="w-3 h-3 text-primary-200 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                            </svg>}
-                            <Link href={crumb.link}>
-                                <div className="ml-1 text-sm font-medium text-primary-200 hover:underline md:ml-2 dark:text-typography-400 dark:hover:text-surface-100">{crumb.label}</div>
+                    return (
+                        <li key={index} className="inline-flex items-center">
+                            {index > 0 && (
+                                <ChevronRight className="w-3.5 h-3.5 text-typography-400 mx-0.5 sm:mx-1 shrink-0" aria-hidden="true" />
+                            )}
+                            <Link
+                                href={crumb.link}
+                                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-medium text-typography-600 dark:text-typography-400 hover:text-primary-200 dark:hover:text-primary-100 hover:bg-surface-200 transition-all duration-150"
+                            >
+                                {isFirst && isHomeLabel && (
+                                    <Home className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                                )}
+                                <span>{crumb.label}</span>
                             </Link>
-                        </div>
-                    </li>
-                ))}
-                <li aria-current="page">
-                    <div className="flex items-center">
-                        <svg className="w-3 h-3 text-primary-200 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-                        </svg>
-                        <span className="ml-1 text-sm font-medium text-typography-500 md:ml-2 dark:text-typography-400">{pageActive}</span>
-                    </div>
+                        </li>
+                    );
+                })}
+
+                {/* Página Ativa */}
+                <li className="inline-flex items-center" aria-current="page">
+                    <ChevronRight className="w-3.5 h-3.5 text-typography-400 mx-0.5 sm:mx-1 shrink-0" aria-hidden="true" />
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md font-semibold text-typography-900 dark:text-typography-100 bg-surface-200/80 dark:bg-surface-200/50 border border-surface-300/80 max-w-[220px] sm:max-w-none truncate shadow-xs">
+                        {pageActive}
+                    </span>
                 </li>
             </ol>
         </nav>
-
-    )
+    );
 }

@@ -50,8 +50,19 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             ? futureAssignments.length - MAX_VISIBLE
             : 0;
 
-    const getBorderColor = (role: string) => {
-        switch (role) {
+    const getBorderColor = (assignment: IAssignment) => {
+        if ('section' in assignment && assignment.section) {
+            switch (assignment.section) {
+                case "TREASURES":
+                    return "border-l-[#2F7682]";
+                case "MINISTRY":
+                    return "border-l-[#D49000]";
+                case "LIVING":
+                    return "border-l-[#BA2A12]";
+            }
+        }
+
+        switch (assignment.role) {
             case "Limpeza do Salão":
                 return "border-l-green-400";
             case "Presidente":
@@ -77,7 +88,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
     const renderAssignment = (assignment: IAssignment, i: number) => (
         <li
             key={i}
-            className={`flex bg-surface-100 border border-surface-300 border-l-4 rounded-sm overflow-hidden hover:bg-surface-200/40 transition ${getBorderColor(assignment.role)}`}
+            className={`flex bg-surface-100 border border-surface-300 border-l-4 rounded-sm overflow-hidden hover:bg-surface-200/40 transition ${getBorderColor(assignment)}`}
         >
             {/* Barra lateral + data */}
             <div className="flex flex-col items-center justify-center w-16 bg-surface-200/40 border-r border-surface-300 py-3">
@@ -244,6 +255,57 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     {(assignment.role === "Anfitrião" || assignment.role === "Hospitalidade") && (
                         <div>
                             <strong>🏡 {assignment.role}</strong>
+                        </div>
+                    )}
+
+                    {(
+                        assignment.role === "Oração Inicial" || 
+                        assignment.role === "Oração Final" || 
+                        assignment.role === "Conselheiro" || 
+                        assignment.role === "Dirigente do Estudo Bíblico" || 
+                        assignment.role === "Leitor do Estudo Bíblico" ||
+                        assignment.role === "Meio de Semana" || 
+                        assignment.role === "Ajudante (Meio de Semana)"
+                    ) && (
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                                <BookOpen size={16} className="text-typography-400" />
+                                <strong>
+                                    {('section' in assignment && assignment.section === "TREASURES") ? "Tesouros da Palavra de Deus" :
+                                     ('section' in assignment && assignment.section === "MINISTRY") ? "Faça Seu Melhor no Ministério" :
+                                     ('section' in assignment && assignment.section === "LIVING") ? "Nossa Vida Cristã" :
+                                     assignment.role}
+                                </strong>
+                            </div>
+                            
+                            {/* Se for uma seção e tivermos também o role ou title, podemos exibir o title/role */}
+                            {(assignment as any).title && (
+                                <div className="text-xs font-medium text-typography-700 ml-6">
+                                    {/* Se for Joias, e section=TREASURES, o title já é "Joias Espirituais". Se for leitura da bíblia, o title é "Leitura da Bíblia". Perfeito. */}
+                                    <span>{(assignment as any).title}</span>
+                                </div>
+                            )}
+                            
+                            <div className="flex flex-col gap-1 ml-6 mt-1">
+                                {(assignment as any).timeMinutes && (
+                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                        <Clock size={12} />
+                                        <span>{(assignment as any).timeMinutes} min</span>
+                                    </div>
+                                )}
+                                {(assignment as any).room && (
+                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                        <MapPin size={12} />
+                                        <span>{(assignment as any).room}</span>
+                                    </div>
+                                )}
+                                {(assignment as any).partner && (
+                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                        <User size={12} />
+                                        <span>{assignment.role === "Meio de Semana" ? "Ajudante: " : "Estudante: "}{(assignment as any).partner}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

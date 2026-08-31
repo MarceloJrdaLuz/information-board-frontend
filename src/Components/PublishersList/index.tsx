@@ -6,8 +6,8 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
 import { IPublisher, Privileges, Situation } from "@/types/types"
-import { BlobProvider, Document, PDFDownloadLink } from "@react-pdf/renderer"
-import { ArrowRightLeft, ChevronDownIcon, Trash } from "lucide-react"
+import { BlobProvider, Document } from "@react-pdf/renderer"
+import { ArrowRightLeft, CalendarOff, ChevronDownIcon, Trash } from "lucide-react"
 import moment from "moment"
 import Image from "next/image"
 import Router, { useRouter } from "next/router"
@@ -314,6 +314,19 @@ export default function PublisherList() {
                                         >
                                             <EditIcon />
                                             Editar
+                                        </Button>
+                                    }
+
+                                    {(roleContains("PUBLISHERS_MANAGER") || roleContains("ADMIN_CONGREGATION") || roleContains("MIDWEEK_MANAGER")) &&
+                                        <Button
+                                            className="w-auto px-3"
+                                            onClick={() => Router.push(`/congregacao/publicadores/indisponibilidades?publisherId=${publisher.id}`)}
+                                            outline
+                                        >
+                                            <span className="flex gap-1.5 items-center text-amber-600 dark:text-amber-400 font-semibold text-xs">
+                                                <CalendarOff size={16} />
+                                                <span>Indisponibilidade</span>
+                                            </span>
                                         </Button>
                                     }
 

@@ -45,6 +45,20 @@ export interface IPublicWitnessAssignment extends IBaseAssignment {
 }
 
 /* =========================
+ * Meio de Semana
+ * ========================= */
+
+export interface IMidweekPartAssignment extends IBaseAssignment {
+  role: "Meio de Semana" | "Ajudante (Meio de Semana)"
+  title?: string
+  room?: string
+  partner?: string
+  section?: "TREASURES" | "MINISTRY" | "LIVING"
+  timeMinutes?: number
+  partType?: string
+}
+
+/* =========================
  * Reunião no Salão
  * Presidente | Leitor | Orador
  * ========================= */
@@ -86,6 +100,16 @@ export interface IHospitalityAssignment extends IBaseAssignment {
 }
 
 /* =========================
+ * Reunião de Meio de Semana Gerais
+ * ========================= */
+
+export interface IMidweekGeneralAssignment extends IBaseAssignment {
+  role: "Oração Inicial" | "Oração Final" | "Conselheiro" | "Dirigente do Estudo Bíblico" | "Leitor do Estudo Bíblico"
+  title?: string
+  room?: string
+}
+
+/* =========================
  * Union FINAL
  * ========================= */
 
@@ -96,3 +120,6 @@ export type IAssignment =
   | IMeetingAssignment
   | IExternalTalkAssignment
   | IHospitalityAssignment
+  | IMidweekGeneralAssignment
+  | IMidweekPartAssignment
+
