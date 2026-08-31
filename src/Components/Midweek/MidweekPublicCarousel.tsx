@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons";
 import { getLessonDetails } from "@/utils/midweekLessons";
@@ -243,12 +243,12 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                             isNoMeetingSpecial ? "bg-gradient-to-r from-[#28456C] to-[#730817]" : "bg-[#28456C]"
                         }`}>
                             <div className="flex flex-col">
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
                                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-200">
                                         {formattedMeetingDate}
                                     </span>
                                     {week.isCurrentWeek && (
-                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs">
+                                        <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs shrink-0 self-center">
                                             Semana Atual
                                         </span>
                                     )}
@@ -451,9 +451,9 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                             <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
                                                                 {formatNumberedTitle(partNum, part.title)}
                                                             </span>
-                                                            {lessonInfo && (
-                                                                <span className="text-[11px] text-amber-700 dark:text-amber-300 font-medium mt-0.5">
-                                                                    {lessonInfo.fullDisplay}
+                                                            {(lessonInfo?.fullDisplay || part.sourceMaterial) && (
+                                                                <span className="text-[11px] text-typography-500 italic mt-0.5">
+                                                                    {lessonInfo?.fullDisplay || part.sourceMaterial}
                                                                 </span>
                                                             )}
                                                         </div>

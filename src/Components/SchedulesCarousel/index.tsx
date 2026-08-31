@@ -169,12 +169,12 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
             {/* Cabeçalho da Semana com Tarja Azul (#28456C) */}
             <div className="bg-[#28456C] text-white p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-200">
                     {formattedDate}
                   </span>
                   {item.isCurrentWeek && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs">
+                    <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs shrink-0 self-center">
                       Semana Atual
                     </span>
                   )}
