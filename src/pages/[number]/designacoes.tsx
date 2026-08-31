@@ -276,8 +276,20 @@ function Designacoes() {
                             </div>
                         ) : (
                             <>
-                                {/* 1. Se houver programação no sistema, exibe o carrossel interativo */}
-                                {midweekSchedules && Object.keys(midweekSchedules).length > 0 && Object.values(midweekSchedules).some(weeks => weeks.length > 0) ? (
+                                {/* 1. Verifica se congregação realmente usa o sistema (tem ao menos 1 designado) */}
+                                {midweekSchedules &&
+                                    Object.keys(midweekSchedules).length > 0 &&
+                                    Object.values(midweekSchedules).some(weeks => weeks.length > 0) &&
+                                    Object.values(midweekSchedules).some(weeks =>
+                                        weeks.some(week =>
+                                            week.chairman ||
+                                            week.openingPrayer ||
+                                            week.closingPrayer ||
+                                            week.cbsConductor ||
+                                            week.cbsReader ||
+                                            (week.parts || []).some(p => p.assignedPublisher)
+                                        )
+                                    ) ? (
                                     <div className="flex flex-col gap-4">
                                         <MidweekPublicCarousel schedules={midweekSchedules} />
 
