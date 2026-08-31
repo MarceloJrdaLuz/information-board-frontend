@@ -1,12 +1,13 @@
 ﻿"use client"
 
+import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons"
 import { IPublicSchedule } from "@/types/weekendSchedule"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, MapPin, Mic, Send, Sparkles, User, Users } from "lucide-react"
+import { Calendar, ChevronLeft, ChevronRight, MapPin, Send, Sparkles, Users } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 
@@ -147,7 +148,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
         </div>
       )}
 
-      {/* 3. Card da Semana Ativa */}
+      {/* 3. Card da Semana Ativa com Identidade Visual Oficial */}
       {currentWeeks.map((item, idx) => {
         if (idx !== activeWeekIndex) return null
 
@@ -164,145 +165,174 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
         return (
           <div
             key={item.id || idx}
-            className="bg-surface-100 border border-surface-300 rounded-2xl shadow-sm overflow-hidden flex flex-col"
+            className="rounded-2xl border border-surface-300 shadow-sm overflow-hidden bg-surface-100 flex flex-col"
           >
-            {/* Header da Semana */}
-            <div className="bg-surface-200/80 px-4 py-3.5 border-b border-surface-300 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm sm:text-base text-typography-900 capitalize">
-                  {formattedDate}
-                </span>
+            {/* Cabeçalho da Semana com Tarja Azul (#28456C) */}
+            <div className="bg-[#28456C] text-white p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-200">
+                    {formattedDate}
+                  </span>
+                  {item.isCurrentWeek && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs">
+                      Semana Atual
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-base sm:text-xl font-black tracking-tight text-white mt-0.5">
+                  Reunião Pública e Sentinela
+                </h3>
               </div>
 
-              <div className="flex items-center gap-2">
-                {item.isCurrentWeek && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-700 border border-emerald-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Semana Atual
-                  </span>
-                )}
-                {item.specialName && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-700 border border-amber-500/20">
-                    <Sparkles size={12} />
-                    {item.specialName}
-                  </span>
-                )}
-              </div>
+              {/* Presidente da Reunião no mesmo estilo do meio de semana */}
+              {item.chairman?.name && (
+                <div className="bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-xs flex items-center gap-2 self-start sm:self-auto border border-white/10">
+                  <Users className="h-4 w-4 text-blue-200" />
+                  <div className="flex flex-col text-xs">
+                    <span className="text-[10px] text-blue-200 font-semibold uppercase tracking-wider">
+                      Presidente
+                    </span>
+                    <span className="font-bold text-white">{item.chairman.name}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Conteúdo Principal da Reunião */}
-            <div className="p-4 sm:p-5 flex flex-col gap-4">
-              {/* Presidente da Reunião */}
-              {item.chairman?.name && (
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-200/50 border border-surface-300 text-sm">
-                  <div className="w-7 h-7 rounded-lg bg-primary-200/10 text-primary-200 flex items-center justify-center shrink-0">
-                    <User size={15} />
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-typography-500 uppercase tracking-wider">
-                      Presidente:
-                    </span>
-                    <span className="font-semibold text-typography-900">{item.chairman.name}</span>
-                  </div>
-                </div>
-              )}
+            {/* Tarja de Evento Especial (se houver) */}
+            {item.specialName && (
+              <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2.5 text-center font-semibold text-sm flex items-center justify-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                <span>{item.specialName}</span>
+              </div>
+            )}
 
-              {/* Seção do Discurso Público */}
-              <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 overflow-hidden">
-                <div className="px-4 py-2.5 bg-blue-500/10 border-b border-blue-500/20 flex items-center gap-2">
-                  <Mic size={16} className="text-blue-600 dark:text-blue-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+            {/* CORPO DO CARD COM AS 3 SEÇÕES DEFINIDAS */}
+            <div className="p-4 sm:p-6 flex flex-col gap-6 divide-y divide-surface-300">
+              {/* SEÇÃO 1: DISCURSO PÚBLICO (Cor de Tesouros: #2F7682) */}
+              <div className="pt-1 flex flex-col gap-3">
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#2F7682] text-white shadow-2xs">
+                  <MidweekTreasuresIcon className="h-5 w-5" size={20} />
+                  <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
                     Discurso Público
-                  </span>
+                  </h4>
                 </div>
-                <div className="p-4 flex flex-col gap-2">
-                  {item.talk ? (
-                    <h3 className="font-bold text-sm sm:text-base text-typography-900 leading-snug">
-                      {item.talk.number ? `Nº ${item.talk.number} - ${item.talk.title}` : item.talk.title}
-                    </h3>
-                  ) : (
-                    <span className="text-xs italic text-typography-400">Tema não informado</span>
-                  )}
 
-                  {item.speaker && (
-                    <div className="flex items-center gap-2 text-xs sm:text-sm text-typography-700 mt-1 pt-2 border-t border-blue-500/10">
-                      <span className="font-bold text-typography-500">Orador:</span>
-                      <span className="font-semibold text-typography-900">{item.speaker.name}</span>
-                      {item.speaker.congregation && (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-typography-500 bg-surface-200 px-2 py-0.5 rounded-md">
-                          <MapPin size={11} />
-                          {item.speaker.congregation}
-                        </span>
-                      )}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
+                  <div className="flex flex-col max-w-xl">
+                    <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
+                      {item.talk
+                        ? item.talk.number
+                          ? `Nº ${item.talk.number} - ${item.talk.title}`
+                          : item.talk.title
+                        : "Discurso Público"}
+                    </span>
+                    {item.speaker?.congregation && (
+                      <span className="text-xs text-typography-500 flex items-center gap-1 mt-0.5">
+                        <MapPin size={12} className="text-typography-400 shrink-0" />
+                        Congregação {item.speaker.congregation}
+                      </span>
+                    )}
+                  </div>
+
+                  {item.speaker?.name && (
+                    <div className="flex items-center gap-1.5 self-start sm:self-auto bg-surface-100 dark:bg-surface-300/50 px-3 py-1.5 rounded-lg border border-surface-300 shadow-2xs shrink-0">
+                      <span className="text-[11px] text-typography-500 font-semibold uppercase">
+                        Orador:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-typography-900">
+                        {item.speaker.name}
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Seção de Estudo de A Sentinela */}
-              <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 overflow-hidden">
-                <div className="px-4 py-2.5 bg-rose-500/10 border-b border-rose-500/20 flex items-center gap-2">
-                  <BookOpen size={16} className="text-rose-600 dark:text-rose-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300">
+              {/* SEÇÃO 2: ESTUDO DE A SENTINELA (Cor de Nossa Vida Cristã: #961526) */}
+              <div className="pt-5 flex flex-col gap-3">
+                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#961526] text-white shadow-2xs">
+                  <MidweekLivingIcon className="h-5 w-5" size={20} />
+                  <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
                     Estudo de A Sentinela
-                  </span>
+                  </h4>
                 </div>
-                <div className="p-4 flex flex-col gap-2">
-                  {item.watchTowerStudyTitle ? (
-                    <h3 className="font-bold text-sm sm:text-base text-typography-900 leading-snug italic">
-                      {item.watchTowerStudyTitle}
-                    </h3>
-                  ) : (
-                    <span className="text-xs italic text-typography-400">Artigo não informado</span>
-                  )}
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
+                  <div className="flex flex-col max-w-xl">
+                    <span className="font-bold text-xs sm:text-sm text-[#961526] dark:text-rose-400 italic">
+                      {item.watchTowerStudyTitle || "Artigo de Estudo de A Sentinela"}
+                    </span>
+                  </div>
 
                   {item.reader?.name && (
-                    <div className="flex items-center gap-2 text-xs sm:text-sm text-typography-700 mt-1 pt-2 border-t border-rose-500/10">
-                      <span className="font-bold text-typography-500">Leitor:</span>
-                      <span className="font-semibold text-typography-900">{item.reader.name}</span>
+                    <div className="flex items-center gap-1.5 self-start sm:self-auto bg-surface-100 dark:bg-surface-300/50 px-3 py-1.5 rounded-lg border border-surface-300 shadow-2xs shrink-0">
+                      <span className="text-[11px] text-typography-500 font-semibold uppercase">
+                        Leitor:
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-typography-900">
+                        {item.reader.name}
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Oradores que Saem da Congregação */}
-              {filteredExternalTalks.length > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 overflow-hidden">
-                  <div className="px-4 py-2.5 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2">
-                    <Send size={15} className="text-amber-600 dark:text-amber-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                      Oradores que Saem
-                    </span>
+              {/* SEÇÃO 3: HOSPITALIDADE E ARRANJOS (Cor de Faça Seu Melhor: #C28100) */}
+              {(filteredExternalTalks.length > 0 ||
+                (item.hospitality && item.hospitality.length > 0)) && (
+                <div className="pt-5 flex flex-col gap-3">
+                  <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#C28100] text-white shadow-2xs">
+                    <MidweekMinistryIcon className="h-5 w-5" size={20} />
+                    <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
+                      Hospitalidade e Arranjos
+                    </h4>
                   </div>
-                  <div className="p-3.5 flex flex-col gap-2.5 divide-y divide-amber-500/10">
-                    {filteredExternalTalks.map((ext) => (
-                      <div key={ext.id} className="pt-2 first:pt-0 flex flex-col gap-1 text-xs sm:text-sm">
-                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <span className="font-bold text-typography-900">{ext.speaker?.name}</span>
-                          {ext.destinationCongregation && (
-                            <span className="inline-flex items-center gap-1 text-[11px] text-amber-800 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md font-medium">
-                              <MapPin size={11} />
-                              {formatNameCongregation(
-                                ext.destinationCongregation.name,
-                                ext.destinationCongregation.city
-                              )}
-                            </span>
-                          )}
+
+                  <div className="flex flex-col gap-3">
+                    {/* Oradores que Saem */}
+                    {filteredExternalTalks.length > 0 && (
+                      <div className="p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 flex flex-col gap-2.5">
+                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C28100] dark:text-amber-400">
+                          <Send size={14} />
+                          <span>Oradores que Saem da Congregação</span>
                         </div>
-                        <span className="text-typography-600 text-xs">
-                          {ext.talk?.number
-                            ? `Nº ${ext.talk.number} - ${ext.talk.title}`
-                            : ext.talk?.title || ext.manualTalk || "Tema a definir"}
-                        </span>
+                        <div className="flex flex-col gap-2 divide-y divide-surface-300/60">
+                          {filteredExternalTalks.map((ext) => (
+                            <div
+                              key={ext.id}
+                              className="pt-2 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm"
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-bold text-typography-900">
+                                  {ext.speaker?.name}
+                                </span>
+                                <span className="text-typography-600 text-xs">
+                                  {ext.talk?.number
+                                    ? `Nº ${ext.talk.number} - ${ext.talk.title}`
+                                    : ext.talk?.title || ext.manualTalk || "Tema a definir"}
+                                </span>
+                              </div>
+                              {ext.destinationCongregation && (
+                                <span className="inline-flex items-center gap-1 text-xs text-typography-600 bg-surface-100 dark:bg-surface-300/50 px-2.5 py-1 rounded-lg border border-surface-300 shrink-0 font-medium self-start sm:self-auto">
+                                  <MapPin size={12} className="text-typography-400" />
+                                  {formatNameCongregation(
+                                    ext.destinationCongregation.name,
+                                    ext.destinationCongregation.city
+                                  )}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
+
+                    {/* Cards de Hospitalidade */}
+                    {item.hospitality && item.hospitality.length > 0 && (
+                      <HospitalityCard item={item} />
+                    )}
                   </div>
                 </div>
-              )}
-
-              {/* Hospitalidade */}
-              {item.hospitality && item.hospitality.length > 0 && (
-                <HospitalityCard item={item} />
               )}
             </div>
           </div>

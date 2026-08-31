@@ -1,5 +1,5 @@
 ﻿import { IPublicSchedule } from "@/types/weekendSchedule"
-import { CheckCircle2, ChevronDown, ChevronUp, Clock, Home, Utensils, Users, User } from "lucide-react"
+import { CheckCircle2, ChevronDown, ChevronUp, Clock, User, Users, Utensils } from "lucide-react"
 import { useState } from "react"
 
 export function HospitalityCard({ item }: { item: IPublicSchedule }) {
@@ -8,19 +8,19 @@ export function HospitalityCard({ item }: { item: IPublicSchedule }) {
     if (!item.hospitality || item.hospitality.length === 0) return null
 
     return (
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 overflow-hidden">
+        <div className="rounded-xl border border-[#C28100]/25 bg-[#C28100]/5 overflow-hidden">
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="w-full px-4 py-2.5 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center justify-between cursor-pointer hover:bg-emerald-500/15 transition-colors"
+                className="w-full px-4 py-2.5 bg-[#C28100]/10 border-b border-[#C28100]/20 flex items-center justify-between cursor-pointer hover:bg-[#C28100]/15 transition-colors"
             >
                 <div className="flex items-center gap-2">
-                    <Utensils size={15} className="text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    <Utensils size={15} className="text-[#C28100] dark:text-amber-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#A06A00] dark:text-amber-300">
                         Hospitalidade do Fim de Semana
                     </span>
                 </div>
-                <div className="text-emerald-600 dark:text-emerald-400">
+                <div className="text-[#C28100] dark:text-amber-400">
                     {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </div>
             </button>
@@ -34,7 +34,7 @@ export function HospitalityCard({ item }: { item: IPublicSchedule }) {
                         >
                             <div>
                                 <div className="flex items-center justify-between gap-2 border-b border-surface-200 pb-2 mb-2">
-                                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-[#A06A00] dark:text-amber-400 flex items-center gap-1.5">
                                         {hosp.eventType === "DINNER" && "🍽️ Jantar"}
                                         {hosp.eventType === "LUNCH" && "🥗 Almoço"}
                                         {hosp.eventType === "HOSTING" && "🏡 Hospedagem"}
