@@ -209,11 +209,10 @@ function Designacoes() {
                 <div className="flex bg-surface-100 border border-surface-300 rounded-xl p-1 shadow-sm">
                     <button
                         onClick={() => setActiveTab('midweek')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                            activeTab === 'midweek'
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${activeTab === 'midweek'
                                 ? 'bg-primary-200 text-white shadow-sm'
                                 : 'text-typography-600 hover:text-typography-900 hover:bg-surface-200/60'
-                        }`}
+                            }`}
                     >
                         <LifeAndMinistryIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>Meio de Semana</span>
@@ -221,11 +220,10 @@ function Designacoes() {
 
                     <button
                         onClick={() => setActiveTab('weekend')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                            activeTab === 'weekend'
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all ${activeTab === 'weekend'
                                 ? 'bg-primary-200 text-white shadow-sm'
                                 : 'text-typography-600 hover:text-typography-900 hover:bg-surface-200/60'
-                        }`}
+                            }`}
                     >
                         <PublicMeetingIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>Fim de Semana</span>
@@ -431,10 +429,6 @@ function Designacoes() {
                 {/* Conteúdo da Aba Fim de Semana */}
                 {activeTab === 'weekend' && (
                     <div className="flex flex-col gap-4">
-                        <h2 className="text-sm font-bold text-typography-700 uppercase tracking-wider">
-                            Discursos e Sentinela
-                        </h2>
-
                         {!documents ? (
                             <div className="py-12 flex flex-col items-center justify-center gap-2 text-typography-400">
                                 <Spiner size="w-8 h-8" />
@@ -543,9 +537,8 @@ function Designacoes() {
             <Footer
                 nCong={number as string}
                 ano={new Date().getFullYear()}
-                nomeCongregacao={`Congregação ${congregationData?.name ?? ""} ${
-                    congregationData?.circuit ? `- ${congregationData.circuit}` : ""
-                }`}
+                nomeCongregacao={`Congregação ${congregationData?.name ?? ""} ${congregationData?.circuit ? `- ${congregationData.circuit}` : ""
+                    }`}
                 aviso="Atenção: favor não compartilhar acesso ao site para outros que não pertencem à congregação."
             />
         </div>
