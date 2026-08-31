@@ -253,13 +253,9 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
                                                     <Calendar className="h-3 w-3" />
                                                     Última vez há {pub.daysSinceLastThisPart} dias
                                                 </span>
-                                            ) : hasDaysAnyPart ? (
-                                                <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                                                    <Calendar className="h-3 w-3" />
-                                                    Sem esta parte há {pub.daysSinceLastAnyPart} dias
-                                                </span>
                                             ) : (
-                                                <span className="text-emerald-700 dark:text-emerald-300 font-medium italic">
+                                                <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold">
+                                                    <Calendar className="h-3 w-3" />
                                                     Nunca fez esta parte
                                                 </span>
                                             )}
