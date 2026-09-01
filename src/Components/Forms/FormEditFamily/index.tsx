@@ -64,22 +64,18 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
 
     // Criar conjuntos de publishers já membros e já responsáveis, exceto desta família
     const publishersInFamilies = new Set<string>();
-    const publishersResponsible = new Set<string>();
 
     if (data?.families) {
         data.families.forEach(family => {
             if (family.id !== family_id) {
                 family.members?.forEach((p: IPublisher) => publishersInFamilies.add(p.id));
-                if (family.responsible) {
-                    publishersResponsible.add(family.responsible.id);
-                }
             }
         });
     }
 
     // Filtrar publishers disponíveis
     const availablePublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
-        .filter(p => !publishersInFamilies.has(p.id) && !publishersResponsible.has(p.id));
+        .filter(p => !publishersInFamilies.has(p.id));
 
     const validation = yup.object({
         name: yup.string().required("Campo obrigatório"),
@@ -106,11 +102,16 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
             return;
         }
 
+        const allMemberIds = selectedMembers.map(m => m.id);
+        if (!allMemberIds.includes(responsible.id)) {
+            allMemberIds.push(responsible.id);
+        }
+
         await toast.promise(
             updateFamily(family_id, {
                 name: formData.name,
                 responsible_publisher_id: responsible.id,
-                memberIds: selectedMembers.map(m => m.id)
+                memberIds: allMemberIds
             }),
             { pending: "Atualizando família..." }
         ).then(() => {

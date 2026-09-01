@@ -40,20 +40,16 @@ export default function FormAddFamily() {
     );
 
     const publishersInFamilies = new Set<string>();
-    const publishersResponsible = new Set<string>();
 
     if (data?.families) {
         data.families.forEach(family => {
             family.members?.forEach((p: IPublisher) => publishersInFamilies.add(p.id));
-            if (family.responsible) {
-                publishersResponsible.add(family.responsible.id);
-            }
         });
     }
 
     // Filtrar publishers disponíveis
     const availablePublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
-        .filter(p => !publishersInFamilies.has(p.id) && !publishersResponsible.has(p.id));
+        .filter(p => !publishersInFamilies.has(p.id));
 
     const validation = yup.object({
         name: yup.string().required("Campo obrigatório"),
@@ -71,11 +67,16 @@ export default function FormAddFamily() {
             return;
         }
 
+        const allMemberIds = selectedMembers.map(m => m.id);
+        if (responsible && !allMemberIds.includes(responsible.id)) {
+            allMemberIds.push(responsible.id);
+        }
+
         await toast.promise(
             createFamily(congregation_id ?? "", {
                 name: formData.name,
                 responsible_publisher_id: responsible?.id,
-                memberIds: selectedMembers.map(m => m.id)
+                memberIds: allMemberIds
             }),
             { pending: "Criando nova família..." }
         ).then(() => {
