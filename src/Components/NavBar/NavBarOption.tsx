@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import NavBarOptionIcon from "./NavBarOptionIcon"
 import { NavBarOptionType } from "./types"
@@ -16,7 +16,7 @@ export default function NavBarOption(props: NavBarOptionType) {
                 transition-all duration-150 ease-out select-none
                 ${
                     isSubItem
-                        ? "pl-9 text-xs sm:text-sm my-0.5"
+                        ? "pl-5 text-xs sm:text-sm my-0.5"
                         : "text-xs sm:text-sm my-1"
                 }
                 ${

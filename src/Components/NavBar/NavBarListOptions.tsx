@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { ChevronDown } from "lucide-react"
 import NavBarOptionIcon from "./NavBarOptionIcon"
@@ -52,7 +52,7 @@ export default function NavBarListOptions({
 
             {/* Submenu com Linha Guia Lateral */}
             {showList && (
-                <ul className="mt-1 ml-4 pl-1.5 border-l border-white/20 space-y-0.5 animate-fade-in">
+                <ul className="mt-1 ml-2 pl-1 border-l border-white/20 space-y-0.5 animate-fade-in">
                     {children}
                 </ul>
             )}
