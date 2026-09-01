@@ -52,7 +52,7 @@ export const LOVE_PEOPLE_LESSONS: Record<number, { theme: string; points: Record
     7: {
         theme: "Perseverança",
         points: {
-            3: "Ajuste a sua programação paravisitar a pessoa num horário que seja bom para ela",
+            3: "Ajuste a sua programação para visitar a pessoa num horário que seja bom para ela",
             4: "Marque a próxima conversa",
             5: "Não perca a esperança"
         }
@@ -164,8 +164,13 @@ export function getLessonDetails(
     const lessonData = LOVE_PEOPLE_LESSONS[lmdLesson];
     const lessonTheme = lessonData?.theme;
     
-    // Prioriza a descrição que veio no XML ou busca exatamente nos pontos 3 a 5
-    const pointDesc = studyPointDescription?.trim() || (lmdPoint && lessonData?.points?.[lmdPoint]) || undefined;
+    // O ponto de estudo tem a sua própria descrição/ação (ex: "Seja flexível", "Seja observador", "Escute"), e nunca repete o tema da lição
+    let pointDesc: string | undefined = undefined;
+    if (lmdPoint && lessonData?.points?.[lmdPoint]) {
+        pointDesc = lessonData.points[lmdPoint];
+    } else if (studyPointDescription && studyPointDescription.trim().toLowerCase() !== lessonTheme?.toLowerCase()) {
+        pointDesc = studyPointDescription.trim();
+    }
 
     const parts: string[] = ["lmd"];
     if (lmdLesson) {
@@ -175,9 +180,12 @@ export function getLessonDetails(
         parts.push(`ponto ${lmdPoint}`);
     }
 
-    let fullDisplay = `Ame as Pessoas: Lição ${lmdLesson}${lessonTheme ? ` (${lessonTheme})` : ""}`;
+    let fullDisplay = `lmd lição ${lmdLesson}`;
+    if (lessonTheme) {
+        fullDisplay += ` (${lessonTheme})`;
+    }
     if (lmdPoint) {
-        fullDisplay += ` • Ponto ${lmdPoint}${pointDesc ? `: ${pointDesc}` : ""}`;
+        fullDisplay += ` • ponto ${lmdPoint}${pointDesc ? `: ${pointDesc}` : ""}`;
     }
 
     return {
