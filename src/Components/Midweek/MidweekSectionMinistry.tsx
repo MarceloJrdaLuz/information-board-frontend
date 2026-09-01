@@ -144,10 +144,17 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                     {formatNumberedTitle(partNum, part.title)}
                                 </h4>
 
-                                {/* Fonte de Matéria da brochura Ame as Pessoas / Cena em Cinza Itálico */}
-                                {(lessonInfo?.fullDisplay || part.sourceMaterial) && (
-                                    <span className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
-                                        {lessonInfo?.fullDisplay || part.sourceMaterial}
+                                {/* Fonte de Matéria / Cenário (ex: DE CASA EM CASA. Ofereça um estudo bíblico.) */}
+                                {part.sourceMaterial && (
+                                    <p className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-relaxed">
+                                        {part.sourceMaterial}
+                                    </p>
+                                )}
+
+                                {/* Informações da Lição e Ponto de Estudo */}
+                                {lessonInfo?.fullDisplay && (
+                                    <span className="text-[11px] text-typography-500 italic mt-0.5 leading-relaxed block">
+                                        {lessonInfo.fullDisplay}
                                     </span>
                                 )}
 

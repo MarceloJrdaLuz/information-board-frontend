@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons";
 import { getLessonDetails } from "@/utils/midweekLessons";
@@ -451,9 +451,14 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                             <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
                                                                 {formatNumberedTitle(partNum, part.title)}
                                                             </span>
-                                                            {(lessonInfo?.fullDisplay || part.sourceMaterial) && (
+                                                            {part.sourceMaterial && (
+                                                                <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
+                                                                    {part.sourceMaterial}
+                                                                </span>
+                                                            )}
+                                                            {lessonInfo?.fullDisplay && (
                                                                 <span className="text-[11px] text-typography-500 italic mt-0.5">
-                                                                    {lessonInfo?.fullDisplay || part.sourceMaterial}
+                                                                    {lessonInfo.fullDisplay}
                                                                 </span>
                                                             )}
                                                         </div>
@@ -484,14 +489,32 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                 </span>
                                                 {aux1Ministry.map((part, auxIdx) => {
                                                     const matchingMainNum = (partCounter - mainMinistry.length) + auxIdx;
+                                                    const lessonInfo = getLessonDetails(
+                                                        part.lessonNumber ? "lmd-T" : undefined,
+                                                        part.lessonNumber,
+                                                        part.studyPoint,
+                                                        part.studyPointDescription
+                                                    );
                                                     return (
                                                         <div
                                                             key={part.id}
                                                             className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                         >
-                                                            <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
-                                                                {formatNumberedTitle(matchingMainNum, part.title)}
-                                                            </span>
+                                                            <div className="flex flex-col max-w-xl">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
+                                                                    {formatNumberedTitle(matchingMainNum, part.title)}
+                                                                </span>
+                                                                {part.sourceMaterial && (
+                                                                    <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
+                                                                        {part.sourceMaterial}
+                                                                    </span>
+                                                                )}
+                                                                {lessonInfo?.fullDisplay && (
+                                                                    <span className="text-[11px] text-typography-500 italic mt-0.5">
+                                                                        {lessonInfo.fullDisplay}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             <div className="self-end sm:self-center flex items-center gap-1.5 text-xs">
                                                                 {part.assignedPublisher && (
                                                                     <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
@@ -518,14 +541,32 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                 </span>
                                                 {aux2Ministry.map((part, auxIdx) => {
                                                     const matchingMainNum = (partCounter - mainMinistry.length) + auxIdx;
+                                                    const lessonInfo = getLessonDetails(
+                                                        part.lessonNumber ? "lmd-T" : undefined,
+                                                        part.lessonNumber,
+                                                        part.studyPoint,
+                                                        part.studyPointDescription
+                                                    );
                                                     return (
                                                         <div
                                                             key={part.id}
                                                             className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                         >
-                                                            <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
-                                                                {formatNumberedTitle(matchingMainNum, part.title)}
-                                                            </span>
+                                                            <div className="flex flex-col max-w-xl">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
+                                                                    {formatNumberedTitle(matchingMainNum, part.title)}
+                                                                </span>
+                                                                {part.sourceMaterial && (
+                                                                    <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
+                                                                        {part.sourceMaterial}
+                                                                    </span>
+                                                                )}
+                                                                {lessonInfo?.fullDisplay && (
+                                                                    <span className="text-[11px] text-typography-500 italic mt-0.5">
+                                                                        {lessonInfo.fullDisplay}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             <div className="self-end sm:self-center flex items-center gap-1.5 text-xs">
                                                                 {part.assignedPublisher && (
                                                                     <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
