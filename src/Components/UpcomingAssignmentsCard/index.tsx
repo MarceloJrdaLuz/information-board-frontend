@@ -9,6 +9,7 @@ import {
     Calendar,
     CalendarDays,
     Clock,
+    Layers,
     MapPin,
     Mic,
     Sparkles,
@@ -17,27 +18,66 @@ import {
 import { useState } from "react";
 import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
 import { LocationLink } from "../LocationLink";
-dayjs.extend(isBetween)
-dayjs.locale("pt-br")
+dayjs.extend(isBetween);
+dayjs.locale("pt-br");
+
+type TabType = "ALL" | "MEETINGS" | "MINISTRY" | "OTHERS";
 
 interface UpcomingAssignmentsCardProps {
     assignments: IAssignment[];
 }
 
 export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCardProps) {
-    const hasAssignments = assignments && assignments.length > 0;
+    const [activeTab, setActiveTab] = useState<TabType>("ALL");
     const [expanded, setExpanded] = useState(false);
 
+    const isMeetingAssignment = (a: IAssignment) => {
+        return (
+            a.role === "Presidente" ||
+            a.role === "Leitor" ||
+            a.role === "Orador" ||
+            a.role === "Discurso Externo" ||
+            a.role === "Oração Inicial" ||
+            a.role === "Oração Final" ||
+            a.role === "Conselheiro" ||
+            a.role === "Dirigente do Estudo Bíblico" ||
+            a.role === "Leitor do Estudo Bíblico" ||
+            a.role === "Meio de Semana" ||
+            a.role === "Ajudante (Meio de Semana)"
+        );
+    };
+
+    const isMinistryAssignment = (a: IAssignment) => {
+        return a.role === "Dirigente de Campo" || a.role === "Testemunho Público";
+    };
+
+    const isOtherAssignment = (a: IAssignment) => {
+        return a.role === "Limpeza do Salão" || a.role === "Anfitrião" || a.role === "Hospitalidade";
+    };
+
+    const allCount = assignments?.length || 0;
+    const meetingsCount = assignments?.filter(isMeetingAssignment).length || 0;
+    const ministryCount = assignments?.filter(isMinistryAssignment).length || 0;
+    const othersCount = assignments?.filter(isOtherAssignment).length || 0;
+
+    const filteredAssignments = (assignments || []).filter(a => {
+        if (activeTab === "MEETINGS") return isMeetingAssignment(a);
+        if (activeTab === "MINISTRY") return isMinistryAssignment(a);
+        if (activeTab === "OTHERS") return isOtherAssignment(a);
+        return true;
+    });
+
+    const hasAssignments = filteredAssignments.length > 0;
     const MAX_VISIBLE = 5;
 
     const today = dayjs().startOf("day");
     const endOfWeek = dayjs().add(7, "days").endOf("day");
 
-    const thisWeekAssignments = assignments.filter(a =>
+    const thisWeekAssignments = filteredAssignments.filter(a =>
         dayjs(a.date).isBetween(today, endOfWeek, undefined, "[]")
     );
 
-    const futureAssignments = assignments.filter(a =>
+    const futureAssignments = filteredAssignments.filter(a =>
         dayjs(a.date).isAfter(endOfWeek)
     );
 
@@ -368,14 +408,88 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
     return (
         <div className="bg-surface-100 rounded-xl shadow-sm p-4 w-full">
+            {/* Cabeçalho do Card com Abas de Filtro */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-surface-300 pb-3">
+                <div className="flex items-center gap-2">
+                    <CalendarDays className="h-5 w-5 text-primary-200" />
+                    <h2 className="text-base font-bold text-typography-900">
+                        Minhas Designações
+                    </h2>
+                </div>
+
+                {/* Abas / Filtros Rápidos */}
+                <div className="flex items-center gap-1 bg-surface-200/60 p-1 rounded-lg self-start sm:self-auto overflow-x-auto max-w-full">
+                    <button
+                        type="button"
+                        onClick={() => { setActiveTab("ALL"); setExpanded(false); }}
+                        className={`px-2.5 py-1 text-xs font-semibold rounded-md transition flex items-center gap-1.5 cursor-pointer ${
+                            activeTab === "ALL"
+                                ? "bg-surface-100 text-typography-900 shadow-xs"
+                                : "text-typography-500 hover:text-typography-700 hover:bg-surface-200"
+                        }`}
+                    >
+                        <span>Todas</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-surface-300/60 text-typography-700">
+                            {allCount}
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => { setActiveTab("MEETINGS"); setExpanded(false); }}
+                        className={`px-2.5 py-1 text-xs font-semibold rounded-md transition flex items-center gap-1.5 cursor-pointer ${
+                            activeTab === "MEETINGS"
+                                ? "bg-surface-100 text-typography-900 shadow-xs"
+                                : "text-typography-500 hover:text-typography-700 hover:bg-surface-200"
+                        }`}
+                    >
+                        <span>Reuniões</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-surface-300/60 text-typography-700">
+                            {meetingsCount}
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => { setActiveTab("MINISTRY"); setExpanded(false); }}
+                        className={`px-2.5 py-1 text-xs font-semibold rounded-md transition flex items-center gap-1.5 cursor-pointer ${
+                            activeTab === "MINISTRY"
+                                ? "bg-surface-100 text-typography-900 shadow-xs"
+                                : "text-typography-500 hover:text-typography-700 hover:bg-surface-200"
+                        }`}
+                    >
+                        <span>Pregação</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-surface-300/60 text-typography-700">
+                            {ministryCount}
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => { setActiveTab("OTHERS"); setExpanded(false); }}
+                        className={`px-2.5 py-1 text-xs font-semibold rounded-md transition flex items-center gap-1.5 cursor-pointer ${
+                            activeTab === "OTHERS"
+                                ? "bg-surface-100 text-typography-900 shadow-xs"
+                                : "text-typography-500 hover:text-typography-700 hover:bg-surface-200"
+                        }`}
+                    >
+                        <span>Outros</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-surface-300/60 text-typography-700">
+                            {othersCount}
+                        </span>
+                    </button>
+                </div>
+            </div>
+
             {hasAssignments ? (
                 <>
                     {thisWeekAssignments.length > 0 && (
                         <>
-                            <h2 className="text-base font-semibold mb-3 text-typography-700">
+                            <h3 className="text-sm font-semibold mb-2.5 text-typography-700 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-green-500" />
                                 Esta semana
-                            </h2>
-                            <ul className="space-y-2 mb-6">
+                            </h3>
+                            <ul className="space-y-2 mb-5">
                                 {thisWeekAssignments.map(renderAssignment)}
                             </ul>
                         </>
@@ -383,9 +497,10 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                     {futureAssignments.length > 0 && (
                         <>
-                            <h2 className="text-base font-semibold mb-3 text-typography-700">
+                            <h3 className="text-sm font-semibold mb-2.5 text-typography-700 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-primary-200" />
                                 Próximas designações
-                            </h2>
+                            </h3>
                             <ul className="space-y-2">
                                 {visibleFutureAssignments.map(renderAssignment)}
                             </ul>
@@ -394,7 +509,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                 <div className="mt-3 text-center">
                                     <button
                                         onClick={() => setExpanded(!expanded)}
-                                        className="text-xs font-medium text-primary-200 hover:underline"
+                                        className="text-xs font-medium text-primary-200 hover:underline cursor-pointer"
                                     >
                                         {expanded ? "Ver menos" : `Ver mais (${hiddenCount})`}
                                     </button>
@@ -405,8 +520,16 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                 </>
             ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-typography-400">
-                    <Clock size={28} className="mb-2" />
-                    <p className="text-sm">Nenhuma designação futura</p>
+                    <Clock size={28} className="mb-2 opacity-50" />
+                    <p className="text-sm">
+                        {activeTab === "ALL"
+                            ? "Nenhuma designação futura"
+                            : activeTab === "MEETINGS"
+                            ? "Nenhuma designação de reunião no momento"
+                            : activeTab === "MINISTRY"
+                            ? "Nenhuma designação de pregação no momento"
+                            : "Nenhum outro serviço agendado no momento"}
+                    </p>
                 </div>
             )}
         </div>
