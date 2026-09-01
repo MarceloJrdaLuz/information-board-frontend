@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
-import { IMidweekSchedule, MidweekRoom, MidweekSection, MidweekPartType, IPublisherMini } from "@/types/midweek";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
-import { FileText, Download, Calendar, Sparkles } from "lucide-react";
+import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection } from "@/types/midweek";
+import { getLessonDetails } from "@/utils/midweekLessons";
+import { Document, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { getLessonDetails } from "@/utils/midweekLessons";
+import { Calendar, Download, FileText, Sparkles } from "lucide-react";
+import React, { useState } from "react";
 
 dayjs.locale("pt-br");
 
@@ -532,12 +532,12 @@ export const MidweekS89PdfModal: React.FC<{
                     </div>
 
                     {/* Seletor de Escopo: Mês Inteiro vs Semana Específica */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <div className="flex items-center bg-surface-200 p-1 rounded-lg border border-surface-300">
+                    <div className="flex flex-wrap items-center gap-2 max-w-full">
+                        <div className="flex items-center bg-surface-200 p-1 rounded-lg border border-surface-300 overflow-x-auto max-w-full scrollbar-none">
                             <button
                                 type="button"
                                 onClick={() => setSelectedScope("all")}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-all ${
                                     isAll
                                         ? "bg-surface-100 text-typography-900 shadow-sm"
                                         : "text-typography-500 hover:text-typography-900"
@@ -555,7 +555,7 @@ export const MidweekS89PdfModal: React.FC<{
                                         key={s.id}
                                         type="button"
                                         onClick={() => setSelectedScope(s.id)}
-                                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-semibold transition-all ${
+                                        className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-all ${
                                             isSelected
                                                 ? "bg-surface-100 text-typography-900 shadow-sm"
                                                 : "text-typography-500 hover:text-typography-900"

@@ -271,7 +271,7 @@ function MidweekScheduleAssistantPage() {
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Programação do Meio de Semana"} />
 
-            <div className="flex flex-col gap-5 w-full max-w-7xl mx-auto p-4 sm:p-6">
+            <div className="flex flex-col gap-5 w-full max-w-7xl mx-auto p-4 sm:p-6 min-w-0">
                 {/* Barra Superior de Controles e Ações */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-100 p-4 rounded-xl border border-surface-300 shadow-sm">
                     {/* Seletor de Mês e Ano */}
@@ -355,7 +355,7 @@ function MidweekScheduleAssistantPage() {
 
                 {/* Abas das Semanas do Mês */}
                 {schedules.length > 0 && (
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                    <div className="w-full max-w-full min-w-0 overflow-x-auto pb-2 pt-0.5 scroll-smooth overscroll-x-contain flex items-center gap-2">
                         {schedules.map((s) => {
                             const isSelected = s.id === selectedScheduleId;
                             const weekDay = dayjs(s.meetingDate || s.weekDate).format("DD/MM");
@@ -375,7 +375,7 @@ function MidweekScheduleAssistantPage() {
                                     key={s.id}
                                     type="button"
                                     onClick={() => setSelectedScheduleId(s.id)}
-                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all ${
+                                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all ${
                                         isSelected
                                             ? "bg-primary-200 text-white shadow-md font-bold"
                                             : "bg-surface-100 text-typography-700 border border-surface-300 hover:bg-surface-200"
