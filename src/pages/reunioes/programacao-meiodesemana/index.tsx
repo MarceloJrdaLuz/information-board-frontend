@@ -516,6 +516,10 @@ function MidweekScheduleAssistantPage() {
                         open={isS89ModalOpen}
                         onClose={() => setIsS89ModalOpen(false)}
                         schedule={currentSchedule}
+                        schedules={schedules}
+                        selectedScheduleId={selectedScheduleId}
+                        year={year}
+                        month={month}
                     />
                 </>
             )}
