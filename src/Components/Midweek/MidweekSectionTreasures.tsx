@@ -43,7 +43,7 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
 
             {/* Lista de Partes */}
             <div className="divide-y divide-surface-300 p-2">
-                {mainParts.map((part) => {
+                {mainParts.map((part, index) => {
                     const isBibleReading = part.partType === MidweekPartType.BIBLE_READING;
                     const isGems = part.partType === MidweekPartType.GEMS;
                     const isTalk = part.partType === MidweekPartType.TALK;
@@ -85,19 +85,18 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                     )}
                                 </div>
 
-                                <h4 className="font-bold text-sm text-typography-900 leading-snug">
-                                    {part.title}
+                                <h4 className="font-bold text-sm text-[#2F7682] dark:text-teal-400 leading-snug">
+                                    {/^\d+\./.test(part.title) ? part.title : `${index + 1}. ${part.title}`}
                                 </h4>
 
                                 {part.sourceMaterial && (
-                                    <p className="text-xs text-typography-600 font-medium">
+                                    <p className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
                                         {part.sourceMaterial}
                                     </p>
                                 )}
 
                                 {isBibleReading && (
-                                    <div className="flex items-center gap-1.5 text-xs text-[#2F7682] dark:text-teal-400 font-semibold mt-0.5">
-                                        <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                                    <div className="flex items-center gap-1.5 text-xs text-typography-500 italic mt-0.5 leading-relaxed">
                                         <span>Melhore: Lição {part.studyPoint || part.lessonNumber || 1}{lessonInfo.lessonTheme ? ` • ${lessonInfo.lessonTheme}` : ""}</span>
                                     </div>
                                 )}

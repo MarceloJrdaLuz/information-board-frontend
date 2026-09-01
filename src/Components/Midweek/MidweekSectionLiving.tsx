@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { IMidweekMeetingPart, IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSpecialType, MidweekSection } from "@/types/midweek";
-import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 import { MidweekLivingIcon } from "@/Components/Icons/MidweekIcons";
-import { Clock, Plus, BookOpen, User, Trash2, Mic, Check, Loader2 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
+import { IMidweekMeetingPart, IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
+import { BookOpen, Check, Clock, Loader2, Mic, Plus, Trash2, User } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 
 interface MidweekSectionLivingProps {
     schedule: IMidweekSchedule;
     parts: IMidweekMeetingPart[];
+    startPartNumber?: number;
     onUpdateSchedule: (data: Partial<IMidweekSchedule>) => Promise<void>;
     onUpdatePart: (partId: string, data: Partial<IMidweekMeetingPart>) => Promise<void>;
     onAddCustomPart: (data: {
@@ -27,6 +28,7 @@ interface MidweekSectionLivingProps {
 export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
     schedule,
     parts,
+    startPartNumber = 7,
     onUpdateSchedule,
     onUpdatePart,
     onAddCustomPart,
@@ -36,11 +38,18 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
     const isCoVisit = schedule.isSpecial && schedule.specialType === MidweekSpecialType.CIRCUIT_OVERSEER_VISIT;
 
     // Partes normais (excluindo CBS e Discurso de Serviço se for visita do SC)
-    const mainParts = parts.filter(
-        p => p.room === MidweekRoom.MAIN &&
-             p.partType !== MidweekPartType.CBS &&
-             !p.title.toLowerCase().includes("discurso de serviço")
-    );
+    const mainParts = parts
+        .filter(
+            p => p.room === MidweekRoom.MAIN &&
+                 p.partType !== MidweekPartType.CBS &&
+                 !p.title.toLowerCase().includes("discurso de serviço")
+        )
+        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+
+    const formatNumberedTitle = (num: number, title: string) => {
+        if (/^\d+\./.test(title)) return title;
+        return `${num}. ${title}`;
+    };
 
     const cbsPart = parts.find(p => p.partType === MidweekPartType.CBS && p.isActive);
     const serviceTalkPart = parts.find(
@@ -113,7 +122,7 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                     size="sm"
                     variant="ghost"
                     onClick={onOpenCustomPartModal}
-                    className="text-xs text-white hover:bg-[#96210E] flex items-center gap-1 h-7 px-2"
+                    className="text-xs text-white hover:bg-[#96210E] flex items-center gap-1 h-7 px-2 cursor-pointer"
                 >
                     <Plus className="h-3.5 w-3.5" />
                     <span>Adicionar Parte</span>
@@ -122,7 +131,8 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
 
             {/* Lista de Partes de Vida Cristã */}
             <div className="divide-y divide-surface-300 p-2">
-                {mainParts.map((part) => {
+                {mainParts.map((part, index) => {
+                    const partNum = startPartNumber + index;
                     const isLocalNeeds = part.partType === MidweekPartType.LOCAL_NEEDS;
                     const isCustom = part.partType === MidweekPartType.CUSTOM;
 
@@ -157,12 +167,12 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     )}
                                 </div>
 
-                                <h4 className="font-semibold text-sm text-typography-900">
-                                    {part.title}
+                                <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 leading-snug">
+                                    {formatNumberedTitle(partNum, part.title)}
                                 </h4>
 
                                 {part.sourceMaterial && (
-                                    <p className="text-xs text-typography-500">
+                                    <p className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
                                         {part.sourceMaterial}
                                     </p>
                                 )}
@@ -184,7 +194,7 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => onDeletePart(part.id)}
-                                        className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                        className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer"
                                         title="Excluir parte personalizada"
                                     >
                                         <Trash2 className="h-4 w-4" />
@@ -202,9 +212,8 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                             <div className="flex items-center gap-2">
                                 <Mic className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                 <div>
-                                    <h4 className="font-bold text-sm text-typography-900 flex items-center gap-2">
-                                        <span>Discurso de Serviço (30 min)</span>
-                                        
+                                    <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 flex items-center gap-2">
+                                        <span>{formatNumberedTitle(startPartNumber + mainParts.length, "Discurso de Serviço (30 min)")}</span>
                                     </h4>
                                     <p className="text-xs text-typography-500">
                                         Proferido pelo Superintendente de Circuito durante a semana da visita.
@@ -245,7 +254,7 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     size="sm"
                                     disabled={savingTalk}
                                     onClick={handleSaveServiceTalk}
-                                    className="w-full text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold flex items-center justify-center gap-1 h-8 shadow-sm"
+                                    className="w-full text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold flex items-center justify-center gap-1 h-8 shadow-sm cursor-pointer"
                                 >
                                     {savingTalk ? (
                                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -262,13 +271,12 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                     <div className="p-3 bg-surface-200/50 rounded-xl my-2 border border-surface-300">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 mb-3 border-b border-surface-300">
                             <div className="flex items-center gap-2">
-                                <BookOpen className="h-4 w-4 text-[#BA2A12]" />
-                                <h4 className="font-bold text-sm text-typography-900">
-                                    Estudo Bíblico de Congregação (30 min)
+                                <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400">
+                                    {formatNumberedTitle(startPartNumber + mainParts.length, "Estudo Bíblico de Congregação (30 min)")}
                                 </h4>
                             </div>
                             {cbsPart?.sourceMaterial && (
-                                <span className="text-xs text-typography-500">
+                                <span className="text-xs text-typography-500 italic">
                                     {cbsPart.sourceMaterial}
                                 </span>
                             )}

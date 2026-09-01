@@ -2,7 +2,7 @@ import { MidweekMinistryIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, MidweekPartType, MidweekRoom } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { BookOpen, Clock, Copy, Layers } from "lucide-react";
+import { Clock, Copy, Layers } from "lucide-react";
 import React, { useState } from "react";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 
@@ -21,10 +21,19 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
 
     const filteredParts = parts
         .filter(p => p.room === activeRoom)
-        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+        .sort((a, b) => {
+            if (a.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && b.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return 1;
+            if (b.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && a.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return -1;
+            return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+        });
 
     const hasAuxRoom1 = parts.some(p => p.room === MidweekRoom.AUXILIARY_1);
     const hasAuxRoom2 = parts.some(p => p.room === MidweekRoom.AUXILIARY_2);
+
+    const formatNumberedTitle = (num: number, title: string) => {
+        if (/^\d+\./.test(title)) return title;
+        return `${num}. ${title}`;
+    };
 
     return (
         <div className="flex flex-col rounded-xl border border-surface-300 bg-surface-100 overflow-hidden shadow-sm">
@@ -104,11 +113,13 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
 
             {/* Lista de Partes */}
             <div className="divide-y divide-surface-300 p-2">
-                {filteredParts.map((part) => {
+                {filteredParts.map((part, index) => {
+                    const partNum = 4 + index;
                     const isTalk = part.partType === MidweekPartType.STUDENT_TALK || part.partType === MidweekPartType.EXPLAIN_BELIEFS;
+                    const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
 
                     const lessonInfo = getLessonDetails(
-                        part.brochure,
+                        part.lessonNumber ? "lmd-T" : (part.brochure || "LovePeople"),
                         part.lessonNumber,
                         part.studyPoint,
                         part.studyPointDescription
@@ -120,7 +131,7 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                             className="flex flex-col lg:flex-row lg:items-start justify-between p-3.5 gap-4 hover:bg-surface-200/70 rounded-lg transition-colors"
                         >
                             {/* Detalhes da Parte */}
-                            <div className="flex flex-col gap-2 lg:w-5/12">
+                            <div className="flex flex-col gap-1.5 lg:w-5/12">
                                 <div className="flex items-center gap-2">
                                     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
                                         <Clock className="h-3 w-3 text-typography-500" />
@@ -128,27 +139,18 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                     </span>
                                 </div>
 
-                                <h4 className="font-bold text-sm text-typography-900 leading-snug">
-                                    {part.title}
+                                {/* Título em Amarelo com Numeração */}
+                                <h4 className="font-bold text-sm text-[#A87200] dark:text-[#FBBF24] leading-snug">
+                                    {formatNumberedTitle(partNum, part.title)}
                                 </h4>
 
-                                {/* Detalhes da Cena e Contexto da Demonstração */}
-                                {part.sourceMaterial && (
-                                    <div className="text-xs text-typography-800 bg-surface-200/90 p-2.5 rounded-lg border border-surface-300">
-                                        <span className="font-bold text-[#A87200] block mb-0.5 uppercase text-[10px] tracking-wider">
-                                            Cena / Instrução da Demonstração:
-                                        </span>
-                                        <p className="leading-relaxed font-medium">
-                                            {part.sourceMaterial}
-                                        </p>
-                                    </div>
+                                {/* Fonte de Matéria da brochura Ame as Pessoas / Cena em Cinza Itálico */}
+                                {(lessonInfo?.fullDisplay || part.sourceMaterial) && (
+                                    <span className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
+                                        {lessonInfo?.fullDisplay || part.sourceMaterial}
+                                    </span>
                                 )}
 
-                                {/* Informação da Lição e Ponto (posicionada de forma limpa abaixo da cena) */}
-                                <div className="flex items-start gap-1.5 text-xs text-[#A87200] dark:text-amber-400 font-semibold mt-0.5 leading-relaxed">
-                                    <BookOpen className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                                    <span>{lessonInfo.fullDisplay}</span>
-                                </div>
                             </div>
 
                             {/* Seleção do Titular e Ajudante */}
@@ -156,7 +158,7 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                 {/* Titular */}
                                 <div className="flex-1">
                                     <span className="text-[10px] text-typography-500 font-semibold block mb-1 uppercase tracking-wider">
-                                        {isTalk ? "Orador (Estudante)" : "Titular (Estudante)"}
+                                        {isWWYS ? "Orador (Consideração)" : isTalk ? "Orador (Estudante)" : "Titular (Estudante)"}
                                     </span>
                                     <MidweekPublisherSelect
                                         partId={part.id}

@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
+import { MidweekAutoAssignModal } from "@/Components/Midweek/MidweekAutoAssignModal";
 import { MidweekCustomPartModal } from "@/Components/Midweek/MidweekCustomPartModal";
 import { MidweekMonthSchedulePdfModal } from "@/Components/Midweek/MidweekMonthSchedulePdf";
 import { MidweekS89PdfModal } from "@/Components/Midweek/MidweekS89Pdf";
@@ -32,7 +33,6 @@ import {
     FileText,
     Loader2,
     Printer,
-    Sparkles,
     UploadCloud,
     Users,
     Wand2
@@ -65,10 +65,24 @@ function MidweekScheduleAssistantPage() {
 
     // Modais
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isAutoAssignModalOpen, setIsAutoAssignModalOpen] = useState(false);
     const [isCustomPartModalOpen, setIsCustomPartModalOpen] = useState(false);
     const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
+
+    const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
+
+    // Verifica se a reunião normal foi cancelada por evento (Assembleia, Congresso, Celebração)
+    const isCancelledMeeting = currentSchedule?.isSpecial && (
+        currentSchedule.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
+        currentSchedule.specialType === MidweekSpecialType.REGIONAL_CONVENTION ||
+        currentSchedule.specialType === MidweekSpecialType.MEMORIAL
+    );
+
+    const currentTreasuresParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.TREASURES && p.isActive) || [];
+    const currentMinistryParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive) || [];
+    const currentLivingParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.LIVING && p.isActive) || [];
 
     useEffect(() => {
         setPageActive("Programação do Meio de Semana");
@@ -218,52 +232,40 @@ function MidweekScheduleAssistantPage() {
         }
     };
 
-    const handleAutoAssignSchedule = async () => {
-        if (!currentSchedule || !congregationId) return;
-        setAutoAssigning(true);
-        try {
-            const res = await api.post(
-                `/midweek/schedules/${currentSchedule.id}/auto-assign/congregation/${congregationId}`,
-                { chairmanPrays: true }
-            );
-            setSchedules(prev => prev.map(s => s.id === currentSchedule.id ? res.data : s));
-            toast.success("Designações preenchidas automaticamente!");
-        } catch (error) {
-            toast.error("Erro no preenchimento automático.");
-        } finally {
-            setAutoAssigning(false);
+    const handleConfirmAutoAssign = async (scope: "WEEK" | "MONTH", options: { chairmanPrays: boolean }) => {
+        if (scope === "WEEK") {
+            if (!currentSchedule || !congregationId) return;
+            setAutoAssigning(true);
+            try {
+                const res = await api.post(
+                    `/midweek/schedules/${currentSchedule.id}/auto-assign/congregation/${congregationId}`,
+                    { chairmanPrays: options.chairmanPrays }
+                );
+                setSchedules(prev => prev.map(s => s.id === currentSchedule.id ? res.data : s));
+                toast.success("Designações da semana preenchidas com sucesso!");
+            } catch (error) {
+                toast.error("Erro no preenchimento automático da semana.");
+            } finally {
+                setAutoAssigning(false);
+            }
+        } else {
+            if (!congregationId) return;
+            setAutoAssigning(true);
+            try {
+                const res = await api.post(
+                    `/midweek/schedules/month-auto-assign/congregation/${congregationId}`,
+                    { year, month, chairmanPrays: options.chairmanPrays }
+                );
+                setSchedules(res.data);
+                toast.success("Mês inteiro preenchido com sucesso!");
+            } catch (error) {
+                toast.error("Erro no preenchimento automático do mês.");
+            } finally {
+                setAutoAssigning(false);
+            }
         }
     };
 
-    const handleAutoAssignMonth = async () => {
-        if (!congregationId) return;
-        setAutoAssigning(true);
-        try {
-            const res = await api.post(
-                `/midweek/schedules/month-auto-assign/congregation/${congregationId}`,
-                { year, month, chairmanPrays: true }
-            );
-            setSchedules(res.data);
-            toast.success("Mês inteiro preenchido automaticamente com sucesso!");
-        } catch (error) {
-            toast.error("Erro no preenchimento automático do mês.");
-        } finally {
-            setAutoAssigning(false);
-        }
-    };
-
-    const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
-
-    // Verifica se a reunião normal foi cancelada por evento (Assembleia, Congresso, Celebração)
-    const isCancelledMeeting = currentSchedule?.isSpecial && (
-        currentSchedule.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
-        currentSchedule.specialType === MidweekSpecialType.REGIONAL_CONVENTION ||
-        currentSchedule.specialType === MidweekSpecialType.MEMORIAL
-    );
-
-    const currentTreasuresParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.TREASURES && p.isActive) || [];
-    const currentMinistryParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive) || [];
-    const currentLivingParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.LIVING && p.isActive) || [];
 
     return (
         <ContentDashboard>
@@ -304,23 +306,17 @@ function MidweekScheduleAssistantPage() {
 
                         <Button
                             size="sm"
-                            onClick={handleAutoAssignSchedule}
-                            disabled={autoAssigning || !currentSchedule || isCancelledMeeting}
-                            className="text-xs bg-primary-200 hover:opacity-90 text-white font-semibold flex items-center gap-1.5 shadow-sm disabled:opacity-50"
-                        >
-                            {autoAssigning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                            <span>Auto-Preencher Semana</span>
-                        </Button>
-
-                        <Button
-                            size="sm"
                             variant="outline"
-                            onClick={handleAutoAssignMonth}
-                            disabled={autoAssigning || schedules.length === 0}
-                            className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                            onClick={() => setIsAutoAssignModalOpen(true)}
+                            disabled={autoAssigning || (!currentSchedule && schedules.length === 0)}
+                            className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 disabled:opacity-50"
                         >
-                            <Sparkles className="h-4 w-4 text-purple-500" />
-                            <span>Auto-Preencher Mês</span>
+                            {autoAssigning ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-primary-200" />
+                            ) : (
+                                <Wand2 className="h-4 w-4 text-primary-200" />
+                            )}
+                            <span>Auto-Preencher...</span>
                         </Button>
 
                         <Button
@@ -534,6 +530,14 @@ function MidweekScheduleAssistantPage() {
                     congregationName={user?.congregation?.name}
                 />
             )}
+            <MidweekAutoAssignModal
+                open={isAutoAssignModalOpen}
+                onClose={() => setIsAutoAssignModalOpen(false)}
+                onConfirm={handleConfirmAutoAssign}
+                loading={autoAssigning}
+                weekDateFormatted={currentSchedule ? dayjs(currentSchedule.weekDate).format("DD/MM/YYYY") : undefined}
+                monthFormatted={`${MONTH_NAMES[month - 1]} de ${year}`}
+            />
         </ContentDashboard>
     );
 }
