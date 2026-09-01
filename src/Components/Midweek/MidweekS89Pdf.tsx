@@ -244,13 +244,19 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
     (schedules || []).forEach(schedule => {
         const meetingDateFormatted = dayjs(schedule.meetingDate || schedule.weekDate).format("DD/MM/YYYY");
 
+        const sortMinistryParts = (a: any, b: any) => {
+            if (a.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && b.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return 1;
+            if (b.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && a.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return -1;
+            return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+        };
+
         const allMainTreasures = (schedule.parts || [])
             .filter(p => p.section === MidweekSection.TREASURES && p.room === MidweekRoom.MAIN && p.isActive !== false)
             .sort((a, b) => (typeOrder[a.partType] ?? 99) - (typeOrder[b.partType] ?? 99));
 
         const allMainMinistry = (schedule.parts || [])
             .filter(p => p.section === MidweekSection.MINISTRY && p.room === MidweekRoom.MAIN && p.isActive !== false)
-            .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+            .sort(sortMinistryParts);
 
         // Mapa com os números exatos das partes na reunião daquela semana
         const partNumberMap = new Map<string, number>();
@@ -265,8 +271,9 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
         });
 
         // Partes dos estudantes desta semana (Salão Principal + Salas Auxiliares)
+        // Obs: WHAT_WOULD_YOU_SAY é consideração congregacional, não gera S-89
         const studentParts = (schedule.parts || []).filter(p => {
-            const isMinistry = p.section === MidweekSection.MINISTRY;
+            const isMinistry = p.section === MidweekSection.MINISTRY && p.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY;
             const isBibleReading = p.partType === MidweekPartType.BIBLE_READING;
             const isActive = p.isActive !== false;
             return (isMinistry || isBibleReading) && isActive;
@@ -278,7 +285,7 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
             if (a.section !== b.section) {
                 return a.section === MidweekSection.TREASURES ? -1 : 1;
             }
-            return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+            return sortMinistryParts(a, b);
         });
 
         const weekSlips: ItemWithSchedule[] = studentParts.map(part => {

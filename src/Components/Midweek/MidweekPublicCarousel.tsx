@@ -214,10 +214,18 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                 );
 
                 // 2. Separação do Ministério por salas
+                const sortMinistryParts = (a: any, b: any) => {
+                    const isWWYSA = a.partType === "WHAT_WOULD_YOU_SAY" || a.title?.toLowerCase().includes("o que você diria");
+                    const isWWYSB = b.partType === "WHAT_WOULD_YOU_SAY" || b.title?.toLowerCase().includes("o que você diria");
+                    if (isWWYSA && !isWWYSB) return 1;
+                    if (isWWYSB && !isWWYSA) return -1;
+                    return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+                };
+
                 const ministryParts = (week.parts || []).filter(p => p.section === "MINISTRY");
-                const mainMinistry = ministryParts.filter(p => p.room === "MAIN");
-                const aux1Ministry = ministryParts.filter(p => p.room === "AUXILIARY_1");
-                const aux2Ministry = ministryParts.filter(p => p.room === "AUXILIARY_2");
+                const mainMinistry = ministryParts.filter(p => p.room === "MAIN").sort(sortMinistryParts);
+                const aux1Ministry = ministryParts.filter(p => p.room === "AUXILIARY_1").sort(sortMinistryParts);
+                const aux2Ministry = ministryParts.filter(p => p.room === "AUXILIARY_2").sort(sortMinistryParts);
 
                 const hasAux1 = aux1Ministry.length > 0;
                 const hasAux2 = aux2Ministry.length > 0;

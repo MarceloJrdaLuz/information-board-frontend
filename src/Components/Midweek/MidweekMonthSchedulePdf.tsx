@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
-import { IMidweekSchedule, MidweekSection, MidweekPartType, MidweekSpecialType, MidweekRoom, IPublisherMini } from "@/types/midweek";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
-import { Printer, Download, LayoutTemplate, Columns } from "lucide-react";
+import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
+import { getLessonDetails } from "@/utils/midweekLessons";
+import { Document, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { getLessonDetails } from "@/utils/midweekLessons";
+import { Columns, Download, LayoutTemplate, Printer } from "lucide-react";
+import React, { useState } from "react";
 
 dayjs.locale("pt-br");
 
@@ -530,13 +530,19 @@ const MidweekModel1Document: React.FC<{
                         p => p.section === MidweekSection.TREASURES && p.partType === MidweekPartType.BIBLE_READING && p.room === MidweekRoom.AUXILIARY_1 && p.isActive
                     );
 
+                    const sortMinistryParts = (a: any, b: any) => {
+                        if (a.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && b.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return 1;
+                        if (b.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && a.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return -1;
+                        return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+                    };
+
                     const ministryMainParts = schedule.parts
                         ?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive && p.room === MidweekRoom.MAIN)
-                        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
+                        .sort(sortMinistryParts) || [];
 
                     const ministryAuxParts = schedule.parts
                         ?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive && p.room === MidweekRoom.AUXILIARY_1)
-                        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
+                        .sort(sortMinistryParts) || [];
 
                     const hasAuxRoom = ministryAuxParts.length > 0 || !!auxBibleReadingPart;
 
@@ -671,7 +677,9 @@ const MidweekModel1Document: React.FC<{
                                         </Text>
 
                                         <View style={styles1.colAssigneeContainer}>
-                                            {hasAuxRoom ? (
+                                            {part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY ? (
+                                                <Text style={styles1.assigneeSingleName}>{getDisplayName(part.assignedPublisher)}</Text>
+                                            ) : hasAuxRoom ? (
                                                 <>
                                                     <View style={styles1.assigneeGridRowDual}>
                                                         <Text style={styles1.assigneeLabelCellDual}>Estudante:</Text>
@@ -885,13 +893,19 @@ const MidweekModel2Document: React.FC<{
                         p => p.section === MidweekSection.TREASURES && p.partType === MidweekPartType.BIBLE_READING && p.room === MidweekRoom.AUXILIARY_1 && p.isActive
                     );
 
+                    const sortMinistryParts2 = (a: any, b: any) => {
+                        if (a.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && b.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return 1;
+                        if (b.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && a.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return -1;
+                        return (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+                    };
+
                     const ministryMainParts = schedule.parts
                         ?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive && p.room === MidweekRoom.MAIN)
-                        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
+                        .sort(sortMinistryParts2) || [];
 
                     const ministryAuxParts = schedule.parts
                         ?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive && p.room === MidweekRoom.AUXILIARY_1)
-                        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
+                        .sort(sortMinistryParts2) || [];
 
                     const hasAuxRoom = ministryAuxParts.length > 0 || !!auxBibleReadingPart;
 
@@ -1005,6 +1019,7 @@ const MidweekModel2Document: React.FC<{
 
                             {ministryMainParts.map((part, index) => {
                                 const currentNumber = partNum++;
+                                const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
                                 const auxPart = ministryAuxParts[index];
 
                                 const mainStudent = getDisplayName(part.assignedPublisher);
@@ -1021,12 +1036,15 @@ const MidweekModel2Document: React.FC<{
                                         <Text style={styles2.colContent}>
                                             {currentNumber}. {part.title} ({part.timeMinutes} min)
                                         </Text>
-                                        <Text style={styles2.colLabelTag}>Estudante/ajudante:</Text>
-                                        <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
+                                        <Text style={styles2.colLabelTag}>{isWWYS ? "" : "Estudante/ajudante:"}</Text>
+                                        <Text style={hasAuxRoom ? (isWWYS ? styles2.colSingleName : styles2.colAuxRoom) : styles2.colSingleName}>
                                             {mainText}
                                         </Text>
-                                        {hasAuxRoom && (
+                                        {hasAuxRoom && !isWWYS && (
                                             <Text style={styles2.colMainRoom}>{auxText}</Text>
+                                        )}
+                                        {hasAuxRoom && isWWYS && (
+                                            <Text style={styles2.colMainRoom} />
                                         )}
                                     </View>
                                 );
