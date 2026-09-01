@@ -62,13 +62,23 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             }
         }
 
+        if (assignment.role === "Presidente") {
+            return (assignment as any).title?.includes("Meio") ? "border-l-[#2F7682]" : "border-l-amber-300";
+        }
+
         switch (assignment.role) {
             case "Limpeza do Salão":
                 return "border-l-green-400";
-            case "Presidente":
-                return "border-l-amber-300";
             case "Leitor":
                 return "border-l-[#961526]";
+            case "Dirigente do Estudo Bíblico":
+            case "Leitor do Estudo Bíblico":
+                return "border-l-[#BA2A12]";
+            case "Oração Inicial":
+            case "Oração Final":
+                return "border-l-[#2F7682]";
+            case "Conselheiro":
+                return "border-l-[#D49000]";
             case "Dirigente de Campo":
                 return "border-l-[#c18626]";
             case "Orador":
@@ -83,6 +93,37 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             default:
                 return "border-l-primary-200";
         }
+    };
+
+    const getTextColor = (assignment: IAssignment) => {
+        if ('section' in assignment && assignment.section) {
+            switch (assignment.section) {
+                case "TREASURES":
+                    return "text-[#2F7682] dark:text-teal-400";
+                case "MINISTRY":
+                    return "text-[#D49000] dark:text-amber-400";
+                case "LIVING":
+                    return "text-[#BA2A12] dark:text-rose-400";
+            }
+        }
+
+        if (assignment.role === "Presidente") {
+            return (assignment as any).title?.includes("Meio") ? "text-[#2F7682] dark:text-teal-400" : "text-typography-900";
+        }
+
+        if (assignment.role === "Dirigente do Estudo Bíblico" || assignment.role === "Leitor do Estudo Bíblico") {
+            return "text-[#BA2A12] dark:text-rose-400";
+        }
+
+        if (assignment.role === "Oração Inicial" || assignment.role === "Oração Final") {
+            return "text-[#2F7682] dark:text-teal-400";
+        }
+
+        if (assignment.role === "Conselheiro") {
+            return "text-[#D49000] dark:text-amber-400";
+        }
+
+        return "text-typography-900";
     };
 
     const renderAssignment = (assignment: IAssignment, i: number) => (
@@ -128,21 +169,25 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     {assignment.role === "Limpeza do Salão" && (
                         <div className="flex items-center gap-2">
                             <Sparkles size={16} className="text-typography-400" />
-                            <strong>Limpeza do salão</strong>
+                            <strong className="text-sm font-bold text-typography-900">Limpeza do Salão</strong>
                         </div>
                     )}
 
                     {assignment.role === "Presidente" && (
                         <div className="flex items-center gap-2">
                             <User size={16} className="text-typography-400" />
-                            <strong>Presidente da reunião</strong>
+                            <strong className={`text-sm font-bold ${getTextColor(assignment)}`}>
+                                {(assignment as any).title?.includes("Meio") ? "Presidente (Meio de Semana)" : "Presidente (Fim de Semana)"}
+                            </strong>
                         </div>
                     )}
 
                     {assignment.role === "Leitor" && (
                         <div className="flex items-center gap-2">
                             <BookOpen size={16} className="text-typography-400" />
-                            <strong>Leitor da Sentinela</strong>
+                            <strong className="text-sm font-bold text-typography-900">
+                                Leitor da Sentinela
+                            </strong>
                         </div>
                     )}
 
@@ -172,7 +217,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
                                 <LifeAndMinistryIcon className="w-5 h-5 text-typography-400" />
-                                <strong>Dirigente de Campo</strong>
+                                <strong className="text-sm font-bold text-typography-900">Dirigente de Campo</strong>
                             </div>
 
                             {assignment.fieldServiceLocation && (
@@ -195,7 +240,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
                                 <Calendar size={16} className="text-typography-400" />
-                                <strong>Testemunho Público</strong>
+                                <strong className="text-sm font-bold text-typography-900">Testemunho Público</strong>
                             </div>
 
                             {assignment.start_time && assignment.end_time && (
@@ -213,7 +258,6 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                                     </span>
                                 </div>
                             )}
-
                         </div>
                     )}
 
@@ -268,41 +312,50 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                         assignment.role === "Ajudante (Meio de Semana)"
                     ) && (
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <BookOpen size={16} className="text-typography-400" />
-                                <strong>
-                                    {('section' in assignment && assignment.section === "TREASURES") ? "Tesouros da Palavra de Deus" :
-                                     ('section' in assignment && assignment.section === "MINISTRY") ? "Faça Seu Melhor no Ministério" :
-                                     ('section' in assignment && assignment.section === "LIVING") ? "Nossa Vida Cristã" :
-                                     assignment.role}
+                            {/* Título Principal com a cor da seção */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <BookOpen size={16} className="text-typography-400 shrink-0" />
+                                <strong className={`text-sm font-bold leading-snug ${getTextColor(assignment)}`}>
+                                    {assignment.role === "Meio de Semana" || assignment.role === "Ajudante (Meio de Semana)"
+                                        ? ((assignment as any).title || assignment.role)
+                                        : assignment.role === "Oração Inicial"
+                                        ? "Oração Inicial (Meio de Semana)"
+                                        : assignment.role === "Oração Final"
+                                        ? "Oração Final (Meio de Semana)"
+                                        : assignment.role === "Dirigente do Estudo Bíblico"
+                                        ? "Dirigente do Estudo Bíblico"
+                                        : assignment.role === "Leitor do Estudo Bíblico"
+                                        ? "Leitor do Estudo Bíblico"
+                                        : assignment.role === "Conselheiro"
+                                        ? `Conselheiro (${(assignment as any).room || "Sala Auxiliar"})`
+                                        : assignment.role}
                                 </strong>
+
+                                {assignment.role === "Ajudante (Meio de Semana)" && (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                        Ajudante
+                                    </span>
+                                )}
                             </div>
                             
-                            {/* Se for uma seção e tivermos também o role ou title, podemos exibir o title/role */}
-                            {(assignment as any).title && (
-                                <div className="text-xs font-medium text-typography-700 ml-6">
-                                    {/* Se for Joias, e section=TREASURES, o title já é "Joias Espirituais". Se for leitura da bíblia, o title é "Leitura da Bíblia". Perfeito. */}
-                                    <span>{(assignment as any).title}</span>
-                                </div>
-                            )}
-                            
-                            <div className="flex flex-col gap-1 ml-6 mt-1">
+                            {/* Detalhes extras (tempo, sala, parceiro) */}
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 ml-6 text-xs text-typography-500">
                                 {(assignment as any).timeMinutes && (
-                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                    <div className="flex items-center gap-1">
                                         <Clock size={12} />
                                         <span>{(assignment as any).timeMinutes} min</span>
                                     </div>
                                 )}
                                 {(assignment as any).room && (
-                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                    <div className="flex items-center gap-1">
                                         <MapPin size={12} />
                                         <span>{(assignment as any).room}</span>
                                     </div>
                                 )}
                                 {(assignment as any).partner && (
-                                    <div className="flex items-center gap-1 text-xs text-typography-500">
+                                    <div className="flex items-center gap-1">
                                         <User size={12} />
-                                        <span>{assignment.role === "Meio de Semana" ? "Ajudante: " : "Estudante: "}{(assignment as any).partner}</span>
+                                        <span>{assignment.role === "Meio de Semana" ? "Ajudante: " : "Estudante: "}<strong>{(assignment as any).partner}</strong></span>
                                     </div>
                                 )}
                             </div>
