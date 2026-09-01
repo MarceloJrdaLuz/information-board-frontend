@@ -88,10 +88,11 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
         }
         // filtro de busca textual
         if (!searchTerm.trim()) return availableList;
-        const term = searchTerm.toLowerCase();
+        const normalize = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const term = normalize(searchTerm);
         return availableList.filter(s =>
-            s.fullName.toLowerCase().includes(term) ||
-            (s.nickname && s.nickname.toLowerCase().includes(term))
+            normalize(s.fullName).includes(term) ||
+            (s.nickname && normalize(s.nickname).includes(term))
         );
     }, [suggestions, searchTerm, value, genderFilter, publisher]);
 
