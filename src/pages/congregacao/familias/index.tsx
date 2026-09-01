@@ -75,12 +75,10 @@ function FamiliesPage() {
                                     <div className="text-sm text-typography-700 flex flex-col gap-2">
                                         {family.responsible && (
                                             <span key={family.responsible_publisher_id} className="ml-4">{family.responsible.nickname || family.responsible.fullName}</span>
-                                            <span key={family.responsible.id || family.responsible_publisher_id} className="ml-4">{family.responsible.nickname || family.responsible.fullName}</span>
                                         )}
                                         {family.members && family.members.length > 0
                                             ? family.members
                                                 .filter((m) => m.id !== family.responsible_publisher_id)
-                                                .filter((m) => m.id !== (family.responsible?.id || family.responsible_publisher_id))
                                                 .map((m) => (
                                                 <span key={m.id} className="ml-4">{m.nickname || m.fullName}</span>
                                             ))
