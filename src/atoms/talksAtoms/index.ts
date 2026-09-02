@@ -27,7 +27,7 @@ export const createTalkAtom = atom(
 
 export const updateTalkAtom = atom(
   null, // valor inicial → write-only atom
-  async (_get, _set, talk_id: string,  payload: UpdateTalkPayload) => {
+  async (_get, _set, talk_id: string, payload: UpdateTalkPayload) => {
     try {
       const res = await api.patch(`/talk/${talk_id}`, payload)
 
@@ -59,7 +59,6 @@ export const deleteTalkAtom = atom(
       const message = err?.response?.data?.message
 
       if (message === "Talk not found") {
-        toast.error("Orador não encontrado.")
         toast.error("Discurso não encontrado.")
       } else {
         console.error(err)
