@@ -75,6 +75,15 @@ export default function Document() {
                   meta.id = 'theme-color-meta';
                   meta.content = color;
                   document.head.appendChild(meta);
+                  // Update existing theme-color meta tag if it exists, otherwise create it
+                  var meta = document.getElementById('theme-color-meta');
+                  if (!meta) {
+                    meta = document.createElement('meta');
+                    meta.name = 'theme-color';
+                    meta.id = 'theme-color-meta';
+                    document.head.appendChild(meta);
+                  }
+                  meta.setAttribute('content', color);
                   var nav = document.querySelector('meta[name="msapplication-navbutton-color"]');
                   if (nav) {
                     nav.setAttribute('content', color);
