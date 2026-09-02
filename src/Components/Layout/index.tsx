@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -9,12 +9,10 @@ import CleanIcon from "../Icons/CleanIcon"
 import ExternalTalkIcon from "../Icons/ExternalTalkIcon"
 import GroupIcon from "../Icons/GroupIcon"
 import LifeAndMinistry from "../Icons/LifeAndMinistryIcon"
-import MeetingIcon from "../Icons/MeetingIcon"
 import MyReportsIcon from "../Icons/MyReportsIcon"
 import NoticesIcon from "../Icons/NoticesIcon"
 import EmergencyContactIcon from "../Icons/PhoneContactIcon"
 import PrechingHomeIcon from "../Icons/PreachingHomeIcon"
-import PreachingIcon from "../Icons/PreachingIcon"
 import PublicMeetingIcon from "../Icons/PublicMeetingIcon"
 import PublicPreachingIcon from "../Icons/PublicPreachingIcon"
 import PublisherIcon from "../Icons/PublisherIcon"
@@ -58,8 +56,23 @@ export default function Layout(props: LayoutProps) {
         const path = router.pathname
         const parts = path.split('/')
         const middlePart = parts[1]
+        const subPart = parts[2]
 
-        setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
+        if (
+            middlePart === 'pregacao' ||
+            middlePart === 'limpeza' ||
+            middlePart === 'contas' ||
+            middlePart === 'eventosespeciais' ||
+            (middlePart === 'reunioes' && (subPart === 'meiodesemana' || subPart === 'fimdesemana'))
+        ) {
+            setOpenSubMenu('documentos-pdf')
+        } else if (middlePart === 'reunioes' && subPart === 'programacao-meiodesemana') {
+            setOpenSubMenu('reunioes-meiodesemana')
+        } else if (middlePart === 'arranjo-oradores') {
+            setOpenSubMenu('reunioes-fimdesemana')
+        } else {
+            setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
+        }
     }, [router.pathname, setOpenSubMenu])
 
     const toggleSubMenu = (menuKey: string) => {
@@ -293,15 +306,46 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
 
+                        {(isAdminCongregation || roleContains('MIDWEEK_MANAGER')) &&
+                            <NavBar.ListOptions
+                                key={"submenuReunioesMeioDeSemana"}
+                                showList={openSubMenu === 'reunioes-meiodesemana'}
+                                onClick={() => toggleSubMenu('reunioes-meiodesemana')}
+                                title="Reuniões meio de semana"
+                                icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            >
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Programação"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push(`/reunioes/programacao-meiodesemana`)
+                                    }}
+                                    icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive === '/reunioes/programacao-meiodesemana'}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Qualificações"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push(`/reunioes/programacao-meiodesemana/qualificacoes`)
+                                    }}
+                                    icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/reunioes/programacao-meiodesemana/qualificacoes')}
+                                />
+                            </NavBar.ListOptions>
+                        }
+
                         {(isAdminCongregation ||
                             roleContains('TALK_MANAGER') ||
                             roleContains('ADMIN'))
                             &&
                             <NavBar.ListOptions
-                                key={"submenuArranjoOradores"}
-                                showList={openSubMenu === 'arranjo-oradores'}
-                                onClick={() => toggleSubMenu('arranjo-oradores')}
-                                title="Arranjo de oradores"
+                                key={"submenuReunioesFimDeSemana"}
+                                showList={openSubMenu === 'reunioes-fimdesemana'}
+                                onClick={() => toggleSubMenu('reunioes-fimdesemana')}
+                                title="Reuniões fim de semana"
                                 icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 {isAdminCongregation &&
@@ -396,28 +440,17 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
 
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER') || roleContains('MIDWEEK_MANAGER')) &&
+                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                             <NavBar.ListOptions
-                                key={"submenuReunioes"}
-                                showList={openSubMenu === 'reunioes'}
-                                onClick={() => toggleSubMenu('reunioes')}
-                                title="Reuniões"
-                                icon={() => <MeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                key={"submenuDocumentosPdf"}
+                                showList={openSubMenu === 'documentos-pdf'}
+                                onClick={() => toggleSubMenu('documentos-pdf')}
+                                title="Documentos (PDF)"
+                                icon={() => <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
                                 <NavBar.Options
                                     isSubItem
-                                    title="Programação Meio de Semana"
-                                    onClick={() => {
-                                        { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/programacao-meiodesemana`)
-                                    }}
-                                    icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/reunioes/programacao-meiodesemana')}
-                                />
-
-                                <NavBar.Options
-                                    isSubItem
-                                    title="Meio de semana (PDF)"
+                                    title="Meio de semana"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
                                         Router.push(`/reunioes/meiodesemana`)
@@ -436,17 +469,7 @@ export default function Layout(props: LayoutProps) {
                                     icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive.startsWith('/reunioes/fimdesemana')}
                                 />
-                            </NavBar.ListOptions>
-                        }
 
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                            <NavBar.ListOptions
-                                key={"submenuPregacao"}
-                                showList={openSubMenu === 'pregacao'}
-                                onClick={() => toggleSubMenu('pregacao')}
-                                title="Pregação"
-                                icon={() => <PreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                            >
                                 <NavBar.Options
                                     isSubItem
                                     title="Saídas de campo"
@@ -467,6 +490,39 @@ export default function Layout(props: LayoutProps) {
                                     }}
                                     icon={() => <PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive.startsWith('/pregacao/testemunhopublico')}
+                                />
+
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Limpeza"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/limpeza')
+                                    }}
+                                    icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
+                                    active={pageActive.startsWith('/limpeza')}
+                                />
+
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Contas"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/contas')
+                                    }}
+                                    icon={() => <CalculatorIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/contas')}
+                                />
+
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Eventos especiais"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/eventosespeciais')
+                                    }}
+                                    icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/eventosespeciais')}
                                 />
                             </NavBar.ListOptions>
                         }
@@ -516,43 +572,6 @@ export default function Layout(props: LayoutProps) {
                                 }}
                                 icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive.startsWith('/congregacoes')}
-                            />
-                        }
-
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                            <NavBar.Options
-                                title="Limpeza"
-                                onClick={() => {
-                                    { !isDesktop && setIsMenuOpen(false) }
-                                    Router.push('/limpeza')
-                                }}
-                                icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-                                active={pageActive.startsWith('/limpeza')}
-                            />
-                        }
-
-
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                            <NavBar.Options
-                                title="Contas"
-                                onClick={() => {
-                                    { !isDesktop && setIsMenuOpen(false) }
-                                    Router.push('/contas')
-                                }}
-                                icon={() => <CalculatorIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive.startsWith('/contas')}
-                            />
-                        }
-
-                        {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
-                            <NavBar.Options
-                                title="Eventos especiais"
-                                onClick={() => {
-                                    { !isDesktop && setIsMenuOpen(false) }
-                                    Router.push('/eventosespeciais')
-                                }}
-                                icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive.startsWith('/eventosespeciais')}
                             />
                         }
 
