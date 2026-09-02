@@ -454,7 +454,6 @@ function MidweekQualificationsPage() {
 
 MidweekQualificationsPage.getLayout = withProtectedLayout([
     "ADMIN_CONGREGATION",
-    "DOCUMENTS_MANAGER",
     "MIDWEEK_MANAGER"
 ]);
 

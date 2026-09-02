@@ -532,7 +532,6 @@ function MidweekUnavailabilitiesPage() {
 
 MidweekUnavailabilitiesPage.getLayout = withProtectedLayout([
     "ADMIN_CONGREGATION",
-    "DOCUMENTS_MANAGER",
     "MIDWEEK_MANAGER"
 ]);
 

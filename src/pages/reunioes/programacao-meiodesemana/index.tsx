@@ -552,7 +552,6 @@ function MidweekScheduleAssistantPage() {
 
 MidweekScheduleAssistantPage.getLayout = withProtectedLayout([
     "ADMIN_CONGREGATION",
-    "DOCUMENTS_MANAGER",
     "MIDWEEK_MANAGER"
 ]);
 
