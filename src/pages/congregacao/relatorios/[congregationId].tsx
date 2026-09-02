@@ -19,7 +19,7 @@ function ListReportsPage() {
         if (congregationId) {
             setCrumbs([
                 { label: "Início", link: "/dashboard" },
-                { label: "Congregação", link: `/congregacao/${congregationId}` }
+                // { label: "Congregação", link: `/congregacao/${congregationId}` }
             ])
         }
     }, [setPageActive, setCrumbs, congregationId])
