@@ -501,7 +501,7 @@ function WeekendSchedulePage() {
                                     title="Mês anterior"
                                 >
                                     <ChevronLeft className="h-4 w-4" />
-                                    <span className="hidden sm:inline capitalize">{prevMonthLabel}</span>
+                                    <span className="sm:inline capitalize">{prevMonthLabel}</span>
                                 </button>
 
                                 {monthOffset !== 0 && (
@@ -520,7 +520,7 @@ function WeekendSchedulePage() {
                                     className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
                                     title="Próximo mês"
                                 >
-                                    <span className="hidden sm:inline capitalize">{nextMonthLabel}</span>
+                                    <span className=" sm:inline capitalize">{nextMonthLabel}</span>
                                     <ChevronRight className="h-4 w-4" />
                                 </button>
                             </div>

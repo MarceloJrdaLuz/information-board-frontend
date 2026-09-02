@@ -381,7 +381,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               value={current.specialName || ""}
               onChange={(e) => handleManualChange("specialName", e.target.value)}
               type="text"
-              placeholder="Nome do evento (Ex: Visita do Superintendente de Circuito, Assembleia Regional...)"
+              placeholder="Nome do evento"
               className="bg-surface-100"
             />
             <div className="pt-1">
@@ -625,7 +625,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 value={current.watchTowerStudyTitle || ""}
                 onChange={(e) => handleManualChange("watchTowerStudyTitle", e.target.value)}
                 type="text"
-                placeholder="Ex: Artigo de estudo nº X - Título do artigo"
+                placeholder="Tema do estudo"
               />
             </div>
           </div>
