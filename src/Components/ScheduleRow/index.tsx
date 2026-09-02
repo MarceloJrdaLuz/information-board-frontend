@@ -1,4 +1,4 @@
-import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakersAtom, talksAtom } from "@/atoms/weekendScheduleAtoms"
+import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakersAtom, talksAtom, workbookWeeksAtom } from "@/atoms/weekendScheduleAtoms"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
@@ -6,28 +6,32 @@ import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
 import { externalTalkStatusMap } from "@/utils/statusMap"
 import { format } from "date-fns"
 import ptBR from "date-fns/locale/pt-BR"
+import dayjs from "dayjs"
+import isoWeek from "dayjs/plugin/isoWeek"
 import { useAtom, useAtomValue } from "jotai"
+import {
+    AlertCircle,
+    BookOpen,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    ExternalLink,
+    Mic2,
+    Sparkles,
+    UserCheck
+} from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import Button from "../Button"
 import CheckboxMultiple from "../CheckBoxMultiple"
 import DropdownObject from "../DropdownObjects"
 import Input from "../Input"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Switch } from "../ui/switch"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog"
-import Button from "../Button"
-import { toast } from "react-toastify"
-import {
-  UserCheck,
-  Mic2,
-  BookOpen,
-  Calendar,
-  Sparkles,
-  CheckCircle2,
-  Clock,
-  Building2,
-  ExternalLink,
-  AlertCircle
-} from "lucide-react"
+
+dayjs.extend(isoWeek)
 
 interface ScheduleRowProps {
   date: Date
@@ -41,10 +45,33 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const speakers = useAtomValue(speakersAtom)
   const talks = useAtomValue(talksAtom)
   const congregations = useAtomValue(congregationsAtom)
+  const workbookWeeks = useAtomValue(workbookWeeksAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
   const [openConfirm, setOpenConfirm] = useState(false)
   const dateStr = date.toISOString().split("T")[0]
   const current = schedules[dateStr] || { date: dateStr }
+
+  const mondayDate = dayjs(date).isoWeekday(1).format("YYYY-MM-DD")
+  const matchingWorkbookWeek = workbookWeeks?.find(w => w.weekDate === mondayDate)
+  const autoWatchtowerTheme = matchingWorkbookWeek?.watchtowerStudyTheme || null
+
+  useEffect(() => {
+    if (!current.watchTowerStudyTitle && autoWatchtowerTheme && !current.isSpecial) {
+      setSchedules(prev => {
+        const cur = prev[dateStr] || ({ date: dateStr } as IRecordWeekendSchedule)
+        if (!cur.watchTowerStudyTitle) {
+          return {
+            ...prev,
+            [dateStr]: {
+              ...cur,
+              watchTowerStudyTitle: autoWatchtowerTheme
+            }
+          }
+        }
+        return prev
+      })
+    }
+  }, [dateStr, autoWatchtowerTheme, current.watchTowerStudyTitle, current.isSpecial, setSchedules])
 
   const optionsSpecial = ["Presidente", "Orador", "Tema", "Leitor", "Orador manual", "Tema manual"]
 
@@ -585,7 +612,14 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
             )}
 
             <div className={`flex flex-col gap-1 ${current.isSpecial && !checkedOptions.includes("Leitor") ? "md:col-span-2" : ""}`}>
-              <span className="text-xs font-semibold text-typography-700">Tema do Estudo da Sentinela</span>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-xs font-semibold text-typography-700">Tema do Estudo da Sentinela</span>
+                {autoWatchtowerTheme && current.watchTowerStudyTitle === autoWatchtowerTheme && (
+                  <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-300/40">
+                    Apostila XML
+                  </span>
+                )}
+              </div>
               <Input
                 className="!my-0 bg-surface-100"
                 value={current.watchTowerStudyTitle || ""}

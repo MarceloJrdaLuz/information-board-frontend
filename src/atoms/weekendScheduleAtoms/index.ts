@@ -15,6 +15,7 @@ export const hospitalityGroupsAtom = atom<IHospitalityGroup[] | null>(null)
 export const congregationsAtom = atom<ICongregation[] | null>(null)
 export const externalTalksAtom = atom<IExternalTalk[] | null>(null)
 export const specialEventToogleAtom = atom<boolean>(false)
+export const workbookWeeksAtom = atom<{ weekDate: string; watchtowerStudyTheme: string | null }[]>([])
 
 export const speakerFilterCongregationAtom = atom<string | null>(null)
 export const speakerFilterTalkAtom = atom<string | null>(null)

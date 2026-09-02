@@ -18,7 +18,8 @@ import {
     schedulesAtom,
     speakersAtom,
     talksAtom,
-    updateWeekendScheduleAtom
+    updateWeekendScheduleAtom,
+    workbookWeeksAtom
 } from "@/atoms/weekendScheduleAtoms"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
@@ -28,30 +29,29 @@ import { IRecordWeekendSchedule, IWeekendSchedule, IWeekendScheduleFormData, IWe
 import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { BlobProvider, Document, PDFViewer } from "@react-pdf/renderer"
+import dayjs from "dayjs"
+import "dayjs/locale/pt-br"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import isBetween from "dayjs/plugin/isBetween"
+import isoWeek from "dayjs/plugin/isoWeek"
 import { useAtom, useSetAtom } from "jotai"
 import {
+    Calendar as CalendarIcon,
+    CheckCircle2,
     ChevronLeft,
     ChevronRight,
-    Save,
-    Calendar as CalendarIcon,
-    Mail,
-    FileDown,
+    Clock,
     Eye,
     EyeOff,
-    Sparkles,
-    CheckCircle2,
-    Clock,
-    Users,
-    RotateCcw
+    FileDown,
+    Mail,
+    RotateCcw,
+    Save,
+    Users
 } from "lucide-react"
-import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
-import "dayjs/locale/pt-br";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import isoWeek from "dayjs/plugin/isoWeek";
-import isBetween from "dayjs/plugin/isBetween";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
@@ -109,6 +109,7 @@ function WeekendSchedulePage() {
     const setReaders = useSetAtom(readersAtom)
     const setChairmans = useSetAtom(chairmansAtom)
     const setCongregations = useSetAtom(congregationsAtom)
+    const setWorkbookWeeks = useSetAtom(workbookWeeksAtom)
     const [weekendScheduleWithExternalTalks, setWeekendScheduleWithExternalTalks] = useState<IWeekendScheduleWithExternalTalks[]>([])
     const setCreateWeekendSchedule = useSetAtom(createWeekendScheduleAtom)
     const setUpdateWeekendSchedule = useSetAtom(updateWeekendScheduleAtom)
@@ -205,11 +206,23 @@ function WeekendSchedulePage() {
         setReaders(data.readers)
         setChairmans(data.chairmans)
         setCongregations(data.congregations)
+        if (data.workbookWeeks) {
+            setWorkbookWeeks(data.workbookWeeks)
+        }
 
         if (data.weekendSchedules) {
             const weekendSchedulesByDate =
                 data.weekendSchedules.reduce<Record<string, IRecordWeekendSchedule>>(
                     (acc, sched) => {
+                        let wtTitle = sched.watchTowerStudyTitle
+                        if (!wtTitle && data.workbookWeeks) {
+                            const monday = dayjs(sched.date).isoWeekday(1).format("YYYY-MM-DD")
+                            const matchedWeek = data.workbookWeeks.find(w => w.weekDate === monday)
+                            if (matchedWeek?.watchtowerStudyTheme) {
+                                wtTitle = matchedWeek.watchtowerStudyTheme
+                            }
+                        }
+
                         acc[sched.date] = {
                             id: sched.id,
                             date: sched.date,
@@ -222,7 +235,7 @@ function WeekendSchedulePage() {
                             manualSpeaker: sched.manualSpeaker,
                             manualTalk: sched.manualTalk,
                             specialName: sched.specialName,
-                            watchTowerStudyTitle: sched.watchTowerStudyTitle
+                            watchTowerStudyTitle: wtTitle
                         }
                         return acc
                     },
@@ -231,7 +244,7 @@ function WeekendSchedulePage() {
             setWeekendSchedules(weekendSchedulesByDate)
             setInitialWeekendSchedules(weekendSchedulesByDate)
         }
-    }, [data, setChairmans, setReaders, setCongregations, setSpeakers, setTalks, setWeekendSchedules])
+    }, [data, setChairmans, setReaders, setCongregations, setSpeakers, setTalks, setWeekendSchedules, setWorkbookWeeks])
 
     useEffect(() => {
         setPageActive("Programação")
