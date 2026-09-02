@@ -296,7 +296,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border transition-all duration-200 shadow-sm hover:shadow-md bg-surface-100 ${
+      className={`relative rounded-2xl border transition-all duration-200 shadow-sm hover:shadow-md bg-surface-100 focus-within:z-20 ${
         current.isSpecial
           ? "border-purple-300 dark:border-purple-800/60"
           : isFullyComplete
@@ -306,7 +306,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     >
       {/* Top Accent Strip */}
       <div
-        className={`h-1.5 w-full ${
+        className={`h-1.5 w-full rounded-t-2xl ${
           current.isSpecial
             ? "bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500"
             : isFullyComplete
@@ -324,7 +324,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold uppercase tracking-wider text-primary-200 capitalize">
+                <span className="text-xs font-bold  tracking-wider text-primary-200 capitalize">
                   {formattedDayOfWeek}
                 </span>
                 <span className="text-xs text-typography-400">•</span>
