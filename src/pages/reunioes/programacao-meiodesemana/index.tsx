@@ -178,7 +178,6 @@ function MidweekScheduleAssistantPage() {
                 data
             );
             setSchedules(prev => prev.map(s => s.id === currentSchedule.id ? res.data : s));
-            toast.success("Programação atualizada!");
         } catch (error) {
             toast.error("Erro ao atualizar programação.");
         }
