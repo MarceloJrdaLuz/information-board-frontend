@@ -16,7 +16,15 @@ import { DayMeetingPublic, getWeekendDays } from "@/utils/dateUtil"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import isBetween from "dayjs/plugin/isBetween"
+import isoWeek from "dayjs/plugin/isoWeek"
 import { useAtom, useSetAtom } from "jotai"
+
+dayjs.extend(customParseFormat)
+dayjs.extend(isoWeek)
+dayjs.extend(isBetween)
+
 import {
   Calendar as CalendarIcon,
   CheckCircle2,
