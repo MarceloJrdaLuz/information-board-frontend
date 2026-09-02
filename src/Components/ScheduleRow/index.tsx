@@ -48,11 +48,11 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const workbookWeeks = useAtomValue(workbookWeeksAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
   const [openConfirm, setOpenConfirm] = useState(false)
-  const dateStr = date.toISOString().split("T")[0]
+  const dateStr = dayjs(date).format("YYYY-MM-DD")
   const current = schedules[dateStr] || { date: dateStr }
 
   const mondayDate = dayjs(date).isoWeekday(1).format("YYYY-MM-DD")
-  const matchingWorkbookWeek = workbookWeeks?.find(w => w.weekDate === mondayDate)
+  const matchingWorkbookWeek = workbookWeeks?.find(w => dayjs(w.weekDate).format("YYYY-MM-DD") === mondayDate)
   const autoWatchtowerTheme = matchingWorkbookWeek?.watchtowerStudyTheme || null
 
   useEffect(() => {

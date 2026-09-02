@@ -40,6 +40,7 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
+    ChevronUp,
     Clock,
     Eye,
     EyeOff,
@@ -119,6 +120,38 @@ function WeekendSchedulePage() {
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const [activeTool, setActiveTool] = useState<"none" | "invitation" | "pdf">("none");
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+            const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+            setShowScrollTop(scrollY > 250);
+        };
+
+        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+        if (scrollContainer) {
+            scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+        }
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener("scroll", handleScroll);
+            }
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+    const scrollToTop = () => {
+        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+        if (scrollContainer) {
+            scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
 
     const currentMonthLabel = baseDate.format("MMMM [de] YYYY")
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMM")
@@ -217,7 +250,7 @@ function WeekendSchedulePage() {
                         let wtTitle = sched.watchTowerStudyTitle
                         if (!wtTitle && data.workbookWeeks) {
                             const monday = dayjs(sched.date).isoWeekday(1).format("YYYY-MM-DD")
-                            const matchedWeek = data.workbookWeeks.find(w => w.weekDate === monday)
+                            const matchedWeek = data.workbookWeeks.find(w => dayjs(w.weekDate).format("YYYY-MM-DD") === monday)
                             if (matchedWeek?.watchtowerStudyTheme) {
                                 wtTitle = matchedWeek.watchtowerStudyTheme
                             }
@@ -421,106 +454,26 @@ function WeekendSchedulePage() {
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
 
-            <section className="flex flex-col w-full h-full p-3 sm:p-5 md:p-6 gap-6 max-w-7xl mx-auto">
+            <section className="flex flex-col w-full min-h-full p-3 sm:p-5 md:p-6 gap-6 max-w-7xl mx-auto">
                 {!data ? (
                     <WeekendScheduleSkeleton />
                 ) : (
                     <>
                         {/* ==================================================== */}
-                        {/* 1. HERO & MONTH CONTROLS TOOLBAR                     */}
+                        {/* 1. HERO & METRICS CARD                               */}
                         {/* ==================================================== */}
-                        <div className="flex flex-col gap-4 bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <div>
-                                    <div className="flex items-center gap-2 text-primary-200 font-semibold text-xs uppercase tracking-wider">
-                                        <CalendarIcon className="h-4 w-4" />
-                                        <span>Arranjo de Oradores</span>
-                                    </div>
-                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-typography-900 capitalize mt-1">
-                                        {currentMonthLabel}
-                                    </h1>
-                                    <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
-                                        Gerencie as designações de reuniões de fim de semana, oradores e temas.
-                                    </p>
+                        <div className="flex flex-col gap-4 bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2 text-primary-200 font-semibold text-xs uppercase tracking-wider">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span>Arranjo de Oradores</span>
                                 </div>
-
-                                {/* Month Navigation Controls */}
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex items-center bg-surface-200/80 rounded-xl p-1 border border-surface-300">
-                                        <button
-                                            onClick={() => setMonthOffset((m) => m - 1)}
-                                            className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
-                                            title="Mês anterior"
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                            <span className="hidden sm:inline capitalize">{prevMonthLabel}</span>
-                                        </button>
-
-                                        {monthOffset !== 0 && (
-                                            <button
-                                                onClick={() => setMonthOffset(0)}
-                                                className="px-2.5 py-1 text-xs font-semibold text-primary-200 hover:bg-surface-100 rounded-lg transition-colors flex items-center gap-1"
-                                                title="Voltar para o mês atual"
-                                            >
-                                                <RotateCcw className="h-3 w-3" />
-                                                Hoje
-                                            </button>
-                                        )}
-
-                                        <button
-                                            onClick={() => setMonthOffset((m) => m + 1)}
-                                            className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
-                                            title="Próximo mês"
-                                        >
-                                            <span className="hidden sm:inline capitalize">{nextMonthLabel}</span>
-                                            <ChevronRight className="h-4 w-4" />
-                                        </button>
-                                    </div>
-
-                                    {/* Action Buttons Toolbar */}
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => setActiveTool(activeTool === "invitation" ? "none" : "invitation")}
-                                            className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                                                activeTool === "invitation"
-                                                    ? "bg-primary-200 text-white border-primary-200 shadow-sm"
-                                                    : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
-                                            }`}
-                                        >
-                                            <Mail className="h-4 w-4" />
-                                            <span className="hidden md:inline">Convite Orador</span>
-                                        </button>
-
-                                        <button
-                                            onClick={() => setActiveTool(activeTool === "pdf" ? "none" : "pdf")}
-                                            className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                                                activeTool === "pdf"
-                                                    ? "bg-primary-200 text-white border-primary-200 shadow-sm"
-                                                    : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
-                                            }`}
-                                        >
-                                            <FileDown className="h-4 w-4" />
-                                            <span className="hidden md:inline">Exportar PDF</span>
-                                        </button>
-
-                                        <Button
-                                            onClick={handleSave}
-                                            disabled={isSaving}
-                                            className={`rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-sm transition-all ${
-                                                pendingChangesCount > 0
-                                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse"
-                                                    : "text-typography-200"
-                                            }`}
-                                        >
-                                            <Save className="h-4 w-4" />
-                                            <span>
-                                                {pendingChangesCount > 0
-                                                    ? `Salvar (${pendingChangesCount})`
-                                                    : "Salvar todas"}
-                                            </span>
-                                        </Button>
-                                    </div>
-                                </div>
+                                <h1 className="text-xl sm:text-2xl font-bold text-typography-900 capitalize">
+                                    {currentMonthLabel}
+                                </h1>
+                                <p className="text-xs sm:text-sm text-typography-500">
+                                    Gerencie as designações de reuniões de fim de semana, oradores e temas.
+                                </p>
                             </div>
 
                             {/* Metric Badges Strip */}
@@ -564,6 +517,87 @@ function WeekendSchedulePage() {
                                         <div className="text-base font-bold text-typography-900">{externalData.length} oradores</div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* ==================================================== */}
+                        {/* 2. COMPACT STICKY NAVIGATION & ACTIONS BAR           */}
+                        {/* ==================================================== */}
+                        <div className="sticky top-2 z-30 flex flex-wrap items-center justify-between gap-3 bg-surface-100/95 backdrop-blur-md border border-surface-300 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-md">
+                            {/* Month Navigation */}
+                            <div className="flex items-center bg-surface-200/80 rounded-xl p-1 border border-surface-300">
+                                <button
+                                    onClick={() => setMonthOffset((m) => m - 1)}
+                                    className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
+                                    title="Mês anterior"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                    <span className="hidden sm:inline capitalize">{prevMonthLabel}</span>
+                                </button>
+
+                                {monthOffset !== 0 && (
+                                    <button
+                                        onClick={() => setMonthOffset(0)}
+                                        className="px-2.5 py-1 text-xs font-semibold text-primary-200 hover:bg-surface-100 rounded-lg transition-colors flex items-center gap-1"
+                                        title="Voltar para o mês atual"
+                                    >
+                                        <RotateCcw className="h-3 w-3" />
+                                        Hoje
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => setMonthOffset((m) => m + 1)}
+                                    className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
+                                    title="Próximo mês"
+                                >
+                                    <span className="hidden sm:inline capitalize">{nextMonthLabel}</span>
+                                    <ChevronRight className="h-4 w-4" />
+                                </button>
+                            </div>
+
+                            {/* Action Buttons Toolbar */}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setActiveTool(activeTool === "invitation" ? "none" : "invitation")}
+                                    className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                                        activeTool === "invitation"
+                                            ? "bg-primary-200 text-white border-primary-200 shadow-sm"
+                                            : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                    }`}
+                                >
+                                    <Mail className="h-4 w-4" />
+                                    <span className="hidden md:inline">Convite Orador</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setActiveTool(activeTool === "pdf" ? "none" : "pdf")}
+                                    className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                                        activeTool === "pdf"
+                                            ? "bg-primary-200 text-white border-primary-200 shadow-sm"
+                                            : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                    }`}
+                                >
+                                    <FileDown className="h-4 w-4" />
+                                    <span className="hidden md:inline">Exportar PDF</span>
+                                </button>
+
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={isSaving}
+                                    className={`rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-sm transition-all ${
+                                        pendingChangesCount > 0
+                                            ? "bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse"
+                                            : "text-typography-200"
+                                    }`}
+                                >
+                                    <Save className="h-4 w-4" />
+                                    <span>
+                                        {pendingChangesCount > 0
+                                            ? `Salvar (${pendingChangesCount})`
+                                            : "Salvar todas"}
+                                    </span>
+                                </Button>
                             </div>
                         </div>
 
@@ -762,6 +796,19 @@ function WeekendSchedulePage() {
                     </>
                 )}
             </section>
+
+            {/* Botão Flutuante Voltar ao Topo */}
+            {showScrollTop && (
+                <button
+                    type="button"
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
+                    title="Voltar ao topo"
+                    aria-label="Voltar ao topo"
+                >
+                    <ChevronUp size={20} />
+                </button>
+            )}
         </ContentDashboard>
     )
 }
