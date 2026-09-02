@@ -278,6 +278,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName", dateStr)
   const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName")
   const talkOptions = buildTalkOptions(filteredTalks, schedules)
+  const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName", dateStr)
+  const talkOptions = buildTalkOptions(filteredTalks, schedules, dateStr)
 
   // Status de preenchimento
   const isChairmanFilled = !!current.chairman_id
