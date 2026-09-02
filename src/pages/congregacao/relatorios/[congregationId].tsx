@@ -16,7 +16,13 @@ function ListReportsPage() {
 
     useEffect(() => {
         setPageActive('Relatórios')
-    }, [setPageActive])
+        if (congregationId) {
+            setCrumbs([
+                { label: "Início", link: "/dashboard" },
+                { label: "Congregação", link: `/congregacao/${congregationId}` }
+            ])
+        }
+    }, [setPageActive, setCrumbs, congregationId])
 
     return (
         <ContentDashboard>
