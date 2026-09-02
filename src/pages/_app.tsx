@@ -1,4 +1,4 @@
-import { themeAtom, themeColorsMap, ThemeType } from '@/atoms/themeAtoms'
+import { themeAtom, themeColorsMap, ThemeType, updateThemeColorMeta } from '@/atoms/themeAtoms'
 import Layout from '@/Components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
@@ -18,28 +18,6 @@ type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
-}
-
-function updateThemeColorMeta(newTheme: ThemeType) {
-  if (typeof document === 'undefined') return
-  const color = themeColorsMap[newTheme] || '#178582'
-
-  const metas = document.querySelectorAll('meta[name="theme-color"]')
-  if (metas.length > 0) {
-    metas.forEach((m) => m.setAttribute('content', color))
-  } else {
-    const meta = document.createElement('meta')
-    meta.name = 'theme-color'
-    meta.id = 'theme-color-meta'
-    meta.content = color
-    document.head.appendChild(meta)
-  }
-
-  const msNavs = document.querySelectorAll('meta[name="msapplication-navbutton-color"]')
-  msNavs.forEach((m) => m.setAttribute('content', color))
-
-  const tiles = document.querySelectorAll('meta[name="msapplication-TileColor"]')
-  tiles.forEach((m) => m.setAttribute('content', color))
 }
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
@@ -79,7 +57,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta key="theme-color" name="theme-color" content={currentThemeColor} />
         <meta key="ms-nav" name="msapplication-navbutton-color" content={currentThemeColor} />
         <meta key="ms-tile" name="msapplication-TileColor" content={currentThemeColor} />
       </Head>
