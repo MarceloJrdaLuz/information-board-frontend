@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { toogleMenu } from "@/atoms/atom"
 import { useSetAtom } from "jotai"
@@ -15,7 +15,13 @@ export default function NavBarLogo({ isDesktop }: INavBarLogoProps) {
     const setMenuOpen = useSetAtom(toogleMenu)
 
     return (
-        <div className="flex h-18 sm:h-20 items-center justify-between px-4 bg-white/5 backdrop-blur-xs">
+        <div
+            className="flex items-center justify-between px-4 bg-white/5 backdrop-blur-xs"
+            style={{
+                paddingTop: 'env(safe-area-inset-top, 0px)',
+                minHeight: 'calc(4.5rem + env(safe-area-inset-top, 0px))',
+            }}
+        >
             <Link
                 href="/dashboard"
                 className="flex items-center gap-3 group transition-transform active:scale-98"

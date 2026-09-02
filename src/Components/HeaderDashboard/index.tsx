@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { isDesktopAtom } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
@@ -12,15 +12,21 @@ export default function HeaderDashboard() {
     const isDesktop = useAtomValue(isDesktopAtom)
 
     return (
-        <header className="sticky top-0 z-30 flex w-full items-center justify-between h-18 sm:h-20 bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 px-3.5 sm:px-6 shadow-md border-b border-white/10">
+        <header
+            className="sticky top-0 z-30 flex w-full items-center justify-between bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 px-3.5 sm:px-6 shadow-md border-b border-white/10"
+            style={{
+                paddingTop: 'env(safe-area-inset-top, 0px)',
+                minHeight: 'calc(4.5rem + env(safe-area-inset-top, 0px))',
+            }}
+        >
             {/* Lado Esquerdo: Hambúrguer (mobile) + Congregação */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 py-2 sm:py-0">
                 {!isDesktop && <ButtonHamburguer />}
                 <AvatarCongregation loading={!user} />
             </div>
 
             {/* Lado Direito: Avatar do Usuário */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 py-2 sm:py-0">
                 <Avatar
                     loading={!user}
                     userName={user?.fullName}

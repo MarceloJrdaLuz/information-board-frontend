@@ -2,6 +2,13 @@ import { atom } from 'jotai'
 
 export type ThemeType = '' | 'theme-dark' | 'theme-blue' | 'theme-purple' 
 
+export const themeColorsMap: Record<ThemeType, string> = {
+  '': '#178582',
+  'theme-dark': '#6F4EA1',
+  'theme-blue': '#3E6BA3',
+  'theme-purple': '#62468C',
+}
+
 /** Átomo com o tema atual */
 export const themeAtom = atom<ThemeType>('')
 
@@ -13,6 +20,18 @@ export const setThemeAtom = atom(
     document.documentElement.className = newTheme
     // Salva no localStorage
     localStorage.setItem('theme', newTheme)
+
+    // Atualiza as meta tags de tema imediatamente
+    const color = themeColorsMap[newTheme] || '#178582'
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', color)
+    }
+    const metaMsNav = document.querySelector('meta[name="msapplication-navbutton-color"]')
+    if (metaMsNav) {
+      metaMsNav.setAttribute('content', color)
+    }
+
     // Atualiza o estado global
     set(themeAtom, newTheme)
   }
