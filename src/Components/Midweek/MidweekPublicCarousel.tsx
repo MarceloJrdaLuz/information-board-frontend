@@ -5,7 +5,7 @@ import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarOff, ChevronLeft, ChevronRight, ChevronUp, Sparkles, Users } from "lucide-react";
+import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Sparkles, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 dayjs.locale("pt-br");
@@ -108,7 +108,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
     const currentWeeks = months[activeMonthIndex]?.[1] || [];
 
     return (
-        <div className="relative w-full flex flex-col gap-4">
+        <div className="relative w-full flex flex-col gap-4 pb-12 sm:pb-16">
             {/* Cabeçalho Sticky de Navegação de Mês e Semanas */}
             <div className="sticky top-0 z-30 bg-surface-100/95 backdrop-blur-md p-3 rounded-2xl border border-surface-300 shadow-sm flex flex-col gap-2.5 transition-all">
                 {/* Navegação de Meses */}

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { domainUrl } from '@/atoms/atom'
 import Footer from '@/Components/Footer'
@@ -190,7 +190,7 @@ function Designacoes() {
             </div>
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
+            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-16 sm:pb-24 flex flex-col gap-6">
                 {/* Título da Seção */}
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 text-primary-200 font-bold text-xs uppercase tracking-wider">

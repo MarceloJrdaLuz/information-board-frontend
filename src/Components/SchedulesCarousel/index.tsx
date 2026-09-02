@@ -6,7 +6,7 @@ import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, ChevronUp, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 
@@ -60,7 +60,7 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
   const currentWeeks = currentMonthEntry?.[1] || []
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="relative w-full flex flex-col gap-4 pb-12 sm:pb-16">
       {/* 1. Navegação de Meses (Card Superior Separado) */}
       <div className="flex justify-between items-center bg-surface-100 p-3 rounded-2xl border border-surface-300 shadow-sm">
         <button

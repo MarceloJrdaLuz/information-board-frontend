@@ -31,7 +31,6 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
-    ChevronUp,
     FileText,
     Loader2,
     Printer,
@@ -456,7 +455,7 @@ function MidweekScheduleAssistantPage() {
                         </Button>
                     </div>
                 ) : currentSchedule ? (
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 pb-20 sm:pb-28">
                         {/* Cabeçalho da Semana (Presidente, Orações, Conselheiros, Cânticos) */}
                         <MidweekWeekHeader
                             schedule={currentSchedule}
