@@ -1,4 +1,4 @@
-import { themeAtom, themeColorsMap } from '@/atoms/themeAtoms'
+import { themeAtom, themeColorsMap, ThemeType } from '@/atoms/themeAtoms'
 import Layout from '@/Components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
@@ -20,6 +20,28 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
+function updateThemeColorMeta(newTheme: ThemeType) {
+  if (typeof document === 'undefined') return
+  const color = themeColorsMap[newTheme] || '#178582'
+
+  const metas = document.querySelectorAll('meta[name="theme-color"]')
+  if (metas.length > 0) {
+    metas.forEach((m) => m.setAttribute('content', color))
+  } else {
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    meta.id = 'theme-color-meta'
+    meta.content = color
+    document.head.appendChild(meta)
+  }
+
+  const msNavs = document.querySelectorAll('meta[name="msapplication-navbutton-color"]')
+  msNavs.forEach((m) => m.setAttribute('content', color))
+
+  const tiles = document.querySelectorAll('meta[name="msapplication-TileColor"]')
+  tiles.forEach((m) => m.setAttribute('content', color))
+}
+
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const theme = useAtomValue(themeAtom)
   const setTheme = useSetAtom(themeAtom)
@@ -28,9 +50,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     ((page) => <Layout>{page}</Layout>)
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || ''
+    const savedTheme = (localStorage.getItem('theme') || '') as ThemeType
     document.documentElement.className = savedTheme
-    setTheme(savedTheme as any)
+    setTheme(savedTheme)
+    updateThemeColorMeta(savedTheme)
   }, [setTheme])
 
   useEffect(() => {
@@ -45,34 +68,20 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const currentThemeColor = themeColorsMap[theme] || '#178582'
 
   useEffect(() => {
-    const color = themeColorsMap[theme] || '#178582'
-
-    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', color)
-    }
-
-    let metaMsNav = document.querySelector('meta[name="msapplication-navbutton-color"]')
-    if (metaMsNav) {
-      metaMsNav.setAttribute('content', color)
-    }
-
-    let metaTile = document.querySelector('meta[name="msapplication-TileColor"]')
-    if (metaTile) {
-      metaTile.setAttribute('content', color)
-    }
+    updateThemeColorMeta(theme)
   }, [theme])
 
   return (
     <>
       <Head>
         <meta
+          key="viewport"
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta name="theme-color" content={currentThemeColor} />
-        <meta name="msapplication-navbutton-color" content={currentThemeColor} />
-        <meta name="msapplication-TileColor" content={currentThemeColor} />
+        <meta key="theme-color" name="theme-color" content={currentThemeColor} />
+        <meta key="ms-nav" name="msapplication-navbutton-color" content={currentThemeColor} />
+        <meta key="ms-tile" name="msapplication-TileColor" content={currentThemeColor} />
       </Head>
 
       <AuthProvider>

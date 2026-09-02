@@ -12,6 +12,7 @@ export default function Document() {
 
         {/* Cor da barra de navegação no Android / Chrome */}
         <meta
+          id="theme-color-meta"
           name="theme-color"
           content="#178582"
         />
@@ -57,6 +58,37 @@ export default function Document() {
         <link
           rel="apple-touch-icon"
           href="/icons/pwa-192.png"
+        />
+
+        {/* Script síncrono que define a classe do tema e a cor da status bar antes do primeiro desenho da tela */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('theme') || '';
+                  var colors = {
+                    '': '#178582',
+                    'theme-dark': '#6F4EA1',
+                    'theme-blue': '#3E6BA3',
+                    'theme-purple': '#62468C'
+                  };
+                  var color = colors[saved] || '#178582';
+                  if (saved) {
+                    document.documentElement.className = saved;
+                  }
+                  var meta = document.getElementById('theme-color-meta');
+                  if (meta) {
+                    meta.setAttribute('content', color);
+                  }
+                  var nav = document.querySelector('meta[name="msapplication-navbutton-color"]');
+                  if (nav) {
+                    nav.setAttribute('content', color);
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
         />
       </Head>
 

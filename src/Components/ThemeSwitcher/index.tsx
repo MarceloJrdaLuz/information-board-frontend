@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Palette } from 'lucide-react'
+import { setThemeAtom, themeColorsMap, ThemeType } from '@/atoms/themeAtoms'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useSetAtom } from 'jotai'
-import { themeAtom, ThemeType } from '@/atoms/themeAtoms'
+import { Palette } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 const themes: { name: string; class: ThemeType; color: string }[] = [
-  { name: 'Padrão', class: '', color: '#178582' },
-  { name: 'Escuro', class: 'theme-dark', color: '#191223' },
-  { name: 'Azul', class: 'theme-blue', color: '#2878bb' },
-  { name: 'Roxo', class: 'theme-purple', color: '#746B84' },
+  { name: 'Padrão', class: '', color: themeColorsMap[''] },
+  { name: 'Escuro', class: 'theme-dark', color: themeColorsMap['theme-dark'] },
+  { name: 'Azul', class: 'theme-blue', color: themeColorsMap['theme-blue'] },
+  { name: 'Roxo', class: 'theme-purple', color: themeColorsMap['theme-purple'] },
 ]
 
 interface ThemeSwitcherProps {
@@ -20,7 +20,7 @@ interface ThemeSwitcherProps {
 
 export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwitcherProps) {
   const [open, setOpen] = useState(false)
-  const setThemeAtom = useSetAtom(themeAtom)
+  const changeTheme = useSetAtom(setThemeAtom)
 
   // função para validar o valor do localStorage
   const isValidTheme = (value: string): value is ThemeType => {
@@ -30,16 +30,11 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
   useEffect(() => {
     const saved = localStorage.getItem('theme') || ''
     const theme = isValidTheme(saved) ? saved : ''
-    document.documentElement.classList.remove('theme-dark', 'theme-blue', 'theme-purple')
-    if (theme) document.documentElement.classList.add(theme)
-    setThemeAtom(theme)
-  }, [setThemeAtom])
+    changeTheme(theme)
+  }, [changeTheme])
 
-  const setTheme = (themeClass: ThemeType) => {
-    document.documentElement.classList.remove('theme-dark', 'theme-blue', 'theme-purple')
-    if (themeClass) document.documentElement.classList.add(themeClass)
-    localStorage.setItem('theme', themeClass)
-    setThemeAtom(themeClass)
+  const handleSelectTheme = (themeClass: ThemeType) => {
+    changeTheme(themeClass)
     setOpen(false)
   }
 
@@ -71,7 +66,7 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
             {themes.map((t) => (
               <motion.button
                 key={t.name}
-                onClick={() => setTheme(t.class)}
+                onClick={() => handleSelectTheme(t.class)}
                 className="w-5 h-5 rounded-full border border-typography-300 hover:scale-110 transition-transform"
                 style={{ backgroundColor: t.color }}
                 title={t.name}

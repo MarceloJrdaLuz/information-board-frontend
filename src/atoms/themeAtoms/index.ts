@@ -9,6 +9,28 @@ export const themeColorsMap: Record<ThemeType, string> = {
   'theme-purple': '#62468C',
 }
 
+export function updateThemeColorMeta(newTheme: ThemeType) {
+  if (typeof document === 'undefined') return
+  const color = themeColorsMap[newTheme] || '#178582'
+
+  const metas = document.querySelectorAll('meta[name="theme-color"]')
+  if (metas.length > 0) {
+    metas.forEach(m => m.setAttribute('content', color))
+  } else {
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    meta.id = 'theme-color-meta'
+    meta.content = color
+    document.head.appendChild(meta)
+  }
+
+  const msNavs = document.querySelectorAll('meta[name="msapplication-navbutton-color"]')
+  msNavs.forEach(m => m.setAttribute('content', color))
+
+  const tiles = document.querySelectorAll('meta[name="msapplication-TileColor"]')
+  tiles.forEach(m => m.setAttribute('content', color))
+}
+
 /** Átomo com o tema atual */
 export const themeAtom = atom<ThemeType>('')
 
@@ -22,15 +44,7 @@ export const setThemeAtom = atom(
     localStorage.setItem('theme', newTheme)
 
     // Atualiza as meta tags de tema imediatamente
-    const color = themeColorsMap[newTheme] || '#178582'
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', color)
-    }
-    const metaMsNav = document.querySelector('meta[name="msapplication-navbutton-color"]')
-    if (metaMsNav) {
-      metaMsNav.setAttribute('content', color)
-    }
+    updateThemeColorMeta(newTheme)
 
     // Atualiza o estado global
     set(themeAtom, newTheme)
