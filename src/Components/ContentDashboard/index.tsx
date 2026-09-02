@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { ReactNode } from "react"
 import FooterDashboard from "../FooterDashboard"
@@ -17,7 +17,7 @@ export default function ContentDashboard(props: IContentDashboard) {
       </div>
 
       {/* Conteúdo Principal com Scroll */}
-      <div className="flex-1 overflow-y-auto overscroll-contain thin-scrollbar">
+      <div id="dashboard-scroll-container" className="flex-1 overflow-y-auto overscroll-contain thin-scrollbar">
         {props.children}
       </div>
 

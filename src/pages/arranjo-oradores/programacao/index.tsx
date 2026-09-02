@@ -6,6 +6,7 @@ import DropdownObject from "@/Components/DropdownObjects"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import ScheduleRow from "@/Components/ScheduleRow"
 import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
+import ScrollToTopButton from "@/Components/ScrollToTopButton"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
@@ -120,38 +121,6 @@ function WeekendSchedulePage() {
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const [activeTool, setActiveTool] = useState<"none" | "invitation" | "pdf">("none");
-    const [showScrollTop, setShowScrollTop] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-            const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
-            setShowScrollTop(scrollY > 250);
-        };
-
-        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-        if (scrollContainer) {
-            scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
-        }
-        window.addEventListener("scroll", handleScroll, { passive: true });
-
-        return () => {
-            if (scrollContainer) {
-                scrollContainer.removeEventListener("scroll", handleScroll);
-            }
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-
-    const scrollToTop = () => {
-        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-        if (scrollContainer) {
-            scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        if (typeof window !== "undefined") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    };
 
     const currentMonthLabel = baseDate.format("MMMM [de] YYYY")
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMM")
@@ -798,17 +767,7 @@ function WeekendSchedulePage() {
             </section>
 
             {/* Botão Flutuante Voltar ao Topo */}
-            {showScrollTop && (
-                <button
-                    type="button"
-                    onClick={scrollToTop}
-                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
-                    title="Voltar ao topo"
-                    aria-label="Voltar ao topo"
-                >
-                    <ChevronUp size={20} />
-                </button>
-            )}
+            <ScrollToTopButton />
         </ContentDashboard>
     )
 }

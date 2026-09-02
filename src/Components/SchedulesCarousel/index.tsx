@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { IPublicSchedule } from "@/types/weekendSchedule"
 import { formatNameCongregation } from "@/utils/formatCongregationName"
@@ -6,7 +6,7 @@ import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, ChevronUp, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 

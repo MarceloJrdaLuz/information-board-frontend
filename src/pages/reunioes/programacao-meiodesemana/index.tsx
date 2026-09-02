@@ -10,6 +10,7 @@ import { MidweekSectionTreasures } from "@/Components/Midweek/MidweekSectionTrea
 import { MidweekSpecialWeekModal } from "@/Components/Midweek/MidweekSpecialWeekModal";
 import { MidweekUploadXmlModal } from "@/Components/Midweek/MidweekUploadXmlModal";
 import { MidweekWeekHeader } from "@/Components/Midweek/MidweekWeekHeader";
+import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
@@ -71,38 +72,6 @@ function MidweekScheduleAssistantPage() {
     const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-            const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
-            setShowScrollTop(scrollY > 250);
-        };
-
-        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-        if (scrollContainer) {
-            scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
-        }
-        window.addEventListener("scroll", handleScroll, { passive: true });
-
-        return () => {
-            if (scrollContainer) {
-                scrollContainer.removeEventListener("scroll", handleScroll);
-            }
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-
-    const scrollToTop = () => {
-        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
-        if (scrollContainer) {
-            scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        if (typeof window !== "undefined") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    };
 
     const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
 
@@ -576,17 +545,7 @@ function MidweekScheduleAssistantPage() {
             />
 
             {/* Botão Flutuante Voltar ao Topo */}
-            {showScrollTop && (
-                <button
-                    type="button"
-                    onClick={scrollToTop}
-                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
-                    title="Voltar ao topo"
-                    aria-label="Voltar ao topo"
-                >
-                    <ChevronUp size={20} />
-                </button>
-            )}
+            <ScrollToTopButton />
         </ContentDashboard>
     );
 }

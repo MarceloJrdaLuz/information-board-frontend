@@ -1,6 +1,7 @@
 "use client";
 
 import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons";
+import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
@@ -85,23 +86,6 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
 
     const [activeMonthIndex, setActiveMonthIndex] = useState(0);
     const [activeWeekIndex, setActiveWeekIndex] = useState(0);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-
-    useEffect(() => {
-        const checkScroll = () => {
-            if (typeof window !== "undefined") {
-                setShowScrollTop(window.scrollY > 250);
-            }
-        };
-        window.addEventListener("scroll", checkScroll, { passive: true });
-        return () => window.removeEventListener("scroll", checkScroll);
-    }, []);
-
-    const scrollToTop = () => {
-        if (typeof window !== "undefined") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    };
 
     useEffect(() => {
         const currentMonthIndex = months.findIndex(([_, weeks]) =>
@@ -712,17 +696,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
             })}
 
             {/* Botão Flutuante Voltar ao Topo */}
-            {showScrollTop && (
-                <button
-                    type="button"
-                    onClick={scrollToTop}
-                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
-                    title="Voltar ao topo"
-                    aria-label="Voltar ao topo"
-                >
-                    <ChevronUp size={20} />
-                </button>
-            )}
+            <ScrollToTopButton bottomClass="bottom-6 right-6" />
         </div>
     );
 }
