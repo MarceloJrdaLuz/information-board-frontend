@@ -6,18 +6,18 @@ import { DayMeetingPublic, getRealDateForDestination } from "@/utils/dateUtil"
 import { format } from "date-fns"
 import ptBR from "date-fns/locale/pt-BR"
 import {
-  BookOpen,
-  Building2,
-  Calendar,
-  Check,
-  Clock,
-  MapPin,
-  Mic2,
-  Pencil,
-  Plus,
-  Send,
-  Trash2,
-  X
+    BookOpen,
+    Building2,
+    Calendar,
+    Check,
+    Clock,
+    MapPin,
+    Mic2,
+    Pencil,
+    Plus,
+    Send,
+    Trash2,
+    X
 } from "lucide-react"
 import moment from "moment"
 import { useState } from "react"
@@ -135,19 +135,20 @@ export default function ExternalTalkRow({
     resetForm()
   }
 
-  // Formatação de data
+  // Date formatting
   const formattedDayOfWeek = format(date, "EEEE", { locale: ptBR })
   const formattedFullDate = format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
 
-  // Status de preenchimento
+  // Summary status calculation for card header
+  const hasConfirmed = externalTalks.some(t => t.status === "confirmed")
   const hasPending = externalTalks.some(t => t.status === "pending")
   const allConfirmed = externalTalks.length > 0 && externalTalks.every(t => t.status === "confirmed")
 
   return (
-    <div className="relative rounded-2xl border border-surface-300 transition-all duration-200 shadow-sm hover:shadow-md bg-surface-100 overflow-hidden">
+    <div className="relative rounded-2xl border border-surface-300 transition-all duration-200 shadow-sm hover:shadow-md bg-surface-100 focus-within:z-20">
       {/* Top Accent Strip */}
       <div
-        className={`h-1.5 w-full ${
+        className={`h-1.5 w-full rounded-t-2xl ${
           externalTalks.length === 0
             ? "bg-surface-300"
             : allConfirmed
@@ -532,4 +533,3 @@ export default function ExternalTalkRow({
     </div>
   )
 }
-
