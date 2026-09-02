@@ -1,7 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import Button from "@/Components/Button"
 import Calendar from "@/Components/Calendar"
-import { CollapsibleCard } from "@/Components/CollapsibleCard"
 import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import PdfIcon from "@/Components/Icons/PdfIcon"
@@ -30,7 +29,21 @@ import { DayMeetingPublic, getWeekendDays, getWeekendRange } from "@/utils/dateU
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { BlobProvider, Document, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import {
+    ChevronLeft,
+    ChevronRight,
+    Save,
+    Calendar as CalendarIcon,
+    Mail,
+    FileDown,
+    Eye,
+    EyeOff,
+    Sparkles,
+    CheckCircle2,
+    Clock,
+    Users,
+    RotateCcw
+} from "lucide-react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
@@ -59,11 +72,14 @@ function PdfSpeakerInvitation({ schedule, congregationLocale }: PdfLinkComponent
             }
         >
             {({ blob, url, loading, error }) => (
-                <a href={url ?? "#"} download={`Convite - ${schedule.speaker?.fullName}.pdf`}>
-                    <Button outline className="bg-surface-100 w-[200px] text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80">
+                <a href={url ?? "#"} download={`Convite - ${schedule.speaker?.fullName || "Orador"}.pdf`}>
+                    <Button
+                        outline
+                        className="w-full sm:w-auto text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 transition-all shadow-sm"
+                    >
                         <PdfIcon />
-                        <span className="text-primary-200 font-semibold">
-                            {loading ? "Gerando PDF..." : "Gerar Convite PDF"}
+                        <span className="font-semibold text-sm">
+                            {loading ? "Gerando Convite..." : "Baixar Convite PDF"}
                         </span>
                     </Button>
                 </a>
@@ -86,6 +102,7 @@ function WeekendSchedulePage() {
     const [weekendSchedules, setWeekendSchedules] = useAtom(schedulesAtom)
     const [isClient, setIsClient] = useState(false)
     const [initialWeekendSchedules, setInitialWeekendSchedules] = useState<Record<string, IRecordWeekendSchedule>>({})
+    const [isSaving, setIsSaving] = useState(false)
 
     const setTalks = useSetAtom(talksAtom)
     const setSpeakers = useSetAtom(speakersAtom)
@@ -100,11 +117,11 @@ function WeekendSchedulePage() {
     const baseDate = dayjs().add(monthOffset, "month")
     const [pdfScale, setPdfScale] = useState(1);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
-    const [showFilters, setShowFilters] = useState(true);
-    const [isPdfSectionOpen, setIsPdfSectionOpen] = useState(false)
+    const [activeTool, setActiveTool] = useState<"none" | "invitation" | "pdf">("none");
 
-    const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMMM")
-    const nextMonthLabel = baseDate.clone().add(1, "month").format("MMMM")
+    const currentMonthLabel = baseDate.format("MMMM [de] YYYY")
+    const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMM")
+    const nextMonthLabel = baseDate.clone().add(1, "month").format("MMM")
 
     useEffect(() => {
         setIsClient(true)
@@ -118,7 +135,6 @@ function WeekendSchedulePage() {
 
         const target = dayjs(dateParam, "YYYY-MM-DD", true)
         if (!target.isValid()) {
-
             const alt = dayjs(dateParam)
             if (!alt.isValid()) return
 
@@ -148,7 +164,6 @@ function WeekendSchedulePage() {
     const effectiveEnd = endDatePdfGenerate
         || (lastWeekend ? getWeekendRange(lastWeekend).sunday.format("YYYY-MM-DD") : null)
 
-
     // Busca dados do backend usando o intervalo do fim de semana
     const { data: rawExternalData } = useAuthorizedFetch<IExternalTalk[]>(
         congregation_id && effectiveStart && effectiveEnd
@@ -167,7 +182,6 @@ function WeekendSchedulePage() {
     useEffect(() => {
         if (data) {
             const schedulesWithTalks = (data.weekendSchedules ?? []).map(sched => {
-                // Para cada schedule, pega os external talks que caem dentro do fim de semana da congregação local
                 const weekendStartDate = dayjs(sched.date).isoWeekday(5)
                 const weekendEndDate = dayjs(sched.date).isoWeekday(7)
                 const talksForWeekend = externalData.filter(t =>
@@ -179,7 +193,6 @@ function WeekendSchedulePage() {
                 }
             })
 
-            // Ordena por data crescente
             schedulesWithTalks.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             setWeekendScheduleWithExternalTalks(schedulesWithTalks)
         }
@@ -225,7 +238,7 @@ function WeekendSchedulePage() {
     }, [setPageActive])
 
     const hasChanges = (a: IRecordWeekendSchedule, b?: IRecordWeekendSchedule) => {
-        if (!b) return true // novo item
+        if (!b) return true
         const fields: (keyof IRecordWeekendSchedule)[] = [
             "speaker_id",
             "visitingCongregation_id",
@@ -241,8 +254,19 @@ function WeekendSchedulePage() {
         return fields.some(f => a[f] !== b[f])
     }
 
+    // Calcula alterações pendentes
+    const pendingChangesCount = useMemo(() => {
+        const allSchedules = Object.values(weekendSchedules)
+        const newSchedules = allSchedules.filter(s => !s.id)
+        const changedSchedules = allSchedules.filter(s =>
+            s.id && hasChanges(s, initialWeekendSchedules[s.date])
+        )
+        return newSchedules.length + changedSchedules.length
+    }, [weekendSchedules, initialWeekendSchedules])
+
     const handleSave = async () => {
         try {
+            setIsSaving(true)
             const allSchedules = Object.values(weekendSchedules)
             const newSchedules = allSchedules.filter(s => !s.id)
             const changedSchedules = allSchedules.filter(s =>
@@ -251,37 +275,47 @@ function WeekendSchedulePage() {
 
             if (newSchedules.length === 0 && changedSchedules.length === 0) {
                 toast.info("Nenhuma alteração para salvar.")
+                setIsSaving(false)
                 return
             }
 
             if (changedSchedules.length > 0) {
                 await toast.promise(setUpdateWeekendSchedule({ schedules: changedSchedules }), {
-                    pending: "Atualizando programações alteradas..."
-                }).then(() => {
-
-                }).catch(err => {
-                    console.log(err)
+                    pending: "Atualizando programações alteradas...",
+                    success: "Programações salvas com sucesso!",
+                    error: "Erro ao atualizar programações."
                 })
             }
 
             if (newSchedules.length > 0) {
                 await toast.promise(
                     setCreateWeekendSchedule(congregation_id ?? "", { schedules: newSchedules }),
-                    { pending: "Criando novas programações..." }
-                ).then(() => {
-
-                }).catch(err => {
-                    console.log(err)
-                })
+                    {
+                        pending: "Criando novas programações...",
+                        success: "Novas programações criadas com sucesso!",
+                        error: "Erro ao criar programações."
+                    }
+                )
             }
 
             mutate()
         } catch (err) {
             console.error(err)
             toast.error("Erro ao salvar a programação.")
+        } finally {
+            setIsSaving(false)
         }
     }
 
+    // Filtra para gerar PDF considerando datas do usuário ou o fim de semana
+    const filteredSchedules = useMemo(() => {
+        return weekendScheduleWithExternalTalks.filter(s => {
+            const schedDate = new Date(s.date).getTime()
+            const startFilter = effectiveStart ? new Date(effectiveStart).getTime() : 0
+            const endFilter = effectiveEnd ? new Date(effectiveEnd).getTime() : Infinity
+            return schedDate >= startFilter && schedDate <= endFilter
+        })
+    }, [weekendScheduleWithExternalTalks, effectiveStart, effectiveEnd])
 
     const PdfLinkComponent = () => (
         <BlobProvider
@@ -292,13 +326,13 @@ function WeekendSchedulePage() {
             }
         >
             {({ blob, url, loading, error }) => (
-                <a href={url ?? "#"} download={"Reunião do fim de semana.pdf"}>
+                <a href={url ?? "#"} download={`Reunião do Fim de Semana - ${baseDate.format("MMMM YYYY")}.pdf`}>
                     <Button
                         outline
-                        className="text-primary-200 p-1 md:p-3 border-typography-300 rounded-none hover:opacity-80 w-fit min-w-[200px]"
+                        className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 min-w-[180px] shadow-sm transition-all"
                     >
-                        <PdfIcon />
-                        <span className="text-primary-200 font-semibold">
+                        <FileDown className="h-4 w-4" />
+                        <span className="font-semibold text-sm">
                             {loading ? "Gerando PDF..." : "Baixar PDF"}
                         </span>
                     </Button>
@@ -307,20 +341,11 @@ function WeekendSchedulePage() {
         </BlobProvider>
     );
 
-
-    // Filtra para gerar PDF considerando datas do usuário ou o fim de semana
-    const filteredSchedules = weekendScheduleWithExternalTalks.filter(s => {
-        const schedDate = new Date(s.date).getTime()
-        const startFilter = effectiveStart ? new Date(effectiveStart).getTime() : 0
-        const endFilter = effectiveEnd ? new Date(effectiveEnd).getTime() : Infinity
-        return schedDate >= startFilter && schedDate <= endFilter
-    })
-
     // Opções de convite (orador + data)
     const scheduledOptions = useMemo(() => {
         if (!data?.speakers) return [];
 
-        const now = dayjs().startOf("day"); // evita problemas com hora
+        const now = dayjs().startOf("day");
 
         const options: { label: string, schedule: IRecordWeekendSchedule, id: string }[] = [];
 
@@ -333,7 +358,7 @@ function WeekendSchedulePage() {
                 const speaker = data.speakers.find(sp => sp.id === s.speaker_id);
                 if (speaker) {
                     options.push({
-                        label: `${speaker.fullName} - ${scheduleDate.format("DD/MM/YYYY")}`,
+                        label: `${speaker.fullName} • ${scheduleDate.format("DD/MM/YYYY")}`,
                         schedule: s,
                         id: s.id || s.date
                     });
@@ -351,74 +376,232 @@ function WeekendSchedulePage() {
         return scheduledOptions.find(opt => opt.id === selectedOptionId)?.schedule ?? null;
     }, [selectedOptionId, scheduledOptions]);
 
+    // Estatísticas do mês
+    const stats = useMemo(() => {
+        const total = weekendMeetingDay.length;
+        let complete = 0;
+        let special = 0;
+
+        weekendMeetingDay.forEach(d => {
+            const dateStr = d.toISOString().split("T")[0];
+            const sched = weekendSchedules[dateStr];
+            if (sched) {
+                if (sched.isSpecial) {
+                    special++;
+                    complete++;
+                } else if (
+                    sched.chairman_id &&
+                    (sched.speaker_id || sched.manualSpeaker) &&
+                    (sched.talk_id || sched.manualTalk) &&
+                    sched.reader_id &&
+                    sched.watchTowerStudyTitle
+                ) {
+                    complete++;
+                }
+            }
+        });
+
+        return { total, complete, special, pending: total - complete };
+    }, [weekendMeetingDay, weekendSchedules]);
+
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Programação do Fim de Semana" />
-            <section className="flex flex-wrap w-full h-full p-4 relative">
+
+            <section className="flex flex-col w-full h-full p-3 sm:p-5 md:p-6 gap-6 max-w-7xl mx-auto">
                 {!data ? (
                     <WeekendScheduleSkeleton />
                 ) : (
                     <>
-                        <div className="w-full space-y-4">
-                            <div className="sticky top-0 z-30">
-                                <div className="md:hidden flex justify-center bg-surface-100 border-b shadow-sm p-2 w-10 ml-2 -mb-2 rounded-t-md border-none ">
-                                    <button
-                                        onClick={() => setShowFilters((o) => !o)}
-                                        className="flex items-center gap-2 text-sm text-typography-600"
-                                    >
-                                        {showFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                    </button>
+                        {/* ==================================================== */}
+                        {/* 1. HERO & MONTH CONTROLS TOOLBAR                     */}
+                        {/* ==================================================== */}
+                        <div className="flex flex-col gap-4 bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div>
+                                    <div className="flex items-center gap-2 text-primary-200 font-semibold text-xs uppercase tracking-wider">
+                                        <CalendarIcon className="h-4 w-4" />
+                                        <span>Arranjo de Oradores</span>
+                                    </div>
+                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-typography-900 capitalize mt-1">
+                                        {currentMonthLabel}
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
+                                        Gerencie as designações de reuniões de fim de semana, oradores e temas.
+                                    </p>
                                 </div>
 
-                                {/* Painel */}
-                                <div
-                                    className={`
-           bg-surface-100 border-b shadow-sm rounded-xl flex flex-col gap-3 md:gap-4
-    transition-all duration-300 overflow-visible
-    ${showFilters ? "max-h-screen opacity-100 p-4 pointer-events-auto" : "max-h-0 opacity-0 p-0 pointer-events-none"}
-    md:opacity-100 md:max-h-screen md:pointer-events-auto
-        `}
-                                >
-                                    <div className="flex justify-between items-center gap-4">
-                                        <Button
+                                {/* Month Navigation Controls */}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <div className="flex items-center bg-surface-200/80 rounded-xl p-1 border border-surface-300">
+                                        <button
                                             onClick={() => setMonthOffset((m) => m - 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
+                                            className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
+                                            title="Mês anterior"
                                         >
-                                            {prevMonthLabel}
-                                        </Button>
+                                            <ChevronLeft className="h-4 w-4" />
+                                            <span className="hidden sm:inline capitalize">{prevMonthLabel}</span>
+                                        </button>
 
-                                        <Button
+                                        {monthOffset !== 0 && (
+                                            <button
+                                                onClick={() => setMonthOffset(0)}
+                                                className="px-2.5 py-1 text-xs font-semibold text-primary-200 hover:bg-surface-100 rounded-lg transition-colors flex items-center gap-1"
+                                                title="Voltar para o mês atual"
+                                            >
+                                                <RotateCcw className="h-3 w-3" />
+                                                Hoje
+                                            </button>
+                                        )}
+
+                                        <button
                                             onClick={() => setMonthOffset((m) => m + 1)}
-                                            className="rounded-lg px-4 py-2 text-sm shadow capitalize text-typography-200"
+                                            className="p-2 rounded-lg hover:bg-surface-100 text-typography-700 hover:text-typography-900 transition-colors flex items-center gap-1 text-xs font-semibold"
+                                            title="Próximo mês"
                                         >
-                                            {nextMonthLabel}
-                                        </Button>
+                                            <span className="hidden sm:inline capitalize">{nextMonthLabel}</span>
+                                            <ChevronRight className="h-4 w-4" />
+                                        </button>
                                     </div>
 
-                                    <Button className="w-full text-typography-200" onClick={handleSave}>
-                                        Salvar todas
-                                    </Button>
+                                    {/* Action Buttons Toolbar */}
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => setActiveTool(activeTool === "invitation" ? "none" : "invitation")}
+                                            className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                                                activeTool === "invitation"
+                                                    ? "bg-primary-200 text-white border-primary-200 shadow-sm"
+                                                    : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                            }`}
+                                        >
+                                            <Mail className="h-4 w-4" />
+                                            <span className="hidden md:inline">Convite Orador</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setActiveTool(activeTool === "pdf" ? "none" : "pdf")}
+                                            className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                                                activeTool === "pdf"
+                                                    ? "bg-primary-200 text-white border-primary-200 shadow-sm"
+                                                    : "bg-surface-200/70 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                            }`}
+                                        >
+                                            <FileDown className="h-4 w-4" />
+                                            <span className="hidden md:inline">Exportar PDF</span>
+                                        </button>
+
+                                        <Button
+                                            onClick={handleSave}
+                                            disabled={isSaving}
+                                            className={`rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-sm transition-all ${
+                                                pendingChangesCount > 0
+                                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse"
+                                                    : "text-typography-200"
+                                            }`}
+                                        >
+                                            <Save className="h-4 w-4" />
+                                            <span>
+                                                {pendingChangesCount > 0
+                                                    ? `Salvar (${pendingChangesCount})`
+                                                    : "Salvar todas"}
+                                            </span>
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <CollapsibleCard full title="Convite ao Orador" defaultOpen={false}>
-                                <div className="p-4">
-                                    <DropdownObject
-                                        textVisible
-                                        title="Selecionar Orador e Data"
-                                        items={scheduledOptions ?? []}
-                                        selectedItem={
-                                            scheduledOptions.find(opt => opt.id === selectedOptionId) ?? null
-                                        }
-                                        handleChange={item => setSelectedOptionId(item?.id ?? null)}
-                                        labelKey="label"
-                                        border
-                                        full
-                                        emptyMessage="Nenhuma designação futura encontrada"
-                                        searchable
-                                    />
-                                    {selectedSchedule && congregation && (
-                                        <div className="flex justify-center mt-2">
+                            {/* Metric Badges Strip */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-surface-300">
+                                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+                                        <CalendarIcon className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[11px] font-medium text-typography-500">Total no mês</div>
+                                        <div className="text-base font-bold text-typography-900">{stats.total} reuniões</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[11px] font-medium text-typography-500">Completas</div>
+                                        <div className="text-base font-bold text-typography-900">{stats.complete} de {stats.total}</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
+                                        <Clock className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[11px] font-medium text-typography-500">Pendentes</div>
+                                        <div className="text-base font-bold text-typography-900">{stats.pending} restantes</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400">
+                                        <Users className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-[11px] font-medium text-typography-500">Saídas externas</div>
+                                        <div className="text-base font-bold text-typography-900">{externalData.length} oradores</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ==================================================== */}
+                        {/* 2. EXPANDABLE ACTION TOOL: CONVITE AO ORADOR          */}
+                        {/* ==================================================== */}
+                        {activeTool === "invitation" && (
+                            <div className="bg-surface-100 border border-primary-200/40 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col gap-4 animate-in fade-in-50 duration-200">
+                                <div className="flex items-center justify-between pb-3 border-b border-surface-300">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="p-2 rounded-xl bg-primary-100/20 text-primary-200">
+                                            <Mail className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base font-bold text-typography-900">Gerar Convite ao Orador</h3>
+                                            <p className="text-xs text-typography-500">
+                                                Crie um PDF personalizado de confirmação com os dados da reunião e congregação.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setActiveTool("none")}
+                                        className="text-xs text-typography-500 hover:text-typography-800 p-1"
+                                    >
+                                        Fechar
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                    <div className="md:col-span-2">
+                                        <span className="text-xs font-semibold text-typography-700 block mb-1">
+                                            Selecione o Orador e a Data da Designação
+                                        </span>
+                                        <DropdownObject
+                                            textVisible
+                                            title="Selecionar Orador e Data"
+                                            items={scheduledOptions ?? []}
+                                            selectedItem={
+                                                scheduledOptions.find(opt => opt.id === selectedOptionId) ?? null
+                                            }
+                                            handleChange={item => setSelectedOptionId(item?.id ?? null)}
+                                            labelKey="label"
+                                            border
+                                            full
+                                            emptyMessage="Nenhuma designação futura com orador encontrada"
+                                            searchable
+                                        />
+                                    </div>
+
+                                    <div>
+                                        {selectedSchedule && congregation ? (
                                             <PdfSpeakerInvitation
                                                 schedule={{
                                                     ...selectedSchedule,
@@ -430,98 +613,143 @@ function WeekendSchedulePage() {
                                                 }}
                                                 congregationLocale={congregation}
                                             />
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <div className="p-2.5 rounded-xl bg-surface-200/60 border border-surface-300 text-center text-xs text-typography-500">
+                                                Selecione uma designação acima
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </CollapsibleCard>
+                            </div>
+                        )}
 
-                            <CollapsibleCard full title="Gerar Programação" defaultOpen={false}>
-                                <div className="p-4 flex flex-col gap-4">
-                                    <div className="flex flex-wrap justify-between gap-3">
-                                        <div className="w-full sm:w-fit">
-                                            <Calendar
-                                                full
-                                                titleHidden
-                                                label="Data inicial"
-                                                selectedDate={startDatePdfGenerate}
-                                                handleDateChange={setStartDatePdfGenerate}
-                                            />
+                        {/* ==================================================== */}
+                        {/* 3. EXPANDABLE ACTION TOOL: GERAR PROGRAMAÇÃO PDF     */}
+                        {/* ==================================================== */}
+                        {activeTool === "pdf" && (
+                            <div className="bg-surface-100 border border-primary-200/40 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col gap-4 animate-in fade-in-50 duration-200">
+                                <div className="flex items-center justify-between pb-3 border-b border-surface-300">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="p-2 rounded-xl bg-primary-100/20 text-primary-200">
+                                            <FileDown className="h-5 w-5" />
                                         </div>
-
-                                        <div className="w-full sm:w-fit">
-                                            <Calendar
-                                                full
-                                                titleHidden
-                                                label="Data final"
-                                                selectedDate={endDatePdfGenerate}
-                                                handleDateChange={setEndDatePdfGenerate}
-                                                minDate={startDatePdfGenerate}
-                                            />
+                                        <div>
+                                            <h3 className="text-base font-bold text-typography-900">Gerar Programação em PDF</h3>
+                                            <p className="text-xs text-typography-500">
+                                                Exporte a programação do quadro de anúncios para impressão ou compartilhamento.
+                                            </p>
                                         </div>
                                     </div>
-
-                                    <Select
-                                        value={pdfScale.toString()}
-                                        onValueChange={v => setPdfScale(Number(v))}
+                                    <button
+                                        onClick={() => setActiveTool("none")}
+                                        className="text-xs text-typography-500 hover:text-typography-800 p-1"
                                     >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Escala do PDF" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="1">100%</SelectItem>
-                                            <SelectItem value="0.9">90%</SelectItem>
-                                            <SelectItem value="0.8">80%</SelectItem>
-                                            <SelectItem value="0.7">70%</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        Fechar
+                                    </button>
                                 </div>
 
-                                {/* ========================= */}
-                                {/* AÇÕES FINAIS */}
-                                {/* ========================= */}
-                                <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div className="w-full">
+                                        <span className="text-xs font-semibold text-typography-700 block mb-1">Data inicial</span>
+                                        <Calendar
+                                            full
+                                            titleHidden
+                                            label="Data inicial"
+                                            selectedDate={startDatePdfGenerate}
+                                            handleDateChange={setStartDatePdfGenerate}
+                                        />
+                                    </div>
+
+                                    <div className="w-full">
+                                        <span className="text-xs font-semibold text-typography-700 block mb-1">Data final</span>
+                                        <Calendar
+                                            full
+                                            titleHidden
+                                            label="Data final"
+                                            selectedDate={endDatePdfGenerate}
+                                            handleDateChange={setEndDatePdfGenerate}
+                                            minDate={startDatePdfGenerate}
+                                        />
+                                    </div>
+
+                                    <div className="w-full">
+                                        <span className="text-xs font-semibold text-typography-700 block mb-1">Escala do Documento</span>
+                                        <Select
+                                            value={pdfScale.toString()}
+                                            onValueChange={v => setPdfScale(Number(v))}
+                                        >
+                                            <SelectTrigger className="rounded-xl border-surface-300 bg-surface-100">
+                                                <SelectValue placeholder="Escala do PDF" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="1">100% (Padrão)</SelectItem>
+                                                <SelectItem value="0.9">90% (Mais compacto)</SelectItem>
+                                                <SelectItem value="0.8">80%</SelectItem>
+                                                <SelectItem value="0.7">70%</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-surface-300">
                                     <Button
+                                        outline
                                         onClick={() => setShowPdfPreview(!showPdfPreview)}
-                                        className="min-w-[200px]"
+                                        className="rounded-xl border-surface-300 text-typography-700 hover:bg-surface-200 flex items-center gap-2 text-sm"
                                     >
-                                        {showPdfPreview ? "Fechar pré-visualização" : "Visualizar PDF"}
+                                        {showPdfPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                        <span>{showPdfPreview ? "Ocultar Prévia" : "Pré-visualizar"}</span>
                                     </Button>
 
                                     {isClient && <PdfLinkComponent />}
                                 </div>
-                            </CollapsibleCard>
 
-                            {showPdfPreview && (
-                                <div className="w-full h-[90vh] mt-4 border rounded-lg overflow-hidden">
-                                    <PDFViewer style={{ width: "100%", height: "100%" }}>
-                                        <Document>
-                                            <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
-                                        </Document>
-                                    </PDFViewer>
+                                {showPdfPreview && (
+                                    <div className="w-full h-[80vh] mt-3 border border-surface-300 rounded-2xl overflow-hidden shadow-inner">
+                                        <PDFViewer style={{ width: "100%", height: "100%" }}>
+                                            <Document>
+                                                <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
+                                            </Document>
+                                        </PDFViewer>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ==================================================== */}
+                        {/* 4. LISTA DE FINAIS DE SEMANA (CARDS MODERNOS)         */}
+                        {/* ==================================================== */}
+                        <div className="flex flex-col gap-5 pb-24">
+                            {weekendMeetingDay.length === 0 ? (
+                                <div className="p-12 text-center bg-surface-100 border border-surface-300 rounded-2xl flex flex-col items-center justify-center gap-3">
+                                    <CalendarIcon className="h-10 w-10 text-typography-400" />
+                                    <h3 className="text-base font-bold text-typography-800">
+                                        Nenhuma reunião encontrada para este mês
+                                    </h3>
+                                    <p className="text-xs text-typography-500 max-w-sm">
+                                        Verifique se o dia da reunião pública da congregação está configurado nas configurações.
+                                    </p>
                                 </div>
-                            )}
-
-                            <div className="space-y-4 mt-6 pb-36 h-fit">
-                                {weekendMeetingDay.map((d) => {
-                                    const weekend = getWeekendRange(d) // { friday, saturday, sunday }
-
+                            ) : (
+                                weekendMeetingDay.map((d) => {
+                                    const weekend = getWeekendRange(d)
                                     const externalForDate = (externalData ?? []).filter((t) =>
                                         dayjs(t.date).isBetween(weekend.friday.toDate(), weekend.sunday.toDate(), "day", "[]")
                                     )
                                     return (
-                                        <div key={d.toISOString()} className="bg-surface-100 border rounded-xl shadow-sm">
-                                            <ScheduleRow date={d} externalTalks={externalForDate} />
-                                        </div>
+                                        <ScheduleRow
+                                            key={d.toISOString()}
+                                            date={d}
+                                            externalTalks={externalForDate}
+                                        />
                                     )
-                                })}
-                            </div>
+                                })
+                            )}
                         </div>
                     </>
-                )
-                }
-
-            </section >
-        </ContentDashboard >
+                )}
+            </section>
+        </ContentDashboard>
     )
 }
 
