@@ -13,16 +13,6 @@ export function updateThemeColorMeta(newTheme: ThemeType) {
   if (typeof document === 'undefined') return
   const color = themeColorsMap[newTheme] || '#178582'
 
-  const metas = document.querySelectorAll('meta[name="theme-color"]')
-  if (metas.length > 0) {
-    metas.forEach(m => m.setAttribute('content', color))
-  } else {
-    const meta = document.createElement('meta')
-    meta.name = 'theme-color'
-    meta.id = 'theme-color-meta'
-    meta.content = color
-    document.head.appendChild(meta)
-  }
   // Remove tags antigas para forçar o Chromium/WebAPK a registrar a inserção da nova cor
   const existingMetas = document.querySelectorAll('meta[name="theme-color"]')
   existingMetas.forEach(m => m.remove())
