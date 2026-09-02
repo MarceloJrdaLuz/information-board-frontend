@@ -370,7 +370,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push(`/arranjo-oradores/discursos`)
                                         }}
                                         icon={() => <TalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/arranjo-oradores/discursos')}
+                                        active={router.pathname.startsWith('/arranjo-oradores/discursos') || pageActive.startsWith('/arranjo-oradores/discursos')}
                                     />}
                                 {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
                                     <>

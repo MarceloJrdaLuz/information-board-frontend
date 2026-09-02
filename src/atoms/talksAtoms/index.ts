@@ -60,6 +60,7 @@ export const deleteTalkAtom = atom(
 
       if (message === "Talk not found") {
         toast.error("Orador não encontrado.")
+        toast.error("Discurso não encontrado.")
       } else {
         console.error(err)
         toast.error("Erro ao excluir o discurso.")
