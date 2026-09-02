@@ -4,7 +4,7 @@ import { MidweekLivingIcon, MidweekMinistryIcon, MidweekTreasuresIcon } from "@/
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Sparkles, Users } from "lucide-react";
+import { Calendar, CalendarOff, ChevronLeft, ChevronRight, ChevronUp, Sparkles, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 dayjs.locale("pt-br");
@@ -85,6 +85,23 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
 
     const [activeMonthIndex, setActiveMonthIndex] = useState(0);
     const [activeWeekIndex, setActiveWeekIndex] = useState(0);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const checkScroll = () => {
+            if (typeof window !== "undefined") {
+                setShowScrollTop(window.scrollY > 250);
+            }
+        };
+        window.addEventListener("scroll", checkScroll, { passive: true });
+        return () => window.removeEventListener("scroll", checkScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
 
     useEffect(() => {
         const currentMonthIndex = months.findIndex(([_, weeks]) =>
@@ -108,79 +125,82 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
 
     return (
         <div className="relative w-full flex flex-col gap-4">
-            {/* Navegação de Meses */}
-            <div className="flex justify-between items-center bg-surface-100 p-3 rounded-2xl border border-surface-300 shadow-sm">
-                <button
-                    disabled={activeMonthIndex === 0}
-                    onClick={() => handleMonthChange(Math.max(activeMonthIndex - 1, 0))}
-                    className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
-                    title="Mês anterior"
-                >
-                    <ChevronLeft size={24} />
-                </button>
-
-                <h2 className="text-base sm:text-lg font-extrabold text-typography-900 capitalize tracking-tight flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-primary-200" />
-                    <span>{months[activeMonthIndex]?.[0] || "Programação"}</span>
-                </h2>
-
-                <button
-                    disabled={activeMonthIndex === months.length - 1}
-                    onClick={() => handleMonthChange(Math.min(activeMonthIndex + 1, months.length - 1))}
-                    className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
-                    title="Próximo mês"
-                >
-                    <ChevronRight size={24} />
-                </button>
-            </div>
-
-            {/* Navegação de Semanas */}
-            {currentWeeks.length > 1 && (
-                <div className="flex items-center justify-between gap-2">
+            {/* Cabeçalho Sticky de Navegação de Mês e Semanas */}
+            <div className="sticky top-0 z-30 bg-surface-100/95 backdrop-blur-md p-3 rounded-2xl border border-surface-300 shadow-sm flex flex-col gap-2.5 transition-all">
+                {/* Navegação de Meses */}
+                <div className="flex justify-between items-center">
                     <button
-                        disabled={activeWeekIndex === 0}
-                        onClick={() => setActiveWeekIndex((i) => Math.max(i - 1, 0))}
-                        className="disabled:opacity-20 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer shrink-0"
-                        title="Semana anterior"
+                        disabled={activeMonthIndex === 0}
+                        onClick={() => handleMonthChange(Math.max(activeMonthIndex - 1, 0))}
+                        className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
+                        title="Mês anterior"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={24} />
                     </button>
 
-                    {/* Indicadores de semana (dots) */}
-                    <div className="flex items-center gap-2">
-                        {currentWeeks.map((w, idx) => {
-                            const isActive = idx === activeWeekIndex;
-                            const date = dayjs(w.meetingDate || w.weekDate).format("DD/MM");
-                            return (
-                                <button
-                                    key={w.id}
-                                    onClick={() => setActiveWeekIndex(idx)}
-                                    title={`Semana de ${date}`}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${
-                                        isActive
-                                            ? "bg-primary-200 text-white shadow-sm"
-                                            : "bg-surface-200 text-typography-600 hover:bg-surface-300"
-                                    }`}
-                                >
-                                    {w.isCurrentWeek && (
-                                        <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-300" : "bg-emerald-500"}`} />
-                                    )}
-                                    {date}
-                                </button>
-                            );
-                        })}
-                    </div>
+                    <h2 className="text-base sm:text-lg font-extrabold text-typography-900 capitalize tracking-tight flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-primary-200" />
+                        <span>{months[activeMonthIndex]?.[0] || "Programação"}</span>
+                    </h2>
 
                     <button
-                        disabled={activeWeekIndex === currentWeeks.length - 1}
-                        onClick={() => setActiveWeekIndex((i) => Math.min(i + 1, currentWeeks.length - 1))}
-                        className="disabled:opacity-20 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer shrink-0"
-                        title="Próxima semana"
+                        disabled={activeMonthIndex === months.length - 1}
+                        onClick={() => handleMonthChange(Math.min(activeMonthIndex + 1, months.length - 1))}
+                        className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
+                        title="Próximo mês"
                     >
-                        <ChevronRight size={20} />
+                        <ChevronRight size={24} />
                     </button>
                 </div>
-            )}
+
+                {/* Navegação de Semanas */}
+                {currentWeeks.length > 1 && (
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-surface-200/80">
+                        <button
+                            disabled={activeWeekIndex === 0}
+                            onClick={() => setActiveWeekIndex((i) => Math.max(i - 1, 0))}
+                            className="disabled:opacity-20 disabled:cursor-not-allowed p-1.5 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer shrink-0"
+                            title="Semana anterior"
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+
+                        {/* Indicadores de semana (com rolagem horizontal suave no celular) */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full scrollbar-none py-0.5 scroll-smooth overscroll-x-contain">
+                            {currentWeeks.map((w, idx) => {
+                                const isActive = idx === activeWeekIndex;
+                                const date = dayjs(w.meetingDate || w.weekDate).format("DD/MM");
+                                return (
+                                    <button
+                                        key={w.id}
+                                        onClick={() => setActiveWeekIndex(idx)}
+                                        title={`Semana de ${date}`}
+                                        className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer ${
+                                            isActive
+                                                ? "bg-primary-200 text-white shadow-sm"
+                                                : "bg-surface-200 text-typography-600 hover:bg-surface-300"
+                                        }`}
+                                    >
+                                        {w.isCurrentWeek && (
+                                            <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-300" : "bg-emerald-500"}`} />
+                                        )}
+                                        {date}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            disabled={activeWeekIndex === currentWeeks.length - 1}
+                            onClick={() => setActiveWeekIndex((i) => Math.min(i + 1, currentWeeks.length - 1))}
+                            className="disabled:opacity-20 disabled:cursor-not-allowed p-1.5 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer shrink-0"
+                            title="Próxima semana"
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* Card da Semana Ativa */}
             {currentWeeks.map((week, idx) => {
@@ -328,7 +348,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                         Cântico {week.songOpen || "—"}
                                     </span>
                                     {week.openingPrayer && (
-                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70">
+                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70 text-right">
                                             <strong className="text-typography-800 font-semibold">Oração Inicial:</strong> {week.openingPrayer}
                                         </span>
                                     )}
@@ -364,7 +384,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                         </div>
 
                                                         {part.assignedPublisher && (
-                                                            <div className="self-end sm:self-center font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs">
+                                                            <div className="self-end sm:self-center font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs text-right">
                                                                 {part.assignedPublisher}
                                                             </div>
                                                         )}
@@ -378,7 +398,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                 return (
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
                                                         <div className="flex flex-col max-w-xl">
-                                                            <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
+                                                             <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
                                                                 {formatNumberedTitle(bibleNum, bibleReadingMain?.title || bibleReadingAux1?.title || "Leitura da Bíblia")}
                                                             </span>
                                                             {(bibleReadingMain?.sourceMaterial || bibleReadingAux1?.sourceMaterial) && (
@@ -388,23 +408,23 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                             )}
                                                         </div>
 
-                                                        <div className="self-end sm:self-center flex flex-wrap items-center gap-2 text-xs">
+                                                        <div className="self-end sm:self-center flex flex-wrap items-center justify-end gap-2 text-xs text-right">
                                                             {bibleReadingAux1 ? (
                                                                 <>
                                                                     {bibleReadingMain?.assignedPublisher && (
-                                                                        <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs flex items-center gap-1">
+                                                                        <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs flex items-center gap-1 text-right">
                                                                             <strong className="text-[#205B6F] dark:text-[#38BDF8]">Salão Principal:</strong> {bibleReadingMain.assignedPublisher}
                                                                         </span>
                                                                     )}
                                                                     {bibleReadingAux1.assignedPublisher && (
-                                                                        <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs flex items-center gap-1">
+                                                                        <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs flex items-center gap-1 text-right">
                                                                             <strong className="text-amber-600 dark:text-amber-400">Sala B:</strong> {bibleReadingAux1.assignedPublisher}
                                                                         </span>
                                                                     )}
                                                                 </>
                                                             ) : (
                                                                 bibleReadingMain?.assignedPublisher && (
-                                                                    <div className="font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs">
+                                                                    <div className="font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs text-right">
                                                                         {bibleReadingMain.assignedPublisher}
                                                                     </div>
                                                                 )
@@ -471,15 +491,15 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                             )}
                                                         </div>
 
-                                                        <div className="self-end sm:self-center flex flex-wrap items-center gap-1.5 text-xs shrink-0">
+                                                        <div className="self-end sm:self-center flex flex-wrap items-center justify-end gap-1.5 text-xs shrink-0 text-right">
                                                             {part.assignedPublisher ? (
-                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                     {part.assignedPublisher}
                                                                 </span>
                                                             ) : null}
 
                                                             {part.requiresAssistant && part.assistantPublisher ? (
-                                                                <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                     <span className="text-typography-400">Ajudante:</span> {part.assistantPublisher}
                                                                 </span>
                                                             ) : null}
@@ -523,14 +543,14 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <div className="self-end sm:self-center flex items-center gap-1.5 text-xs">
+                                                            <div className="self-end sm:self-center flex flex-wrap items-center justify-end gap-1.5 text-xs text-right">
                                                                 {part.assignedPublisher && (
-                                                                    <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                    <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                         {part.assignedPublisher}
                                                                     </span>
                                                                 )}
                                                                 {part.requiresAssistant && part.assistantPublisher && (
-                                                                    <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                    <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                         <span className="text-typography-400">Ajudante:</span> {part.assistantPublisher}
                                                                     </span>
                                                                 )}
@@ -575,14 +595,14 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <div className="self-end sm:self-center flex items-center gap-1.5 text-xs">
+                                                            <div className="self-end sm:self-center flex flex-wrap items-center justify-end gap-1.5 text-xs text-right">
                                                                 {part.assignedPublisher && (
-                                                                    <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                    <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                         {part.assignedPublisher}
                                                                     </span>
                                                                 )}
                                                                 {part.requiresAssistant && part.assistantPublisher && (
-                                                                    <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs">
+                                                                    <span className="font-medium text-typography-600 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs text-right">
                                                                         <span className="text-typography-400">Ajudante:</span> {part.assistantPublisher}
                                                                     </span>
                                                                 )}
@@ -632,7 +652,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                         </div>
 
                                                         {part.assignedPublisher && (
-                                                            <div className="self-end sm:self-center font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs">
+                                                            <div className="self-end sm:self-center font-bold text-xs text-typography-900 bg-surface-100 px-3 py-1.5 rounded-lg border border-surface-300 shrink-0 shadow-2xs text-right">
                                                                 {part.assignedPublisher}
                                                             </div>
                                                         )}
@@ -655,14 +675,14 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="self-end sm:self-center flex flex-wrap items-center gap-2 text-xs">
+                                                        <div className="self-end sm:self-center flex flex-wrap items-center justify-end gap-2 text-xs text-right">
                                                             {week.cbsConductor && (
-                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300">
+                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 text-right">
                                                                     <span className="text-typography-500 font-medium mr-1">Dirigente:</span>{week.cbsConductor}
                                                                 </span>
                                                             )}
                                                             {week.cbsReader && (
-                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300">
+                                                                <span className="font-bold text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 text-right">
                                                                     <span className="text-typography-500 font-medium mr-1">Leitor:</span>{week.cbsReader}
                                                                 </span>
                                                             )}
@@ -680,7 +700,7 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                         Cântico {week.songEnd || "—"}
                                     </span>
                                     {week.closingPrayer && (
-                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70">
+                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70 text-right">
                                             <strong className="text-typography-800 font-semibold">Oração Final:</strong> {week.closingPrayer}
                                         </span>
                                     )}
@@ -690,6 +710,19 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                     </div>
                 );
             })}
+
+            {/* Botão Flutuante Voltar ao Topo */}
+            {showScrollTop && (
+                <button
+                    type="button"
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
+                    title="Voltar ao topo"
+                    aria-label="Voltar ao topo"
+                >
+                    <ChevronUp size={20} />
+                </button>
+            )}
         </div>
     );
 }

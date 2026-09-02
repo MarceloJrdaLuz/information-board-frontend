@@ -270,9 +270,15 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                     /* CASO 2: Semana Normal -> Estudo Bíblico de Congregação (CBS) */
                     <div className="p-3 bg-surface-200/50 rounded-xl my-2 border border-surface-300">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 mb-3 border-b border-surface-300">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
+                                        <Clock className="h-3 w-3 text-typography-500" />
+                                        30 min
+                                    </span>
+                                </div>
                                 <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400">
-                                    {formatNumberedTitle(startPartNumber + mainParts.length, "Estudo Bíblico de Congregação (30 min)")}
+                                    {formatNumberedTitle(startPartNumber + mainParts.length, "Estudo Bíblico de Congregação")}
                                 </h4>
                             </div>
                             {cbsPart?.sourceMaterial && (

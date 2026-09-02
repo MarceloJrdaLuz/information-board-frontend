@@ -206,11 +206,8 @@ function MidweekQualificationsPage() {
                                         }`}
                                     >
                                         <div className="flex flex-col truncate">
-                                            <span className="text-xs truncate">
+                                            <span className="text-xs truncate font-medium text-typography-900">
                                                 {pub.fullName}
-                                            </span>
-                                            <span className="text-[10px] text-typography-500 font-normal">
-                                                {pub.gender} {pub.privileges && pub.privileges.length > 0 ? `• ${pub.privileges.join(", ")}` : ""}
                                             </span>
                                         </div>
                                         {isSelected && <Check className="h-4 w-4 text-primary-200 shrink-0" />}

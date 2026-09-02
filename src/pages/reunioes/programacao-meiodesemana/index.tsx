@@ -30,6 +30,7 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
+    ChevronUp,
     FileText,
     Loader2,
     Printer,
@@ -70,6 +71,38 @@ function MidweekScheduleAssistantPage() {
     const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+            const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+            setShowScrollTop(scrollY > 250);
+        };
+
+        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+        if (scrollContainer) {
+            scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+        }
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener("scroll", handleScroll);
+            }
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+    const scrollToTop = () => {
+        const scrollContainer = document.querySelector(".flex-1.overflow-y-auto");
+        if (scrollContainer) {
+            scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
 
     const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
 
@@ -355,7 +388,7 @@ function MidweekScheduleAssistantPage() {
 
                 {/* Abas das Semanas do Mês */}
                 {schedules.length > 0 && (
-                    <div className="w-full max-w-full min-w-0 overflow-x-auto pb-2 pt-0.5 scroll-smooth overscroll-x-contain flex items-center gap-2">
+                    <div className="sticky top-0 z-20 bg-secondary-100/95 backdrop-blur-md py-2 -mx-2 sm:-mx-4 px-2 sm:px-4 w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] min-w-0 overflow-x-auto scroll-smooth overscroll-x-contain flex items-center gap-2 border-b border-surface-300/60 shadow-xs">
                         {schedules.map((s) => {
                             const isSelected = s.id === selectedScheduleId;
                             const weekDay = dayjs(s.meetingDate || s.weekDate).format("DD/MM");
@@ -375,7 +408,7 @@ function MidweekScheduleAssistantPage() {
                                     key={s.id}
                                     type="button"
                                     onClick={() => setSelectedScheduleId(s.id)}
-                                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all ${
+                                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all cursor-pointer ${
                                         isSelected
                                             ? "bg-primary-200 text-white shadow-md font-bold"
                                             : "bg-surface-100 text-typography-700 border border-surface-300 hover:bg-surface-200"
@@ -542,6 +575,19 @@ function MidweekScheduleAssistantPage() {
                 weekDateFormatted={currentSchedule ? dayjs(currentSchedule.weekDate).format("DD/MM/YYYY") : undefined}
                 monthFormatted={`${MONTH_NAMES[month - 1]} de ${year}`}
             />
+
+            {/* Botão Flutuante Voltar ao Topo */}
+            {showScrollTop && (
+                <button
+                    type="button"
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary-200 hover:bg-primary-150 text-white shadow-lg transition-all cursor-pointer flex items-center justify-center animate-fade-in"
+                    title="Voltar ao topo"
+                    aria-label="Voltar ao topo"
+                >
+                    <ChevronUp size={20} />
+                </button>
+            )}
         </ContentDashboard>
     );
 }
