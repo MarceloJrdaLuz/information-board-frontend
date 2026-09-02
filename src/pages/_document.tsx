@@ -10,6 +10,13 @@ export default function Document() {
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
 
+        {/* Cor da barra de navegação no Android / Chrome */}
+        <meta
+          id="theme-color-meta"
+          name="theme-color"
+          content="#178582"
+        />
+
         {/* Windows Phone / Edge */}
         <meta
           name="msapplication-navbutton-color"
@@ -69,6 +76,10 @@ export default function Document() {
                   var color = colors[saved] || '#178582';
                   if (saved) {
                     document.documentElement.className = saved;
+                  }
+                  var meta = document.getElementById('theme-color-meta');
+                  if (meta) {
+                    meta.setAttribute('content', color);
                   }
                   var meta = document.createElement('meta');
                   meta.name = 'theme-color';
