@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, SquareStackIcon, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, Radio, SquareStackIcon, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -438,6 +438,18 @@ export default function Layout(props: LayoutProps) {
                                 }
                             </NavBar.ListOptions>
                         }
+
+                        {(isAdminCongregation || roleContains('ADMIN')) && (
+                            <NavBar.Options
+                                title="Partes Mecânicas"
+                                onClick={() => {
+                                    { !isDesktop && setIsMenuOpen(false) }
+                                    Router.push('/reunioes/partes-mecanicas')
+                                }}
+                                icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                active={pageActive.startsWith('/reunioes/partes-mecanicas')}
+                            />
+                        )}
 
                         {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                             <NavBar.ListOptions
