@@ -63,15 +63,15 @@ const getDisplayName = (pub?: IPublisherMini | null): string => {
 // ==========================================
 const styles1 = StyleSheet.create({
     page: {
-        paddingTop: 16,
-        paddingBottom: 22,
-        paddingHorizontal: 18,
+        paddingTop: 12,
+        paddingBottom: 10,
+        paddingHorizontal: 16,
         backgroundColor: "#FFFFFF",
         fontFamily: "Crimson Pro",
         color: "#1E293B"
     },
     docHeader: {
-        marginBottom: 10,
+        marginBottom: 6,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "flex-end",
@@ -98,7 +98,7 @@ const styles1 = StyleSheet.create({
         textTransform: "uppercase"
     },
     weekCard: {
-        marginBottom: 13,
+        marginBottom: 8,
         borderWidth: 0.75,
         borderColor: "#CBD5E1",
         borderRadius: 2,
@@ -320,14 +320,14 @@ const styles1 = StyleSheet.create({
 // ==========================================
 const styles2 = StyleSheet.create({
     page: {
-        paddingTop: 16,
-        paddingBottom: 22,
-        paddingHorizontal: 22,
+        paddingTop: 12,
+        paddingBottom: 10,
+        paddingHorizontal: 18,
         backgroundColor: "#FFFFFF",
         fontFamily: "Helvetica"
     },
     docHeader: {
-        marginBottom: 10
+        marginBottom: 6
     },
     docHeaderTop: {
         flexDirection: "row",
@@ -357,7 +357,7 @@ const styles2 = StyleSheet.create({
         borderBottomColor: "#000000"
     },
     weekBlock: {
-        marginBottom: 16
+        marginBottom: 8
     },
     weekHeaderRow: {
         flexDirection: "row",
@@ -849,12 +849,6 @@ const MidweekModel1Document: React.FC<{
                         </View>
                     );
                 })}
-
-                <Text
-                    render={({ pageNumber, totalPages }) => `Quadro de Anúncios • Página ${pageNumber} de ${totalPages}`}
-                    fixed
-                    style={styles1.pageFooter}
-                />
             </Page>
         </Document>
     );
@@ -1158,12 +1152,6 @@ const MidweekModel2Document: React.FC<{
                         </View>
                     );
                 })}
-
-                <Text
-                    render={({ pageNumber, totalPages }) => `Quadro de Anúncios • Página ${pageNumber} de ${totalPages}`}
-                    fixed
-                    style={styles2.pageFooter}
-                />
             </Page>
         </Document>
     );
