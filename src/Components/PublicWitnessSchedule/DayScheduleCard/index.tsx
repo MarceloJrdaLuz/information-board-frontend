@@ -1,14 +1,13 @@
-import { IPublicWitnessArrangement } from "@/types/publicWitness"
-import SlotScheduleRow from "../SlotScheduleRow"
-import { IPublisher } from "@/types/types"
-import { IPublicWitnessAssignment } from "../SlotScheduleRow"
-import { IFieldServiceException } from "@/types/fieldService"
-import { useMemo } from "react"
-import { useAtom } from "jotai"
 import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
+import { IFieldServiceException } from "@/types/fieldService"
+import { IPublicWitnessArrangement } from "@/types/publicWitness"
+import { IPublisher } from "@/types/types"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
-import { Calendar as CalendarIcon, ShieldAlert, CheckCircle2 } from "lucide-react"
+import { useAtom } from "jotai"
+import { Calendar as CalendarIcon, CheckCircle2, ShieldAlert } from "lucide-react"
+import { useMemo } from "react"
+import SlotScheduleRow, { IPublicWitnessAssignment } from "../SlotScheduleRow"
 
 dayjs.locale("pt-br")
 
@@ -128,15 +127,18 @@ export default function DayScheduleCard({
         {sortedSlots.map(slot => {
           const countExcludingThisSlot: Record<string, number> = { ...publishersCount }
 
-          assignmentsBySlot?.[slot.id]?.publishers.forEach(p => {
-            countExcludingThisSlot[p.publisher.id] =
-              (countExcludingThisSlot[p.publisher.id] ?? 1) - 1
+          assignmentsBySlot?.[slot.id]?.publishers?.forEach(p => {
+            const pubId = p?.publisher?.id || p?.publisher_id
+            if (pubId) {
+              countExcludingThisSlot[pubId] = (countExcludingThisSlot[pubId] ?? 1) - 1
+            }
           })
 
-          const dayDirtySlot = dirty[date]?.slots.find(s => s.time_slot_id === slot.id)
-          dayDirtySlot?.publishers.forEach(p => {
-            countExcludingThisSlot[p.publisher_id] =
-              (countExcludingThisSlot[p.publisher_id] ?? 1) - 1
+          const dayDirtySlot = dirty[date]?.slots?.find(s => s.time_slot_id === slot.id)
+          dayDirtySlot?.publishers?.forEach(p => {
+            if (p?.publisher_id) {
+              countExcludingThisSlot[p.publisher_id] = (countExcludingThisSlot[p.publisher_id] ?? 1) - 1
+            }
           })
 
           return (

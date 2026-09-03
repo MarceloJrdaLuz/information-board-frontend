@@ -1,42 +1,42 @@
+import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
+import {
+    createSchedulePublicWitnessAtom,
+    dirtyMonthScheduleAtom,
+    monthScheduleAtom,
+} from "@/atoms/publicWitnessAtoms.ts/schedules"
+import ArrangementMonthScheduleSkeleton from "@/Components/ArrangementMonthScheduleSkeleton"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import { getDatesForMonth } from "@/utils/publicWitnessDates"
-import { useAtom, useSetAtom } from "jotai"
-import { useRouter } from "next/router"
-import { useEffect, useMemo, useState } from "react"
-import { toast } from "react-toastify"
-import {
-  createSchedulePublicWitnessAtom,
-  dirtyMonthScheduleAtom,
-  monthScheduleAtom,
-} from "@/atoms/publicWitnessAtoms.ts/schedules"
-import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
-import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import DayScheduleCard from "@/Components/PublicWitnessSchedule/DayScheduleCard"
 import GenerateScheduleModal from "@/Components/PublicWitnessSchedule/GenerateScheduleModal"
 import SlotPreferencesModal from "@/Components/PublicWitnessSchedule/SlotPreferencesModal"
-import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
+import { Button } from "@/Components/ui/button"
+import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
+import { WEEKDAY_LABEL, Weekday } from "@/types/fieldService"
+import { getDatesForMonth } from "@/utils/publicWitnessDates"
+import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
+import { useAtom, useSetAtom } from "jotai"
 import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Wand2,
-  SlidersHorizontal,
-  Save,
-  ArrowLeft,
-  CheckCircle2,
-  AlertCircle,
-  Users,
-  CalendarDays,
-  CalendarOff
+    AlertCircle,
+    ArrowLeft,
+    CalendarDays,
+    Calendar as CalendarIcon,
+    CalendarOff,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    Save,
+    SlidersHorizontal,
+    Users,
+    Wand2
 } from "lucide-react"
-import { Button } from "@/Components/ui/button"
-import ArrangementMonthScheduleSkeleton from "@/Components/ArrangementMonthScheduleSkeleton"
-import { WEEKDAY_LABEL, Weekday } from "@/types/fieldService"
+import { useRouter } from "next/router"
+import { useEffect, useMemo, useState } from "react"
+import { toast } from "react-toastify"
 
 dayjs.locale("pt-br")
 

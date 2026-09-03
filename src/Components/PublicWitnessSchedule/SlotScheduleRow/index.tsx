@@ -1,32 +1,31 @@
+import React, { useEffect, useMemo, useState } from "react"
 import { useAtom } from "jotai"
-import { useEffect, useMemo, useState } from "react"
-import DropdownMulti from "@/Components/DropdownMulti"
 import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
 import { useCongregationContext } from "@/context/CongregationContext"
-import { buildPublicWitnessHistoryOptions } from "@/functions/buildPublicWitnessHistoryOptions"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
 import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
 import { IPublisher } from "@/types/types"
 import {
   AlertCircleIcon,
+  AlertTriangle,
   Clock,
   Lock,
   RefreshCw,
   SlidersHorizontal,
-  X,
-  UserCheck
+  User,
+  Users2,
+  X
 } from "lucide-react"
+import dayjs from "dayjs"
+import { PublicWitnessPublisherSelect } from "../PublicWitnessPublisherSelect"
 
 export interface IPublicWitnessAssignment {
   id: string
   time_slot_id: string
   date: string
-  created_at: string
-  fixed: boolean
   publishers: {
     id: string
-    assignment_id: string
     publisher_id: string
     order: number
     publisher: IPublisher
@@ -34,18 +33,18 @@ export interface IPublicWitnessAssignment {
 }
 
 interface Props {
-  date: string
   slot: IPublicWitnessTimeSlot
-  publishers: IPublisher[]
+  date: string
   assignment?: IPublicWitnessAssignment
+  publishers: IPublisher[]
   publishersCount?: Record<string, number>
 }
 
 export default function SlotScheduleRow({
-  date,
   slot,
-  publishers,
+  date,
   assignment,
+  publishers,
   publishersCount
 }: Props) {
   const { congregation } = useCongregationContext()
@@ -53,35 +52,17 @@ export default function SlotScheduleRow({
   const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([])
   const isEditable = slot.is_rotative
 
-  const tempUsage = useMemo(() => {
-    if (!dirty) return []
-
-    return Object.values(dirty).flatMap(day =>
-      day.slots.flatMap(slotItem =>
-        slotItem.publishers.map(p => ({
-          publisher_id: p.publisher_id,
-          date: day.date
-        }))
-      )
-    )
-  }, [dirty])
-
-  const urlFetch = congregation
-    ? `public-witness/schedules/congregation/${congregation?.id}/history`
+  const urlFetch = congregation?.id
+    ? `public-witness/schedules/congregation/${congregation.id}/history`
     : ""
 
   const { data: history } = useAuthorizedFetch<IAssignmentsHistoryResponse>(urlFetch, {
     allowedRoles: ["ADMIN_CONGREGATION", "PUBLIC_WITNESS_MANAGER"]
   })
 
-  const options = useMemo(
-    () => buildPublicWitnessHistoryOptions(publishers, history, "fullName", tempUsage),
-    [publishers, history, tempUsage]
-  )
-
   // 🔄 Inicializa com publishers do assignment ou fixos
   useEffect(() => {
-    if (!options.length) return
+    if (!publishers.length) return
 
     const hasDirtyForSlot = dirty?.[date]?.slots?.some(s => s.time_slot_id === slot.id)
     if (hasDirtyForSlot) return
@@ -90,23 +71,123 @@ export default function SlotScheduleRow({
 
     if (assignment?.publishers?.length) {
       initialSelected = assignment.publishers
+        .slice()
         .sort((a, b) => a.order - b.order)
-        .map(p => options.find(o => o.id === p.publisher.id))
+        .map(p => {
+          const pubId = p.publisher?.id || p.publisher_id
+          return publishers.find(o => o.id === pubId)
+        })
         .filter(Boolean) as IPublisher[]
     } else if (slot.defaultPublishers?.length) {
       initialSelected = slot.defaultPublishers
-        .map(dp => options.find(o => o.id === dp.publisher.id))
+        .map(dp => {
+          const pubId = dp.publisher?.id || dp.publisher_id
+          return publishers.find(o => o.id === pubId)
+        })
         .filter(Boolean) as IPublisher[]
     }
 
     setSelectedPublishers(initialSelected)
-  }, [assignment, options, slot.id, slot.defaultPublishers, date, dirty])
+  }, [assignment, publishers, slot.id, slot.defaultPublishers, date, dirty])
 
   const leaderOfDay = useMemo(() => {
     if (!history?.fieldServiceHistory?.length) return null
     const entry = history.fieldServiceHistory.find(h => h.date === date)
     return entry?.leader_id ?? null
   }, [history, date])
+
+  // Preferências cadastradas para este horário
+  const slotPreferences = useMemo(() => {
+    const set = new Set<string>()
+    slot.preferences?.forEach(pref => set.add(pref.publisher_id))
+    return set
+  }, [slot.preferences])
+
+  // Publicadores já escalados neste dia em outros horários ou dirigentes
+  const assignedTodayIds = useMemo(() => {
+    const set = new Set<string>()
+    if (leaderOfDay) set.add(leaderOfDay)
+
+    Object.entries(publishersCount ?? {}).forEach(([pubId, count]) => {
+      const inThisSlot = selectedPublishers.some(p => p.id === pubId)
+      if (count > (inThisSlot ? 1 : 0)) {
+        set.add(pubId)
+      }
+    })
+    return set
+  }, [leaderOfDay, publishersCount, selectedPublishers])
+
+  // Histórico de saídas no carrinho e duplas formadas
+  const { lastCartDateMap, daysSinceLastMap, pairCountMap } = useMemo(() => {
+    const lastDateMap = new Map<string, string>()
+    const pairMap = new Map<string, { count: number; lastDate?: string }>()
+
+    const recordPair = (id1: string, id2: string, pairDate: string) => {
+      if (id1 === id2) return
+      const key = id1 < id2 ? `${id1}:${id2}` : `${id2}:${id1}`
+      const existing = pairMap.get(key) || { count: 0, lastDate: undefined }
+      const newCount = existing.count + 1
+      const newLastDate = !existing.lastDate || dayjs(pairDate).isAfter(existing.lastDate)
+        ? pairDate
+        : existing.lastDate
+      pairMap.set(key, { count: newCount, lastDate: newLastDate })
+    }
+
+    const recordPublisherDate = (pubId: string, pubDate: string) => {
+      const prev = lastDateMap.get(pubId)
+      if (!prev || dayjs(pubDate).isAfter(prev)) {
+        lastDateMap.set(pubId, pubDate)
+      }
+    }
+
+    // 1. Processa histórico salvo de arranjos
+    history?.history?.forEach(arrangement => {
+      arrangement.schedule?.forEach(day => {
+        day.slots?.forEach(s => {
+          const pubs = s.publishers || []
+          for (let i = 0; i < pubs.length; i++) {
+            recordPublisherDate(pubs[i].id, day.date)
+            for (let j = i + 1; j < pubs.length; j++) {
+              recordPair(pubs[i].id, pubs[j].id, day.date)
+            }
+          }
+        })
+      })
+    })
+
+    // 2. Processa alterações temporárias não salvas (dirty)
+    if (dirty) {
+      Object.entries(dirty).forEach(([dirtyDate, dayData]) => {
+        dayData.slots?.forEach(s => {
+          const pubs = s.publishers || []
+          for (let i = 0; i < pubs.length; i++) {
+            recordPublisherDate(pubs[i].publisher_id, dirtyDate)
+            for (let j = i + 1; j < pubs.length; j++) {
+              recordPair(pubs[i].publisher_id, pubs[j].publisher_id, dirtyDate)
+            }
+          }
+        })
+      })
+    }
+
+    // Calcula dias desde a última saída para a data atual
+    const daysSinceMap = new Map<string, number | null>()
+    publishers.forEach(p => {
+      const last = lastDateMap.get(p.id)
+      if (!last) {
+        daysSinceMap.set(p.id, null)
+      } else {
+        const diff = dayjs(date).diff(dayjs(last), "day")
+        daysSinceMap.set(p.id, Math.max(0, diff))
+      }
+    })
+
+    return {
+      lastCartDateMap: lastDateMap,
+      daysSinceLastMap: daysSinceMap,
+      pairCountMap: pairMap
+    }
+  }, [history, dirty, date, publishers])
 
   const updateDirty = (items: IPublisher[]) => {
     setDirty(prev => ({
@@ -127,10 +208,29 @@ export default function SlotScheduleRow({
     }))
   }
 
-  const handleChange = (items: IPublisher[]) => {
+  const handleSetSlotPosition = (index: number, publisherId: string | null) => {
     if (!isEditable) return
-    setSelectedPublishers(items)
-    updateDirty(items)
+    const updated = [...selectedPublishers]
+
+    if (!publisherId) {
+      updated.splice(index, 1)
+    } else {
+      const found = publishers.find(p => p.id === publisherId)
+      if (found) {
+        const filtered = updated.filter(p => p.id !== publisherId)
+        if (index >= filtered.length) {
+          filtered.push(found)
+        } else {
+          filtered[index] = found
+        }
+        setSelectedPublishers(filtered)
+        updateDirty(filtered)
+        return
+      }
+    }
+
+    setSelectedPublishers(updated)
+    updateDirty(updated)
   }
 
   const handleRemovePublisher = (publisherId: string) => {
@@ -151,6 +251,30 @@ export default function SlotScheduleRow({
       .filter(Boolean)
   }, [slot.preferences, publishers])
 
+  // Verificação de conflito de gênero/família entre os selecionados no slot
+  const hasGenderFamilyConflict = useMemo(() => {
+    if (selectedPublishers.length < 2) return false
+    const getGenderNorm = (g?: string) => {
+      if (!g) return "M"
+      return g.trim().toLowerCase().startsWith("f") ? "F" : "M"
+    }
+
+    for (let i = 0; i < selectedPublishers.length; i++) {
+      for (let j = i + 1; j < selectedPublishers.length; j++) {
+        const p1 = selectedPublishers[i]
+        const p2 = selectedPublishers[j]
+        const g1 = getGenderNorm(p1.gender)
+        const g2 = getGenderNorm(p2.gender)
+        if (g1 !== g2) {
+          if (!p1.family_id || !p2.family_id || p1.family_id !== p2.family_id) {
+            return true
+          }
+        }
+      }
+    }
+    return false
+  }, [selectedPublishers])
+
   // Status visual do slot
   const isFilled = selectedPublishers.length >= 2
   const isPartial = selectedPublishers.length === 1
@@ -162,6 +286,8 @@ export default function SlotScheduleRow({
         ${
           !isEditable
             ? "bg-surface-50 border-surface-300"
+            : hasGenderFamilyConflict
+            ? "bg-red-50/20 border-red-300 shadow-sm"
             : isFilled
             ? "bg-surface-100 border-green-300/80 shadow-sm"
             : isPartial
@@ -222,31 +348,70 @@ export default function SlotScheduleRow({
         </div>
       </div>
 
-      {/* Seleção de publicadores */}
+      {/* Alerta de Incompatibilidade de Gênero/Família */}
+      {hasGenderFamilyConflict && (
+        <div className="flex items-center gap-2 p-2.5 rounded-lg bg-red-100/80 border border-red-300 text-red-800 text-xs font-semibold">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+          <span>
+            Atenção: Um homem e uma mulher de famílias diferentes estão selecionados juntos neste horário.
+          </span>
+        </div>
+      )}
+
+      {/* Seleção de publicadores por vagas inteligentes */}
       {isEditable ? (
-        <DropdownMulti<IPublisher>
-          title="Selecione os publicadores para este horário"
-          items={options}
-          selectedItems={selectedPublishers}
-          handleChange={handleChange}
-          itemKey="id"
-          labelKey="fullName"
-          labelRenderer={p => (p as any).displayLabel}
-          border
-          full
-          textVisible
-          searchable
-          emptyMessage="Nenhum publicador encontrado"
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] font-semibold text-typography-600 flex items-center gap-1">
+              <User className="h-3 w-3 text-primary-200" />
+              1º Publicador:
+            </span>
+            <PublicWitnessPublisherSelect
+              value={selectedPublishers[0]?.id || null}
+              onChange={id => handleSetSlotPosition(0, id)}
+              partner={selectedPublishers[1] || null}
+              publishers={publishers}
+              date={date}
+              slotId={slot.id}
+              slotPreferences={slotPreferences}
+              daysSinceLastMap={daysSinceLastMap}
+              lastCartDateMap={lastCartDateMap}
+              pairCountMap={pairCountMap}
+              assignedTodayIds={assignedTodayIds}
+              placeholder="Selecionar 1º Publicador..."
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] font-semibold text-typography-600 flex items-center gap-1">
+              <Users2 className="h-3 w-3 text-amber-500" />
+              2º Publicador (Dupla):
+            </span>
+            <PublicWitnessPublisherSelect
+              value={selectedPublishers[1]?.id || null}
+              onChange={id => handleSetSlotPosition(1, id)}
+              partner={selectedPublishers[0] || null}
+              publishers={publishers}
+              date={date}
+              slotId={slot.id}
+              slotPreferences={slotPreferences}
+              daysSinceLastMap={daysSinceLastMap}
+              lastCartDateMap={lastCartDateMap}
+              pairCountMap={pairCountMap}
+              assignedTodayIds={assignedTodayIds}
+              placeholder="Selecionar Dupla Inteligente..."
+            />
+          </div>
+        </div>
       ) : (
         <div className="text-xs text-typography-600 italic">
           Horário fixo: publicadores configurados por padrão no arranjo.
         </div>
       )}
 
-      {/* Publicadores selecionados em formato de cartões / tags */}
+      {/* Publicadores selecionados em formato de cartões / tags com detalhes */}
       {selectedPublishers.length > 0 && (
-        <div className="flex flex-wrap gap-2 pt-1">
+        <div className="flex flex-wrap gap-2 pt-1 border-t border-surface-300/60 mt-1">
           {selectedPublishers.map((p, index) => {
             const totalInOtherSlots = publishersCount?.[p.id] ?? 0
             const duplicatesInThisSlot = selectedPublishers
