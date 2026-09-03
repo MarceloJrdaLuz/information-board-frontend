@@ -5,8 +5,8 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import DropdownObject from "@/Components/DropdownObjects"
 import PdfIcon from "@/Components/Icons/PdfIcon"
 import ScheduleRow from "@/Components/ScheduleRow"
-import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import ScrollToTopButton from "@/Components/ScrollToTopButton"
+import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
@@ -15,10 +15,12 @@ import {
     chairmansAtom,
     congregationsAtom,
     createWeekendScheduleAtom,
+    IPublisherUnavailability,
     readersAtom,
     schedulesAtom,
     speakersAtom,
     talksAtom,
+    unavailabilitiesAtom,
     updateWeekendScheduleAtom,
     workbookWeeksAtom
 } from "@/atoms/weekendScheduleAtoms"
@@ -41,7 +43,6 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
-    ChevronUp,
     Clock,
     Eye,
     EyeOff,
@@ -112,6 +113,7 @@ function WeekendSchedulePage() {
     const setChairmans = useSetAtom(chairmansAtom)
     const setCongregations = useSetAtom(congregationsAtom)
     const setWorkbookWeeks = useSetAtom(workbookWeeksAtom)
+    const setUnavailabilities = useSetAtom(unavailabilitiesAtom)
     const [weekendScheduleWithExternalTalks, setWeekendScheduleWithExternalTalks] = useState<IWeekendScheduleWithExternalTalks[]>([])
     const setCreateWeekendSchedule = useSetAtom(createWeekendScheduleAtom)
     const setUpdateWeekendSchedule = useSetAtom(updateWeekendScheduleAtom)
@@ -176,6 +178,17 @@ function WeekendSchedulePage() {
     )
 
     const externalData = useMemo(() => rawExternalData ?? [], [rawExternalData])
+
+    const { data: unavailabilitiesData } = useAuthorizedFetch<IPublisherUnavailability[]>(
+        congregation_id ? `/midweek/unavailabilities/congregation/${congregation_id}` : "",
+        { allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"] }
+    )
+
+    useEffect(() => {
+        if (unavailabilitiesData) {
+            setUnavailabilities(unavailabilitiesData)
+        }
+    }, [unavailabilitiesData, setUnavailabilities])
 
     const { data, mutate } = useAuthorizedFetch<IWeekendScheduleFormData>(`/form-data?form=weekendSchedule`, {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]

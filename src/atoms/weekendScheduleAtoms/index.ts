@@ -6,6 +6,14 @@ import { atom } from "jotai"
 import { toast } from "react-toastify"
 import { CreateWeekendSchedulePayload, UpdateWeekendSchedulePayload } from "./types"
 
+export interface IPublisherUnavailability {
+  id: string
+  publisher_id: string
+  startDate: string
+  endDate: string
+  reason?: string | null
+}
+
 export const schedulesAtom = atom<Record<string, IRecordWeekendSchedule>>({})
 export const speakersAtom = atom<ISpeaker[] | null>(null)
 export const chairmansAtom = atom<IPublisher[] | null>(null)
@@ -16,6 +24,7 @@ export const congregationsAtom = atom<ICongregation[] | null>(null)
 export const externalTalksAtom = atom<IExternalTalk[] | null>(null)
 export const specialEventToogleAtom = atom<boolean>(false)
 export const workbookWeeksAtom = atom<{ weekDate: string; watchtowerStudyTheme: string | null }[]>([])
+export const unavailabilitiesAtom = atom<IPublisherUnavailability[] | null>(null)
 
 export const speakerFilterCongregationAtom = atom<string | null>(null)
 export const speakerFilterTalkAtom = atom<string | null>(null)

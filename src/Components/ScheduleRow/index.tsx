@@ -1,4 +1,13 @@
-import { chairmansAtom, congregationsAtom, readersAtom, schedulesAtom, speakersAtom, talksAtom, workbookWeeksAtom } from "@/atoms/weekendScheduleAtoms"
+import {
+    chairmansAtom,
+    congregationsAtom,
+    readersAtom,
+    schedulesAtom,
+    speakersAtom,
+    talksAtom,
+    unavailabilitiesAtom,
+    workbookWeeksAtom
+} from "@/atoms/weekendScheduleAtoms"
 import { buildOptions } from "@/functions/buildHistoryOptions"
 import { buildTalkOptions } from "@/functions/buildTalkHistoryOptions"
 import { IExternalTalk } from "@/types/externalTalks"
@@ -11,6 +20,7 @@ import isoWeek from "dayjs/plugin/isoWeek"
 import { useAtom, useAtomValue } from "jotai"
 import {
     AlertCircle,
+    AlertTriangle,
     BookOpen,
     Building2,
     Calendar,
@@ -46,6 +56,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const talks = useAtomValue(talksAtom)
   const congregations = useAtomValue(congregationsAtom)
   const workbookWeeks = useAtomValue(workbookWeeksAtom)
+  const unavailabilities = useAtomValue(unavailabilitiesAtom)
   const [checkedOptions, setCheckedOptions] = useState<string[]>([])
   const [openConfirm, setOpenConfirm] = useState(false)
   const dateStr = dayjs(date).format("YYYY-MM-DD")
@@ -274,10 +285,14 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
     if (selectedTalk) filteredTalks = [selectedTalk, ...filteredTalks]
   }
 
-  const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName", dateStr)
-  const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName", dateStr)
-  const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName", dateStr)
+  const chairmanOptions = buildOptions(chairmans, schedules, "chairman_id", "fullName", dateStr, unavailabilities)
+  const readerOptions = buildOptions(readers, schedules, "reader_id", "fullName", dateStr, unavailabilities)
+  const speakerOptions = buildOptions(filteredSpeakers, schedules, "speaker_id", "fullName", dateStr, unavailabilities)
   const talkOptions = buildTalkOptions(filteredTalks, schedules, dateStr)
+
+  const selectedChairman = chairmanOptions?.find((p) => p.id === current.chairman_id)
+  const selectedSpeaker = speakerOptions?.find((p) => p.id === current.speaker_id)
+  const selectedReader = readerOptions?.find((p) => p.id === current.reader_id)
 
   // Status de preenchimento
   const isChairmanFilled = !!current.chairman_id
@@ -435,6 +450,15 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
               emptyMessage="Nenhum presidente encontrado"
               searchable
             />
+
+            {selectedChairman?.isUnavailable && (
+              <div className="flex items-center gap-1.5 mt-2.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 text-xs font-medium">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                <span>
+                  <strong>Aviso de Indisponibilidade:</strong> Este irmão está cadastrado como indisponível nesta data{selectedChairman.unavailabilityReason ? ` (${selectedChairman.unavailabilityReason})` : ""}.
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -511,6 +535,14 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                     emptyMessage="Nenhum orador encontrado"
                     searchable
                   />
+                  {selectedSpeaker?.isUnavailable && (
+                    <div className="flex items-center gap-1.5 mt-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 text-xs font-medium">
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+                      <span>
+                        <strong>Aviso:</strong> Este orador está indisponível nesta data{selectedSpeaker.unavailabilityReason ? ` (${selectedSpeaker.unavailabilityReason})` : ""}.
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -608,6 +640,14 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                   emptyMessage="Nenhum leitor encontrado"
                   searchable
                 />
+                {selectedReader?.isUnavailable && (
+                  <div className="flex items-center gap-1.5 mt-2.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 text-xs font-medium">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                    <span>
+                      <strong>Aviso de Indisponibilidade:</strong> Este leitor está cadastrado como indisponível nesta data{selectedReader.unavailabilityReason ? ` (${selectedReader.unavailabilityReason})` : ""}.
+                    </span>
+                  </div>
+                )}
               </div>
             )}
 

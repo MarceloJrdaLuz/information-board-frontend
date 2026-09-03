@@ -1,7 +1,11 @@
+import { IPublisherUnavailability } from "@/atoms/weekendScheduleAtoms"
 import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
 import dayjs from "dayjs"
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+
 dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 
 export interface RelativeTimeInfo {
     relativeText: string
@@ -71,7 +75,8 @@ export function buildOptions<T extends { id: string }>(
     schedules: Record<string, IRecordWeekendSchedule>,
     roleField: keyof IRecordWeekendSchedule,
     labelKey: keyof T,
-    limitDate?: string // <-- opcional
+    limitDate?: string,
+    unavailabilities?: IPublisherUnavailability[] | null
 ) {
     if (!people) return []
 
@@ -97,15 +102,39 @@ export function buildOptions<T extends { id: string }>(
         .map(p => {
             const lastDate = historyMap.get(p.id)
             const info = formatRelativeTime(lastDate, limitDate)
+
+            // Checa se a pessoa (ou seu publisher vinculado) está indisponível na data da reunião
+            const pubId = (p as any).publisher?.id || (p as any).publisher_id || p.id
+            const unavail = limitDate && unavailabilities
+                ? unavailabilities.find(u => {
+                    if (u.publisher_id !== pubId && u.publisher_id !== p.id) return false
+                    const target = dayjs(limitDate).startOf("day")
+                    const start = dayjs(u.startDate).startOf("day")
+                    const end = dayjs(u.endDate).endOf("day")
+                    return (target.isAfter(start, "day") || target.isSame(start, "day")) &&
+                           (target.isBefore(end, "day") || target.isSame(end, "day"))
+                })
+                : null
+
+            const unavailTag = unavail
+                ? `⚠️ [Indisponível${unavail.reason ? `: ${unavail.reason}` : ""}] `
+                : ""
+
             return {
                 ...p,
                 lastDate,
                 relativeText: info.relativeText,
                 formattedDate: info.formattedDate,
-                displayLabel: `${(p as any)[labelKey]} ${info.fullLabel}`
+                isUnavailable: !!unavail,
+                unavailabilityReason: unavail?.reason ?? null,
+                displayLabel: `${(p as any)[labelKey]} ${unavailTag}${info.fullLabel}`
             }
         })
         .sort((a, b) => {
+            // Publicadores disponíveis primeiro; indisponíveis no fim da lista
+            if (a.isUnavailable !== b.isUnavailable) {
+                return a.isUnavailable ? 1 : -1
+            }
             if (!a.lastDate) return -1
             if (!b.lastDate) return 1
             return dayjs(a.lastDate).valueOf() - dayjs(b.lastDate).valueOf()
