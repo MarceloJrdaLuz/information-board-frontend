@@ -174,7 +174,6 @@ export interface IPublisher {
     user?: UserTypes
     hospitalityGroup?: IHospitalityGroup
     family_id?: string | null
-    family?: any
     created_at: string
     updated_at: string
 }

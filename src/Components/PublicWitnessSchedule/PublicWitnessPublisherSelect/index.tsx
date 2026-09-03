@@ -66,14 +66,17 @@ export function PublicWitnessPublisherSelect({
   }
 
   // Checagem de compatibilidade de gênero e família
-  const checkCompatibility = (pub: IPublisher, currentPartner: IPublisher) => {
+  const checkCompatibility = (
+    pub: IPublisher,
+    currentPartner: IPublisher
+  ): { isCompatible: boolean; isFamily: boolean; reason: string | null } => {
     const g1 = getGender(pub.gender)
     const g2 = getGender(currentPartner.gender)
-    if (g1 === g2) return { isCompatible: true, reason: null }
+    if (g1 === g2) return { isCompatible: true, isFamily: false, reason: null }
     if (pub.family_id && currentPartner.family_id && pub.family_id === currentPartner.family_id) {
       return { isCompatible: true, isFamily: true, reason: "Mesma família" }
     }
-    return { isCompatible: false, reason: "Homem e mulher de famílias diferentes" }
+    return { isCompatible: false, isFamily: false, reason: "Homem e mulher de famílias diferentes" }
   }
 
   // Lista filtrada e ordenada
