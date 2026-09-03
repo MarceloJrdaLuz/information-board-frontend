@@ -1,23 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react"
-import { useAtom } from "jotai"
 import { dirtyMonthScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPublicWitnessTimeSlot } from "@/types/publicWitness"
 import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
 import { IPublisher } from "@/types/types"
-import {
-  AlertCircleIcon,
-  AlertTriangle,
-  Clock,
-  Lock,
-  RefreshCw,
-  SlidersHorizontal,
-  User,
-  Users2,
-  X
-} from "lucide-react"
 import dayjs from "dayjs"
+import { useAtom } from "jotai"
+import {
+    AlertCircleIcon,
+    AlertTriangle,
+    Clock,
+    Lock,
+    RefreshCw,
+    SlidersHorizontal,
+    User,
+    Users2
+} from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
 import { PublicWitnessPublisherSelect } from "../PublicWitnessPublisherSelect"
 
 export interface IPublicWitnessAssignment {
@@ -233,13 +232,6 @@ export default function SlotScheduleRow({
     updateDirty(updated)
   }
 
-  const handleRemovePublisher = (publisherId: string) => {
-    if (!isEditable) return
-    const updated = selectedPublishers.filter(p => p.id !== publisherId)
-    setSelectedPublishers(updated)
-    updateDirty(updated)
-  }
-
   // Nomes dos publicadores que têm preferência por este horário
   const preferredPublishersNames = useMemo(() => {
     if (!slot.preferences?.length) return []
@@ -409,8 +401,8 @@ export default function SlotScheduleRow({
         </div>
       )}
 
-      {/* Publicadores selecionados em formato de cartões / tags com detalhes */}
-      {selectedPublishers.length > 0 && (
+      {/* Exibe tags de publicadores apenas em horários fixos (onde não há dropdowns) */}
+      {!isEditable && selectedPublishers.length > 0 && (
         <div className="flex flex-wrap gap-2 pt-1 border-t border-surface-300/60 mt-1">
           {selectedPublishers.map((p, index) => {
             const totalInOtherSlots = publishersCount?.[p.id] ?? 0
@@ -465,17 +457,6 @@ export default function SlotScheduleRow({
                   >
                     <AlertCircleIcon className="w-3.5 h-3.5" />
                   </span>
-                )}
-
-                {isEditable && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePublisher(p.id)}
-                    className="text-typography-400 hover:text-red-500 transition-colors ml-1 p-0.5 rounded hover:bg-surface-200"
-                    title="Remover deste horário"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
                 )}
               </div>
             )
