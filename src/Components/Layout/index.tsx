@@ -66,7 +66,10 @@ export default function Layout(props: LayoutProps) {
             (middlePart === 'reunioes' && (subPart === 'meiodesemana' || subPart === 'fimdesemana'))
         ) {
             setOpenSubMenu('documentos-pdf')
-        } else if (middlePart === 'reunioes' && subPart === 'programacao-meiodesemana') {
+        } else if (
+            middlePart === 'reunioes' &&
+            (subPart === 'programacao-meiodesemana' || subPart === 'partes-mecanicas')
+        ) {
             setOpenSubMenu('reunioes-meiodesemana')
         } else if (middlePart === 'arranjo-oradores') {
             setOpenSubMenu('reunioes-fimdesemana')
@@ -306,7 +309,7 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
 
-                        {(isAdminCongregation || roleContains('MIDWEEK_MANAGER')) &&
+                        {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) &&
                             <NavBar.ListOptions
                                 key={"submenuReunioesMeioDeSemana"}
                                 showList={openSubMenu === 'reunioes-meiodesemana'}
@@ -333,6 +336,16 @@ export default function Layout(props: LayoutProps) {
                                     }}
                                     icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive.startsWith('/reunioes/programacao-meiodesemana/qualificacoes')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Partes Mecânicas"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/reunioes/partes-mecanicas')
+                                    }}
+                                    icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/reunioes/partes-mecanicas')}
                                 />
                             </NavBar.ListOptions>
                         }
@@ -438,18 +451,6 @@ export default function Layout(props: LayoutProps) {
                                 }
                             </NavBar.ListOptions>
                         }
-
-                        {(isAdminCongregation || roleContains('ADMIN')) && (
-                            <NavBar.Options
-                                title="Partes Mecânicas"
-                                onClick={() => {
-                                    { !isDesktop && setIsMenuOpen(false) }
-                                    Router.push('/reunioes/partes-mecanicas')
-                                }}
-                                icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive.startsWith('/reunioes/partes-mecanicas')}
-                            />
-                        )}
 
                         {(isAdminCongregation || roleContains('DOCUMENTS_MANAGER')) &&
                             <NavBar.ListOptions
