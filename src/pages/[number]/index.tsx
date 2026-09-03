@@ -158,42 +158,42 @@ function Home({ serverNumber }: HomeProps) {
                 urlMiniatura={`${domain}/images/miniatura.png`}
             />
 
-            {/* Banner Superior de Avisos (fica acima do header, sem cobrir o botão de login) */}
+            {/* Banner Superior de Avisos */}
             {notices.length > 0 && (
                 <div className="bg-primary-200 text-white px-4 py-2.5 shadow-sm relative z-40 w-full">
                     <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 text-xs sm:text-sm">
                         <Link
                             href={`/${number}/anuncios`}
-                            className="flex items-center gap-2 overflow-hidden flex-1 group hover:opacity-90 transition"
+                            className="flex items-center gap-2.5 overflow-hidden flex-1 group hover:opacity-90 transition min-w-0"
                         >
-                            <span className="flex items-center justify-center p-1 rounded-full bg-white/20 text-white shrink-0">
-                                <Bell size={13} />
+                            <span className="flex items-center justify-center p-1.5 rounded-full bg-white/20 text-white shrink-0 self-center">
+                                <Bell size={14} />
                             </span>
-                            <div className="overflow-hidden whitespace-nowrap text-ellipsis flex items-center gap-1.5">
-                                <span className="font-bold uppercase tracking-wider text-[10px] bg-white/20 px-1.5 py-0.5 rounded shrink-0">
-                                    Aviso
-                                </span>
+                            <div className="min-w-0 flex-1">
                                 <AnimatePresence mode="wait">
-                                    <motion.span
+                                    <motion.div
                                         key={currentNoticeIndex}
                                         initial={{ opacity: 0, y: 4 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -4 }}
                                         transition={{ duration: 0.2 }}
-                                        className="font-medium truncate"
+                                        className="font-medium line-clamp-2 leading-tight text-xs sm:text-sm"
                                     >
-                                        <strong className="mr-1">
+                                        <span className="font-bold uppercase tracking-wider text-[10px] bg-white/20 px-1.5 py-0.5 rounded mr-1.5 inline-block align-middle">
+                                            Aviso
+                                        </span>
+                                        <strong className="mr-1 font-semibold">
                                             {notices[currentNoticeIndex]?.title}:
                                         </strong>
                                         <span>{notices[currentNoticeIndex]?.text}</span>
-                                    </motion.span>
+                                    </motion.div>
                                 </AnimatePresence>
                             </div>
                         </Link>
 
                         <Link
                             href={`/${number}/anuncios`}
-                            className="flex items-center gap-1 text-[11px] font-semibold shrink-0 bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition"
+                            className="flex items-center gap-1 text-[11px] font-semibold shrink-0 bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition self-center"
                         >
                             {notices.length > 1 && (
                                 <span className="text-[10px] opacity-80 mr-0.5">
@@ -263,15 +263,6 @@ function Home({ serverNumber }: HomeProps) {
                                 <h1 className="text-base sm:text-lg md:text-xl font-semibold text-secondary-100 drop-shadow">
                                     Congregação {congregation?.name}
                                 </h1>
-                                {/* {congregation?.circuit && (
-                                    <p className="text-xs sm:text-sm text-secondary-100 flex items-center gap-1">
-                                        <MapPin size={13} className="text-primary-100" />
-                                        <span>
-                                            {congregation?.circuit}
-                                            {congregation?.city ? ` • ${congregation.city}` : ""}
-                                        </span>
-                                    </p>
-                                )} */}
                             </div>
                         )}
                     </div>
@@ -343,7 +334,7 @@ function Home({ serverNumber }: HomeProps) {
                 )}
             </main>
 
-            {/* Footer Oficial do Sistema (com Mudar Tema em formato pill, Instalar App e Política de Privacidade) */}
+            {/* Footer Oficial do Sistema */}
             <Footer
                 nCong={number as string}
                 ano={new Date().getFullYear()}
