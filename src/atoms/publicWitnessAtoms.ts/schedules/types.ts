@@ -35,5 +35,20 @@ export interface IPublicWitnessScheduleResponse {
   exceptions: IFieldServiceException[]
 }
 
+export type GeneratePublicWitnessSchedulePayload = {
+  startDate: string
+  endDate: string
+  mode?: "append" | "reconcile"
+  publishersPerSlot?: number
+}
+
+export type UpdateSlotPreferencesPayload = {
+  preferences: {
+    time_slot_id: string
+    publisher_ids: string[]
+  }[]
+}
+
+
 
 

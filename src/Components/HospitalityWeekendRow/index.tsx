@@ -1,36 +1,31 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
-import { useEffect, useMemo, useState } from "react"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useEffect, useState } from "react"
 
 import {
-  dirtyWeekendsAtom,
-  hospitalityGroup,
-  hospitalityWeekendsAtom,
-  updateAssignmentStatusAtom,
+    dirtyWeekendsAtom,
+    hospitalityGroup,
+    hospitalityWeekendsAtom,
+    updateAssignmentStatusAtom,
 } from "@/atoms/hospitalityWeekendScheduleAtoms"
 import { buildHospitalityOptions } from "@/functions/buildHospitalityGroupOptions"
+import { IHospitalityEventType, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
 import { IHospitalityGroup } from "@/types/types"
 import { formatPhoneNumber } from "@/utils/formatPhoneNumber"
 import { hospitalityMap } from "@/utils/hospitalityMap"
+import {
+    Calendar,
+    Check,
+    CheckCircle2,
+    Clock,
+    Home,
+    Moon,
+    Utensils
+} from "lucide-react"
 import CheckboxBoolean from "../CheckboxBoolean"
 import DropdownObject from "../DropdownObjects"
 import WhatsAppIcon from "../Icons/WhatsAppIcon"
-import { IHospitalityEventType, IRecordHospitalityAssignment, IRecordHospitalityWeekend } from "@/types/hospitality"
-import {
-  Calendar,
-  Check,
-  CheckCircle2,
-  Clock,
-  Home,
-  Moon,
-  Plus,
-  Send,
-  User,
-  Users,
-  Utensils,
-  X
-} from "lucide-react"
 
 interface Props {
   date: Date

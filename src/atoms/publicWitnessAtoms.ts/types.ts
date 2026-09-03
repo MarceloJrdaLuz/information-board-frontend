@@ -16,6 +16,7 @@ export type PublicWitnessTimeSlotPayload = {
   order: number
   is_rotative?: boolean
   defaultPublishers?: PublicWitnessDefaultPublisherPayload[]
+  preferences?: { publisher_id: string }[]
 }
 
 export type CreatePublicWitnessArrangementPayload = {

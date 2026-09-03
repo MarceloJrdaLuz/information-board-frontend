@@ -31,6 +31,14 @@ export interface IPublicWitnessDefaultPublisher {
   publisher: IPublisher
 }
 
+// Preferência de horário por publicador
+export interface IPublicWitnessTimeSlotPreference {
+  id: string
+  time_slot_id: string
+  publisher_id: string
+  publisher?: IPublisher
+}
+
 // Slot de horário
 export interface IPublicWitnessTimeSlot {
   id: string
@@ -40,6 +48,7 @@ export interface IPublicWitnessTimeSlot {
   order: number
   is_rotative: boolean
   defaultPublishers: IPublicWitnessDefaultPublisher[]
+  preferences?: IPublicWitnessTimeSlotPreference[]
 }
 
 // Arranjo completo
