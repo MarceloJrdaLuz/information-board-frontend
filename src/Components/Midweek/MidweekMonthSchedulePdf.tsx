@@ -1,13 +1,50 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Document, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { Columns, Download, LayoutTemplate, Printer } from "lucide-react";
 import React, { useState } from "react";
 
 dayjs.locale("pt-br");
+
+// Registra as fontes Crimson Pro para o Modelo Grade
+try {
+    Font.register({
+        family: "Crimson Pro",
+        fonts: [
+            {
+                src: "/fonts/CrimsonPro-Regular.ttf",
+                fontWeight: "normal",
+            },
+            {
+                src: "/fonts/CrimsonPro-Bold.ttf",
+                fontWeight: "bold",
+            },
+            {
+                src: "/fonts/CrimsonPro-Italic.ttf",
+                fontStyle: "italic",
+                fontWeight: "normal",
+            },
+            {
+                src: "/fonts/CrimsonPro-BoldItalic.ttf",
+                fontStyle: "italic",
+                fontWeight: "bold",
+            },
+            {
+                src: "/fonts/CrimsonPro-SemiBold.ttf",
+                fontWeight: 600,
+            },
+            {
+                src: "/fonts/CrimsonPro-Medium.ttf",
+                fontWeight: 500,
+            },
+        ],
+    });
+} catch (e) {
+    // Ignora se já estiver registrada
+}
 
 const MONTH_NAMES = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -30,7 +67,8 @@ const styles1 = StyleSheet.create({
         paddingBottom: 22,
         paddingHorizontal: 18,
         backgroundColor: "#FFFFFF",
-        fontFamily: "Helvetica"
+        fontFamily: "Crimson Pro",
+        color: "#1E293B"
     },
     docHeader: {
         marginBottom: 10,
@@ -42,19 +80,19 @@ const styles1 = StyleSheet.create({
         paddingBottom: 4
     },
     docTitle: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: "bold",
         color: "#1E3A5F",
         textTransform: "uppercase",
         letterSpacing: 0.5
     },
     docSubtitle: {
-        fontSize: 8.5,
+        fontSize: 9,
         color: "#64748B",
         marginTop: 1
     },
     docMonthTag: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: "bold",
         color: "#1E3A5F",
         textTransform: "uppercase"
@@ -78,7 +116,7 @@ const styles1 = StyleSheet.create({
         paddingHorizontal: 8
     },
     weekTitleLeft: {
-        fontSize: 9.5,
+        fontSize: 10,
         fontWeight: "bold",
         color: "#FFFFFF",
         textTransform: "uppercase",
@@ -95,7 +133,7 @@ const styles1 = StyleSheet.create({
     },
     weekHeaderLabel: {
         width: "40%",
-        fontSize: 7.5,
+        fontSize: 8,
         fontWeight: "bold",
         color: "#94A3B8",
         textAlign: "right",
@@ -103,7 +141,7 @@ const styles1 = StyleSheet.create({
     },
     weekHeaderName: {
         width: "60%",
-        fontSize: 8.5,
+        fontSize: 9.5,
         fontWeight: "bold",
         color: "#FFFFFF",
         textAlign: "left"
@@ -113,7 +151,7 @@ const styles1 = StyleSheet.create({
         paddingHorizontal: 8,
         color: "#FFFFFF",
         fontWeight: "bold",
-        fontSize: 7.8,
+        fontSize: 8.5,
         textTransform: "uppercase",
         letterSpacing: 0.4
     },
@@ -137,7 +175,7 @@ const styles1 = StyleSheet.create({
         width: "8%",
         paddingVertical: 3,
         paddingHorizontal: 4,
-        fontSize: 7.5,
+        fontSize: 8,
         color: "#64748B",
         textAlign: "right"
     },
@@ -145,7 +183,7 @@ const styles1 = StyleSheet.create({
         width: "57%",
         paddingVertical: 3,
         paddingHorizontal: 6,
-        fontSize: 7.5,
+        fontSize: 8,
         color: "#1E293B",
         borderLeftWidth: 0.5,
         borderLeftColor: "#E2E8F0"
@@ -168,21 +206,21 @@ const styles1 = StyleSheet.create({
     },
     assigneeLabelCellSingle: {
         width: "40%",
-        fontSize: 7.2,
+        fontSize: 7.5,
         color: "#64748B",
         textAlign: "right",
         paddingRight: 4
     },
     assigneeNameCellSingle: {
         width: "60%",
-        fontSize: 7.8,
+        fontSize: 8.5,
         fontWeight: "bold",
         color: "#0F172A",
         textAlign: "left"
     },
     assigneeSingleName: {
         width: "100%",
-        fontSize: 7.8,
+        fontSize: 8.5,
         fontWeight: "bold",
         color: "#0F172A",
         textAlign: "left",
@@ -196,14 +234,14 @@ const styles1 = StyleSheet.create({
     },
     assigneeLabelCellDual: {
         width: "28%",
-        fontSize: 6.8,
+        fontSize: 7,
         color: "#64748B",
         textAlign: "right",
         paddingRight: 3
     },
     assigneeMainCellDual: {
         width: "36%",
-        fontSize: 7.5,
+        fontSize: 8,
         fontWeight: "bold",
         color: "#0F172A",
         textAlign: "left",
@@ -211,7 +249,7 @@ const styles1 = StyleSheet.create({
     },
     assigneeAuxCellDual: {
         width: "36%",
-        fontSize: 7.5,
+        fontSize: 8,
         fontWeight: "bold",
         color: "#0F172A",
         textAlign: "left",
@@ -233,7 +271,7 @@ const styles1 = StyleSheet.create({
         paddingHorizontal: 8
     },
     songTitle: {
-        fontSize: 7.8,
+        fontSize: 8.5,
         fontWeight: "bold",
         color: "#1E293B"
     },
@@ -246,7 +284,7 @@ const styles1 = StyleSheet.create({
         color: "#475569"
     },
     lessonBadge: {
-        fontSize: 7,
+        fontSize: 7.5,
         color: "#64748B"
     },
     specialBanner: {
@@ -256,13 +294,13 @@ const styles1 = StyleSheet.create({
         justifyContent: "center"
     },
     specialTitle: {
-        fontSize: 9.5,
+        fontSize: 10.5,
         fontWeight: "bold",
         color: "#92400E",
         textTransform: "uppercase"
     },
     specialDesc: {
-        fontSize: 7.5,
+        fontSize: 8,
         color: "#B45309",
         marginTop: 2
     },
@@ -272,7 +310,7 @@ const styles1 = StyleSheet.create({
         left: 20,
         right: 20,
         textAlign: "center",
-        fontSize: 7,
+        fontSize: 7.5,
         color: "#94A3B8"
     }
 });
