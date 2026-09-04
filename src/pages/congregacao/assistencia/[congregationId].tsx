@@ -21,8 +21,7 @@ import {
     TrendingUp,
     Users,
 } from "lucide-react";
-import moment from "moment";
-import "moment/locale/pt-br";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 
@@ -62,14 +61,8 @@ function ListReportsPage() {
     const meetingAssistance = useMemo(() => {
         if (!data) return [];
         return [...data].sort((a, b) => {
-            const dateA = moment(
-                `${a.year}-${moment().month(a.month).format("MM")}`,
-                "YYYY-MM"
-            );
-            const dateB = moment(
-                `${b.year}-${moment().month(b.month).format("MM")}`,
-                "YYYY-MM"
-            );
+            const dateA = dayjs().year(a.year).month(a.month);
+            const dateB = dayjs().year(b.year).month(b.month);
             return dateB.diff(dateA);
         });
     }, [data]);

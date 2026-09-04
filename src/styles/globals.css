@@ -357,12 +357,12 @@ input[type=number] {
 }
 
 .theme-purple {
-  --color-primary-200: 98 70 140;
-  /* #62468C — tom mais escuro e sólido */
-  --color-primary-150: 134 106 170;
-  /* #866AAA — transição equilibrada */
-  --color-primary-100: 174 152 206;
-  /* #AE98CE — destaque suave */
+  --color-primary-200: 124 58 237;
+  /* #7C3AED — tom roxo moderno e contrastante */
+  --color-primary-150: 139 92 246;
+  /* #8B5CF6 — intermediário equilibrado */
+  --color-primary-100: 196 181 253;
+  /* #C4B5FD — destaque suave */
 
 
   /* Secundárias */

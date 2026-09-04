@@ -123,7 +123,6 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             }}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                                 sameTeamWholeWeek ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
-                                sameTeamWholeWeek ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
@@ -149,7 +148,6 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             onClick={() => setCombineSoundAndMedia(!combineSoundAndMedia)}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                                 combineSoundAndMedia ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
-                                combineSoundAndMedia ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
