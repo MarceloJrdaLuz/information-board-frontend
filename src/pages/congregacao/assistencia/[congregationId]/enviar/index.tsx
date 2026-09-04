@@ -16,6 +16,12 @@ function MeetingAssistancePage() {
     useEffect(() => {
         setPageActive('Adicionar')
     }, [setPageActive])
+        setPageActive("Adicionar Assistência")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Assistência", link: `/congregacao/assistencia/${congregationId}` },
+        ])
+    }, [setPageActive, setCrumbs, congregationId])
 
     useEffect(() => {
         setCrumbs((prevCrumbs) => {

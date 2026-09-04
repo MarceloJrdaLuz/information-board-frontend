@@ -31,6 +31,12 @@ function TransferPublishersPage() {
             const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/congregacao/publicadores' }]
             return updatedCrumbs
         })
+        setPageActive("Transferir Publicador")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Publicadores", link: "/congregacao/publicadores" },
+        ])
+    }, [setPageActive, setCrumbs])
 
         const removeCrumb = () => {
             setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))

@@ -43,6 +43,7 @@ function ListReportsPage() {
             { label: "Assistência", link: `/congregacao/assistencia/${congregationId}` },
         ]);
     }, [setPageActive, setCrumbs, congregationId]);
+    }, [setPageActive, setCrumbs]);
 
     const { data, isLoading } = useAuthorizedFetch<IMeetingAssistance[]>(
         congregationId ? `/assistance/${congregationId}` : "",

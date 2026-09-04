@@ -134,6 +134,7 @@ function EditHistoryTerritoryPage() {
             },
         ]);
     }, [setPageActive, setCrumbs, territory, territoryIdStr]);
+    }, [setPageActive, setCrumbs]);
 
     // ==========================================
     // Estados dos Modais
