@@ -29,15 +29,20 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     ((page) => <Layout>{page}</Layout>)
 
   useEffect(() => {
-    // Se o PWA foi aberto via atalho instalado com ?theme=, guarda como tema instalado
+    const validThemes = ['', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-pink']
     const urlParams = new URLSearchParams(window.location.search)
     const urlTheme = urlParams.get('theme')
+
     if (urlTheme !== null) {
       localStorage.setItem('pwa_installed_theme', urlTheme)
+      if (validThemes.includes(urlTheme)) {
+        changeTheme(urlTheme as ThemeType)
+        return
+      }
     }
 
     const savedTheme = (localStorage.getItem('theme') || '') as ThemeType
-    if (['', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-pink'].includes(savedTheme)) {
+    if (validThemes.includes(savedTheme)) {
       changeTheme(savedTheme)
     }
   }, [changeTheme])

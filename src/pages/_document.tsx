@@ -59,7 +59,12 @@ export default function Document() {
             __html: `
               (function() {
                 try {
-                  var saved = localStorage.getItem('theme') || '';
+                  var params = new URLSearchParams(window.location.search);
+                  var urlTheme = params.get('theme');
+                  var saved = (urlTheme !== null && urlTheme !== undefined) ? urlTheme : (localStorage.getItem('theme') || '');
+                  if (urlTheme !== null && urlTheme !== undefined) {
+                    try { localStorage.setItem('theme', urlTheme); } catch(e) {}
+                  }
                   var colors = {
                     '': '#178582',
                     'theme-dark': '#6F4EA1',
