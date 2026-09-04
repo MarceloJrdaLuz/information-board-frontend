@@ -12,18 +12,15 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { BlobProvider, Document } from "@react-pdf/renderer";
 import { useAtom } from "jotai";
 import {
-    CalendarDays,
     FileDown,
     FilePlus2,
     FileText,
     Layers,
     Loader2,
-    TrendingUp,
-    Users,
+    TrendingUp
 } from "lucide-react";
-import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function ListReportsPage() {
     const { roleContains } = useAuthContext();
@@ -60,10 +57,30 @@ function ListReportsPage() {
 
     const meetingAssistance = useMemo(() => {
         if (!data) return [];
+        const monthMap: Record<string, number> = {
+            janeiro: 0,
+            fevereiro: 1,
+            março: 2,
+            marco: 2,
+            abril: 3,
+            maio: 4,
+            junho: 5,
+            julho: 6,
+            agosto: 7,
+            setembro: 8,
+            outubro: 9,
+            novembro: 10,
+            dezembro: 11,
+        };
         return [...data].sort((a, b) => {
-            const dateA = dayjs().year(a.year).month(a.month);
-            const dateB = dayjs().year(b.year).month(b.month);
-            return dateB.diff(dateA);
+            const yearA = Number(a.year) || 0;
+            const yearB = Number(b.year) || 0;
+            if (yearB !== yearA) {
+                return yearB - yearA;
+            }
+            const monthA = monthMap[a.month?.toLowerCase()] ?? (Number(a.month) || 0);
+            const monthB = monthMap[b.month?.toLowerCase()] ?? (Number(b.month) || 0);
+            return monthB - monthA;
         });
     }, [data]);
 

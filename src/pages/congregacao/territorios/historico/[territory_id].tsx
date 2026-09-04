@@ -13,7 +13,6 @@ import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useAuthContext } from "@/context/AuthContext";
 import { useTerritoryContext } from "@/context/TerritoryContext";
-import { shortenName } from "@/functions/reduzirNome";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import TerritoriesProviderLayout from "@/layouts/providers/territories/_layout";
 import {
@@ -24,9 +23,10 @@ import {
 } from "@/types/territory";
 import { WORKTYPESTERRITORY } from "@/types/types";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import { useAtom } from "jotai";
 import {
-    AlertCircle,
     ArrowLeft,
     Calendar,
     Check,
@@ -35,15 +35,11 @@ import {
     History,
     Layers,
     Loader2,
-    MapPin,
     Pencil,
     Plus,
     Trash2,
-    User,
-    UserCheck,
+    User
 } from "lucide-react";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br";
 import Router, { useRouter } from "next/router";
 import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";

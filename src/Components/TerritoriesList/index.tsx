@@ -12,6 +12,7 @@ import { useTerritoryContext } from "@/context/TerritoryContext";
 import { shortenName } from "@/functions/reduzirNome";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ITerritory } from "@/types/territory";
+import dayjs from "dayjs";
 import {
     Calendar,
     CheckCircle2,
@@ -29,9 +30,8 @@ import {
     UserCheck,
     X,
 } from "lucide-react";
-import dayjs from "dayjs";
 import Router from "next/router";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import FullScreenImage from "../FullScreenImage";
 import SkeletonTerritoriesList from "./skeletonTerritoriesList";
