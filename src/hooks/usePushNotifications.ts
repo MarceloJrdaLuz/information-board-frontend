@@ -202,10 +202,8 @@ export function usePushNotifications() {
                     const themeFolder = currentTheme ? `${currentTheme}/` : ""
                     reg.showNotification("Notificações Ativadas! 🎉", {
                         body: "Você começará a receber suas designações e lembretes aqui.",
-                        icon: "/icons/notifications/reminder.png",
                         icon: `/icons/notifications/${themeFolder}reminder.png`,
                         badge: "/icons/badge.png", // Usando o novo badge monocromático
-                        data: { url: "/dashboard" },
                         data: { url: "/dashboard", theme: currentTheme || "" },
                     })
                 }
