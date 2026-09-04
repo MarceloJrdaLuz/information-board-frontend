@@ -1,6 +1,5 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
 import FormTransferPublisher from "@/Components/Forms/FormTransferPublisher"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
@@ -31,12 +30,6 @@ function TransferPublishersPage() {
             const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/congregacao/publicadores' }]
             return updatedCrumbs
         })
-        setPageActive("Transferir Publicador")
-        setCrumbs([
-            { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" },
-        ])
-    }, [setPageActive, setCrumbs])
 
         const removeCrumb = () => {
             setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))

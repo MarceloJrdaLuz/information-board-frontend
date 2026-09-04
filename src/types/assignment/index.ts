@@ -1,4 +1,5 @@
 import { IHospitalityEventType } from "../hospitality"
+import { MechanicalRole } from "../mechanical"
 import { ITalk } from "../types"
 
 /* =========================
@@ -110,6 +111,20 @@ export interface IMidweekGeneralAssignment extends IBaseAssignment {
 }
 
 /* =========================
+ * Tarefas Mecânicas
+ * ========================= */
+
+export interface IMechanicalTaskAssignment extends IBaseAssignment {
+  role: "Tarefa Mecânica" | "Indicador" | "Som" | "Mídias" | "Som e Mídias" | "Microfone Volante" | "Pedestal"
+  id?: string
+  title?: string
+  mechanicalRole?: MechanicalRole | string
+  mechanicalRoleLabel?: string
+  order?: number
+  meetingType?: "MIDWEEK" | "WEEKEND"
+}
+
+/* =========================
  * Union FINAL
  * ========================= */
 
@@ -122,4 +137,4 @@ export type IAssignment =
   | IHospitalityAssignment
   | IMidweekGeneralAssignment
   | IMidweekPartAssignment
-
+  | IMechanicalTaskAssignment
