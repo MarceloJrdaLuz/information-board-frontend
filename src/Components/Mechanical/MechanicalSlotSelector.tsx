@@ -86,7 +86,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                     type="button"
                     className={`group w-full flex items-center justify-between text-left p-2 rounded-lg border transition-all cursor-pointer ${
                         currentPublisherName
-                            ? "bg-white dark:bg-zinc-800/90 border-typography-200 hover:border-primary-200/80 shadow-xs"
+                            ? "bg-surface-100/90 border-typography-200 hover:border-primary-200/80 shadow-xs"
                             : "bg-surface-100/70 border-dashed border-typography-300 hover:bg-surface-200/50"
                     }`}
                 >
@@ -117,7 +117,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
 
             <Popover.Portal>
                 <Popover.Content
-                    className="z-50 w-72 sm:w-80 p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-typography-200 shadow-xl focus:outline-none"
+                    className="z-50 w-72 sm:w-80 p-2.5 rounded-xl bg-surface-100 border border-typography-200 shadow-xl focus:outline-none"
                     sideOffset={5}
                     align="start"
                 >

@@ -223,7 +223,7 @@ function MechanicalSchedulePage() {
                 <BreadCrumbs crumbs={crumbs} pageActive="Partes Mecânicas" />
 
                 {/* Top Header Card */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-zinc-900 border border-typography-200/80 rounded-2xl p-4 md:p-5 shadow-xs">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-100 border border-surface-300 rounded-2xl p-4 md:p-5 shadow-xs">
                     <div>
                         <div className="flex items-center gap-2">
                             <div className="p-2 bg-primary-50 dark:bg-primary-950/40 rounded-xl text-primary-200">
@@ -339,7 +339,7 @@ function MechanicalSchedulePage() {
                         <span className="text-sm font-medium">Carregando programação mecânica...</span>
                     </div>
                 ) : !data || data.weeks.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border border-typography-200/80 text-center p-6">
+                    <div className="flex flex-col items-center justify-center py-20 bg-surface-100 rounded-2xl border border-surface-300 text-center p-6">
                         <Radio className="h-10 w-10 text-typography-300 mb-3" />
                         <h3 className="text-base font-bold text-typography-800">
                             Nenhuma programação encontrada para este mês
@@ -365,7 +365,7 @@ function MechanicalSchedulePage() {
                             return (
                                 <div
                                     key={week.weekStartDate}
-                                    className="bg-white dark:bg-zinc-900 border border-typography-200/80 rounded-2xl overflow-hidden shadow-xs"
+                                    className="bg-surface-100 border border-surface-300 rounded-2xl overflow-hidden shadow-xs"
                                 >
                                     {/* Cabeçalho da Semana */}
                                     <div className="flex items-center justify-between px-4 py-3 bg-surface-200/70 border-b border-typography-200/60">

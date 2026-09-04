@@ -63,14 +63,16 @@ export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
                         <PlusCircle className="h-5 w-5 text-primary-200" />
                         Adicionar Parte Personalizada
                     </DialogTitle>
-                    <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <DialogDescription className="text-xs text-zinc-500 text-typography-500">
+                    <DialogDescription className="text-xs text-typography-500">
                         Crie uma parte extra na programação da semana (ex: Necessidades Locais extra, Discurso Especial).
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-2">
                     <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                        <label className="text-xs font-semibold text-zinc-700 text-typography-700">
+                        <label className="text-xs font-semibold text-typography-700">
                             Tema da Parte *
                         </label>
                         <input
@@ -79,13 +81,15 @@ export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
                             placeholder="Ex: Discurso de Serviço do SC..."
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 border-surface-300 bg-zinc-50 bg-surface-200 text-zinc-900 text-typography-800 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-800 focus:outline-none focus:ring-1 focus:ring-primary-200"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                            <label className="text-xs font-semibold text-zinc-700 text-typography-700">
+                            <label className="text-xs font-semibold text-typography-700">
                                 Duração (minutos)
                             </label>
                             <input
@@ -94,12 +98,14 @@ export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
                                 max={60}
                                 value={timeMinutes}
                                 onChange={(e) => setTimeMinutes(Number(e.target.value))}
-                                className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                                className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 border-surface-300 bg-zinc-50 bg-surface-200 text-zinc-900 text-typography-800"
+                                className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-800"
                             />
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                            <label className="text-xs font-semibold text-zinc-700 text-typography-700">
+                            <label className="text-xs font-semibold text-typography-700">
                                 Método / Formato
                             </label>
                             <input
@@ -107,19 +113,22 @@ export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
                                 placeholder="Ex: Discurso, Vídeo..."
                                 value={method}
                                 onChange={(e) => setMethod(e.target.value)}
-                                className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                                className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 border-surface-300 bg-zinc-50 bg-surface-200 text-zinc-900 text-typography-800"
+                                className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-800"
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                        <label className="text-xs font-semibold text-zinc-700 text-typography-700">
+                        <label className="text-xs font-semibold text-typography-700">
                             Seção da Reunião
                         </label>
                         <select
                             value={section}
                             onChange={(e) => setSection(e.target.value as MidweekSection)}
-                            className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                            className="w-full px-3 py-2 text-xs rounded-lg border border-zinc-200 border-surface-300 bg-zinc-50 bg-surface-200 text-zinc-900 text-typography-800"
+                            className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-800"
                         >
                             <option value={MidweekSection.LIVING}>Nossa Vida Cristã</option>
                             <option value={MidweekSection.TREASURES}>Tesouros da Palavra de Deus</option>

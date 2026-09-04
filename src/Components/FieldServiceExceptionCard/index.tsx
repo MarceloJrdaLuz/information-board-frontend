@@ -1,127 +1,167 @@
-import { API_ROUTES } from "@/constants/apiRoutes"
-import { useAuthorizedFetch } from "@/hooks/useFetch"
-import dayjs from "dayjs"
-import "dayjs/locale/pt-br"
-dayjs.locale("pt-br")
-import { useState } from "react"
-import { toast } from "react-toastify"
-import Calendar from "../Calendar"
-import Button from "../Button"
-import Input from "../Input"
-import { Trash } from "lucide-react"
-import { useSetAtom } from "jotai"
+import { API_ROUTES } from "@/constants/apiRoutes";
+import { useAuthorizedFetch } from "@/hooks/useFetch";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import Calendar from "../Calendar";
+import { Button } from "@/Components/ui/button";
+import { useSetAtom } from "jotai";
 import {
     createFieldServiceExceptionAtom,
     deleteFieldServiceExceptionAtom,
-} from "@/atoms/fieldServiceAtoms"
-import { CreateFieldServiceExceptionPayload } from "@/atoms/fieldServiceAtoms/types"
-import { useCongregationContext } from "@/context/CongregationContext"
+} from "@/atoms/fieldServiceAtoms";
+import { CreateFieldServiceExceptionPayload } from "@/atoms/fieldServiceAtoms/types";
+import { useCongregationContext } from "@/context/CongregationContext";
+import { CalendarOff, Loader2, Plus, Trash2 } from "lucide-react";
 
+dayjs.locale("pt-br");
 
 export function FieldServiceExceptionsCard() {
-    const { congregation } = useCongregationContext()
-    const createException = useSetAtom(createFieldServiceExceptionAtom)
-    const deleteException = useSetAtom(deleteFieldServiceExceptionAtom)
+    const { congregation } = useCongregationContext();
+    const createException = useSetAtom(createFieldServiceExceptionAtom);
+    const deleteException = useSetAtom(deleteFieldServiceExceptionAtom);
 
     const [date, setDate] = useState<string | null>(
         dayjs().format("YYYY-MM-DD")
-    )
-    const [reason, setReason] = useState("")
-    const [loading, setLoading] = useState(false)
+    );
+    const [reason, setReason] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const url = congregation
         ? `${API_ROUTES.FIELD_SERVICE_EXCEPTIONS}/congregation/${congregation?.id}`
-        : ""
+        : "";
 
     const { data: exceptions, mutate } = useAuthorizedFetch<any[]>(url, {
         allowedRoles: ["ADMIN_CONGREGATION", "FIELD_SERVICE_MANAGER"],
-    })
+    });
 
     const handleAdd = async () => {
         if (!date) {
-            toast.error("Informe a data.")
-            return
+            toast.error("Informe a data.");
+            return;
         }
 
         const payload: CreateFieldServiceExceptionPayload = {
             date,
-            reason,
+            reason: reason.trim() || "Sem saída",
+        };
+
+        setLoading(true);
+        try {
+            await createException(congregation?.id ?? "", payload);
+            toast.success("Exceção adicionada com sucesso!");
+            setReason("");
+            await mutate();
+        } catch (err) {
+            console.error(err);
+            toast.error("Erro ao adicionar exceção.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(true)
-
-        await toast
-            .promise(createException(congregation?.id ?? "", payload), {
-                pending: "Salvando exceção...",
-            })
-            .then(() => {
-                setReason("")
-                mutate()
-            })
-            .finally(() => setLoading(false))
-    }
+    };
 
     const handleDelete = async (id: string) => {
-        await toast
-            .promise(deleteException(id), {
-                pending: "Removendo exceção...",
-            })
-            .then(() => mutate())
-    }
+        try {
+            await deleteException(id);
+            toast.success("Exceção removida!");
+            await mutate();
+        } catch (err) {
+            console.error(err);
+            toast.error("Erro ao remover exceção.");
+        }
+    };
 
     return (
-        <div className="flex flex-col  p-5 gap-4 bg-surface-100 rounded-md">
-            <Calendar
-                label="Data"
-                titleHidden
-                full
-                selectedDate={date}
-                handleDateChange={setDate}
-            />
+        <div className="flex flex-col gap-4 p-5 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm w-full">
+            <div className="flex items-center gap-2 pb-3 border-b border-surface-300">
+                <CalendarOff className="w-5 h-5 text-rose-500" />
+                <h3 className="font-bold text-base text-typography-800">
+                    Cadastrar Data sem Saída de Campo
+                </h3>
+            </div>
 
-            <Input
-                type="text"
-                placeholder="Motivo"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-            />
+            {/* Formulário de Adição */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                <Calendar
+                    label="Data da Exceção"
+                    selectedDate={date}
+                    handleDateChange={setDate}
+                    full
+                />
+
+                <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-typography-700">
+                        Motivo (opcional):
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Ex: Congresso, Assembleia, Feriado"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                    />
+                </div>
+            </div>
 
             <Button
-                className="w-full"
                 onClick={handleAdd}
-                disabled={loading}
+                disabled={loading || !date}
+                className="w-full bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm h-10"
             >
-                {loading ? "Salvando..." : "Adicionar"}
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                <span>Adicionar Data sem Saída</span>
             </Button>
 
-            <ul className="mt-2">
-                {exceptions?.map((exc) => (
-                    <li
-                        key={exc.id}
-                        className="flex justify-between items-center p-2 border-b text-sm text-typography-700"
-                    >
-                        <span>
-                            {dayjs(exc.date).format("DD/MM/YYYY")}
-                            {" ("}
-                            {dayjs(exc.date).format("dddd")}
-                            {")"} — {exc.reason}
+            {/* Lista de Exceções */}
+            <div className="mt-2 space-y-2 pt-3 border-t border-surface-300">
+                <span className="text-xs font-semibold text-typography-500 block">
+                    Datas cadastradas ({exceptions?.length || 0}):
+                </span>
 
-                        </span>
-                        <button
-                            className="text-red-500 hover:opacity-70"
-                            onClick={() => handleDelete(exc.id)}
-                        >
-                            <Trash className="w-4 h-4" />
-                        </button>
-                    </li>
-                ))}
+                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                    {exceptions && exceptions.length > 0 ? (
+                        exceptions.map((exc) => {
+                            const excDate = dayjs(exc.date);
+                            return (
+                                <div
+                                    key={exc.id}
+                                    className="flex items-center justify-between p-3 rounded-xl bg-surface-200 border border-surface-300 text-xs"
+                                >
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-typography-800">
+                                                {excDate.format("DD/MM/YYYY")}
+                                            </span>
+                                            <span className="px-2 py-0.2 rounded text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900">
+                                                {excDate.format("dddd")}
+                                            </span>
+                                        </div>
+                                        {exc.reason && (
+                                            <p className="text-typography-500 text-[11px]">
+                                                {exc.reason}
+                                            </p>
+                                        )}
+                                    </div>
 
-                {exceptions?.length === 0 && (
-                    <p className="text-sm text-typography-500 italic">
-                        Nenhuma exceção cadastrada.
-                    </p>
-                )}
-            </ul>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(exc.id)}
+                                        className="p-1.5 text-typography-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                                        title="Remover exceção"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p className="text-xs text-typography-400 italic py-2">
+                            Nenhuma exceção cadastrada.
+                        </p>
+                    )}
+                </div>
+            </div>
         </div>
-    )
+    );
 }

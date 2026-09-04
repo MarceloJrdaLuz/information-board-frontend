@@ -123,10 +123,11 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             }}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                                 sameTeamWholeWeek ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
+                                sameTeamWholeWeek ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
-                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface-100 shadow ring-0 transition duration-200 ease-in-out ${
                                     sameTeamWholeWeek ? "translate-x-5" : "translate-x-0"
                                 }`}
                             />
@@ -148,10 +149,11 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             onClick={() => setCombineSoundAndMedia(!combineSoundAndMedia)}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                                 combineSoundAndMedia ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
+                                combineSoundAndMedia ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
-                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface-100 shadow ring-0 transition duration-200 ease-in-out ${
                                     combineSoundAndMedia ? "translate-x-5" : "translate-x-0"
                                 }`}
                             />
@@ -160,7 +162,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
 
                     {/* CONTEÚDO: Se for o mesmo grupo na semana, exibe 1 seção unificada. Se não, exibe Meio de Semana e Fim de Semana separados */}
                     {sameTeamWholeWeek ? (
-                        <div className="border border-typography-200/60 rounded-xl p-4 bg-white dark:bg-zinc-900">
+                        <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
                             <div className="flex items-center gap-2 mb-2">
                                 <Sliders className="h-4 w-4 text-primary-200" />
                                 <h4 className="text-sm font-bold text-typography-900">
@@ -289,7 +291,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                     ) : (
                         <>
                             {/* Meio de Semana */}
-                            <div className="border border-typography-200/60 rounded-xl p-4 bg-white dark:bg-zinc-900">
+                            <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Sliders className="h-4 w-4 text-primary-200" />
                                     <h4 className="text-sm font-bold text-typography-900">
@@ -392,7 +394,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             </div>
 
                             {/* Fim de Semana */}
-                            <div className="border border-typography-200/60 rounded-xl p-4 bg-white dark:bg-zinc-900">
+                            <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Sliders className="h-4 w-4 text-primary-200" />
                                     <h4 className="text-sm font-bold text-typography-900">

@@ -347,27 +347,27 @@ function FieldServiceSchedulePage() {
                 {/* =========================================================
                  * CABEÇALHO & SELEÇÃO DE SAÍDA (RODÍZIO)
                  * ========================================================= */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-typography-200 dark:border-zinc-800 shadow-sm">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <Layers className="w-6 h-6 text-primary-200" />
-                            <h1 className="text-2xl font-bold text-typography-800 dark:text-zinc-100">
+                            <h1 className="text-2xl font-bold text-typography-800">
                                 Programação do Campo
                             </h1>
                         </div>
-                        <p className="text-sm text-typography-500 dark:text-zinc-400">
+                        <p className="text-sm text-typography-500">
                             Distribuição inteligente de dirigentes por antiguidade e gestão manual por data.
                         </p>
                     </div>
 
                     {/* Seletor de Template de Saída */}
                     <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-sm font-medium text-typography-600 dark:text-zinc-300">
+                        <span className="text-sm font-medium text-typography-600">
                             Saída:
                         </span>
                         <div className="min-w-[280px]">
                             <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 dark:bg-zinc-800 border border-typography-300 dark:border-zinc-700 rounded-xl text-sm font-medium text-typography-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
                                 value={selectedTemplate?.id || ""}
                                 onChange={(e) => {
                                     const t = rotationTemplates.find(
@@ -395,22 +395,22 @@ function FieldServiceSchedulePage() {
                  * ========================================================= */}
                 {selectedTemplate && (
                     <div className="flex flex-wrap items-center gap-3 p-4 bg-primary-200/5 dark:bg-primary-200/10 border border-primary-200/20 rounded-xl">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-primary-200/30 text-xs font-semibold text-primary-200">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-primary-200/30 text-xs font-semibold text-primary-200">
                             <CalendarDays className="w-4 h-4" />
                             <span>{WEEKDAY_LABEL[selectedTemplate.weekday as Weekday]}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-typography-200 dark:border-zinc-700 text-xs font-medium text-typography-700 dark:text-zinc-300">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
                             <Clock className="w-4 h-4 text-typography-400" />
                             <span>{formatHour(selectedTemplate.time)}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-typography-200 dark:border-zinc-700 text-xs font-medium text-typography-700 dark:text-zinc-300">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
                             <MapPin className="w-4 h-4 text-typography-400" />
                             <span className="truncate max-w-[200px]">{selectedTemplate.location}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-typography-200 dark:border-zinc-700 text-xs font-medium text-typography-700 dark:text-zinc-300">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
                             <Users className="w-4 h-4 text-emerald-600" />
                             <span>
                                 {selectedTemplate.rotation_members?.length || 0} dirigentes no rodízio
@@ -422,7 +422,7 @@ function FieldServiceSchedulePage() {
                 {/* =========================================================
                  * NAVEGADOR DE MÊS, ESTATÍSTICAS E AÇÕES RÁPIDAS
                  * ========================================================= */}
-                <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-typography-200 dark:border-zinc-800 shadow-sm">
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
                     {/* Navegador de Mês */}
                     <div className="flex items-center gap-2">
                         <Button
@@ -435,7 +435,7 @@ function FieldServiceSchedulePage() {
                             <ChevronLeft className="w-5 h-5" />
                         </Button>
 
-                        <div className="px-4 py-2 min-w-[200px] text-center font-bold text-lg text-typography-800 dark:text-zinc-100 bg-surface-100 dark:bg-zinc-800/60 rounded-xl border border-typography-200 dark:border-zinc-700">
+                        <div className="px-4 py-2 min-w-[200px] text-center font-bold text-lg text-typography-800 bg-surface-100/60 rounded-xl border border-surface-300">
                             {currentMonth.format("MMMM [de] YYYY").replace(/^\w/, (c) => c.toUpperCase())}
                         </div>
 
@@ -461,7 +461,7 @@ function FieldServiceSchedulePage() {
 
                     {/* Estatísticas Rápidas */}
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-zinc-800 text-xs text-typography-600 dark:text-zinc-300 font-medium">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-100 text-xs text-typography-600 font-medium">
                             <CalendarCheck2 className="w-4 h-4 text-primary-200" />
                             <span>{stats.total} saídas programadas</span>
                         </div>
@@ -521,29 +521,29 @@ function FieldServiceSchedulePage() {
                  * GRID / LISTA DE CARDS DE SAÍDAS DO MÊS
                  * ========================================================= */}
                 {loadingSchedules || loadingTemplates ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-white dark:bg-zinc-900 rounded-2xl border border-typography-200 dark:border-zinc-800">
+                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-surface-300">
                         <Loader2 className="w-8 h-8 text-primary-200 animate-spin mb-3" />
-                        <p className="text-sm text-typography-500 dark:text-zinc-400">
+                        <p className="text-sm text-typography-500">
                             Carregando saídas de campo...
                         </p>
                     </div>
                 ) : !selectedTemplate ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-white dark:bg-zinc-900 rounded-2xl border border-typography-200 dark:border-zinc-800 text-center">
-                        <Layers className="w-12 h-12 text-typography-300 dark:text-zinc-600 mb-3" />
-                        <h3 className="text-base font-semibold text-typography-700 dark:text-zinc-200">
+                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-surface-300 text-center">
+                        <Layers className="w-12 h-12 text-typography-400 mb-3" />
+                        <h3 className="text-base font-semibold text-typography-700">
                             Nenhuma saída selecionada
                         </h3>
-                        <p className="text-sm text-typography-500 dark:text-zinc-400 mt-1 max-w-md">
+                        <p className="text-sm text-typography-500 mt-1 max-w-md">
                             Cadastre saídas de campo do tipo rodízio para gerenciar as escalas.
                         </p>
                     </div>
                 ) : currentMonthSchedules.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-typography-300 dark:border-zinc-700 text-center">
-                        <CalendarOff className="w-12 h-12 text-typography-300 dark:text-zinc-600 mb-3" />
-                        <h3 className="text-base font-semibold text-typography-700 dark:text-zinc-200">
+                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center">
+                        <CalendarOff className="w-12 h-12 text-typography-400 mb-3" />
+                        <h3 className="text-base font-semibold text-typography-700">
                             Nenhuma saída agendada para {currentMonth.format("MMMM [de] YYYY")}
                         </h3>
-                        <p className="text-sm text-typography-500 dark:text-zinc-400 mt-1 max-w-md">
+                        <p className="text-sm text-typography-500 mt-1 max-w-md">
                             Gere a programação automaticamente pelo botão acima ou adicione uma data avulsa.
                         </p>
                         <div className="flex items-center gap-3 mt-6">
@@ -599,8 +599,8 @@ function FieldServiceSchedulePage() {
                     </DialogHeader>
 
                     <div className="space-y-4 py-3">
-                        <div className="p-3 bg-surface-100 dark:bg-zinc-800/70 rounded-xl text-xs space-y-1.5 text-typography-600 dark:text-zinc-300 border border-typography-200 dark:border-zinc-700">
-                            <p className="font-semibold text-typography-800 dark:text-zinc-200">
+                        <div className="p-3 bg-surface-200 rounded-xl text-xs space-y-1.5 text-typography-600 border border-surface-300">
+                            <p className="font-semibold text-typography-800">
                                 🎯 Regras da Distribuição Justa:
                             </p>
                             <ul className="list-disc pl-4 space-y-1">
@@ -627,7 +627,7 @@ function FieldServiceSchedulePage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-typography-700 dark:text-zinc-300">
+                            <label className="text-xs font-semibold text-typography-700">
                                 Modo de Geração:
                             </label>
                             <div className="grid grid-cols-2 gap-2">
@@ -637,7 +637,7 @@ function FieldServiceSchedulePage() {
                                     className={`p-3 text-left rounded-xl border text-xs font-medium transition-all ${
                                         genMode === "append"
                                             ? "border-primary-200 bg-primary-200/10 text-primary-300 font-semibold"
-                                            : "border-typography-200 dark:border-zinc-700 hover:bg-surface-100 dark:hover:bg-zinc-800 text-typography-600 dark:text-zinc-400"
+                                            : "border-surface-300 hover:bg-surface-200 text-typography-600"
                                     }`}
                                 >
                                     <div className="font-semibold mb-0.5">Manter existentes</div>
@@ -652,7 +652,7 @@ function FieldServiceSchedulePage() {
                                     className={`p-3 text-left rounded-xl border text-xs font-medium transition-all ${
                                         genMode === "reconcile"
                                             ? "border-amber-500 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 font-semibold"
-                                            : "border-typography-200 dark:border-zinc-700 hover:bg-surface-100 dark:hover:bg-zinc-800 text-typography-600 dark:text-zinc-400"
+                                            : "border-surface-300 hover:bg-surface-200 text-typography-600"
                                     }`}
                                 >
                                     <div className="font-semibold mb-0.5">Substituir existentes</div>
@@ -708,11 +708,11 @@ function FieldServiceSchedulePage() {
                         />
 
                         <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-typography-700 dark:text-zinc-300">
+                            <label className="text-xs font-semibold text-typography-700">
                                 Dirigente:
                             </label>
                             <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 dark:bg-zinc-800 border border-typography-300 dark:border-zinc-700 rounded-xl text-sm text-typography-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
                                 value={newLeaderId}
                                 onChange={(e) => setNewLeaderId(e.target.value)}
                             >
@@ -928,17 +928,17 @@ function FieldServiceScheduleCard({
 
     return (
         <div
-            className={`flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-zinc-900 border transition-all duration-200 shadow-sm hover:shadow-md ${
+            className={`flex flex-col justify-between p-5 rounded-2xl bg-surface-100 border transition-all duration-200 shadow-sm hover:shadow-md ${
                 currentLeaderUnavailability
                     ? "border-amber-300 dark:border-amber-700/60 bg-amber-50/20 dark:bg-amber-950/10"
-                    : "border-typography-200 dark:border-zinc-800"
+                    : "border-surface-300"
             }`}
         >
             <div>
                 {/* Header do Card: Data e Ação de Exclusão */}
-                <div className="flex items-start justify-between gap-3 pb-3 border-b border-typography-100 dark:border-zinc-800">
+                <div className="flex items-start justify-between gap-3 pb-3 border-b border-surface-300">
                     <div className="flex items-center gap-3">
-                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200 dark:bg-primary-200/20 rounded-xl font-bold border border-primary-200/20 shrink-0">
+                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200  rounded-xl font-bold border border-primary-200/20 shrink-0">
                             <span className="text-base leading-none">{dayNumber}</span>
                             <span className="text-[10px] tracking-wider uppercase">{monthShort}</span>
                         </div>
@@ -946,7 +946,7 @@ function FieldServiceScheduleCard({
                             <span className="text-xs font-semibold text-primary-200 uppercase tracking-wide">
                                 {scheduleDate.format("dddd")}
                             </span>
-                            <h4 className="text-sm font-bold text-typography-800 dark:text-zinc-100 line-clamp-1">
+                            <h4 className="text-sm font-bold text-typography-800 line-clamp-1">
                                 {scheduleDate.format("DD [de] MMMM")}
                             </h4>
                         </div>
@@ -976,7 +976,7 @@ function FieldServiceScheduleCard({
                 {/* Seleção do Dirigente com Dropdown Inteligente */}
                 <div className="mt-4 space-y-1.5">
                     <div className="flex items-center justify-between">
-                        <label className="text-xs font-semibold text-typography-500 dark:text-zinc-400">
+                        <label className="text-xs font-semibold text-typography-500">
                             Dirigente designado:
                         </label>
                     </div>
@@ -988,7 +988,7 @@ function FieldServiceScheduleCard({
                                 className={`w-full flex items-center justify-between gap-2 p-3 rounded-xl border text-left transition-all ${
                                     currentLeaderUnavailability
                                         ? "border-amber-400 bg-amber-50/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200"
-                                        : "border-typography-300 dark:border-zinc-700 bg-surface-100 dark:bg-zinc-800 text-typography-800 dark:text-zinc-100 hover:border-primary-200"
+                                        : "border-surface-300 bg-surface-100 text-typography-800 hover:border-primary-200"
                                 }`}
                             >
                                 <div className="flex items-center gap-2.5 overflow-hidden">
@@ -1015,7 +1015,7 @@ function FieldServiceScheduleCard({
 
                         <Popover.Portal>
                             <Popover.Content
-                                className="z-50 w-[300px] p-2 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-typography-200 dark:border-zinc-800 text-xs animate-in fade-in-80"
+                                className="z-50 w-[300px] p-2 bg-surface-100 rounded-2xl shadow-xl border border-surface-300 text-xs animate-in fade-in-80"
                                 sideOffset={5}
                                 align="start"
                             >
@@ -1027,7 +1027,7 @@ function FieldServiceScheduleCard({
                                         placeholder="Buscar dirigente..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-8 pr-3 py-1.5 bg-surface-100 dark:bg-zinc-800 border border-typography-200 dark:border-zinc-700 rounded-lg text-xs text-typography-800 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                        className="w-full pl-8 pr-3 py-1.5 bg-surface-100 border border-surface-300 rounded-lg text-xs text-typography-800 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                     />
                                 </div>
 
@@ -1047,7 +1047,7 @@ function FieldServiceScheduleCard({
                                                 className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors ${
                                                     isSelected
                                                         ? "bg-primary-200/10 text-primary-200 font-semibold"
-                                                        : "hover:bg-surface-100 dark:hover:bg-zinc-800 text-typography-700 dark:text-zinc-300"
+                                                        : "hover:bg-surface-200 text-typography-700"
                                                 }`}
                                             >
                                                 <div className="space-y-0.5 overflow-hidden pr-2">
@@ -1062,7 +1062,7 @@ function FieldServiceScheduleCard({
                                                         )}
                                                     </div>
 
-                                                    <div className="text-[10px] text-typography-400 dark:text-zinc-400 flex items-center gap-1">
+                                                    <div className="text-[10px] text-typography-400 text-typography-500 flex items-center gap-1">
                                                         <Clock className="w-3 h-3 inline" />
                                                         <span>
                                                             {candidate.relativeText}{" "}
