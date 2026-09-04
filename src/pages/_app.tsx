@@ -57,6 +57,19 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
+        <meta key="theme-color" name="theme-color" content={currentThemeColor} />
+        <meta
+          key="theme-color-light"
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content={currentThemeColor}
+        />
+        <meta
+          key="theme-color-dark"
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content={currentThemeColor}
+        />
         <meta key="ms-nav" name="msapplication-navbutton-color" content={currentThemeColor} />
         <meta key="ms-tile" name="msapplication-TileColor" content={currentThemeColor} />
       </Head>

@@ -63,8 +63,10 @@ export default function Document() {
                   var colors = {
                     '': '#178582',
                     'theme-dark': '#18181B',
+                    'theme-dark': '#6F4EA1',
                     'theme-blue': '#3E6BA3',
                     'theme-purple': '#8B5CF6'
+                    'theme-purple': '#62468C'
                   };
                   var color = colors[saved] || '#178582';
                   if (saved) {
@@ -77,6 +79,7 @@ export default function Document() {
                   document.head.appendChild(meta);
                   // Update existing theme-color meta tag if it exists, otherwise create it
                   var meta = document.getElementById('theme-color-meta');
+                  var meta = document.querySelector('meta[name="theme-color"]:not([media])');
                   if (!meta) {
                     meta = document.createElement('meta');
                     meta.name = 'theme-color';
