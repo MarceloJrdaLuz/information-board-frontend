@@ -4,13 +4,23 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { number } = req.query
+  const { number, theme } = req.query
 
   if (typeof number !== 'string' || !number) {
     return res.status(400).json({
       error: 'Número da congregação não informado',
     })
   }
+
+  const themeColors: Record<string, string> = {
+    '': '#178582',
+    'theme-dark': '#6F4EA1',
+    'theme-blue': '#3E6BA3',
+    'theme-purple': '#62468C',
+  }
+
+  const selectedTheme = typeof theme === 'string' ? theme : ''
+  const color = themeColors[selectedTheme] || '#178582'
 
   res.setHeader('Content-Type', 'application/manifest+json')
 
@@ -21,8 +31,8 @@ export default function handler(
     start_url: `/${number}`,
     scope: `/`,
     display: 'standalone',
-    background_color: '#178582',
-    theme_color: '#178582',
+    background_color: color,
+    theme_color: color,
     icons: [
       {
         src: '/icons/pwa-192.png',

@@ -1,6 +1,7 @@
 'use client'
 
 import { domainUrl } from '@/atoms/atom'
+import { themeAtom } from '@/atoms/themeAtoms'
 import FieldServiceCarousel from '@/Components/FieldServiceScheduleCarousel'
 import Footer from '@/Components/Footer'
 import HeadComponent from '@/Components/HeadComponent'
@@ -93,10 +94,17 @@ function Campo() {
         (allSchedulesPublicWitness.rotationBlocks.length > 0 ||
             allSchedulesPublicWitness.fixedSchedules.length > 0)
 
+    const theme = useAtomValue(themeAtom)
+
     return !pdfShow ? (
         <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
             <Head>
                 <link rel="manifest" href={`/api/manifest?number=${number}`} />
+                <link
+                    key="manifest-link"
+                    rel="manifest"
+                    href={`/api/manifest?number=${number}${theme ? `&theme=${theme}` : ''}`}
+                />
             </Head>
 
             <HeadComponent
