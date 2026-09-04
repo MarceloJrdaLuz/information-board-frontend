@@ -50,13 +50,29 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const setInstallPrompt = useSetAtom(installPromptAtom)
 
   useEffect(() => {
+    // Se o evento foi capturado antes da hidratação do React
+    if (typeof window !== 'undefined' && (window as any).__deferredInstallPrompt) {
+      setInstallPrompt((window as any).__deferredInstallPrompt)
+    }
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault()
+      ;(window as any).__deferredInstallPrompt = event
       setInstallPrompt(event)
     }
+
+    const handlePromptCaptured = () => {
+      if ((window as any).__deferredInstallPrompt) {
+        setInstallPrompt((window as any).__deferredInstallPrompt)
+      }
+    }
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('pwa-prompt-captured', handlePromptCaptured)
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('pwa-prompt-captured', handlePromptCaptured)
     }
   }, [setInstallPrompt])
 

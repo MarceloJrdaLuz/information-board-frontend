@@ -53,6 +53,20 @@ export default function Document() {
           href="/icons/pwa-192.png"
         />
 
+        {/* Captura antecipada do evento de instalacao do PWA para nunca ser perdido */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.__deferredInstallPrompt = null;
+              window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.__deferredInstallPrompt = e;
+                window.dispatchEvent(new CustomEvent('pwa-prompt-captured'));
+              });
+            `,
+          }}
+        />
+
         {/* Script síncrono que define a classe do tema e a cor da status bar antes do primeiro desenho da tela */}
         <script
           dangerouslySetInnerHTML={{

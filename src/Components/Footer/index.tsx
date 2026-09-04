@@ -20,6 +20,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const [isStandalone, setIsStandalone] = useState(false)
   const [installedTheme, setInstalledTheme] = useState<string | null>(null)
   const [showReinstallModal, setShowReinstallModal] = useState(false)
+  const [showManualInstallModal, setShowManualInstallModal] = useState(false)
 
   useEffect(() => {
     // Detecta se está rodando instalado como PWA (standalone)
@@ -34,33 +35,27 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   }, [])
 
   const handleInstallApp = async () => {
-    if (!installPrompt) return
-
-    // Garante que o link do manifest no DOM esteja com o tema atual e sem cache
-    if (typeof document !== 'undefined' && nCong) {
-      const manifestUrl = `/api/manifest?number=${nCong}${themeAtomValue ? `&theme=${themeAtomValue}` : ''}&v=${Date.now()}`
-      const existingLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
-      if (existingLink) {
-        existingLink.setAttribute('href', manifestUrl)
-      } else {
-        const link = document.createElement('link')
-        link.rel = 'manifest'
-        link.href = manifestUrl
-        document.head.appendChild(link)
-      }
+    // Se não tiver o evento nativo capturado (ex: iOS ou cooldown do Chrome),
+    // abre o modal explicativo com instruções passo a passo
+    if (!installPrompt) {
+      setShowManualInstallModal(true)
+      return
     }
 
-    // Pequeno tick para o Chromium registrar a mudança de manifest antes de abrir a janela nativa
-    await new Promise((resolve) => setTimeout(resolve, 80))
+    try {
+      // IMPORTANTE: Disparo direto e imediato para não perder o User Gesture do navegador
+      await installPrompt.prompt()
 
-    await installPrompt.prompt()
+      const { outcome } = await installPrompt.userChoice
 
-    const { outcome } = await installPrompt.userChoice
-
-    if (outcome === "accepted") {
-      localStorage.setItem('pwa_installed_theme', themeAtomValue || '')
-      setInstalledTheme(themeAtomValue || '')
-      setInstallPrompt(null)
+      if (outcome === "accepted") {
+        localStorage.setItem('pwa_installed_theme', themeAtomValue || '')
+        setInstalledTheme(themeAtomValue || '')
+        setInstallPrompt(null)
+      }
+    } catch (err) {
+      console.warn("Falha ao invocar prompt nativo de instalação:", err)
+      setShowManualInstallModal(true)
     }
   }
 
@@ -118,16 +113,8 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
         <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 text-xs">
           {/* Lado Esquerdo: Ações Interativas (Instalar App & Mudar Tema com Label) */}
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {/* Instalar App / Reinstalar */}
-            {installPrompt ? (
-              <button
-                onClick={handleInstallApp}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white font-medium transition-all shadow-sm"
-              >
-                <Download size={14} />
-                <span>Instalar App</span>
-              </button>
-            ) : isStandalone && installedTheme !== null && installedTheme !== (themeAtomValue || '') ? (
+            {/* Se estiver no app já instalado e mudou o tema, sugere atualizar */}
+            {isStandalone && installedTheme !== null && installedTheme !== (themeAtomValue || '') ? (
               <button
                 onClick={() => setShowReinstallModal(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white font-medium transition-all shadow-sm animate-pulse"
@@ -135,6 +122,15 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
               >
                 <RefreshCw size={13} />
                 <span>Atualizar App</span>
+              </button>
+            ) : !isStandalone ? (
+              /* Se não está instalado, exibe sempre o botão de Instalar App */
+              <button
+                onClick={handleInstallApp}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white font-medium transition-all shadow-sm"
+              >
+                <Download size={14} />
+                <span>Instalar App</span>
               </button>
             ) : null}
 
@@ -154,6 +150,51 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
           </div>
         </div>
       </div>
+
+      {/* Modal Educativo de Instalação Manual (para iOS ou caso o navegador retenha o prompt nativo) */}
+      {showManualInstallModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-100 border border-surface-300 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-typography-800 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-primary-200 font-bold text-sm">
+                <Download size={16} />
+                <span>Como Instalar o App</span>
+              </div>
+              <button
+                onClick={() => setShowManualInstallModal(false)}
+                className="p-1 rounded-lg hover:bg-surface-200 text-typography-400 transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="text-xs text-typography-600 leading-relaxed">
+              Você pode instalar este quadro como aplicativo direto no seu celular ou computador:
+            </p>
+
+            <div className="bg-surface-200 p-3.5 rounded-xl flex flex-col gap-3 text-xs text-typography-700">
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold text-primary-200">No Android (Google Chrome):</span>
+                <span>Toque nos <strong>3 pontinhos (⋮)</strong> no canto superior do navegador e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</span>
+              </div>
+
+              <div className="h-px bg-surface-300/60" />
+
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold text-primary-200">No iPhone / iPad (Safari):</span>
+                <span>Toque no botão de <strong>Compartilhar</strong> (ícone de quadrado com seta para cima) e selecione <strong>"Adicionar à Tela de Início"</strong>.</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowManualInstallModal(false)}
+              className="w-full py-2.5 px-4 bg-primary-200 hover:bg-primary-150 text-white font-medium rounded-xl text-xs transition active:scale-95 shadow-sm text-center"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal Educativo de Atualização de Tema no App Instalado */}
       {showReinstallModal && (
