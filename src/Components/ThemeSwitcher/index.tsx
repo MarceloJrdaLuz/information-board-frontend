@@ -11,6 +11,8 @@ const themes: { name: string; class: ThemeType; color: string }[] = [
   { name: 'Escuro', class: 'theme-dark', color: '#18181B' },
   { name: 'Azul', class: 'theme-blue', color: '#3E6BA3' },
   { name: 'Roxo', class: 'theme-purple', color: '#62468C' },
+  { name: 'Roxo', class: 'theme-purple', color: '#7B63AD' },
+  { name: 'Rosa', class: 'theme-pink', color: '#B6587D' },
 ]
 
 interface ThemeSwitcherProps {
@@ -29,6 +31,7 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
   // Função para validar o valor do localStorage
   const isValidTheme = (value: string): value is ThemeType => {
     return ['', 'theme-dark', 'theme-blue', 'theme-purple'].includes(value)
+    return ['', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-pink'].includes(value)
   }
 
   useEffect(() => {

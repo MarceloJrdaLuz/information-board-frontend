@@ -213,7 +213,8 @@ input[type=number] {
 
 /* 💡 Temas claros → gradiente mais escuro para visibilidade */
 .theme-blue .shimmer::after,
-.theme-purple .shimmer::after {
+.theme-purple .shimmer::after,
+.theme-pink .shimmer::after {
   background: linear-gradient(90deg,
       rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, 0.08) 50%,
@@ -363,11 +364,49 @@ input[type=number] {
   /* #8B5CF6 — intermediário equilibrado */
   --color-primary-100: 196 181 253;
   /* #C4B5FD — destaque suave */
+  --color-primary-200: 123 99 173;
+  /* #7B63AD — tom roxo elegante da referência */
+  /* #7B63AD — tom roxo da referência */
+  --color-primary-150: 147 124 196;
+  /* #937CC4 — intermediário */
+  --color-primary-100: 212 201 235;
+  /* #D4C9EB — destaque suave */
 
+  /* Secundárias */
+  --color-secondary-100: 247 245 252;
+  --color-secondary-200: 238 235 245;
+
+  /* Texto */
+  --color-typography-100: 245 245 245;
+  --color-typography-200: 238 238 238;
+  --color-typography-300: 224 224 224;
+  --color-typography-400: 189 189 189;
+  --color-typography-500: 158 158 158;
+  --color-typography-600: 117 117 117;
+  --color-typography-700: 97 97 97;
+  --color-typography-800: 66 66 66;
+  --color-typography-900: 33 33 33;
+
+  /* Fundos */
+  --color-surface-100: 255 255 255;
+  --color-surface-200: 245 245 245;
+  --color-surface-300: 230 233 236;
+}
+
+.theme-pink {
+  --color-primary-200: 182 88 125;
+  /* #B6587D — tom rosa suave e moderno da referência */
+  /* #B6587D — tom rosa da referência */
+  --color-primary-150: 202 110 146;
+  /* #CA6E92 — intermediário */
+  --color-primary-100: 240 196 213;
+  /* #F0C4D5 — destaque suave */
 
   /* Secundárias */
   --color-secondary-100: 237 246 249;
   --color-secondary-200: 233 233 233;
+  --color-secondary-100: 253 245 248;
+  --color-secondary-200: 247 235 240;
 
   /* Texto */
   --color-typography-100: 245 245 245;

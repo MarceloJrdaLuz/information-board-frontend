@@ -1,12 +1,13 @@
 import { atom } from 'jotai'
 
-export type ThemeType = '' | 'theme-dark' | 'theme-blue' | 'theme-purple'
+export type ThemeType = '' | 'theme-dark' | 'theme-blue' | 'theme-purple' | 'theme-pink'
 
 export const themeColorsMap: Record<ThemeType, string> = {
   '': '#178582',
   'theme-dark': '#6F4EA1',
   'theme-blue': '#3E6BA3',
-  'theme-purple': '#62468C',
+  'theme-purple': '#7B63AD',
+  'theme-pink': '#B6587D',
 }
 
 export function updateThemeColorMeta(newTheme: ThemeType) {

@@ -16,7 +16,8 @@ export default function handler(
     '': '#178582',
     'theme-dark': '#6F4EA1',
     'theme-blue': '#3E6BA3',
-    'theme-purple': '#62468C',
+    'theme-purple': '#7B63AD',
+    'theme-pink': '#B6587D',
   }
 
   const selectedTheme = typeof theme === 'string' ? theme : ''
