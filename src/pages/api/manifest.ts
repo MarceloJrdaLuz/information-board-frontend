@@ -24,6 +24,7 @@ export default function handler(
   const iconSuffix = selectedTheme && themeColors[selectedTheme] ? `-${selectedTheme}` : ''
 
   res.setHeader('Content-Type', 'application/manifest+json')
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
 
   return res.status(200).json({
     name: 'Quadro de Anúncios',
