@@ -35,8 +35,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const [showReinstallModal, setShowReinstallModal] = useState(false)
   const [showManualInstallModal, setShowManualInstallModal] = useState(false)
 
-  // Tema original guardado caso o usuário cancele
-  const [initialTheme, setInitialTheme] = useState<ThemeType>("")
+  // Tema selecionado para preview
   const [previewTheme, setPreviewTheme] = useState<ThemeType>("")
 
   useEffect(() => {
@@ -54,7 +53,6 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   // Ao clicar em "Instalar App", abre o modal com o tema atual selecionado
   const handleOpenInstallModal = () => {
     const current = (themeAtomValue || "") as ThemeType
-    setInitialTheme(current)
     setPreviewTheme(current)
     setShowThemeInstallModal(true)
   }
@@ -66,11 +64,9 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
     changeTheme(themeKey)
   }
 
-  // Se o usuário cancelar/fechar o modal sem instalar
+  // Fechar o modal
   const handleCancelModal = () => {
     setShowThemeInstallModal(false)
-    // Se mudou de cor durante o preview mas desistiu, você pode manter ou restaurar.
-    // Aqui mantemos suavemente o que ele estava ou permitimos manter a nova cor escolhida.
   }
 
   // Confirmar e disparar a instalação
@@ -226,24 +222,26 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
             {/* Corpo: Mockup do Smartphone + Cores */}
             <div className="p-4 sm:p-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
               
-              {/* Mockup Interativo de Celular com Live Preview */}
-              <div className="flex justify-center items-center py-1">
-                <div className="w-56 bg-slate-900 rounded-[28px] p-2.5 shadow-xl border-4 border-slate-700/80 transition-transform duration-200">
-                  {/* Speaker & Sensor Notch */}
-                  <div className="w-20 h-3 bg-slate-800 rounded-full mx-auto mb-1.5 flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>
-                  </div>
-
-                  {/* Tela do Celular */}
-                  <div className="bg-surface-200 rounded-[20px] overflow-hidden flex flex-col h-60 text-[9px] select-none border border-slate-700/30">
+              {/* Mockup Interativo de Celular Bordeless / Borda Infinita com Live Preview */}
+              <div className="flex justify-center items-center py-4">
+                <div className="w-40 bg-slate-950 rounded-[32px] p-1.5 shadow-2xl ring-1 ring-white/10 transition-transform duration-200">
+                  {/* Tela do Celular com Borda Infinita */}
+                  <div className="bg-surface-200 rounded-[26px] overflow-hidden flex flex-col h-72 text-[9px] select-none relative">
                     
-                    {/* Barra de Status do Mockup */}
+                    {/* Barra de Status com Notch / Dynamic Island embutido */}
                     <div
-                      className="px-3 py-1 flex items-center justify-between text-white font-bold transition-colors duration-300"
+                      className="px-3 pt-1.5 pb-1 flex items-center justify-between text-white font-bold transition-colors duration-300 relative"
                       style={{ backgroundColor: selectedThemeObj.color }}
                     >
-                      <span className="text-[8px]">09:41</span>
-                      <div className="flex items-center gap-1 text-[7px]">
+                      <span className="text-[8px] tracking-tight pl-1 font-semibold">09:41</span>
+                      
+                      {/* Entalhe da Câmera integrado na própria barra do tema */}
+                      <div className="absolute left-1/2 -translate-x-1/2 top-1.5 h-3.5 px-2 bg-black/80 rounded-full flex items-center gap-1 shadow-xs border border-white/5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-950 ring-1 ring-slate-800"></div>
+                        <div className="w-1 h-1 rounded-full bg-emerald-500/80"></div>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-[7px] pr-1 opacity-90">
                         <span>5G</span>
                         <span>100%</span>
                       </div>
@@ -251,10 +249,10 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
 
                     {/* Top Header do Quadro no Mockup */}
                     <div
-                      className="px-2.5 py-2 text-white flex items-center justify-between shadow-sm transition-colors duration-300"
+                      className="px-3 py-2 text-white flex items-center justify-between shadow-sm transition-colors duration-300"
                       style={{ backgroundColor: selectedThemeObj.color }}
                     >
-                      <div className="truncate font-semibold text-[10px]">
+                      <div className="truncate font-bold text-[10px] tracking-tight">
                         {nomeCongregacao || "Quadro de Anúncios"}
                       </div>
                       <img
@@ -265,14 +263,14 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                     </div>
 
                     {/* Conteúdo Simulado (Cards do Quadro) */}
-                    <div className="p-2 flex-1 flex flex-col gap-1.5 overflow-hidden">
+                    <div className="p-2.5 flex-1 flex flex-col gap-1.5 overflow-hidden">
                       <div className="text-[8px] font-bold text-typography-500 uppercase tracking-wider">
                         Visão Geral
                       </div>
 
                       {/* Mini Cards */}
                       <div className="grid grid-cols-2 gap-1.5">
-                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300 shadow-2xs flex flex-col gap-0.5">
+                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300/80 shadow-2xs flex flex-col gap-0.5">
                           <span
                             className="font-bold text-[9px] transition-colors"
                             style={{ color: selectedThemeObj.color }}
@@ -281,7 +279,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                           </span>
                           <span className="text-[7px] text-typography-500">Envio mensal</span>
                         </div>
-                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300 shadow-2xs flex flex-col gap-0.5">
+                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300/80 shadow-2xs flex flex-col gap-0.5">
                           <span
                             className="font-bold text-[9px] transition-colors"
                             style={{ color: selectedThemeObj.color }}
@@ -290,7 +288,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                           </span>
                           <span className="text-[7px] text-typography-500">Programação</span>
                         </div>
-                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300 shadow-2xs flex flex-col gap-0.5">
+                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300/80 shadow-2xs flex flex-col gap-0.5">
                           <span
                             className="font-bold text-[9px] transition-colors"
                             style={{ color: selectedThemeObj.color }}
@@ -299,7 +297,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                           </span>
                           <span className="text-[7px] text-typography-500">Escala</span>
                         </div>
-                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300 shadow-2xs flex flex-col gap-0.5">
+                        <div className="bg-surface-100 p-1.5 rounded-lg border border-surface-300/80 shadow-2xs flex flex-col gap-0.5">
                           <span
                             className="font-bold text-[9px] transition-colors"
                             style={{ color: selectedThemeObj.color }}
@@ -311,7 +309,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                       </div>
 
                       {/* Mini Ícone do App que vai pra tela inicial */}
-                      <div className="mt-auto bg-surface-100/90 p-1.5 rounded-lg border border-surface-300 flex items-center gap-2">
+                      <div className="mt-auto bg-surface-100 p-1.5 rounded-xl border border-surface-300/80 flex items-center gap-2 shadow-2xs">
                         <img
                           src={selectedThemeObj.iconSrc}
                           alt="Ícone na tela"
@@ -326,6 +324,11 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                           </span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Barra de Navegação Inferior (Home indicator do celular) */}
+                    <div className="pb-1 pt-0.5 flex justify-center bg-surface-200">
+                      <div className="w-12 h-1 bg-typography-400/40 rounded-full"></div>
                     </div>
                   </div>
                 </div>
