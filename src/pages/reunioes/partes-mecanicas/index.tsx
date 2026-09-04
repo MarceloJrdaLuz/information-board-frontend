@@ -3,6 +3,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import { MechanicalAutoAssignModal } from "@/Components/Mechanical/MechanicalAutoAssignModal";
 import { MechanicalConfigModal } from "@/Components/Mechanical/MechanicalConfigModal";
+import { MechanicalNoMeetingModal } from "@/Components/Mechanical/MechanicalNoMeetingModal";
 import { MechanicalPdfExportModal } from "@/Components/Mechanical/MechanicalPdfExportModal";
 import { MechanicalQualificationsModal } from "@/Components/Mechanical/MechanicalQualificationsModal";
 import { MechanicalSlotSelector } from "@/Components/Mechanical/MechanicalSlotSelector";
@@ -69,6 +70,13 @@ function MechanicalSchedulePage() {
     const [isQualModalOpen, setIsQualModalOpen] = useState(false);
     const [isAutoAssignModalOpen, setIsAutoAssignModalOpen] = useState(false);
     const [isExportPdfModalOpen, setIsExportPdfModalOpen] = useState(false);
+    const [noMeetingModalOpen, setNoMeetingModalOpen] = useState(false);
+    const [selectedWeekForNoMeeting, setSelectedWeekForNoMeeting] = useState<{
+        weekStartDate: string;
+        formattedWeek: string;
+        eventTitle?: string | null;
+    } | null>(null);
+    const [togglingWeek, setTogglingWeek] = useState(false);
 
     useEffect(() => {
         setPageActive("Partes Mecânicas");
@@ -165,33 +173,50 @@ function MechanicalSchedulePage() {
         }
     };
 
-    const handleToggleWeekMeeting = async (weekStartDate: string, hasNoMeeting: boolean) => {
+    const handleOpenNoMeetingModal = (weekStartDate: string, formattedWeek: string, eventTitle?: string | null) => {
+        setSelectedWeekForNoMeeting({
+            weekStartDate,
+            formattedWeek,
+            eventTitle
+        });
+        setNoMeetingModalOpen(true);
+    };
+
+    const handleConfirmNoMeeting = async (weekStartDate: string, eventTitle: string | null) => {
         if (!congregationId) return;
-
-        let eventTitle: string | null = null;
-        if (hasNoMeeting) {
-            const reason = window.prompt(
-                "Informe o motivo ou nome do evento para esta semana (ex: Assembleia, Congresso, Manutenção, etc.):"
-            );
-            if (reason === null) return;
-            eventTitle = reason.trim() || null;
-        }
-
+        setTogglingWeek(true);
         try {
             await api.post(`/congregations/${congregationId}/mechanical-schedules/toggle-week`, {
                 weekStartDate,
-                hasNoMeeting,
+                hasNoMeeting: true,
                 eventTitle
             });
-            toast.success(
-                hasNoMeeting
-                    ? "Semana marcada como sem reunião/partes mecânicas."
-                    : "Designações ativadas para esta semana!"
-            );
+            toast.success("Semana marcada como sem reunião/partes mecânicas.");
             fetchData();
         } catch (error) {
-            console.error("Erro ao alternar status da semana:", error);
+            console.error("Erro ao marcar semana como sem reunião:", error);
             toast.error("Erro ao alterar status da semana.");
+        } finally {
+            setTogglingWeek(false);
+        }
+    };
+
+    const handleActivateWeekMeeting = async (weekStartDate: string) => {
+        if (!congregationId) return;
+        setTogglingWeek(true);
+        try {
+            await api.post(`/congregations/${congregationId}/mechanical-schedules/toggle-week`, {
+                weekStartDate,
+                hasNoMeeting: false,
+                eventTitle: null
+            });
+            toast.success("Designações ativadas para esta semana!");
+            fetchData();
+        } catch (error) {
+            console.error("Erro ao ativar semana:", error);
+            toast.error("Erro ao ativar semana.");
+        } finally {
+            setTogglingWeek(false);
         }
     };
 
@@ -379,7 +404,7 @@ function MechanicalSchedulePage() {
                                                     type="button"
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => handleToggleWeekMeeting(week.weekStartDate, false)}
+                                                    onClick={() => handleActivateWeekMeeting(week.weekStartDate)}
                                                     className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1 h-7 font-medium"
                                                 >
                                                     <CalendarCheck2 className="w-3.5 h-3.5" />
@@ -390,7 +415,7 @@ function MechanicalSchedulePage() {
                                                     type="button"
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => handleToggleWeekMeeting(week.weekStartDate, true)}
+                                                    onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
                                                     className="text-xs text-typography-400 hover:text-red-600 hover:bg-red-50 gap-1 h-7"
                                                     title="Marcar semana como sem reunião / remover partes mecânicas"
                                                 >
@@ -418,15 +443,26 @@ function MechanicalSchedulePage() {
                                                     As partes mecânicas estão desativadas para esta semana. Nenhum irmão foi ou será designado automaticamente.
                                                 </p>
                                             </div>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleToggleWeekMeeting(week.weekStartDate, false)}
-                                                className="text-xs text-blue-700 border-blue-200 hover:bg-blue-50 mt-2"
-                                            >
-                                                Ativar Designações nesta Semana
-                                            </Button>
+                                            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
+                                                    className="text-xs text-typography-700 border-typography-300 hover:bg-surface-200"
+                                                >
+                                                    Alterar Motivo
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleActivateWeekMeeting(week.weekStartDate)}
+                                                    className="text-xs text-blue-700 border-blue-200 hover:bg-blue-50"
+                                                >
+                                                    Ativar Designações nesta Semana
+                                                </Button>
+                                            </div>
                                         </div>
                                     ) : config?.sameTeamWholeWeek ? (
                                         /* Se configurado para o mesmo grupo na semana toda, exibe cartão unificado */
@@ -520,6 +556,19 @@ function MechanicalSchedulePage() {
                 initialYear={year}
                 initialMonth={month}
                 config={config}
+            />
+
+            <MechanicalNoMeetingModal
+                open={noMeetingModalOpen}
+                onClose={() => {
+                    setNoMeetingModalOpen(false);
+                    setSelectedWeekForNoMeeting(null);
+                }}
+                weekStartDate={selectedWeekForNoMeeting?.weekStartDate || ""}
+                formattedWeek={selectedWeekForNoMeeting?.formattedWeek || ""}
+                initialEventTitle={selectedWeekForNoMeeting?.eventTitle}
+                onConfirm={handleConfirmNoMeeting}
+                loading={togglingWeek}
             />
         </ContentDashboard>
     );
