@@ -33,6 +33,15 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const handleInstallApp = async () => {
     if (!installPrompt) return
 
+    // Garante que o link do manifest no DOM esteja apontando para o tema atual no momento do prompt
+    if (typeof document !== 'undefined' && nCong) {
+      const manifestUrl = `/api/manifest?number=${nCong}${themeAtomValue ? `&theme=${themeAtomValue}` : ''}`
+      const existingLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
+      if (existingLink) {
+        existingLink.setAttribute('href', manifestUrl)
+      }
+    }
+
     installPrompt.prompt()
 
     const { outcome } = await installPrompt.userChoice
