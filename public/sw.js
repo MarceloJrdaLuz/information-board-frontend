@@ -4,9 +4,26 @@ self.addEventListener('push', function (event) {
   try {
     const payload = event.data.json()
     const title = payload.title || 'Quadro de Informações'
+
+    // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação
+    const typeIcons = {
+      SPEAKER: '/icons/notifications/speaker.png',
+      READING: '/icons/notifications/reading.png',
+      CHAIRMAN: '/icons/notifications/chairman.png',
+      CLEANING: '/icons/notifications/cleaning.png',
+      FIELD_SERVICE: '/icons/notifications/field_service.png',
+      PUBLICWITNESS: '/icons/notifications/publicwitness.png',
+      HOSPITALITY: '/icons/notifications/hospitality.png',
+      REMINDER: '/icons/notifications/reminder.png',
+    }
+
+    const notifType = payload.data?.type || payload.type
+    const iconUrl = payload.icon || (notifType && typeIcons[notifType]) || '/icons/notifications/reminder.png'
+
     const options = {
       body: payload.body || '',
       badge: payload.badge || '/icons/badge.png', // Ícone específico monocromático para a barra de status
+      icon: iconUrl,
       badge: payload.badge || '/icons/badge.png', // Ícone monocromático para a barra de status
       vibrate: [100, 50, 100],
       data: payload.data || { url: '/dashboard' },
@@ -19,6 +36,7 @@ self.addEventListener('push', function (event) {
       self.registration.showNotification('Quadro de Informações', {
         body: text,
         badge: '/icons/badge.png', // Ícone específico monocromático para a barra de status
+        icon: '/icons/notifications/reminder.png',
         badge: '/icons/badge.png', // Ícone monocromático para a barra de status
         data: { url: '/dashboard' },
       })
