@@ -1,5 +1,5 @@
 import { installPromptAtom } from '@/atoms/atom'
-import { themeAtom, themeColorsMap, ThemeType, updateThemeColorMeta } from '@/atoms/themeAtoms'
+import { setThemeAtom, themeAtom, themeColorsMap, ThemeType, updateThemeColorMeta } from '@/atoms/themeAtoms'
 import Layout from '@/Components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
 import { CongregationProvider } from '@/context/CongregationContext'
@@ -23,7 +23,7 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const theme = useAtomValue(themeAtom)
-  const setTheme = useSetAtom(themeAtom)
+  const changeTheme = useSetAtom(setThemeAtom)
   const getLayout =
     Component.getLayout ??
     ((page) => <Layout>{page}</Layout>)
@@ -37,10 +37,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     }
 
     const savedTheme = (localStorage.getItem('theme') || '') as ThemeType
-    document.documentElement.className = savedTheme
-    setTheme(savedTheme)
-    updateThemeColorMeta(savedTheme)
-  }, [setTheme])
+    if (['', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-pink'].includes(savedTheme)) {
+      changeTheme(savedTheme)
+    }
+  }, [changeTheme])
 
   const setInstallPrompt = useSetAtom(installPromptAtom)
 

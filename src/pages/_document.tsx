@@ -62,11 +62,8 @@ export default function Document() {
                   var saved = localStorage.getItem('theme') || '';
                   var colors = {
                     '': '#178582',
-                    'theme-dark': '#18181B',
                     'theme-dark': '#6F4EA1',
                     'theme-blue': '#3E6BA3',
-                    'theme-purple': '#8B5CF6'
-                    'theme-purple': '#62468C'
                     'theme-purple': '#7B63AD',
                     'theme-pink': '#B6587D'
                   };

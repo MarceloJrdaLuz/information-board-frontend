@@ -358,19 +358,10 @@ input[type=number] {
 }
 
 .theme-purple {
-  --color-primary-200: 124 58 237;
-  /* #7C3AED — tom roxo moderno e contrastante */
-  --color-primary-150: 139 92 246;
-  /* #8B5CF6 — intermediário equilibrado */
-  --color-primary-100: 196 181 253;
-  /* #C4B5FD — destaque suave */
   --color-primary-200: 123 99 173;
-  /* #7B63AD — tom roxo elegante da referência */
   /* #7B63AD — tom roxo da referência */
   --color-primary-150: 147 124 196;
-  /* #937CC4 — intermediário */
   --color-primary-100: 212 201 235;
-  /* #D4C9EB — destaque suave */
 
   /* Secundárias */
   --color-secondary-100: 247 245 252;
@@ -395,16 +386,11 @@ input[type=number] {
 
 .theme-pink {
   --color-primary-200: 182 88 125;
-  /* #B6587D — tom rosa suave e moderno da referência */
   /* #B6587D — tom rosa da referência */
   --color-primary-150: 202 110 146;
-  /* #CA6E92 — intermediário */
   --color-primary-100: 240 196 213;
-  /* #F0C4D5 — destaque suave */
 
   /* Secundárias */
-  --color-secondary-100: 237 246 249;
-  --color-secondary-200: 233 233 233;
   --color-secondary-100: 253 245 248;
   --color-secondary-200: 247 235 240;
 
