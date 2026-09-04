@@ -1,6 +1,6 @@
 import { themeAtom } from "@/atoms/themeAtoms"
 import { useAtomValue } from "jotai"
-import { Download, Info, Shield } from "lucide-react"
+import { Download, Info, RefreshCw, Shield, X } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import ThemeSwitcher from "../ThemeSwitcher"
@@ -16,8 +16,24 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const themeAtomValue = useAtomValue(themeAtom)
   const isDark = themeAtomValue === "theme-dark"
   const [installPrompt, setInstallPrompt] = useState<any>(null)
+  const [isStandalone, setIsStandalone] = useState(false)
+  const [installedTheme, setInstalledTheme] = useState<string | null>(null)
+  const [showReinstallModal, setShowReinstallModal] = useState(false)
 
   useEffect(() => {
+    // Detecta se está rodando instalado como PWA (standalone)
+    const checkStandalone = () => {
+      const isDisplayStandalone = window.matchMedia('(display-mode: standalone)').matches
+      const isNavigatorStandalone = (navigator as any).standalone === true
+      setIsStandalone(Boolean(isDisplayStandalone || isNavigatorStandalone))
+    }
+    checkStandalone()
+
+    const savedInstalledTheme = localStorage.getItem('pwa_installed_theme')
+    if (savedInstalledTheme !== null) {
+      setInstalledTheme(savedInstalledTheme)
+    }
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault()
       setInstallPrompt(event)
@@ -33,20 +49,30 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const handleInstallApp = async () => {
     if (!installPrompt) return
 
-    // Garante que o link do manifest no DOM esteja apontando para o tema atual no momento do prompt
+    // Garante que o link do manifest no DOM esteja com o tema atual e sem cache
     if (typeof document !== 'undefined' && nCong) {
-      const manifestUrl = `/api/manifest?number=${nCong}${themeAtomValue ? `&theme=${themeAtomValue}` : ''}`
+      const manifestUrl = `/api/manifest?number=${nCong}${themeAtomValue ? `&theme=${themeAtomValue}` : ''}&v=${Date.now()}`
       const existingLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
       if (existingLink) {
         existingLink.setAttribute('href', manifestUrl)
+      } else {
+        const link = document.createElement('link')
+        link.rel = 'manifest'
+        link.href = manifestUrl
+        document.head.appendChild(link)
       }
     }
 
-    installPrompt.prompt()
+    // Pequeno tick para o Chromium registrar a mudança de manifest antes de abrir a janela nativa
+    await new Promise((resolve) => setTimeout(resolve, 80))
+
+    await installPrompt.prompt()
 
     const { outcome } = await installPrompt.userChoice
 
     if (outcome === "accepted") {
+      localStorage.setItem('pwa_installed_theme', themeAtomValue || '')
+      setInstalledTheme(themeAtomValue || '')
       setInstallPrompt(null)
     }
   }
@@ -105,8 +131,8 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
         <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 text-xs">
           {/* Lado Esquerdo: Ações Interativas (Instalar App & Mudar Tema com Label) */}
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {/* Instalar App */}
-            {installPrompt && (
+            {/* Instalar App / Reinstalar */}
+            {installPrompt ? (
               <button
                 onClick={handleInstallApp}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white font-medium transition-all shadow-sm"
@@ -114,7 +140,16 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
                 <Download size={14} />
                 <span>Instalar App</span>
               </button>
-            )}
+            ) : isStandalone && installedTheme !== null && installedTheme !== (themeAtomValue || '') ? (
+              <button
+                onClick={() => setShowReinstallModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white font-medium transition-all shadow-sm animate-pulse"
+                title="Novo tema selecionado! Toque para atualizar o app instalado"
+              >
+                <RefreshCw size={13} />
+                <span>Atualizar App</span>
+              </button>
+            ) : null}
 
             {/* Mudar Tema em formato pill */}
             <ThemeSwitcher showLabel />
@@ -132,6 +167,56 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
           </div>
         </div>
       </div>
+
+      {/* Modal Educativo de Atualização de Tema no App Instalado */}
+      {showReinstallModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-100 border border-surface-300 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-typography-800 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-primary-200 font-bold text-sm">
+                <RefreshCw size={16} />
+                <span>Atualizar App Instalado</span>
+              </div>
+              <button
+                onClick={() => setShowReinstallModal(false)}
+                className="p-1 rounded-lg hover:bg-surface-200 text-typography-400 transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="text-xs text-typography-600 leading-relaxed">
+              Você alterou o tema do quadro! Para que a <strong>tela inicial e o ícone do seu celular</strong> exibam essa nova cor:
+            </p>
+
+            <div className="bg-surface-200 p-3 rounded-xl flex flex-col gap-2 text-xs text-typography-700">
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-primary-200">1.</span>
+                <span>Abra o site no navegador do celular (Chrome).</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-primary-200">2.</span>
+                <span>Escolha o tema desejado.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold text-primary-200">3.</span>
+                <span>Toque em <strong>"Instalar App"</strong> no rodapé.</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                localStorage.setItem('pwa_installed_theme', themeAtomValue || '')
+                setInstalledTheme(themeAtomValue || '')
+                setShowReinstallModal(false)
+              }}
+              className="w-full py-2.5 px-4 bg-primary-200 hover:bg-primary-150 text-white font-medium rounded-xl text-xs transition active:scale-95 shadow-sm text-center"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </footer>
   )
 }

@@ -42,6 +42,28 @@ export function updateThemeColorMeta(newTheme: ThemeType) {
   tiles.forEach((m) => m.setAttribute('content', color))
 }
 
+export function updateManifestLink(newTheme: ThemeType) {
+  if (typeof document === 'undefined') return
+  const manifestLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
+  if (manifestLink) {
+    const currentHref = manifestLink.getAttribute('href') || ''
+    const url = new URL(currentHref, window.location.origin)
+    if (newTheme) {
+      url.searchParams.set('theme', newTheme)
+    } else {
+      url.searchParams.delete('theme')
+    }
+    // Adiciona timestamp para quebrar cache local do navegador/Chromium
+    url.searchParams.set('v', Date.now().toString())
+    
+    // Substitui a tag no DOM para forçar o Chromium a registrar imediatamente a nova URL do manifesto
+    const newLink = document.createElement('link')
+    newLink.rel = 'manifest'
+    newLink.href = url.pathname + url.search
+    manifestLink.parentNode?.replaceChild(newLink, manifestLink)
+  }
+}
+
 /** Átomo com o tema atual */
 export const themeAtom = atom<ThemeType>('')
 
@@ -56,6 +78,9 @@ export const setThemeAtom = atom(
 
     // Atualiza as meta tags de tema imediatamente
     updateThemeColorMeta(newTheme)
+
+    // Atualiza o link do manifest no DOM imediatamente para a próxima instalação
+    updateManifestLink(newTheme)
 
     // Atualiza o estado global
     set(themeAtom, newTheme)
