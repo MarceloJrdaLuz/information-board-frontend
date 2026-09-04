@@ -6,14 +6,16 @@ import {
     pushPermissionAtom,
     unreadNotificationsCountAtom,
 } from "@/atoms/pushAtoms"
+import { themeAtom } from "@/atoms/themeAtoms"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { api } from "@/services/api"
 import { isPushNotificationSupported, urlBase64ToUint8Array } from "@/utils/pushNotifications"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useCallback, useEffect } from "react"
 import { toast } from "react-toastify"
 
 export function usePushNotifications() {
+    const currentTheme = useAtomValue(themeAtom)
     const [isSubscribed, setIsSubscribed] = useAtom(isPushSubscribedAtom)
     const [permission, setPermission] = useAtom(pushPermissionAtom)
     const [loading, setLoading] = useAtom(pushLoadingAtom)
@@ -101,6 +103,13 @@ export function usePushNotifications() {
                 registration = await navigator.serviceWorker.register('/sw.js')
             }
             registration = await navigator.serviceWorker.ready
+
+            if (registration.active) {
+                registration.active.postMessage({
+                    type: 'SET_THEME',
+                    theme: currentTheme || '',
+                })
+            }
 
             // 3. Obtém chave pública VAPID do backend (ou do env do frontend)
             let vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
@@ -190,11 +199,14 @@ export function usePushNotifications() {
             if (Notification.permission === "granted") {
                 const reg = await navigator.serviceWorker.ready
                 if (reg && reg.showNotification) {
+                    const themeFolder = currentTheme ? `${currentTheme}/` : ""
                     reg.showNotification("Notificações Ativadas! 🎉", {
                         body: "Você começará a receber suas designações e lembretes aqui.",
                         icon: "/icons/notifications/reminder.png",
+                        icon: `/icons/notifications/${themeFolder}reminder.png`,
                         badge: "/icons/badge.png", // Usando o novo badge monocromático
                         data: { url: "/dashboard" },
+                        data: { url: "/dashboard", theme: currentTheme || "" },
                     })
                 }
             }

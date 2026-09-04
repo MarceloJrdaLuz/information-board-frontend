@@ -89,6 +89,14 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   useEffect(() => {
     updateThemeColorMeta(theme)
+
+    // Notifica o Service Worker sobre o tema ativo para sincronizar os ícones de notificação
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SET_THEME',
+        theme: theme || '',
+      })
+    }
   }, [theme])
 
   return (

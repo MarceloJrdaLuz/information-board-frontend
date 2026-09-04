@@ -1,3 +1,12 @@
+let currentAppTheme = ''
+
+// Escuta mensagem da aplicação informando o tema atual
+self.addEventListener('message', function (event) {
+  if (event.data && event.data.type === 'SET_THEME') {
+    currentAppTheme = event.data.theme || ''
+  }
+})
+
 self.addEventListener('push', function (event) {
   if (!event.data) return
 
@@ -6,6 +15,11 @@ self.addEventListener('push', function (event) {
     const title = payload.title || 'Quadro de Informações'
 
     // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação
+    // Determina o tema (pode vir no payload ou sincronizado via message)
+    const activeTheme = payload.data?.theme || payload.theme || currentAppTheme || ''
+    const themeFolder = activeTheme ? `${activeTheme}/` : ''
+
+    // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação e a cor do tema
     const typeIcons = {
       SPEAKER: '/icons/notifications/speaker.png',
       READING: '/icons/notifications/reading.png',
@@ -15,10 +29,19 @@ self.addEventListener('push', function (event) {
       PUBLICWITNESS: '/icons/notifications/publicwitness.png',
       HOSPITALITY: '/icons/notifications/hospitality.png',
       REMINDER: '/icons/notifications/reminder.png',
+      SPEAKER: `/icons/notifications/${themeFolder}speaker.png`,
+      READING: `/icons/notifications/${themeFolder}reading.png`,
+      CHAIRMAN: `/icons/notifications/${themeFolder}chairman.png`,
+      CLEANING: `/icons/notifications/${themeFolder}cleaning.png`,
+      FIELD_SERVICE: `/icons/notifications/${themeFolder}field_service.png`,
+      PUBLICWITNESS: `/icons/notifications/${themeFolder}publicwitness.png`,
+      HOSPITALITY: `/icons/notifications/${themeFolder}hospitality.png`,
+      REMINDER: `/icons/notifications/${themeFolder}reminder.png`,
     }
 
     const notifType = payload.data?.type || payload.type
     const iconUrl = payload.icon || (notifType && typeIcons[notifType]) || '/icons/notifications/reminder.png'
+    const iconUrl = payload.icon || (notifType && typeIcons[notifType]) || `/icons/notifications/${themeFolder}reminder.png`
 
     const options = {
       body: payload.body || '',
@@ -32,11 +55,13 @@ self.addEventListener('push', function (event) {
     event.waitUntil(self.registration.showNotification(title, options))
   } catch (e) {
     const text = event.data.text()
+    const themeFolder = currentAppTheme ? `${currentAppTheme}/` : ''
     event.waitUntil(
       self.registration.showNotification('Quadro de Informações', {
         body: text,
         badge: '/icons/badge.png', // Ícone específico monocromático para a barra de status
         icon: '/icons/notifications/reminder.png',
+        icon: `/icons/notifications/${themeFolder}reminder.png`,
         badge: '/icons/badge.png', // Ícone monocromático para a barra de status
         data: { url: '/dashboard' },
       })
