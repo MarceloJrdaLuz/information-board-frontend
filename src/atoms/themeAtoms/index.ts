@@ -61,6 +61,7 @@ export function updateManifestLink(newTheme: ThemeType) {
     newLink.rel = 'manifest'
     newLink.href = url.pathname + url.search
     manifestLink.parentNode?.replaceChild(newLink, manifestLink)
+    manifestLink.href = url.pathname + url.search
   }
 }
 

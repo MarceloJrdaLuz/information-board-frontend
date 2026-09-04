@@ -1,5 +1,6 @@
+import { installPromptAtom } from "@/atoms/atom"
 import { themeAtom } from "@/atoms/themeAtoms"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { Download, Info, RefreshCw, Shield, X } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -15,34 +16,20 @@ interface FooterProps {
 export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterProps) {
   const themeAtomValue = useAtomValue(themeAtom)
   const isDark = themeAtomValue === "theme-dark"
-  const [installPrompt, setInstallPrompt] = useState<any>(null)
+  const [installPrompt, setInstallPrompt] = useAtom(installPromptAtom)
   const [isStandalone, setIsStandalone] = useState(false)
   const [installedTheme, setInstalledTheme] = useState<string | null>(null)
   const [showReinstallModal, setShowReinstallModal] = useState(false)
 
   useEffect(() => {
     // Detecta se está rodando instalado como PWA (standalone)
-    const checkStandalone = () => {
-      const isDisplayStandalone = window.matchMedia('(display-mode: standalone)').matches
-      const isNavigatorStandalone = (navigator as any).standalone === true
-      setIsStandalone(Boolean(isDisplayStandalone || isNavigatorStandalone))
-    }
-    checkStandalone()
+    const isDisplayStandalone = window.matchMedia('(display-mode: standalone)').matches
+    const isNavigatorStandalone = (navigator as any).standalone === true
+    setIsStandalone(Boolean(isDisplayStandalone || isNavigatorStandalone))
 
     const savedInstalledTheme = localStorage.getItem('pwa_installed_theme')
     if (savedInstalledTheme !== null) {
       setInstalledTheme(savedInstalledTheme)
-    }
-
-    const handleBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault()
-      setInstallPrompt(event)
-    }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     }
   }, [])
 

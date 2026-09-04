@@ -1,3 +1,4 @@
+import { installPromptAtom } from '@/atoms/atom'
 import { themeAtom, themeColorsMap, ThemeType, updateThemeColorMeta } from '@/atoms/themeAtoms'
 import Layout from '@/Components/Layout'
 import { AuthProvider } from '@/context/AuthContext'
@@ -28,11 +29,31 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     ((page) => <Layout>{page}</Layout>)
 
   useEffect(() => {
+    // Se o PWA foi aberto via atalho instalado com ?theme=, guarda como tema instalado
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlTheme = urlParams.get('theme')
+    if (urlTheme !== null) {
+      localStorage.setItem('pwa_installed_theme', urlTheme)
+    }
+
     const savedTheme = (localStorage.getItem('theme') || '') as ThemeType
     document.documentElement.className = savedTheme
     setTheme(savedTheme)
     updateThemeColorMeta(savedTheme)
   }, [setTheme])
+
+  const setInstallPrompt = useSetAtom(installPromptAtom)
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault()
+      setInstallPrompt(event)
+    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [setInstallPrompt])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {

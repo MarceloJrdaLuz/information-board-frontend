@@ -34,3 +34,5 @@ export const openSubMenuAtom = atom<string | null>(null)
 export const showModalEmergencyContact = atom(false)
 
 export const showConfirmForceModal = atom(false)
+
+export const installPromptAtom = atom<any>(null)
