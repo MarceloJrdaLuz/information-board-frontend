@@ -21,6 +21,7 @@ export default function handler(
 
   const selectedTheme = typeof theme === 'string' ? theme : ''
   const color = themeColors[selectedTheme] || '#178582'
+  const iconSuffix = selectedTheme && themeColors[selectedTheme] ? `-${selectedTheme}` : ''
 
   res.setHeader('Content-Type', 'application/manifest+json')
 
@@ -35,13 +36,13 @@ export default function handler(
     theme_color: color,
     icons: [
       {
-        src: '/icons/pwa-192.png',
+        src: `/icons/pwa${iconSuffix}-192.png`,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any'
       },
       {
-        src: '/icons/pwa-512.png',
+        src: `/icons/pwa${iconSuffix}-512.png`,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable'
