@@ -192,7 +192,6 @@ export function usePushNotifications() {
                 if (reg && reg.showNotification) {
                     reg.showNotification("Notificações Ativadas! 🎉", {
                         body: "Você começará a receber suas designações e lembretes aqui.",
-                        icon: "/icons/pwa-192.png",
                         badge: "/icons/badge.png", // Usando o novo badge monocromático
                         data: { url: "/dashboard" },
                     })

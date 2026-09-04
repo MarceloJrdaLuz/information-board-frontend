@@ -6,9 +6,8 @@ self.addEventListener('push', function (event) {
     const title = payload.title || 'Quadro de Informações'
     const options = {
       body: payload.body || '',
-      icon: payload.icon || '/icons/pwa-192.png',
-      badge: payload.badge || '/icons/pwa-192.png',
       badge: payload.badge || '/icons/badge.png', // Ícone específico monocromático para a barra de status
+      badge: payload.badge || '/icons/badge.png', // Ícone monocromático para a barra de status
       vibrate: [100, 50, 100],
       data: payload.data || { url: '/dashboard' },
     }
@@ -19,9 +18,8 @@ self.addEventListener('push', function (event) {
     event.waitUntil(
       self.registration.showNotification('Quadro de Informações', {
         body: text,
-        icon: '/icons/pwa-192.png',
-        badge: '/icons/pwa-192.png',
         badge: '/icons/badge.png', // Ícone específico monocromático para a barra de status
+        badge: '/icons/badge.png', // Ícone monocromático para a barra de status
         data: { url: '/dashboard' },
       })
     )
