@@ -58,6 +58,28 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
     setOpen(false)
   }
 
+  const [align, setAlign] = useState<'center' | 'left' | 'right'>('center')
+
+  // Ajusta o alinhamento do popup para não vazar da tela em celulares pequenos
+  useEffect(() => {
+    if (open && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      const popupWidth = 190 // largura aproximada do popup (5 círculos + paddings)
+      const spaceRight = window.innerWidth - rect.left
+      const spaceLeft = rect.right
+
+      if (rect.left + rect.width / 2 + popupWidth / 2 > window.innerWidth - 12) {
+        // Vaza na direita -> alinha à direita do botão ou borda da tela
+        setAlign('right')
+      } else if (rect.left + rect.width / 2 - popupWidth / 2 < 12) {
+        // Vaza na esquerda -> alinha à esquerda
+        setAlign('left')
+      } else {
+        setAlign('center')
+      }
+    }
+  }, [open])
+
   return (
     <div ref={containerRef} className="relative inline-flex items-center">
       <button
@@ -81,7 +103,13 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-surface-100 shadow-xl border border-surface-300 rounded-full px-3 py-2 flex items-center gap-2.5 z-50"
+            className={`absolute bottom-12 bg-surface-100 shadow-xl border border-surface-300 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center gap-2 sm:gap-2.5 z-50 max-w-[calc(100vw-1.5rem)] ${
+              align === 'right'
+                ? 'right-0'
+                : align === 'left'
+                ? 'left-0'
+                : 'left-1/2 -translate-x-1/2'
+            }`}
           >
             {themes.map((t) => {
               const isSelected = (currentTheme || '') === t.class
