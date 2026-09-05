@@ -58,25 +58,41 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
     setOpen(false)
   }
 
-  const [align, setAlign] = useState<'center' | 'left' | 'right'>('center')
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({})
 
-  // Ajusta o alinhamento do popup para não vazar da tela em celulares pequenos
+  // Calcula posição fixa do popup garantindo que NUNCA cause overflow horizontal (ex: Galaxy S5 320px)
   useEffect(() => {
-    if (open && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect()
-      const popupWidth = 190 // largura aproximada do popup (5 círculos + paddings)
-      const spaceRight = window.innerWidth - rect.left
-      const spaceLeft = rect.right
+    if (!open || !containerRef.current) return
 
-      if (rect.left + rect.width / 2 + popupWidth / 2 > window.innerWidth - 12) {
-        // Vaza na direita -> alinha à direita do botão ou borda da tela
-        setAlign('right')
-      } else if (rect.left + rect.width / 2 - popupWidth / 2 < 12) {
-        // Vaza na esquerda -> alinha à esquerda
-        setAlign('left')
-      } else {
-        setAlign('center')
+    const updatePosition = () => {
+      if (!containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      const popupWidth = 164 // largura real compacta do popup
+      const padding = 8 // margem de segurança da borda da tela
+
+      let left = rect.left + rect.width / 2 - popupWidth / 2
+
+      if (left < padding) {
+        left = padding
+      } else if (left + popupWidth > window.innerWidth - padding) {
+        left = window.innerWidth - popupWidth - padding
       }
+
+      setPopupStyle({
+        position: 'fixed',
+        left: `${Math.max(padding, left)}px`,
+        bottom: `${window.innerHeight - rect.top + 8}px`,
+        maxWidth: `calc(100vw - ${padding * 2}px)`,
+      })
+    }
+
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
+
+    return () => {
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
     }
   }, [open])
 
@@ -99,17 +115,12 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className={`absolute bottom-12 bg-surface-100 shadow-xl border border-surface-300 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center gap-2 sm:gap-2.5 z-50 max-w-[calc(100vw-1.5rem)] ${
-              align === 'right'
-                ? 'right-0'
-                : align === 'left'
-                ? 'left-0'
-                : 'left-1/2 -translate-x-1/2'
-            }`}
+            style={popupStyle}
+            className="bg-surface-100 shadow-2xl border border-surface-300 rounded-full px-2 py-1.5 sm:px-2.5 sm:py-2 flex items-center justify-center gap-1.5 sm:gap-2 z-50 ring-1 ring-black/5"
           >
             {themes.map((t) => {
               const isSelected = (currentTheme || '') === t.class
@@ -117,14 +128,14 @@ export default function ThemeSwitcher({ className, showLabel = false }: ThemeSwi
                 <motion.button
                   key={t.name}
                   onClick={() => handleSelectTheme(t.class)}
-                  className={`w-5 h-5 rounded-full border border-typography-300 transition-all relative flex items-center justify-center ${
+                  className={`w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full border border-typography-300 transition-all relative flex items-center justify-center shrink-0 ${
                     isSelected
-                      ? 'ring-2 ring-primary-200 ring-offset-2 ring-offset-surface-100 scale-110'
+                      ? 'ring-2 ring-primary-200 ring-offset-2 ring-offset-surface-100 scale-105'
                       : 'hover:scale-110'
                   }`}
                   style={{ backgroundColor: t.color }}
                   title={t.name}
-                  whileHover={{ scale: 1.2 }}
+                  whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
                 />
               )
