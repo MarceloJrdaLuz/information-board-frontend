@@ -258,7 +258,7 @@ function Home({ serverNumber }: HomeProps) {
 
                     {/* Conteúdo Central do Header */}
                     <div className="relative z-20 text-center px-4 max-w-3xl flex flex-col items-center mt-3">
-                        <span className="text-2xl sm:text-3xl md:text-4xl titulo text-secondary-100 font-bold tracking-wide drop-shadow-md">
+                        <span className="text-2xl sm:text-3xl md:text-4xl titulo text-typography-100 font-bold tracking-wide drop-shadow-md">
                             Quadro de Anúncios
                         </span>
 
@@ -266,7 +266,7 @@ function Home({ serverNumber }: HomeProps) {
                             <div className="h-6 w-48 shimmer rounded-md mt-2" />
                         ) : (
                             <div className="mt-1 flex flex-col items-center gap-1">
-                                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-secondary-100 drop-shadow">
+                                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-typography-100 drop-shadow">
                                     Congregação {congregation?.name}
                                 </h1>
                             </div>
