@@ -9,14 +9,17 @@ import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import {
     AlertCircle,
+    ArrowRight,
     BookOpen,
     CheckCircle2,
     ChevronDown,
     Clock,
     Copy,
+    FileSpreadsheet,
     TrendingUp,
     Users
 } from "lucide-react"
+import Link from "next/link"
 import { useMemo, useState } from "react"
 import {
     Bar,
@@ -280,6 +283,11 @@ export function CongregationReportsChart() {
 
     const isLoading = isLoadingReports || isLoadingPublishers
 
+    const targetMonth = lastMonthSummary?.month
+        ? capitalizeFirstLetter(lastMonthSummary.month)
+        : missingTargetMonth
+    const targetYear = lastMonthSummary?.year || missingTargetYear
+
     return (
         <div className="bg-surface-100 rounded-xl shadow-sm p-5 w-full flex flex-col gap-5 border border-surface-300">
             {/* Header */}
@@ -293,83 +301,108 @@ export function CongregationReportsChart() {
                     </p>
                 </div>
 
-                {/* Aviso de Relatórios em Falta (visível até o dia 20) */}
-                {showMissingReports && !isLoading && (
-                    <Popover.Root>
-                        <Popover.Trigger asChild>
-                            <button
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm ${
-                                    missingPublishers.length > 0
-                                        ? "bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-500/20"
-                                        : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
-                                }`}
-                            >
-                                <AlertCircle size={15} />
-                                <span>
-                                    {missingPublishers.length > 0
-                                        ? `Faltam ${missingPublishers.length} relatórios (${missingTargetMonth})`
-                                        : `Todos os relatórios entregues (${missingTargetMonth})`}
-                                </span>
-                                <ChevronDown size={14} />
-                            </button>
-                        </Popover.Trigger>
+                <div className="flex items-center gap-2 flex-wrap">
+                    {user?.congregation?.id && !isLoading && (
+                        <Link
+                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth} ${targetYear}`}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-200 text-white hover:bg-primary-150 transition shadow-xs"
+                        >
+                            <FileSpreadsheet size={14} />
+                            <span>Finalizar Relatório ({targetMonth})</span>
+                        </Link>
+                    )}
 
-                        <Popover.Portal>
-                            <Popover.Content
-                                side="bottom"
-                                align="end"
-                                sideOffset={6}
-                                className="w-80 bg-surface-100 border border-surface-300 rounded-xl shadow-xl p-4 z-50 text-typography-700 animate-in fade-in zoom-in-95 duration-150"
-                            >
-                                <div className="flex items-center justify-between mb-3 pb-2 border-b border-surface-200">
-                                    <div className="text-xs font-bold text-typography-800">
-                                        Em falta ({missingTargetMonth}/{missingTargetYear})
-                                    </div>
-                                    {missingPublishers.length > 0 && (
-                                        <button
-                                            onClick={handleCopyMissing}
-                                            className="flex items-center gap-1 text-[11px] text-primary-200 hover:underline"
-                                            title="Copiar nomes"
-                                        >
-                                            {copied ? (
-                                                <>
-                                                    <CheckCircle2 size={12} className="text-emerald-500" />
-                                                    <span className="text-emerald-500 font-semibold">Copiado</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Copy size={12} />
-                                                    <span>Copiar</span>
-                                                </>
-                                            )}
-                                        </button>
-                                    )}
-                                </div>
+                    {/* Aviso de Relatórios em Falta (visível até o dia 20) */}
+                    {showMissingReports && !isLoading && (
+                        <Popover.Root>
+                            <Popover.Trigger asChild>
+                                <button
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm ${
+                                        missingPublishers.length > 0
+                                            ? "bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-500/20"
+                                            : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30"
+                                    }`}
+                                >
+                                    <AlertCircle size={15} />
+                                    <span>
+                                        {missingPublishers.length > 0
+                                            ? `Faltam ${missingPublishers.length} relatórios (${missingTargetMonth})`
+                                            : `Todos os relatórios entregues (${missingTargetMonth})`}
+                                    </span>
+                                    <ChevronDown size={14} />
+                                </button>
+                            </Popover.Trigger>
 
-                                <ul className="max-h-60 overflow-y-auto space-y-1 pr-1 text-xs">
-                                    {missingPublishers.length > 0 ? (
-                                        missingPublishers.map((pub) => (
-                                            <li
-                                                key={pub.id}
-                                                className="py-1 px-2 rounded-md hover:bg-surface-200/50 flex items-center justify-between"
+                            <Popover.Portal>
+                                <Popover.Content
+                                    side="bottom"
+                                    align="end"
+                                    sideOffset={6}
+                                    className="w-80 bg-surface-100 border border-surface-300 rounded-xl shadow-xl p-4 z-50 text-typography-700 animate-in fade-in zoom-in-95 duration-150"
+                                >
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-surface-200">
+                                        <div className="text-xs font-bold text-typography-800">
+                                            Em falta ({missingTargetMonth}/{missingTargetYear})
+                                        </div>
+                                        {missingPublishers.length > 0 && (
+                                            <button
+                                                onClick={handleCopyMissing}
+                                                className="flex items-center gap-1 text-[11px] text-primary-200 hover:underline"
+                                                title="Copiar nomes"
                                             >
-                                                <span>{pub.fullName}</span>
-                                                <span className="text-[10px] text-typography-400">
-                                                    {pub.group?.name || "Sem grupo"}
-                                                </span>
+                                                {copied ? (
+                                                    <>
+                                                        <CheckCircle2 size={12} className="text-emerald-500" />
+                                                        <span className="text-emerald-500 font-semibold">Copiado</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy size={12} />
+                                                        <span>Copiar</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <ul className="max-h-60 overflow-y-auto space-y-1 pr-1 text-xs">
+                                        {missingPublishers.length > 0 ? (
+                                            missingPublishers.map((pub) => (
+                                                <li
+                                                    key={pub.id}
+                                                    className="py-1 px-2 rounded-md hover:bg-surface-200/50 flex items-center justify-between"
+                                                >
+                                                    <span>{pub.fullName}</span>
+                                                    <span className="text-[10px] text-typography-400">
+                                                        {pub.group?.name || "Sem grupo"}
+                                                    </span>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <li className="text-center py-3 text-emerald-500 font-medium">
+                                                🎉 Parabéns! Todos os publicadores ativos entregaram o relatório.
                                             </li>
-                                        ))
-                                    ) : (
-                                        <li className="text-center py-3 text-emerald-500 font-medium">
-                                            🎉 Parabéns! Todos os publicadores ativos entregaram o relatório.
-                                        </li>
+                                        )}
+                                    </ul>
+
+                                    {user?.congregation?.id && (
+                                        <div className="mt-3 pt-2 border-t border-surface-200">
+                                            <Link
+                                                href={`/congregacao/relatorios/${user.congregation.id}/${missingTargetMonth} ${missingTargetYear}`}
+                                                className="flex items-center justify-center gap-1.5 text-xs font-semibold text-primary-200 hover:text-primary-150 transition w-full py-1"
+                                            >
+                                                <span>Acessar relatórios de {missingTargetMonth}</span>
+                                                <ArrowRight size={13} />
+                                            </Link>
+                                        </div>
                                     )}
-                                </ul>
-                                <Popover.Arrow className="fill-surface-100 stroke-surface-300" />
-                            </Popover.Content>
-                        </Popover.Portal>
-                    </Popover.Root>
-                )}
+
+                                    <Popover.Arrow className="fill-surface-100 stroke-surface-300" />
+                                </Popover.Content>
+                            </Popover.Portal>
+                        </Popover.Root>
+                    )}
+                </div>
             </div>
 
             {isLoading ? (
@@ -423,6 +456,18 @@ export function CongregationReportsChart() {
                                         </div>
                                     )}
                                 </div>
+
+                                {user?.congregation?.id && (
+                                    <div className="mt-2.5 pt-2 border-t border-surface-300/60">
+                                        <Link
+                                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth} ${targetYear}`}
+                                            className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-2.5 rounded-lg bg-primary-200/10 hover:bg-primary-200 text-primary-200 hover:text-white text-xs font-semibold transition-colors group"
+                                        >
+                                            <span>Ver e finalizar relatório</span>
+                                            <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Card 2: Pioneiros Regulares */}

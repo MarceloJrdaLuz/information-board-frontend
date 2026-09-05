@@ -81,6 +81,12 @@ function ReportsMonthPage() {
     const [missingReportsCount, setMissingReportsCount] = useState<number>(0)
 
     const [activeTab, setActiveTab] = useState<"reports" | "totals">("reports")
+
+    useEffect(() => {
+        if (router.query.tab === "totals") {
+            setActiveTab("totals")
+        }
+    }, [router.query.tab])
     const [searchTerm, setSearchTerm] = useState("")
 
     const [totalsAuxPioneers, setTotalsAuxPioneers] = useState<ITotalsReports>()
