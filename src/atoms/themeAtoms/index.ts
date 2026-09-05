@@ -1,6 +1,15 @@
 import { atom } from 'jotai'
 
-export type ThemeType = '' | 'theme-dark' | 'theme-blue' | 'theme-purple' | 'theme-pink'
+export type ThemeType =
+  | ''
+  | 'theme-dark'
+  | 'theme-blue'
+  | 'theme-purple'
+  | 'theme-pink'
+  | 'theme-dark-teal'
+  | 'theme-dark-blue'
+  | 'theme-dark-purple'
+  | 'theme-dark-pink'
 
 export const themeColorsMap: Record<ThemeType, string> = {
   '': '#178582',
@@ -8,6 +17,10 @@ export const themeColorsMap: Record<ThemeType, string> = {
   'theme-blue': '#3E6BA3',
   'theme-purple': '#7B63AD',
   'theme-pink': '#B6587D',
+  'theme-dark-teal': '#178582',
+  'theme-dark-blue': '#3E6BA3',
+  'theme-dark-purple': '#6F4EA1',
+  'theme-dark-pink': '#B6587D',
 }
 
 export function updateThemeColorMeta(newTheme: ThemeType) {

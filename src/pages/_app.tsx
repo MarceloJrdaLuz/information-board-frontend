@@ -29,7 +29,17 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     ((page) => <Layout>{page}</Layout>)
 
   useEffect(() => {
-    const validThemes = ['', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-pink']
+    const validThemes = [
+      '',
+      'theme-dark',
+      'theme-blue',
+      'theme-purple',
+      'theme-pink',
+      'theme-dark-teal',
+      'theme-dark-blue',
+      'theme-dark-purple',
+      'theme-dark-pink',
+    ]
     const urlParams = new URLSearchParams(window.location.search)
     const urlTheme = urlParams.get('theme')
 

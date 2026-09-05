@@ -16,7 +16,7 @@ interface FooterProps {
 
 export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterProps) {
   const themeAtomValue = useAtomValue(themeAtom)
-  const isDark = themeAtomValue === "theme-dark"
+  const isDark = Boolean(themeAtomValue?.startsWith("theme-dark"))
 
   const installPrompt = useAtomValue(installPromptAtom)
   const [isStandalone, setIsStandalone] = useState(false)

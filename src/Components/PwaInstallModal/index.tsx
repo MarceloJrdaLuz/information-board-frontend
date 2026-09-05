@@ -21,12 +21,25 @@ interface PwaInstallModalProps {
 
 export type DeviceType = "mobile" | "tablet" | "desktop"
 
-export const themeOptions: { name: string; key: ThemeType; color: string; iconSrc: string }[] = [
-  { name: "Padrão", key: "", color: "#178582", iconSrc: "/icons/pwa-192.png" },
-  { name: "Escuro", key: "theme-dark", color: "#6F4EA1", iconSrc: "/icons/pwa-theme-dark-192.png" },
-  { name: "Azul", key: "theme-blue", color: "#3E6BA3", iconSrc: "/icons/pwa-theme-blue-192.png" },
-  { name: "Roxo", key: "theme-purple", color: "#7B63AD", iconSrc: "/icons/pwa-theme-purple-192.png" },
-  { name: "Rosa", key: "theme-pink", color: "#B6587D", iconSrc: "/icons/pwa-theme-pink-192.png" },
+export interface ThemeOption {
+  name: string
+  key: ThemeType
+  color: string
+  iconSrc: string
+  isDark: boolean
+}
+
+export const themeOptions: ThemeOption[] = [
+  // Claros
+  { name: "Teal Claro", key: "", color: "#178582", iconSrc: "/icons/pwa-192.png", isDark: false },
+  { name: "Azul Claro", key: "theme-blue", color: "#3E6BA3", iconSrc: "/icons/pwa-theme-blue-192.png", isDark: false },
+  { name: "Roxo Claro", key: "theme-purple", color: "#7B63AD", iconSrc: "/icons/pwa-theme-purple-192.png", isDark: false },
+  { name: "Rosa Claro", key: "theme-pink", color: "#B6587D", iconSrc: "/icons/pwa-theme-pink-192.png", isDark: false },
+  // Escuros
+  { name: "Teal Escuro", key: "theme-dark-teal", color: "#178582", iconSrc: "/icons/pwa-192.png", isDark: true },
+  { name: "Azul Escuro", key: "theme-dark-blue", color: "#3E6BA3", iconSrc: "/icons/pwa-theme-blue-192.png", isDark: true },
+  { name: "Roxo Escuro", key: "theme-dark", color: "#6F4EA1", iconSrc: "/icons/pwa-theme-dark-192.png", isDark: true },
+  { name: "Rosa Escuro", key: "theme-dark-pink", color: "#B6587D", iconSrc: "/icons/pwa-theme-pink-192.png", isDark: true },
 ]
 
 export default function PwaInstallModal({
@@ -393,35 +406,101 @@ export default function PwaInstallModal({
           </div>
 
           {/* Seletor de Paleta de Cores */}
-          <div className="flex flex-col gap-1.5 sm:gap-2">
+          <div className="flex flex-col gap-2">
             <span className="text-[11px] sm:text-xs font-semibold text-typography-700">
-              Selecione uma cor:
+              Selecione o tema e estilo:
             </span>
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
-              {themeOptions.map((item) => {
-                const isSelected = previewTheme === item.key
-                return (
-                  <button
-                    key={item.name}
-                    onClick={() => handleSelectPreviewTheme(item.key)}
-                    className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-xl border transition-all ${
-                      isSelected
-                        ? "border-primary-200 bg-primary-200/10 ring-2 ring-primary-200/30 scale-102"
-                        : "border-surface-300 hover:bg-surface-200"
-                    }`}
-                  >
-                    <div
-                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full shadow-inner flex items-center justify-center text-white"
-                      style={{ backgroundColor: item.color }}
-                    >
-                      {isSelected && <Check size={12} className="stroke-[3] sm:w-[14px] sm:h-[14px]" />}
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] font-medium text-typography-700 text-center leading-tight truncate w-full">
-                      {item.name}
-                    </span>
-                  </button>
-                )
-              })}
+
+            {/* Temas com Fundo Claro */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] sm:text-[10px] font-semibold text-typography-500 uppercase tracking-wider">
+                Fundo Claro
+              </span>
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                {themeOptions
+                  .filter((item) => !item.isDark)
+                  .map((item) => {
+                    const isSelected = previewTheme === item.key
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={() => handleSelectPreviewTheme(item.key)}
+                        className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-xl border transition-all ${
+                          isSelected
+                            ? "border-primary-200 bg-primary-200/10 ring-2 ring-primary-200/30 scale-102 font-bold"
+                            : "border-surface-300 hover:bg-surface-200"
+                        }`}
+                      >
+                        <div
+                          className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-inner flex items-center justify-center overflow-hidden border border-surface-300"
+                          style={{
+                            background: `linear-gradient(135deg, ${item.color} 50%, #ffffff 50%)`,
+                          }}
+                        >
+                          {/* Ponto central */}
+                          <span
+                            className="relative z-10 w-2 h-2 rounded-full border border-white"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 z-20 bg-black/30 flex items-center justify-center text-white">
+                              <Check size={12} className="stroke-[3] sm:w-[14px] sm:h-[14px]" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-[8.5px] sm:text-[9.5px] font-medium text-typography-700 text-center leading-tight truncate w-full">
+                          {item.name}
+                        </span>
+                      </button>
+                    )
+                  })}
+              </div>
+            </div>
+
+            {/* Temas com Fundo Escuro */}
+            <div className="flex flex-col gap-1 mt-1">
+              <span className="text-[9px] sm:text-[10px] font-semibold text-typography-500 uppercase tracking-wider">
+                Fundo Escuro
+              </span>
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                {themeOptions
+                  .filter((item) => item.isDark)
+                  .map((item) => {
+                    const isSelected = previewTheme === item.key
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={() => handleSelectPreviewTheme(item.key)}
+                        className={`flex flex-col items-center gap-1 p-1.5 sm:p-2 rounded-xl border transition-all ${
+                          isSelected
+                            ? "border-primary-200 bg-primary-200/10 ring-2 ring-primary-200/30 scale-102 font-bold"
+                            : "border-surface-300 hover:bg-surface-200"
+                        }`}
+                      >
+                        <div
+                          className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-inner flex items-center justify-center overflow-hidden border border-surface-300"
+                          style={{
+                            background: `linear-gradient(135deg, ${item.color} 50%, #151020 50%)`,
+                          }}
+                        >
+                          {/* Ponto central */}
+                          <span
+                            className="relative z-10 w-2 h-2 rounded-full border border-black/40"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 z-20 bg-black/30 flex items-center justify-center text-white">
+                              <Check size={12} className="stroke-[3] sm:w-[14px] sm:h-[14px]" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-[8.5px] sm:text-[9.5px] font-medium text-typography-700 text-center leading-tight truncate w-full">
+                          {item.name}
+                        </span>
+                      </button>
+                    )
+                  })}
+              </div>
             </div>
           </div>
 

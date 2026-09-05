@@ -412,6 +412,117 @@ input[type=number] {
   --color-surface-300: 230 233 236;
 }
 
+/* ==================== TEMAS ESCUROS ==================== */
+
+.theme-dark-teal {
+  /* Primárias */
+  --color-primary-50: 15 35 34;
+  --color-primary-100: 131 197 190;
+  --color-primary-150: 80 165 160;
+  --color-primary-200: 23 133 130;
+
+  /* Secundárias */
+  --color-secondary-100: 14 26 26;
+  --color-secondary-200: 22 38 38;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 242 242;
+  --color-typography-300: 210 225 225;
+  --color-typography-400: 175 195 195;
+  --color-typography-500: 145 165 165;
+  --color-typography-600: 120 140 140;
+  --color-typography-700: 205 225 225;
+  --color-typography-800: 235 242 242;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 10 20 20;
+  --color-surface-200: 17 32 32;
+  --color-surface-300: 32 55 55;
+}
+
+.theme-dark-blue {
+  /* Primárias */
+  --color-primary-100: 159 185 227;
+  --color-primary-150: 95 138 196;
+  --color-primary-200: 62 107 163;
+
+  /* Secundárias */
+  --color-secondary-100: 14 22 35;
+  --color-secondary-200: 22 32 50;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 240 248;
+  --color-typography-300: 215 225 238;
+  --color-typography-400: 180 195 215;
+  --color-typography-500: 150 165 185;
+  --color-typography-600: 125 140 160;
+  --color-typography-700: 210 225 245;
+  --color-typography-800: 235 240 248;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 11 18 29;
+  --color-surface-200: 18 28 44;
+  --color-surface-300: 35 50 75;
+}
+
+.theme-dark-purple {
+  /* Primárias */
+  --color-primary-100: 193 167 226;
+  --color-primary-150: 153 119 197;
+  --color-primary-200: 111 78 161;
+
+  /* Secundárias */
+  --color-secondary-100: 22 20 25;
+  --color-secondary-200: 35 30 40;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 235 240;
+  --color-typography-300: 215 215 225;
+  --color-typography-400: 190 190 200;
+  --color-typography-500: 160 160 170;
+  --color-typography-600: 130 130 140;
+  --color-typography-700: 210 210 220;
+  --color-typography-800: 235 235 240;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 15 10 20;
+  --color-surface-200: 25 18 35;
+  --color-surface-300: 52 55 58;
+}
+
+.theme-dark-pink {
+  /* Primárias */
+  --color-primary-100: 240 196 213;
+  --color-primary-150: 202 110 146;
+  --color-primary-200: 182 88 125;
+
+  /* Secundárias */
+  --color-secondary-100: 32 16 24;
+  --color-secondary-200: 48 24 36;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 248 235 242;
+  --color-typography-300: 238 215 228;
+  --color-typography-400: 215 180 200;
+  --color-typography-500: 185 150 170;
+  --color-typography-600: 160 125 145;
+  --color-typography-700: 245 210 230;
+  --color-typography-800: 248 235 242;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 24 12 19;
+  --color-surface-200: 38 20 30;
+  --color-surface-300: 65 35 52;
+}
+
 
 .react-datepicker-popper {
   z-index: 9999 !important;
