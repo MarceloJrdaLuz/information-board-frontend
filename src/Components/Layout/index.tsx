@@ -309,7 +309,7 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
 
-                        {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) &&
+                        {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER') || roleContains('MIDWEEK_VIEWER')) &&
                             <NavBar.ListOptions
                                 key={"submenuReunioesMeioDeSemana"}
                                 showList={openSubMenu === 'reunioes-meiodesemana'}
@@ -317,16 +317,18 @@ export default function Layout(props: LayoutProps) {
                                 title="Reuniões meio de semana"
                                 icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
                             >
-                                <NavBar.Options
-                                    isSubItem
-                                    title="Programação"
-                                    onClick={() => {
-                                        { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/programacao-meiodesemana`)
-                                    }}
-                                    icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/reunioes/programacao-meiodesemana'}
-                                />
+                                {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) && (
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Programação"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push(`/reunioes/programacao-meiodesemana`)
+                                        }}
+                                        icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive === '/reunioes/programacao-meiodesemana'}
+                                    />
+                                )}
                                 <NavBar.Options
                                     isSubItem
                                     title="Presidente"
@@ -337,26 +339,30 @@ export default function Layout(props: LayoutProps) {
                                     icon={() => <Timer className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === 'Presidente' || pageActive.startsWith('/reunioes/programacao-meiodesemana/presidente')}
                                 />
-                                <NavBar.Options
-                                    isSubItem
-                                    title="Qualificações"
-                                    onClick={() => {
-                                        { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/programacao-meiodesemana/qualificacoes`)
-                                    }}
-                                    icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/reunioes/programacao-meiodesemana/qualificacoes')}
-                                />
-                                <NavBar.Options
-                                    isSubItem
-                                    title="Partes Mecânicas"
-                                    onClick={() => {
-                                        { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push('/reunioes/partes-mecanicas')
-                                    }}
-                                    icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/reunioes/partes-mecanicas')}
-                                />
+                                {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) && (
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Qualificações"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push(`/reunioes/programacao-meiodesemana/qualificacoes`)
+                                        }}
+                                        icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/reunioes/programacao-meiodesemana/qualificacoes')}
+                                    />
+                                )}
+                                {(isAdminCongregation || isAdmin || roleContains('ADMIN')) && (
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Partes Mecânicas"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/reunioes/partes-mecanicas')
+                                        }}
+                                        icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/reunioes/partes-mecanicas')}
+                                    />
+                                )}
                             </NavBar.ListOptions>
                         }
 

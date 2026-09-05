@@ -137,6 +137,17 @@ export function getLessonDetails(
     shortBadge: string;
     fullDisplay: string;
 } {
+    if (!lessonNumber && !studyPoint && !studyPointDescription) {
+        return {
+            brochureName: "",
+            lessonTheme: undefined,
+            pointDescription: undefined,
+            formattedText: "",
+            shortBadge: "",
+            fullDisplay: ""
+        };
+    }
+
     const rawBrochure = (brochure || "").toLowerCase().trim();
     
     const isExplicitTh = rawBrochure.includes("th") || rawBrochure.includes("teach") || rawBrochure.includes("melhore");

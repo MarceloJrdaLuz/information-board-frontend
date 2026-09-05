@@ -32,9 +32,10 @@ export function addMinutesToTime(timeStr: string, minutesToAdd: number): string 
 /**
  * Obtém o melhor nome para exibição do publicador (customizado > apelido > nome completo).
  */
-function getPublisherName(pub?: IPublisherMini | null, customName?: string | null): string | null {
+function getPublisherName(pub?: IPublisherMini | string | null, customName?: string | null): string | null {
     if (customName && customName.trim()) return customName.trim();
     if (!pub) return null;
+    if (typeof pub === 'string') return pub.trim() || null;
     const nick = pub.nickname?.trim();
     if (nick) return nick;
     return pub.fullName?.trim() || null;
@@ -83,7 +84,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
     // =========================================================================
     pushItem({
         id: `chairman_intro_${schedule.id}`,
-        title: "Palavras Iniciais do Presidente",
+        title: "Comentários iniciais",
         section: 'HEADER',
         sectionTitle: "Início da Reunião",
         sectionColor: '#2F7682',
@@ -97,7 +98,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
     // 3. TESOUROS DA PALAVRA DE DEUS
     // =========================================================================
     const allTreasuresParts = (schedule.parts || [])
-        .filter(p => p.section === MidweekSection.TREASURES && p.isActive);
+        .filter(p => p.section === MidweekSection.TREASURES && (p.isActive ?? true));
 
     const mainTreasuresParts = allTreasuresParts.filter(p => p.room === MidweekRoom.MAIN);
 
@@ -117,12 +118,15 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         const isBibleReading = part.partType === MidweekPartType.BIBLE_READING;
         const isTalk = part.partType === MidweekPartType.TALK;
 
-        const lessonInfo = getLessonDetails(
-            part.brochure,
-            part.lessonNumber,
-            part.studyPoint,
-            part.studyPointDescription
-        );
+        // Partes de Tesouros e Joias NÃO possuem lições nem material fonte
+        const lessonInfo = isBibleReading && (part.lessonNumber || part.studyPoint)
+            ? getLessonDetails(
+                part.brochure,
+                part.lessonNumber,
+                part.studyPoint,
+                part.studyPointDescription
+            )
+            : null;
 
         // Se for Leitura da Bíblia, verifica se há leitor na Sala Auxiliar 1
         let auxReaderName: string | null = null;
@@ -131,7 +135,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
                 p => p.partType === MidweekPartType.BIBLE_READING && p.room === MidweekRoom.AUXILIARY_1
             );
             if (auxPart) {
-                auxReaderName = getPublisherName(auxPart.assignedPublisher, auxPart.custom_speaker_name);
+                auxReaderName = getPublisherName(auxPart.assignedPublisher, auxPart.custom_speaker_name || (auxPart as any).customSpeakerName);
             }
         }
 
@@ -143,10 +147,10 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             sectionColor: '#2F7682',
             durationMinutes: part.timeMinutes || (isBibleReading ? 4 : 10),
             assignedRoleLabel: isBibleReading ? "Leitor" : isTalk ? "Orador" : "Dirigente",
-            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name) || "A designar",
+            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
             auxReaderName,
-            sourceMaterial: part.sourceMaterial || null,
-            lessonInfo: lessonInfo?.fullDisplay || lessonInfo?.shortBadge || null,
+            sourceMaterial: null,
+            lessonInfo: isBibleReading && (lessonInfo?.fullDisplay || lessonInfo?.shortBadge) ? (lessonInfo.fullDisplay || lessonInfo.shortBadge) : null,
             partType: part.partType
         });
 
@@ -170,7 +174,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
     // 4. FAÇA SEU MELHOR NO MINISTÉRIO
     // =========================================================================
     const allMinistryParts = (schedule.parts || [])
-        .filter(p => p.section === MidweekSection.MINISTRY && p.isActive);
+        .filter(p => p.section === MidweekSection.MINISTRY && (p.isActive ?? true));
 
     const mainMinistryParts = allMinistryParts
         .filter(p => p.room === MidweekRoom.MAIN)
@@ -190,8 +194,8 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
                  (p.orderIndex === part.orderIndex || (p.workbook_part_id && p.workbook_part_id === part.workbook_part_id))
         );
 
-        const auxAssignedName = auxPart ? getPublisherName(auxPart.assignedPublisher, auxPart.custom_speaker_name) : null;
-        const auxAssistantName = auxPart ? getPublisherName(auxPart.assistantPublisher) : null;
+        const auxAssignedName = auxPart ? getPublisherName(auxPart.assignedPublisher, auxPart.custom_speaker_name || (auxPart as any).customSpeakerName) : null;
+        const auxAssistantName = auxPart ? getPublisherName((auxPart as any).assistantPublisher || (auxPart as any).assignedAssistant) : null;
 
         const isTalk = part.partType === MidweekPartType.TALK || part.partType === MidweekPartType.STUDENT_TALK;
         const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
@@ -204,8 +208,8 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             sectionColor: '#D49000',
             durationMinutes: part.timeMinutes || 4,
             assignedRoleLabel: isWWYS ? "Orador (Consideração)" : isTalk ? "Orador" : "Titular",
-            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name) || "A designar",
-            assistantName: getPublisherName(part.assistantPublisher),
+            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
+            assistantName: getPublisherName((part as any).assistantPublisher || (part as any).assignedAssistant),
             auxAssignedName,
             auxAssistantName,
             sourceMaterial: part.sourceMaterial || null,
@@ -253,7 +257,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             p.room === MidweekRoom.MAIN &&
             p.partType !== MidweekPartType.CBS &&
             !p.title.toLowerCase().includes("discurso de serviço") &&
-            p.isActive
+            (p.isActive ?? true)
         )
         .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
 
@@ -266,8 +270,8 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             sectionColor: '#973934',
             durationMinutes: part.timeMinutes || 15,
             assignedRoleLabel: "Designado",
-            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name) || "A designar",
-            sourceMaterial: part.sourceMaterial || null,
+            assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
+            sourceMaterial: null,
             partType: part.partType
         });
     });
@@ -283,7 +287,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             durationMinutes: 30,
             assignedRoleLabel: "Superintendente de Circuito",
             assignedName: "Superintendente de Circuito",
-            sourceMaterial: "Visita do Superintendente de Circuito"
+            sourceMaterial: null
         });
     } else {
         const cbsPart = (schedule.parts || []).find(
@@ -300,7 +304,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             assignedRoleLabel: "Dirigente",
             assignedName: getPublisherName(schedule.cbsConductor) || "Dirigente a designar",
             readerName: getPublisherName(schedule.cbsReader) || "Leitor a designar",
-            sourceMaterial: cbsPart?.sourceMaterial || null
+            sourceMaterial: null
         });
     }
 
@@ -309,7 +313,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
     // =========================================================================
     pushItem({
         id: `chairman_conclusion_${schedule.id}`,
-        title: "Palavras Conclusivas do Presidente",
+        title: "Comentário finais",
         section: 'CONCLUSION',
         sectionTitle: "Conclusão da Reunião",
         sectionColor: '#973934',

@@ -32,7 +32,7 @@ function MidweekChairmanPage() {
 
     const [schedules, setSchedules] = useState<IMidweekSchedule[]>([]);
     const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setPageActive("Presidente");
@@ -43,7 +43,7 @@ function MidweekChairmanPage() {
         ]);
     }, [setPageActive, setCrumbs]);
 
-    // Busca programações do mês
+    // Busca programações do mês através da rota da congregação
     const fetchSchedules = async () => {
         if (!congregationId) return;
         setLoading(true);
@@ -51,13 +51,16 @@ function MidweekChairmanPage() {
             const res = await api.get(
                 `/midweek/schedules/congregation/${congregationId}?year=${year}&month=${month}`
             );
-            const data: IMidweekSchedule[] = res.data || [];
-            setSchedules(data);
+            const fetchedSchedules: IMidweekSchedule[] = res.data || [];
 
-            if (data.length > 0) {
+            // Ordena as semanas por weekDate
+            fetchedSchedules.sort((a, b) => (a.weekDate || "").localeCompare(b.weekDate || ""));
+            setSchedules(fetchedSchedules);
+
+            if (fetchedSchedules.length > 0) {
                 // Tenta encontrar a reunião da semana corrente
                 const today = dayjs().startOf('day');
-                const matchingSchedule = data.find(s => {
+                const matchingSchedule = fetchedSchedules.find(s => {
                     const startOfWeek = dayjs(s.weekDate).startOf('week');
                     const endOfWeek = dayjs(s.weekDate).endOf('week');
                     return today.isBetween(startOfWeek, endOfWeek, 'day', '[]');
@@ -65,8 +68,8 @@ function MidweekChairmanPage() {
 
                 if (matchingSchedule) {
                     setSelectedScheduleId(matchingSchedule.id);
-                } else if (!selectedScheduleId || !data.some(s => s.id === selectedScheduleId)) {
-                    setSelectedScheduleId(data[0].id);
+                } else if (!selectedScheduleId || !fetchedSchedules.some(s => s.id === selectedScheduleId)) {
+                    setSelectedScheduleId(fetchedSchedules[0].id);
                 }
             } else {
                 setSelectedScheduleId(null);
@@ -234,6 +237,12 @@ function MidweekChairmanPage() {
 }
 
 MidweekChairmanPage.getLayout = withProtectedLayout();
+MidweekChairmanPage.getLayout = withProtectedLayout([
+    "ADMIN",
+    "ADMIN_CONGREGATION",
+    "MIDWEEK_MANAGER",
+    "MIDWEEK_VIEWER"
+]);
 
 export default MidweekChairmanPage;
 
