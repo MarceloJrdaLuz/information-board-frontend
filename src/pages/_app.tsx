@@ -12,6 +12,7 @@ import Head from 'next/head'
 import { ReactElement, ReactNode, useEffect } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { saveThemeToIndexedDB } from '@/utils/themeStorage'
 
 type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -100,11 +101,25 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   useEffect(() => {
     updateThemeColorMeta(theme)
 
-    // Notifica o Service Worker sobre o tema ativo para sincronizar os ícones de notificação
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: 'SET_THEME',
-        theme: theme || '',
+    const themeValue = theme || ''
+    // 1. Salva a preferência de tema no IndexedDB local para acesso offline / SW com app fechado
+    saveThemeToIndexedDB(themeValue)
+
+    // 2. Notifica o Service Worker sobre o tema ativo
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'SET_THEME',
+          theme: themeValue,
+        })
+      }
+      navigator.serviceWorker.ready.then((reg) => {
+        if (reg.active) {
+          reg.active.postMessage({
+            type: 'SET_THEME',
+            theme: themeValue,
+          })
+        }
       })
     }
   }, [theme])
