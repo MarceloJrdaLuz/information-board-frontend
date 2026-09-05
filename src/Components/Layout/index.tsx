@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, Radio, SquareStackIcon, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, Radio, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -326,6 +326,16 @@ export default function Layout(props: LayoutProps) {
                                     }}
                                     icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive === '/reunioes/programacao-meiodesemana'}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Presidente"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push(`/reunioes/programacao-meiodesemana/presidente`)
+                                    }}
+                                    icon={() => <Timer className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive === 'Presidente' || pageActive.startsWith('/reunioes/programacao-meiodesemana/presidente')}
                                 />
                                 <NavBar.Options
                                     isSubItem
