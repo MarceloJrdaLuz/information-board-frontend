@@ -127,6 +127,7 @@ function ReportsMonthPage() {
             setPageActive(monthParam)
             const dividirPalavra = monthParam.split(" ")
             setMonthSelected(dividirPalavra[0])
+            setMonthSelected(dividirPalavra[0].toLowerCase())
             setYearSelected(dividirPalavra[1])
             setDateFormat(
                 new Date(

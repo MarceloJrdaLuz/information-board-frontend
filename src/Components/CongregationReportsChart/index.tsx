@@ -304,7 +304,7 @@ export function CongregationReportsChart() {
                 <div className="flex items-center gap-2 flex-wrap">
                     {user?.congregation?.id && !isLoading && (
                         <Link
-                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth} ${targetYear}`}
+                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth.toLowerCase()} ${targetYear}`}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-200 text-white hover:bg-primary-150 transition shadow-xs"
                         >
                             <FileSpreadsheet size={14} />
@@ -388,7 +388,7 @@ export function CongregationReportsChart() {
                                     {user?.congregation?.id && (
                                         <div className="mt-3 pt-2 border-t border-surface-200">
                                             <Link
-                                                href={`/congregacao/relatorios/${user.congregation.id}/${missingTargetMonth} ${missingTargetYear}`}
+                                                href={`/congregacao/relatorios/${user.congregation.id}/${missingTargetMonth.toLowerCase()} ${missingTargetYear}`}
                                                 className="flex items-center justify-center gap-1.5 text-xs font-semibold text-primary-200 hover:text-primary-150 transition w-full py-1"
                                             >
                                                 <span>Acessar relatórios de {missingTargetMonth}</span>
@@ -460,7 +460,7 @@ export function CongregationReportsChart() {
                                 {user?.congregation?.id && (
                                     <div className="mt-2.5 pt-2 border-t border-surface-300/60">
                                         <Link
-                                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth} ${targetYear}`}
+                                            href={`/congregacao/relatorios/${user.congregation.id}/${targetMonth.toLowerCase()} ${targetYear}`}
                                             className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-2.5 rounded-lg bg-primary-200/10 hover:bg-primary-200 text-primary-200 hover:text-white text-xs font-semibold transition-colors group"
                                         >
                                             <span>Ver e finalizar relatório</span>
