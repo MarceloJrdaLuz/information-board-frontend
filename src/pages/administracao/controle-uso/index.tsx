@@ -9,8 +9,15 @@ import { useAtom } from "jotai"
 import { useEffect, useState } from "react"
 
 function ControlledUse() {
-    const [crumbs] = useAtom(crumbsAtom)
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
+
+    useEffect(() => {
+        setPageActive("Controle de Uso")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" }
+        ])
+    }, [setPageActive, setCrumbs])
 
     // ---------------------------
     // Datas padrão (1º dia -> hoje)

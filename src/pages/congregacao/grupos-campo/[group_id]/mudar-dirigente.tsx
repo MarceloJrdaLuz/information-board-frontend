@@ -86,21 +86,16 @@ function ChangeGroupOverseer() {
     }, [getPublishers])
 
     useEffect(() => {
-        setCrumbs((prev) => [
-            ...prev,
+        setPageActive("Mudar Dirigente")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Grupos de Campo", link: "/congregacao/grupos-campo" },
             {
-                label: "Editar grupo",
+                label: `Grupo ${group_number ?? ""}`,
                 link: `/congregacao/grupos-campo/${group_id}/add-publicadores?group_number=${group_number}`
             }
         ])
-        return () => {
-            setCrumbs((prev) => prev.slice(0, -1))
-        }
-    }, [setCrumbs, group_id, group_number])
-
-    useEffect(() => {
-        setPageActive("Mudar dirigente")
-    }, [setPageActive])
+    }, [setCrumbs, setPageActive, group_id, group_number])
 
     return (
         <ContentDashboard>

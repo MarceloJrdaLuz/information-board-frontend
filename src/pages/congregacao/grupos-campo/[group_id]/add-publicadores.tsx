@@ -212,18 +212,12 @@ function AddPublishersToGroups() {
     }
 
     useEffect(() => {
-        setCrumbs((prev) => [
-            ...prev,
-            { label: "Grupos", link: "/congregacao/grupos-campo" }
+        setPageActive(`Grupo ${group_number ?? ""}`)
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Grupos de Campo", link: "/congregacao/grupos-campo" }
         ])
-        return () => {
-            setCrumbs((prev) => prev.slice(0, -1))
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive("Editar grupo")
-    }, [setPageActive])
+    }, [setCrumbs, setPageActive, group_number])
 
     return (
         <ContentDashboard>

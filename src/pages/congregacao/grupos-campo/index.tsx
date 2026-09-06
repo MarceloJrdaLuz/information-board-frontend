@@ -65,7 +65,7 @@ function GroupsPage() {
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
-    const [crumbs] = useAtom(crumbsAtom)
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
     const [showInactives, setShowInactives] = useState(false)
@@ -83,8 +83,11 @@ function GroupsPage() {
     }, [getGroups])
 
     useEffect(() => {
-        setPageActive("Grupos")
-    }, [setPageActive])
+        setPageActive("Grupos de Campo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" }
+        ])
+    }, [setPageActive, setCrumbs])
 
     async function deleteGroup(group_id: string) {
         await api

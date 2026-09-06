@@ -36,6 +36,7 @@ function TerritoriesPage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Territórios", link: "/congregacao/territorios" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

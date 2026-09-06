@@ -57,6 +57,7 @@ function FamiliesPage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Famílias", link: "/congregacao/familias" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

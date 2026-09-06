@@ -58,8 +58,7 @@ function ArrangementsPage() {
   useEffect(() => {
     setPageActive("Testemunho Público")
     setCrumbs([
-      { label: "Início", link: "/dashboard" },
-      { label: "Testemunho Público", link: "/congregacao/testemunho-publico" }
+      { label: "Início", link: "/dashboard" }
     ])
   }, [setPageActive, setCrumbs])
 

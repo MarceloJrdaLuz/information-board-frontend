@@ -36,7 +36,7 @@ export const updateAuxiliaryCongregationAtom = atom(
       const res = await api.patch(`/auxiliaryCongregation/${congregation_id}`, payload)
       _set(handleSubmitSuccessAtom, {
         messageSuccess: "Congregação atualizada com sucesso!",
-        redirectTo: "/arranjo-oradores/congregacoes"
+        redirectTo: "/reunioes/fimdesemana/congregacoes"
       })
       return res.data
     } catch (err: any) {

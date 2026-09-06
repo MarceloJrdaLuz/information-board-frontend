@@ -74,6 +74,7 @@ function CleaningSchedulePage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Programação de Limpeza", link: "/congregacao/programacao-limpeza" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

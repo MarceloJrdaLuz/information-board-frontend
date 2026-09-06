@@ -15,20 +15,12 @@ function EditPublicWitnessArrangementPage() {
   const { id } = router.query
 
   useEffect(() => {
-    setCrumbs(prev => [
-      ...prev,
-      {
-        label: "Testemunho Público - Arranjos",
-        link: "/congregacao/testemunho-publico"
-      }
+    setPageActive("Editar Arranjo")
+    setCrumbs([
+      { label: "Início", link: "/dashboard" },
+      { label: "Testemunho Público", link: "/congregacao/testemunho-publico" }
     ])
-
-    return () => setCrumbs(prev => prev.slice(0, -1))
-  }, [setCrumbs])
-
-  useEffect(() => {
-    setPageActive("Editar arranjo")
-  }, [setPageActive])
+  }, [setCrumbs, setPageActive])
 
   if (!id) return null
 

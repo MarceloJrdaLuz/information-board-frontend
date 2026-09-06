@@ -81,8 +81,7 @@ function MechanicalSchedulePage() {
     useEffect(() => {
         setPageActive("Partes Mecânicas");
         setCrumbs([
-            { label: "Início", link: "/dashboard" },
-            { label: "Reuniões", link: "/reunioes/partes-mecanicas" }
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 
@@ -244,8 +243,8 @@ function MechanicalSchedulePage() {
 
     return (
         <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive="Partes Mecânicas" />
             <div className="flex flex-col gap-4 w-full p-4 md:p-6 max-w-7xl mx-auto">
-                <BreadCrumbs crumbs={crumbs} pageActive="Partes Mecânicas" />
 
                 {/* Top Header Card */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-100 border border-surface-300 rounded-2xl p-4 md:p-5 shadow-xs">

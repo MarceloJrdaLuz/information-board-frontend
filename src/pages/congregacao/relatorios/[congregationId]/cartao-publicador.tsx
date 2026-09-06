@@ -60,28 +60,16 @@ function PublisherCardPage() {
     })
 
     useEffect(() => {
-        setPageActive("Registros")
-    }, [setPageActive])
+        setPageActive("Criar Cartão de Publicador")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Relatórios", link: `/congregacao/relatorios/${congregationId}` }
+        ])
+    }, [setPageActive, setCrumbs, congregationId])
 
     useEffect(() => {
         setSelectedPublishersToS21([]);
     }, [congregationId, setSelectedPublishersToS21]);
-
-
-    useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Relatórios', link: `/congregacao/relatorios/${congregationId}` }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs, setPageActive, congregationId])
 
     let skeletonPublishersList = Array(6).fill(0)
 

@@ -38,11 +38,9 @@ function ListReportsPage() {
     useEffect(() => {
         setPageActive("Assistência");
         setCrumbs([
-            { label: "Início", link: "/dashboard" },
-            { label: "Congregação", link: "/congregacao" },
-            { label: "Assistência", link: `/congregacao/assistencia/${congregationId}` },
+            { label: "Início", link: "/dashboard" }
         ]);
-    }, [setPageActive, setCrumbs, congregationId]);
+    }, [setPageActive, setCrumbs]);
 
     const { data, isLoading } = useAuthorizedFetch<IMeetingAssistance[]>(
         congregationId ? `/assistance/${congregationId}` : "",

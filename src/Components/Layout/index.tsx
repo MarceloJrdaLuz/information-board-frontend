@@ -59,19 +59,22 @@ export default function Layout(props: LayoutProps) {
         const subPart = parts[2]
 
         if (
+            middlePart === 'documentos' ||
             middlePart === 'pregacao' ||
             middlePart === 'limpeza' ||
             middlePart === 'contas' ||
-            middlePart === 'eventosespeciais' ||
-            (middlePart === 'reunioes' && (subPart === 'meiodesemana' || subPart === 'fimdesemana'))
+            middlePart === 'eventosespeciais'
         ) {
             setOpenSubMenu('documentos-pdf')
         } else if (
             middlePart === 'reunioes' &&
-            (subPart === 'programacao-meiodesemana' || subPart === 'partes-mecanicas')
+            (subPart === 'meiodesemana' || subPart === 'partes-mecanicas')
         ) {
             setOpenSubMenu('reunioes-meiodesemana')
-        } else if (middlePart === 'arranjo-oradores') {
+        } else if (
+            middlePart === 'reunioes' &&
+            subPart === 'fimdesemana'
+        ) {
             setOpenSubMenu('reunioes-fimdesemana')
         } else {
             setOpenSubMenu(middlePart) // Define o submenu ativo baseado na URL
@@ -322,33 +325,33 @@ export default function Layout(props: LayoutProps) {
                                         isSubItem
                                         title="Programação"
                                         onClick={() => {
-                                            { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push(`/reunioes/programacao-meiodesemana`)
+                                             { !isDesktop && setIsMenuOpen(false) }
+                                             Router.push(`/reunioes/meiodesemana/programacao`)
                                         }}
                                         icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive === '/reunioes/programacao-meiodesemana'}
+                                        active={pageActive === '/reunioes/meiodesemana/programacao' || pageActive === 'Programação do Meio de Semana'}
                                     />
                                 )}
                                 <NavBar.Options
                                     isSubItem
                                     title="Presidente"
                                     onClick={() => {
-                                        { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/programacao-meiodesemana/presidente`)
+                                         { !isDesktop && setIsMenuOpen(false) }
+                                         Router.push(`/reunioes/meiodesemana/presidente`)
                                     }}
                                     icon={() => <Timer className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === 'Presidente' || pageActive.startsWith('/reunioes/programacao-meiodesemana/presidente')}
+                                    active={pageActive === 'Presidente' || pageActive.startsWith('/reunioes/meiodesemana/presidente')}
                                 />
                                 {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) && (
                                     <NavBar.Options
                                         isSubItem
                                         title="Qualificações"
                                         onClick={() => {
-                                            { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push(`/reunioes/programacao-meiodesemana/qualificacoes`)
+                                             { !isDesktop && setIsMenuOpen(false) }
+                                             Router.push(`/reunioes/meiodesemana/qualificacoes`)
                                         }}
                                         icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/reunioes/programacao-meiodesemana/qualificacoes')}
+                                        active={pageActive === 'Qualificações' || pageActive.startsWith('/reunioes/meiodesemana/qualificacoes')}
                                     />
                                 )}
                                 {(isAdminCongregation || isAdmin || roleContains('ADMIN')) && (
@@ -360,7 +363,7 @@ export default function Layout(props: LayoutProps) {
                                             Router.push('/reunioes/partes-mecanicas')
                                         }}
                                         icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/reunioes/partes-mecanicas')}
+                                        active={pageActive === 'Partes Mecânicas' || pageActive.startsWith('/reunioes/partes-mecanicas')}
                                     />
                                 )}
                             </NavBar.ListOptions>
@@ -383,10 +386,10 @@ export default function Layout(props: LayoutProps) {
                                         title="Administração"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push(`/arranjo-oradores/administracao`)
+                                            Router.push(`/reunioes/fimdesemana/administracao`)
                                         }}
                                         icon={() => <KanbanSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/arranjo-oradores/administracao')}
+                                        active={pageActive.startsWith('/reunioes/fimdesemana/administracao') || pageActive === 'Administração'}
                                     />}
                                 {(isAdmin ||
                                     isAdminCongregation ||
@@ -396,9 +399,10 @@ export default function Layout(props: LayoutProps) {
                                         title="Discursos"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push(`/arranjo-oradores/discursos`)
+                                            Router.push(`/reunioes/fimdesemana/discursos`)
                                         }}
                                         icon={() => <TalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/reunioes/fimdesemana/discursos') || pageActive === 'Discursos'}
                                     />}
                                 {(isAdminCongregation || roleContains('TALK_MANAGER')) &&
                                     <>
@@ -407,30 +411,30 @@ export default function Layout(props: LayoutProps) {
                                             title="Programação"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/programacao`)
+                                                Router.push(`/reunioes/fimdesemana/programacao`)
                                             }}
                                             icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/programacao')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/programacao') || pageActive === 'Programação do Fim de Semana'}
                                         />
                                         <NavBar.Options
                                             isSubItem
                                             title="Saída de oradores"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/saida-oradores`)
+                                                Router.push(`/reunioes/fimdesemana/saida-oradores`)
                                             }}
                                             icon={() => <ExternalTalkIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/saida-oradores')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/saida-oradores') || pageActive === 'Saída de oradores'}
                                         />
                                         <NavBar.Options
                                             isSubItem
                                             title="Oradores"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/oradores`)
+                                                Router.push(`/reunioes/fimdesemana/oradores`)
                                             }}
                                             icon={() => <SpeakerIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/oradores')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/oradores') || pageActive === 'Oradores'}
                                         />
 
                                         <NavBar.Options
@@ -438,30 +442,30 @@ export default function Layout(props: LayoutProps) {
                                             title="Congregações"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/congregacoes`)
+                                                Router.push(`/reunioes/fimdesemana/congregacoes`)
                                             }}
                                             icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/congregacoes')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/congregacoes') || pageActive === 'Congregações'}
                                         />
                                         <NavBar.Options
                                             isSubItem
                                             title="Grupos de hospitalidade"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/grupos-hospitalidade`)
+                                                Router.push(`/reunioes/fimdesemana/grupos-hospitalidade`)
                                             }}
                                             icon={() => <GroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/grupos-hospitalidade')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/grupos-hospitalidade') || pageActive === 'Grupos de hospitalidade'}
                                         />
                                         <NavBar.Options
                                             isSubItem
                                             title="Programação de hospitalidade"
                                             onClick={() => {
                                                 { !isDesktop && setIsMenuOpen(false) }
-                                                Router.push(`/arranjo-oradores/programacao-hospitalidade`)
+                                                Router.push(`/reunioes/fimdesemana/programacao-hospitalidade`)
                                             }}
                                             icon={() => <UtensilsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                            active={pageActive.startsWith('/arranjo-oradores/programacao-hospitalidade')}
+                                            active={pageActive.startsWith('/reunioes/fimdesemana/programacao-hospitalidade') || pageActive === 'Programação de hospitalidade'}
                                         />
                                     </>
                                 }
@@ -481,10 +485,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Meio de semana"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/meiodesemana`)
+                                        Router.push(`/documentos/meiodesemana`)
                                     }}
                                     icon={() => <LifeAndMinistry className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/reunioes/meiodesemana')}
+                                    active={pageActive.startsWith('/documentos/meiodesemana')}
                                 />
 
                                 <NavBar.Options
@@ -492,10 +496,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Fim de semana"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/reunioes/fimdesemana`)
+                                        Router.push(`/documentos/fimdesemana`)
                                     }}
                                     icon={() => <PublicMeetingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/reunioes/fimdesemana')}
+                                    active={pageActive.startsWith('/documentos/fimdesemana')}
                                 />
 
                                 <NavBar.Options
@@ -503,10 +507,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Saídas de campo"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/pregacao/saidasdecampo`)
+                                        Router.push(`/documentos/pregacao/saidasdecampo`)
                                     }}
                                     icon={() => <PrechingHomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/pregacao/saidasdecampo')}
+                                    active={pageActive.startsWith('/documentos/pregacao/saidasdecampo')}
                                 />
 
                                 <NavBar.Options
@@ -514,10 +518,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Testemunho público"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push(`/pregacao/testemunhopublico`)
+                                        Router.push(`/documentos/pregacao/testemunhopublico`)
                                     }}
                                     icon={() => <PublicPreachingIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/pregacao/testemunhopublico')}
+                                    active={pageActive.startsWith('/documentos/pregacao/testemunhopublico')}
                                 />
 
                                 <NavBar.Options
@@ -525,10 +529,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Limpeza"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push('/limpeza')
+                                        Router.push('/documentos/limpeza')
                                     }}
                                     icon={() => <CleanIcon className="w-6 h-6 sm:w-7 sm:h-7" />}
-                                    active={pageActive.startsWith('/limpeza')}
+                                    active={pageActive.startsWith('/documentos/limpeza')}
                                 />
 
                                 <NavBar.Options
@@ -536,10 +540,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Contas"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push('/contas')
+                                        Router.push('/documentos/contas')
                                     }}
                                     icon={() => <CalculatorIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/contas')}
+                                    active={pageActive.startsWith('/documentos/contas')}
                                 />
 
                                 <NavBar.Options
@@ -547,10 +551,10 @@ export default function Layout(props: LayoutProps) {
                                     title="Eventos especiais"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push('/eventosespeciais')
+                                        Router.push('/documentos/eventosespeciais')
                                     }}
                                     icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/eventosespeciais')}
+                                    active={pageActive.startsWith('/documentos/eventosespeciais')}
                                 />
                             </NavBar.ListOptions>
                         }

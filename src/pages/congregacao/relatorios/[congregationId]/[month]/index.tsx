@@ -22,6 +22,9 @@ import { InactiveCandidate } from "@/types/publishers"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
+import dayjs from "dayjs"
+import "dayjs/locale/pt-br"
+import customParseFormat from "dayjs/plugin/customParseFormat"
 import { useAtom } from "jotai"
 import {
     AlertTriangle,
@@ -42,9 +45,6 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
-import dayjs from "dayjs"
-import customParseFormat from "dayjs/plugin/customParseFormat"
-import "dayjs/locale/pt-br"
 
 dayjs.extend(customParseFormat)
 dayjs.locale("pt-br")

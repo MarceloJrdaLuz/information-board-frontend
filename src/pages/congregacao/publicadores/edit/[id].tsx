@@ -16,23 +16,12 @@ function EditPublishersPage() {
     const methods = useForm()
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/congregacao/publicadores' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Editar publicador')
-    }, [setPageActive])
+        setPageActive("Editar Publicador")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Publicadores", link: "/congregacao/publicadores" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

@@ -724,7 +724,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                       </span>
                       <Link
                         href={{
-                          pathname: "/arranjo-oradores/saida-oradores",
+                          pathname: "/reunioes/fimdesemana/saida-oradores",
                           query: { date: et.date },
                         }}
                         className="p-1.5 rounded-lg text-primary-200 hover:bg-primary-100/20 transition-colors"

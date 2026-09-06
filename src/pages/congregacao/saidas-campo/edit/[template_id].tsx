@@ -15,22 +15,12 @@ function EditFieldServiceTemplatePage() {
   const { template_id } = router.query
 
   useEffect(() => {
-    setCrumbs(prev => [
-      ...prev,
-      {
-        label: "Saídas de campo",
-        link: "/congregacao/saidas-campo",
-      },
+    setPageActive("Editar Saída de Campo")
+    setCrumbs([
+      { label: "Início", link: "/dashboard" },
+      { label: "Saídas de Campo", link: "/congregacao/saidas-campo" }
     ])
-
-    return () => {
-      setCrumbs(prev => prev.slice(0, -1))
-    }
-  }, [setCrumbs])
-
-  useEffect(() => {
-    setPageActive("Editar saída de campo")
-  }, [setPageActive])
+  }, [setCrumbs, setPageActive])
 
   if (!template_id) return null
 

@@ -11,23 +11,12 @@ function AddTermPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Termos', link: '/administracao/termos' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Criar Termo')
-    }, [setPageActive])
+        setPageActive("Criar Termo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Termos de Uso", link: "/administracao/termos" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

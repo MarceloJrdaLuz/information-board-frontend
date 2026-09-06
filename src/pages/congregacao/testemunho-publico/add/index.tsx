@@ -11,20 +11,12 @@ function AddPublicWitnessArrangementPage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs(prev => [
-            ...prev,
-            {
-                label: "Testemunho Público - Arranjos",
-                link: "/congregacao/testemunho-publico"
-            }
+        setPageActive("Adicionar Arranjo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Testemunho Público", link: "/congregacao/testemunho-publico" }
         ])
-
-        return () => setCrumbs(prev => prev.slice(0, -1))
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive("Adicionar arranjo")
-    }, [setPageActive])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

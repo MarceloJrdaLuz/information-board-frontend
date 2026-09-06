@@ -64,7 +64,7 @@ function ArrangementMonthSchedulePage() {
 
   /* ---------------- Breadcrumb e Título Ativo ---------------- */
   useEffect(() => {
-    setPageActive("Programação de Testemunho Público")
+    setPageActive(arrangement?.title || "Programação de Testemunho Público")
     setCrumbs([
       {
         label: "Início",
@@ -73,13 +73,9 @@ function ArrangementMonthSchedulePage() {
       {
         label: "Testemunho Público",
         link: "/congregacao/testemunho-publico"
-      },
-      {
-        label: arrangement?.title || "Programação Mensal",
-        link: `/congregacao/testemunho-publico/programacao/${arrangement_id}`
       }
     ])
-  }, [setPageActive, setCrumbs, arrangement?.title, arrangement_id])
+  }, [setPageActive, setCrumbs, arrangement?.title])
 
   /* ---------------- Reset do mês ---------------- */
   useEffect(() => {
@@ -189,7 +185,7 @@ function ArrangementMonthSchedulePage() {
   /* ================= Render ================= */
   return (
     <ContentDashboard>
-      <BreadCrumbs crumbs={crumbs} pageActive="Programação de Testemunho Público" />
+      <BreadCrumbs crumbs={crumbs} pageActive={arrangement?.title || "Programação de Testemunho Público"} />
 
       {!arrangement || !publishers ? (
         <ArrangementMonthScheduleSkeleton />

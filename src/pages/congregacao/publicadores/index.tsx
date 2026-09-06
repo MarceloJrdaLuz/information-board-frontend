@@ -23,6 +23,7 @@ function PublishersPage() {
         setCrumbs([
             { label: "Início", link: "/dashboard" },
             { label: "Publicadores", link: "/congregacao/publicadores" },
+            { label: "Início", link: "/dashboard" }
         ])
     }, [setPageActive, setCrumbs])
 

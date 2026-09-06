@@ -34,8 +34,11 @@ function TermsPage() {
         })
     }
     useEffect(() => {
-        setPageActive('Termos de uso')
-    }, [setPageActive])
+        setPageActive('Termos de Uso')
+        setCrumbs([
+            { label: "Início", link: "/dashboard" }
+        ])
+    }, [setPageActive, setCrumbs])
 
     return (
         <ContentDashboard>

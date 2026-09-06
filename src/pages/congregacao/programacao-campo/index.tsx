@@ -130,6 +130,7 @@ function FieldServiceSchedulePage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Programação do Campo", link: "/congregacao/programacao-campo" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

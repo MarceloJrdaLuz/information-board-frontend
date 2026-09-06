@@ -15,7 +15,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
 function RolesPage() {
-    const [crumbs,] = useAtom(crumbsAtom)
+    const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     const { data: getRoles, mutate } = useAuthorizedFetch<IRole[]>('/roles', {
@@ -33,7 +33,10 @@ function RolesPage() {
 
     useEffect(() => {
         setPageActive('Funções')
-    }, [setPageActive])
+        setCrumbs([
+            { label: "Início", link: "/dashboard" }
+        ])
+    }, [setPageActive, setCrumbs])
 
     function handleDelete(item_id: string) {
         toast.promise(deleteRole(item_id), {

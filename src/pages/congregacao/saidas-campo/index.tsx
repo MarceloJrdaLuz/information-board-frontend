@@ -64,6 +64,7 @@ export default function FieldServiceTemplatesPage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Saídas de Campo", link: "/congregacao/saidas-campo" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

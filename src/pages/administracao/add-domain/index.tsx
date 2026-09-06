@@ -16,9 +16,11 @@ function AddDomainPage() {
 
     useEffect(() => {
         setPageActive("Adicionar ao domínio");
+        setPageActive("Acessos ao Domínio");
         setCrumbs([
             { label: "Administração", link: "/administracao" },
             { label: "Acessos ao Domínio", link: "/administracao/add-domain" },
+            { label: "Início", link: "/dashboard" },
         ]);
     }, [setPageActive, setCrumbs]);
 

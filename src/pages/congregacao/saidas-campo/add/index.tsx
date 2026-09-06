@@ -12,19 +12,12 @@ export default function AddFieldServiceTemplatePage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs(prev => [...prev, {
-            label: "Saídas de Campo",
-            link: "/congregacao/saidas-campo"
-        }])
-
-        return () => {
-            setCrumbs(prev => prev.slice(0, -1))
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive("Saídas de Campo")
-    }, [setPageActive])
+        setPageActive("Nova saída de campo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Saídas de Campo", link: "/congregacao/saidas-campo" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

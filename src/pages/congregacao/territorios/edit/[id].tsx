@@ -16,23 +16,12 @@ function EditTerritoryPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Territórios', link: `/congregacao/territorios` }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Editar Território')
-    }, [setPageActive])
+        setPageActive("Editar Território")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Territórios", link: "/congregacao/territorios" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

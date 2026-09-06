@@ -15,17 +15,12 @@ function EditFamilyPage() {
     const { id: family_id } = router.query;
 
     useEffect(() => {
-        setCrumbs(prev => [...prev, {
-            label: "Famílias",
-            link: "/congregacao/familias"
-        }]);
-
-        return () => setCrumbs(prev => prev.slice(0, -1));
-    }, [setCrumbs]);
-
-    useEffect(() => {
         setPageActive("Editar Família");
-    }, [setPageActive]);
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Famílias", link: "/congregacao/familias" }
+        ]);
+    }, [setCrumbs, setPageActive]);
 
     if (!family_id) return null;
 

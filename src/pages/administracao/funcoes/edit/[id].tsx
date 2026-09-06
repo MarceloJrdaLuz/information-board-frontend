@@ -17,33 +17,22 @@ function EditRolesPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/funcoes' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Editar função')
-    }, [setPageActive])
+        setPageActive("Editar Função")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Funções", link: "/administracao/funcoes" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Editar Função"} />
-                <FormProvider {...methods}>
-                    <section className="flex justify-center">
-                        <FormEditRole role_id={`${id}`} />
-                    </section>
-                </FormProvider>
-            </ContentDashboard>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Função"} />
+            <FormProvider {...methods}>
+                <section className="flex justify-center">
+                    <FormEditRole role_id={`${id}`} />
+                </section>
+            </FormProvider>
+        </ContentDashboard>
     )
 }
 

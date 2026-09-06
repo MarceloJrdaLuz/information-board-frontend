@@ -58,6 +58,7 @@ function EmergencyContactsPage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Contatos de emergência", link: "/congregacao/contatos-emergencia" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 

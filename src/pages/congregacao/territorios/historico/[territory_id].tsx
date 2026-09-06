@@ -121,19 +121,16 @@ function EditHistoryTerritoryPage() {
 
     // Breadcrumbs e título da página
     useEffect(() => {
-        setPageActive("Histórico");
+        setPageActive(
+            territory
+                ? `Território #${territory.number}`
+                : "Histórico do Território"
+        );
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Congregação", link: "/congregacao" },
-            { label: "Territórios", link: "/congregacao/territorios" },
-            {
-                label: territory
-                    ? `Território #${territory.number}`
-                    : "Histórico do Território",
-                link: `/congregacao/territorios/historico/${territoryIdStr}`,
-            },
+            { label: "Territórios", link: "/congregacao/territorios" }
         ]);
-    }, [setPageActive, setCrumbs, territory, territoryIdStr]);
+    }, [setPageActive, setCrumbs, territory]);
 
     // ==========================================
     // Estados dos Modais

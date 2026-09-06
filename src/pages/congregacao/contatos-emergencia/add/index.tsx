@@ -14,23 +14,12 @@ function AddEmergencyContactPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Contatos', link: '/congregacao/contatos-emergencia' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Criar Contato de emergência')
-    }, [setPageActive])
+        setPageActive("Criar Contato")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Contatos de emergência", link: "/congregacao/contatos-emergencia" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

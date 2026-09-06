@@ -56,6 +56,7 @@ function CleaningGroupsPage() {
             { label: "Início", link: "/dashboard" },
             { label: "Congregação", link: "/congregacao" },
             { label: "Grupos de Limpeza", link: "/congregacao/grupos-limpeza" },
+            { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
 
