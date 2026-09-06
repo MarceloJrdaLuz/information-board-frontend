@@ -116,8 +116,8 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar contato de emergência</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar contato de emergência</div>
 
                     <Input
                         type="text"
@@ -157,8 +157,8 @@ export default function FormEditEmergencyContact({ emergencyContact }: IEmergenc
                     />
                     {errors?.isTj && <InputError type={errors.isTj.type} field="isTj" />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Contato</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Contato</Button>
                     </div>
                 </div>
             </FormStyle>

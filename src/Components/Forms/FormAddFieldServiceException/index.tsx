@@ -20,12 +20,15 @@ export default function FormAddFieldServiceException({ templates }: any) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Input type="date" onChange={(e) => setDate(e.target.value)} />
 
       <Dropdown
         title="Template (opcional)"
         options={["Todos", ...templates.map((t: any) => t.name)]}
+        border
+        full
+        textVisible
         handleClick={(v) =>
           setTemplateId(
             v === "Todos" ? null : templates.find((t: any) => t.name === v).id
@@ -33,9 +36,11 @@ export default function FormAddFieldServiceException({ templates }: any) {
         }
       />
 
-      <Button onClick={handleSubmit}>
-        Criar exceção
-      </Button>
+      <div className="w-full pt-2">
+        <Button className="w-full text-typography-200" onClick={handleSubmit}>
+          Criar exceção
+        </Button>
+      </div>
     </div>
   )
 }

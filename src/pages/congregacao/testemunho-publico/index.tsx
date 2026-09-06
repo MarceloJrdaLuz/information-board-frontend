@@ -395,7 +395,7 @@ function ArrangementCardItem({
               variant="ghost"
               size="icon"
               onClick={() => onDeleteRequest(arrangement)}
-              className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50"
+              className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
               title="Excluir arranjo"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -404,7 +404,7 @@ function ArrangementCardItem({
         </div>
 
         {/* Lista de horários do arranjo */}
-        <div className="flex flex-col gap-2 pt-1 border-t border-surface-200">
+        <div className="flex flex-col gap-2 pt-1 border-t border-surface-300">
           <span className="text-[11px] font-bold text-typography-500 uppercase tracking-wider">
             Horários ({sortedSlots.length})
           </span>
@@ -413,7 +413,7 @@ function ArrangementCardItem({
             {sortedSlots.map(slot => (
               <div
                 key={slot.id}
-                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-50 border border-surface-200 text-xs"
+                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-200/50 border border-surface-300 text-xs"
               >
                 <div className="flex items-center gap-1.5 font-semibold text-typography-800">
                   <Clock className="w-3.5 h-3.5 text-primary-200" />
@@ -423,7 +423,7 @@ function ArrangementCardItem({
                 </div>
 
                 {slot.is_rotative ? (
-                  <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+                  <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
                     <RefreshCw className="w-2.5 h-2.5" /> Rodízio
                   </span>
                 ) : (
@@ -438,7 +438,7 @@ function ArrangementCardItem({
       </div>
 
       {/* Botão de Ação para a Programação */}
-      <div className="pt-2 border-t border-surface-200">
+      <div className="pt-2 border-t border-surface-300">
         <Button
           onClick={() =>
             Router.push(`/congregacao/testemunho-publico/programacao/${arrangement.id}`)

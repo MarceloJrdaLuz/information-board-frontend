@@ -277,7 +277,7 @@ export default function SlotScheduleRow({
         flex flex-col gap-3 rounded-xl p-4 transition-all duration-200 border
         ${
           !isEditable
-            ? "bg-surface-50 border-surface-300"
+            ? "bg-surface-200/50 border-surface-300"
             : hasGenderFamilyConflict
             ? "bg-red-50/20 border-red-300 shadow-sm"
             : isFilled

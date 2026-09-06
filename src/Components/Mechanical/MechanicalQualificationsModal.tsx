@@ -119,12 +119,12 @@ export const MechanicalQualificationsModal: React.FC<MechanicalQualificationsMod
                         placeholder="Buscar por nome ou apelido..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm border rounded-xl bg-surface-100 border-typography-200 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                        className="w-full pl-9 pr-4 py-2 text-sm border rounded-xl bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                     />
                 </div>
 
                 {/* Tabela de irmãos */}
-                <div className="flex-1 overflow-y-auto border border-typography-200/60 rounded-xl mt-1">
+                <div className="flex-1 overflow-y-auto border border-surface-300 rounded-xl mt-1">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16 text-typography-500 gap-2">
                             <Loader2 className="h-6 w-6 animate-spin text-primary-200" />
@@ -147,7 +147,7 @@ export const MechanicalQualificationsModal: React.FC<MechanicalQualificationsMod
                                     <th className="py-2.5 px-2 text-center">Pedestal</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-typography-200/40">
+                            <tbody className="divide-y divide-surface-300">
                                 {filtered.map((pub) => (
                                     <tr
                                         key={pub.id}

@@ -66,8 +66,8 @@ export default function FormLogin() {
         <>
             {!loading ? (
                 <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                    <div className={`w-full lg:w-11/12 h-fit flex-col justify-center items-center`}>
-                        <div className={`my-6 m-auto w-full  font-semibold text-2xl sm:text-3xl text-primary-200`}>Login</div>
+                    <div className="w-full flex flex-col">
+                        <div className="form-title-modern">Login</div>
                         <Input type="text" placeholder="Email" registro={{
                             ...register('email',
                                 { required: "Campo obrigatório" })
@@ -77,26 +77,24 @@ export default function FormLogin() {
 
                         <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} >
                             {passwordVisible ? (
-                                <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                                <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                             ) : (
-                                <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                                <EyeIcon onClick={() => setPasswordVisible(true)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                             )}
                         </Input>
                         {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
-                        <div>
-                            <div>
-                                <Link href={'/forgot-password'} className='text-primary-200  hover:underline text-center text-sm sm:text-lg'>
-                                    Esqueci minha senha
-                                </Link>
-                            </div>
-                            <div>
-                                <Link href={'/cadastro'} className='text-primary-200  hover:underline text-center text-sm sm:text-lg'>
-                                    Criar nova conta
-                                </Link>
-                            </div>
+
+                        <div className="flex justify-center items-center w-full mt-6">
+                            <Button className="w-full text-typography-200" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
                         </div>
-                        <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                            <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
+
+                        <div className="flex flex-col gap-2 mt-6 pt-4 border-t border-surface-300/60 text-center">
+                            <Link href={'/forgot-password'} className='text-primary-200 hover:underline text-sm font-medium'>
+                                Esqueci minha senha
+                            </Link>
+                            <Link href={'/cadastro'} className='text-typography-600 hover:text-primary-200 text-sm font-medium'>
+                                Não tem uma conta? <span className="text-primary-200 font-semibold underline">Criar nova conta</span>
+                            </Link>
                         </div>
                     </div>
                 </FormStyle>

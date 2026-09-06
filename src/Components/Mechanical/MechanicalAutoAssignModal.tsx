@@ -44,7 +44,7 @@ export const MechanicalAutoAssignModal: React.FC<MechanicalAutoAssignModalProps>
 
                 <div className="flex flex-col gap-3 py-2">
                     {/* Regras e critérios do algoritmo */}
-                    <div className="p-3.5 bg-surface-200/60 rounded-xl border border-typography-200/40 text-xs space-y-2 text-typography-700">
+                    <div className="p-3.5 bg-surface-200/60 rounded-xl border border-surface-300 text-xs space-y-2 text-typography-700">
                         <div className="flex items-start gap-2">
                             <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                             <span><strong>Prioridade por antiguidade:</strong> Irmãos há mais tempo sem designação são escalados primeiro.</span>
@@ -60,7 +60,7 @@ export const MechanicalAutoAssignModal: React.FC<MechanicalAutoAssignModalProps>
                     </div>
 
                     {/* Checkbox sobrescrever manuais */}
-                    <div className="flex items-center gap-2.5 p-2 rounded-lg border border-typography-200/30 bg-surface-100">
+                    <div className="flex items-center gap-2.5 p-2 rounded-lg border border-surface-300 bg-surface-100">
                         <input
                             type="checkbox"
                             id="forceReassign"

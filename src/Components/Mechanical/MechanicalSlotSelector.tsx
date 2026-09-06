@@ -86,7 +86,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                     type="button"
                     className={`group w-full flex items-center justify-between text-left p-2 rounded-lg border transition-all cursor-pointer ${
                         currentPublisherName
-                            ? "bg-surface-100/90 border-typography-200 hover:border-primary-200/80 shadow-xs"
+                            ? "bg-surface-100/90 border-surface-300 hover:border-primary-200/80 shadow-xs"
                             : "bg-surface-100/70 border-dashed border-typography-300 hover:bg-surface-200/50"
                     }`}
                 >
@@ -117,11 +117,11 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
 
             <Popover.Portal>
                 <Popover.Content
-                    className="z-50 w-72 sm:w-80 p-2.5 rounded-xl bg-surface-100 border border-typography-200 shadow-xl focus:outline-none"
+                    className="z-50 w-72 sm:w-80 p-2.5 rounded-xl bg-surface-100 border border-surface-300 shadow-xl focus:outline-none"
                     sideOffset={5}
                     align="start"
                 >
-                    <div className="flex items-center justify-between pb-2 border-b border-typography-200/60 mb-2">
+                    <div className="flex items-center justify-between pb-2 border-b border-surface-300 mb-2">
                         <div className="flex items-center gap-1.5">
                             <Sparkles className="h-4 w-4 text-primary-200" />
                             <span className="text-xs font-bold text-typography-800">
@@ -139,7 +139,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                             placeholder="Buscar irmão..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-surface-100 border-typography-200 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                            className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                         />
                     </div>
 
@@ -181,7 +181,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                                         className={`w-full flex flex-col items-start p-2 rounded-lg text-left transition-colors cursor-pointer border ${
                                             isSelected
                                                 ? "bg-primary-50 dark:bg-primary-950/40 border-primary-300"
-                                                : "hover:bg-surface-100 border-transparent"
+                                                : "hover:bg-surface-200 border-transparent"
                                         }`}
                                     >
                                         <div className="w-full flex items-center justify-between">
@@ -190,7 +190,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                                                     {candidate.nickname || candidate.fullName}
                                                 </span>
                                                 {isTopPick && (
-                                                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-bold shrink-0">
+                                                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-bold shrink-0">
                                                         Top
                                                     </span>
                                                 )}

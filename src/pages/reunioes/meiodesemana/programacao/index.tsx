@@ -354,7 +354,7 @@ function MidweekScheduleAssistantPage() {
 
                 {/* Abas das Semanas do Mês */}
                 {schedules.length > 0 && (
-                    <div className="sticky top-0 z-20 bg-secondary-100/95 backdrop-blur-md py-2 -mx-2 sm:-mx-4 px-2 sm:px-4 w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] min-w-0 overflow-x-auto scroll-smooth overscroll-x-contain flex items-center gap-2 border-b border-surface-300/60 shadow-xs">
+                    <div className="sticky top-0 z-20 bg-surface-100/95 backdrop-blur-md py-2 -mx-2 sm:-mx-4 px-2 sm:px-4 w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] min-w-0 overflow-x-auto scroll-smooth overscroll-x-contain flex items-center gap-2 border-b border-surface-300/60 shadow-xs">
                         {schedules.map((s) => {
                             const isSelected = s.id === selectedScheduleId;
                             const weekDay = dayjs(s.meetingDate || s.weekDate).format("DD/MM");

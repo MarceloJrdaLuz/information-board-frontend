@@ -190,8 +190,8 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
     return (
         <section className="w-80 m-5">
             <FormStyle full onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-auto flex-col justify-center items-center`}>
-                    {territoryHistory && <div className="w-full flex ">
+                <div className="w-full flex flex-col">
+                    {territoryHistory && <div className="w-full flex mb-4">
                         <div className="w-full flex justify-between">
                             <Button
                                 className="w-30"
@@ -321,9 +321,9 @@ export default function FormTerritoryHistory({ territoryHistory, onCreate, onUpd
                         ) : null}
                     </CheckboxUnique>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
+                    <div className="w-full mt-6">
                         <Button
-                            className="text-typography-200"
+                            className="w-full text-typography-200"
                             size="lg"
                             disabled={disabled}
                             error={dataError}

@@ -173,10 +173,10 @@ export default function FormAddPublisher() {
     const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
 
     return (
-        <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto m-2 pb-36 pt-6">
+        <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto p-2 sm:p-4 pb-36 pt-6">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo publicador</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Novo publicador</div>
                     <Input type="text" placeholder="Nome completo" registro={{
                         ...register('fullName',
                             { required: "Campo obrigatório" })
@@ -204,19 +204,19 @@ export default function FormAddPublisher() {
                     />
                     {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <CheckboxUnique visibleLabel checked={genderCheckboxSelected} label="Gênero" options={optionsCheckboxGender[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxGender(selectedItems)} />
                     </div>
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <CheckboxUnique visibleLabel checked={hopeCheckboxSelected} label="Esperança" options={optionsCheckboxHope[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxHope(selectedItems)} />
                     </div>
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <CheckboxUnique visibleLabel checked={situationPublisherCheckboxSelected} label="Situação do publicador" options={optionsCheckboxSituationPublisher[0]} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxSituationPublisher(selectedItems)} />
                     </div>
 
-                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-typography-300 my-4 p-4'>
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         {<CheckboxUnique visibleLabel checked={pioneerCheckboxSelected} label="Pioneiro" options={optionsCheckboxPioneer} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
 
                         {pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
@@ -234,7 +234,7 @@ export default function FormAddPublisher() {
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO &&
                         genderCheckboxSelected === 'Feminino' && (
-                            <div className="border border-typography-300 my-4 p-4">
+                            <div className="border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs">
                                 {/* Privilegio principal */}
                                 <CheckboxMultiple
                                     visibleLabel
@@ -253,18 +253,18 @@ export default function FormAddPublisher() {
                         )}
 
 
-                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-typography-300 my-4 p-4'>
+                    {situationPublisherCheckboxSelected === Situation.ATIVO && genderCheckboxSelected === 'Masculino' && <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <CheckboxUnique allowUncheck visibleLabel checked={privilegeCheckboxSelected} label="Privilégio" options={optionsCheckboxPrivileges} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPrivileges(selectedItems)} />
                         <CheckboxMultiple visibleLabel checkedOptions={additionalsPrivilegeCheckboxSelected} label="Privilégios Adicionais" options={additionalsPrivilegeOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxAdditionalPrivileges(selectedItems)} />
                     </div>}
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={birthDate} />
 
                         <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handlers.handleImmersedDateChange} selectedDate={immersedDate} />
                     </div>
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <div className='flex justify-between items-center'>
                             <span className='my-2 font-semibold text-typography-700 '>Contato de emergência</span>
                             <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon className='text-typography-700' /> </span>
@@ -283,14 +283,14 @@ export default function FormAddPublisher() {
                                     searchable
                                 />
                                 <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                    <Button type='button' className='w-fit text-typography-200'><span><PlusIcon className='bg-transparent rounded-full text-typography-200 w-5 h-5' /></span>Adicionar contato de emergência</Button>
+                                    <Button type='button' outline size="sm" className='w-fit'><span><PlusIcon className='w-4 h-4 mr-1' /></span>Adicionar contato de emergência</Button>
                                 </span>
                             </>
                         )}
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
+                    <div className="flex justify-center items-center w-full mt-6">
+                        <Button className="w-full sm:w-auto" error={dataError} disabled={(genderCheckboxSelected === '' || hopeCheckboxSelected === '') ? true : disabled} success={dataSuccess} type='submit'>Criar Publicador</Button>
                     </div>
                 </div>
             </FormStyle>

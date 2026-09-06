@@ -1,22 +1,23 @@
-interface FormStyleProps{
+interface FormStyleProps {
     onSubmit: () => void
     children: React.ReactNode
     full?: boolean
+    className?: string
 }
 
-export default function FormStyle(props: FormStyleProps){
-
-    return(
+export default function FormStyle(props: FormStyleProps) {
+    return (
         <form
-  onSubmit={props.onSubmit}
-  className={`
-    flex z-0 w-full
-    ${!props.full && "min-h-[450px] lg:w-10/12 md:w-11/12 md:h-fit"}  
-    max-w-[600px] justify-center items-start
-    bg-surface-100 p-6 md:p-8 
-    shadow-neutral-300 rounded-xl
-  `}
->
+            onSubmit={props.onSubmit}
+            className={`
+                flex flex-col z-0 w-full
+                ${!props.full ? "max-w-[620px]" : "w-full"}
+                bg-surface-100 p-6 sm:p-8
+                border border-surface-300 rounded-2xl shadow-sm
+                transition-all
+                ${props.className || ""}
+            `}
+        >
             {props.children}
         </form>
     )

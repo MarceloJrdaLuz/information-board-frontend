@@ -157,6 +157,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
   return (
     <FormStyle onSubmit={handleSubmit(onSubmit)}>
       <div className="w-full flex flex-col gap-4">
+        <div className="form-title-modern">Editar arranjo</div>
 
         <Input
           placeholder="Título do arranjo"
@@ -198,7 +199,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
 
         {/* 🔹 Slots */}
         {fields.map((field, index) => (
-          <div key={field.id} className="border p-4 rounded flex flex-col gap-3">
+          <div key={field.id} className="border border-surface-300 rounded-xl bg-surface-200/20 p-4 shadow-xs flex flex-col gap-3">
             <div className="flex gap-2 flex-wrap items-center">
               <Input
                 placeholder="Início"

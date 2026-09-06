@@ -94,7 +94,7 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                                         className={`text-xs px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 font-medium ${
                                             isSelected
                                                 ? "bg-amber-500/15 border-amber-500/40 text-amber-800 dark:text-amber-300 font-semibold shadow-xs"
-                                                : "bg-surface-200/60 border-typography-200/40 text-typography-700 hover:bg-surface-200 hover:border-typography-300"
+                                                : "bg-surface-200/60 border-surface-300 text-typography-700 hover:bg-surface-200"
                                         }`}
                                     >
                                         <span>{preset.icon}</span>
@@ -120,7 +120,7 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                             value={eventTitle}
                             onChange={(e) => setEventTitle(e.target.value)}
                             placeholder="Ex: Assembleia de Circuito, Congresso Regional, Manutenção..."
-                            className="w-full px-3.5 py-2 text-sm border rounded-xl bg-surface-100 border-typography-300/80 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
+                            className="w-full px-3.5 py-2 text-sm border rounded-xl bg-surface-100 border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
                         />
                     </div>
 
@@ -133,7 +133,7 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                     </div>
                 </div>
 
-                <DialogFooter className="flex sm:justify-end gap-2 pt-2 border-t border-typography-200/40">
+                <DialogFooter className="flex sm:justify-end gap-2 pt-2 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"

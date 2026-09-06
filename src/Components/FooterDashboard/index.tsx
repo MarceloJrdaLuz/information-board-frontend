@@ -6,7 +6,8 @@ import Link from "next/link"
 import ThemeSwitcher from "../ThemeSwitcher"
 
 export default function FooterDashboard() {
-  const { user } = useAuthContext()
+  const { user, roleContains } = useAuthContext()
+  const isAdminCongregation = roleContains("ADMIN_CONGREGATION")
 
   return (
     <footer className="w-full bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 text-white shadow-md border-t border-white/10 py-3 sm:py-3.5 px-4 sm:px-6">
@@ -25,15 +26,17 @@ export default function FooterDashboard() {
         </div>
 
         {/* Lado Direito: Links de Privacidade e Termos */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/termos-de-uso"
-            className="inline-flex items-center gap-1.5 text-white/85 hover:text-white hover:underline transition-colors font-medium"
-          >
-            <Shield size={13} />
-            <span>Termos e Privacidade</span>
-          </Link>
-        </div>
+        {isAdminCongregation && (
+          <div className="flex items-center gap-4">
+            <Link
+              href="/termos-de-uso"
+              className="inline-flex items-center gap-1.5 text-white/85 hover:text-white hover:underline transition-colors font-medium"
+            >
+              <Shield size={13} />
+              <span>Termos e Privacidade</span>
+            </Link>
+          </div>
+        )}
       </div>
     </footer>
   )

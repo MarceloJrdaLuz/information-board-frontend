@@ -68,14 +68,20 @@ export default function FormAddCategory() {
     return (
         <section className="flex  justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center mt-8`}>
-                    <div className='p-2'>
-                        <span className='text-primary-200'>Crie as categorias de documentos. Ex: Campo - Vai ter os arquivos relacionados a saidas de campo. Abaixo tem a lista das categorias já criadas</span>
+                <div className="w-full flex flex-col">
+                    <div className='p-3.5 bg-primary-200/5 border border-primary-200/20 rounded-xl mb-4 text-sm text-typography-500'>
+                        <span className='text-typography-600 font-medium'>Crie as categorias de documentos. Ex: Campo - Vai ter os arquivos relacionados a saídas de campo. Abaixo tem a lista das categorias já criadas:</span>
                     </div>
-                    <div className='flex flex-wrap pt-5'>
-                        {categories?.map(category => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={category.id}>{category.name}</span>)}
-                    </div>
-                    <div className={`my-6  w-11/12 font-semibold  sm:text-2xl text-primary-200`}>Adicionar nova categoria</div>
+                    {categories && categories.length > 0 && (
+                        <div className='flex flex-wrap gap-1.5 mb-5'>
+                            {categories.map(category => (
+                                <span className='inline-flex items-center py-1.5 px-3.5 text-xs font-medium bg-surface-200 border border-surface-300 rounded-full text-typography-700 shadow-2xs' key={category.id}>
+                                    {category.name}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    <div className="form-title-modern">Adicionar nova categoria</div>
 
                     <Input type="text" placeholder="Título da categoria" registro={{
                         ...register('name',
@@ -91,8 +97,8 @@ export default function FormAddCategory() {
                         invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Criar Categoria</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Criar Categoria</Button>
                     </div>
                 </div>
             </FormStyle>

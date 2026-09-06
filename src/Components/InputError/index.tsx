@@ -6,7 +6,8 @@ interface InputErrorsProps {
 }
 
 
-export default function InputError({type, field}:InputErrorsProps){
+export default function InputError({type, field}: InputErrorsProps){
     //@ts-expect-error
-    return <span className="text-red-400 ">{errors[field][type]}</span>
+    const message = errors[field]?.[type] || "Campo obrigatório ou inválido"
+    return <span className="text-xs text-red-500 font-medium -mt-1 mb-2.5 block">{message}</span>
 }

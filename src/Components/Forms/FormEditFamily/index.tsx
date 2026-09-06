@@ -130,8 +130,8 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
 
     return (
         <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-            <div className="w-full h-fit flex-col justify-center items-center">
-                <div className="my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200">
+            <div className="w-full flex flex-col">
+                <div className="form-title-modern">
                     Editar Família
                 </div>
 
@@ -143,7 +143,7 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                 />
                 {errors?.name?.type && <InputError type={errors.name.type} field="name" />}
 
-                <div className='mt-3'>
+                <div className='mt-4'>
                     {availablePublishers && (
                         <DropdownObject<IPublisher>
                             title="Responsável da família"
@@ -159,7 +159,7 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                     )}
                 </div>
 
-                <div className="mt-3">
+                <div className="mt-4">
                     <DropdownMulti<IPublisher>
                         title="Membros da família"
                         items={availablePublishers}
@@ -175,9 +175,9 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                     />
                 </div>
 
-                <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">
+                <div className="w-full mt-6">
                     <Button
-                        className="text-typography-200"
+                        className="w-full text-typography-200"
                         error={dataError}
                         disabled={disabled}
                         success={dataSuccess}

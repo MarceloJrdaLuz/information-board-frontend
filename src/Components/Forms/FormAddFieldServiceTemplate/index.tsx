@@ -97,9 +97,8 @@ export default function FormAddFieldServiceTemplate() {
 
   return (
     <FormStyle onSubmit={handleSubmit(onSubmit)}>
-      <div className="w-full h-fit flex-col justify-center items-center">
-
-        <div className="my-6 m-auto w-11/12 font-semibold text-lg text-primary-200">
+      <div className="w-full flex flex-col">
+        <div className="form-title-modern">
           Nova Saída de Campo
         </div>
 
@@ -182,8 +181,8 @@ export default function FormAddFieldServiceTemplate() {
           )}
         </div>
 
-        <div className="flex justify-center items-center m-auto w-11/12 h-12 my-6">
-          <Button type="submit">Criar Saída</Button>
+        <div className="w-full mt-6">
+          <Button className="w-full text-typography-200" type="submit">Criar Saída</Button>
         </div>
       </div>
     </FormStyle>

@@ -112,7 +112,7 @@ export function FieldServicePdfDownload({ congregationId }: PdfDownloadCardProps
           Ajuste de escala (Tamanho do conteúdo)
         </label>
         <Select value={pdfScale.toString()} onValueChange={v => setPdfScale(Number(v))}>
-          <SelectTrigger className="w-full bg-white">
+          <SelectTrigger className="w-full bg-surface-100 border-surface-300">
             <SelectValue placeholder="Selecione a escala" />
           </SelectTrigger>
           <SelectContent>

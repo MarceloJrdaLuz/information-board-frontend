@@ -319,7 +319,7 @@ function MechanicalSchedulePage() {
                 </div>
 
                 {/* Navegação de Mês */}
-                <div className="flex items-center justify-between bg-surface-100 rounded-xl p-2 border border-typography-200/50">
+                <div className="flex items-center justify-between bg-surface-100 rounded-xl p-2 border border-surface-300">
                     <div className="flex items-center gap-1">
                         <Button
                             type="button"
@@ -392,7 +392,7 @@ function MechanicalSchedulePage() {
                                     className="bg-surface-100 border border-surface-300 rounded-2xl overflow-hidden shadow-xs"
                                 >
                                     {/* Cabeçalho da Semana */}
-                                    <div className="flex items-center justify-between px-4 py-3 bg-surface-200/70 border-b border-typography-200/60">
+                                    <div className="flex items-center justify-between px-4 py-3 bg-surface-200/70 border-b border-surface-300">
                                         <div className="flex items-center gap-2 font-bold text-sm text-typography-900">
                                             <span className={`w-2 h-2 rounded-full ${week.hasNoMeeting ? "bg-amber-500" : "bg-primary-200"}`} />
                                             <span>{week.formattedWeek}</span>
@@ -404,7 +404,7 @@ function MechanicalSchedulePage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleActivateWeekMeeting(week.weekStartDate)}
-                                                    className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1 h-7 font-medium"
+                                                    className="text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/30 gap-1 h-7 font-medium"
                                                 >
                                                     <CalendarCheck2 className="w-3.5 h-3.5" />
                                                     <span>Ativar Semana</span>
@@ -415,14 +415,14 @@ function MechanicalSchedulePage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
-                                                    className="text-xs text-typography-400 hover:text-red-600 hover:bg-red-50 gap-1 h-7"
+                                                    className="text-xs text-typography-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 gap-1 h-7"
                                                     title="Marcar semana como sem reunião / remover partes mecânicas"
                                                 >
                                                     <CalendarX2 className="w-3.5 h-3.5" />
                                                     <span className="hidden sm:inline">Sem Reunião</span>
                                                 </Button>
                                             )}
-                                            <span className="text-[11px] font-semibold text-typography-500 uppercase tracking-wider pl-1.5 border-l border-typography-300/40">
+                                            <span className="text-[11px] font-semibold text-typography-500 uppercase tracking-wider pl-1.5 border-l border-surface-300">
                                                 Semana {weekIdx + 1}
                                             </span>
                                         </div>
@@ -431,7 +431,7 @@ function MechanicalSchedulePage() {
                                     {/* Se a semana não tiver reuniões no Salão (Evento Especial, Assembleia, ou desativada manualmente) */}
                                     {week.hasNoMeeting ? (
                                         <div className="p-8 flex flex-col items-center justify-center text-center bg-surface-100/40 rounded-b-2xl space-y-3">
-                                            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-200">
+                                            <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 flex items-center justify-center border border-blue-200 dark:border-blue-800">
                                                 <Landmark className="w-6 h-6" />
                                             </div>
                                             <div className="space-y-1 max-w-md">
@@ -448,7 +448,7 @@ function MechanicalSchedulePage() {
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
-                                                    className="text-xs text-typography-700 border-typography-300 hover:bg-surface-200"
+                                                    className="text-xs text-typography-700 border-surface-300 hover:bg-surface-200"
                                                 >
                                                     Alterar Motivo
                                                 </Button>
@@ -457,7 +457,7 @@ function MechanicalSchedulePage() {
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => handleActivateWeekMeeting(week.weekStartDate)}
-                                                    className="text-xs text-blue-700 border-blue-200 hover:bg-blue-50"
+                                                    className="text-xs text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/30"
                                                 >
                                                     Ativar Designações nesta Semana
                                                 </Button>
@@ -483,7 +483,7 @@ function MechanicalSchedulePage() {
                                         </div>
                                     ) : (
                                         /* Grid com Meio de Semana e Fim de Semana separados */
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-typography-200/60">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-surface-300">
                                             {/* Reunião de Meio de Semana */}
                                             <div className="p-4 sm:p-5 flex flex-col">
                                                 {midweekSched ? (
@@ -611,7 +611,7 @@ const WholeWeekDutiesCard: React.FC<WholeWeekDutiesCardProps> = ({
     return (
         <div className="flex flex-col gap-4">
             {/* Header da Semana Toda */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-typography-200/50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-surface-300">
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary-200" />
                     <div>
@@ -785,7 +785,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
     return (
         <div className="flex flex-col gap-4">
             {/* Header da Reunião */}
-            <div className="flex items-center justify-between pb-3 border-b border-typography-200/50">
+            <div className="flex items-center justify-between pb-3 border-b border-surface-300">
                 <div className="flex items-center gap-2">
                     <div
                         className={`w-2 h-2 rounded-full ${

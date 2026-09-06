@@ -126,7 +126,8 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
                 )}
             </div>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-auto flex-col justify-center items-center p-8 border border-surface-300`}>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Relatório de Campo</div>
                     <Input
                         readOnly
                         type="text"
@@ -137,6 +138,9 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
                     />
 
                     <CheckboxUnique visibleLabel checked={privilege} label="" options={optionsCheckboxPrivilege[0]} handleCheckboxChange={(selectedItems) => handleCheckboxPrivilege(selectedItems)} />
+                    <div className="my-2">
+                        <CheckboxUnique visibleLabel checked={privilege} label="" options={optionsCheckboxPrivilege[0]} handleCheckboxChange={(selectedItems) => handleCheckboxPrivilege(selectedItems)} />
+                    </div>
 
 
                     <Input
@@ -173,9 +177,9 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
                     />
                     {errors?.observations?.type && <InputError type={errors?.observations?.type} field='observations' />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
+                    <div className="w-full mt-6">
                         <Button
-                            className="text-typography-200"
+                            className="w-full text-typography-200"
                             size="lg"
                             disabled={disabled}
                             error={dataError}

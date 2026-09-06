@@ -155,13 +155,13 @@ export default function FormUserRoles() {
     Primeiramente escolha na lista suspensa o usuário que você quer atribuir uma ou mais funções. Após isso escolha na lista seguinte as funções que você deseja atribuir a ele. As funções selecionadas vão aparecer em etiquetas abaixo, caso queira remover alguma função dada para algum usuário basta clicar no X e ir removendo as que não se aplicam mais. O nome delas estão em inglês, abaixo essa lista mostra o que cada uma delas libera ao usuário.\n${roles.map(role => `   ${role.name} - ${role.description}\n`).join('')}
                         `} />}
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className="flex justify-end ">
-                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                <div className="w-full flex flex-col">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-surface-300/80">
+                        <div className="form-title-modern !mb-0 border-b-0 !pb-0">Atribuir função a um usuário</div>
+                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer hover:opacity-80 transition-opacity" />
                     </div>
-                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir função a um usuário</div>
 
-                    <Dropdown textVisible handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
+                    <Dropdown textVisible full handleClick={option => handleClickUserDrop(option)} options={optionsDropUsers ?? []} title="Usuários" border />
                     <div className="my-4 flex flex-wrap gap-2">
                         {userSelected && (
                             <div
@@ -196,8 +196,8 @@ export default function FormUserRoles() {
                         )}
                     </div>
 
-                    <div>
-                        <Dropdown textVisible handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
+                    <div className="mt-2">
+                        <Dropdown textVisible full handleClick={option => handleClickRolesDrop(option)} options={optionsDrop ?? []} title="Funções" border />
                         <div className="mt-4 flex flex-wrap gap-2">
                             {rolesSelecteds.map((permission) => (
                                 <div
@@ -233,8 +233,8 @@ export default function FormUserRoles() {
                         </div>
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button className="text-typography-200" error={dataError} success={dataSuccess} disabled={(userSelectedId === '') ? true : disabled} type='submit'>Atribuir Função</Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" error={dataError} success={dataSuccess} disabled={(userSelectedId === '') ? true : disabled} type='submit'>Atribuir Função</Button>
                     </div>
                 </div>
             </FormStyle>

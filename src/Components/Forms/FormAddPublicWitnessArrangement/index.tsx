@@ -136,7 +136,7 @@ export default function FormAddPublicWitnessArrangement() {
     return (
         <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
             <div className="w-full flex flex-col gap-2">
-                <div className={`my-1 m-auto w-11/12 font-semibold text-xl text-primary-200`}>Novo arranjo</div>
+                <div className="form-title-modern">Novo arranjo</div>
                 <Input
                     placeholder="Título do arranjo"
                     registro={{ ...register("title") }}
@@ -179,10 +179,9 @@ export default function FormAddPublicWitnessArrangement() {
                 )}
 
                 {/* Horários */}
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-4">
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="border p-4 rounded flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="border border-surface-300 rounded-xl bg-surface-200/20 p-4 shadow-xs flex flex-col gap-3">
                                 {/* Horários */}
                                 <div className="flex gap-2 flex-wrap items-center">
                                     <Input
@@ -289,10 +288,6 @@ export default function FormAddPublicWitnessArrangement() {
                         </Button>
 
                     </div>
-
-
-
-                </div>
 
                 <Button
                     type="submit"

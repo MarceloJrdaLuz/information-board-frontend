@@ -46,23 +46,23 @@ export default function FormForgotPassword() {
     }
 
     return (
-        <>
-            <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-primary-200`}>Digite o seu e-mail</div>
-                    <p className='text-typography-700'>Insira o e-mail que você deseja resetar a senha!</p>
-                    <Input type="text" placeholder="Email" registro={{
-                        ...register('email',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.email?.message ? 'invalido' : ''} />
-                    {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Entrar</Button>
-                    </div>
+        <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
+            <div className="w-full flex flex-col">
+                <div className="form-title-modern">
+                    <div>Digite o seu e-mail</div>
+                    <p className='text-typography-500 text-xs sm:text-sm font-normal mt-1'>Insira o e-mail cadastrado para recuperar seu acesso.</p>
                 </div>
-            </FormStyle>
-        </>
+
+                <Input type="text" placeholder="Email" registro={{
+                    ...register('email',
+                        { required: "Campo obrigatório" })
+                }}
+                    invalid={errors?.email?.message ? 'invalido' : ''} />
+                {errors?.email?.type && <InputError type={errors.email.type} field='email' />}
+                <div className="flex justify-center items-center w-full mt-6">
+                    <Button className="w-full" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Enviar link</Button>
+                </div>
+            </div>
+        </FormStyle>
     )
 }

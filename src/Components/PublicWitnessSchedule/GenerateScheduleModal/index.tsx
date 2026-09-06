@@ -104,7 +104,7 @@ export default function GenerateScheduleModal({
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="p-2 text-sm border rounded-lg bg-surface-50 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
+                className="p-2 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
               />
             </div>
 
@@ -116,7 +116,7 @@ export default function GenerateScheduleModal({
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="p-2 text-sm border rounded-lg bg-surface-50 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
+                className="p-2 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
               />
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function GenerateScheduleModal({
                   className={`flex-1 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                     publishersPerSlot === num
                       ? "bg-primary-200 text-white border-primary-200 shadow-sm"
-                      : "bg-surface-50 text-typography-700 border-surface-300 hover:bg-surface-200"
+                      : "bg-surface-100 text-typography-700 border-surface-300 hover:bg-surface-200"
                   }`}
                 >
                   {num} {num === 1 ? "vaga" : "vagas"}
@@ -155,7 +155,7 @@ export default function GenerateScheduleModal({
                 className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-1 ${
                   mode === "reconcile"
                     ? "border-primary-200 bg-primary-50/40 dark:bg-primary-950/20 shadow-sm ring-1 ring-primary-200"
-                    : "border-surface-300 bg-surface-50 hover:bg-surface-100"
+                    : "border-surface-300 bg-surface-200/50 hover:bg-surface-200"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -179,7 +179,7 @@ export default function GenerateScheduleModal({
                 className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col gap-1 ${
                   mode === "append"
                     ? "border-primary-200 bg-primary-50/40 dark:bg-primary-950/20 shadow-sm ring-1 ring-primary-200"
-                    : "border-surface-300 bg-surface-50 hover:bg-surface-100"
+                    : "border-surface-300 bg-surface-200/50 hover:bg-surface-200"
                 }`}
               >
                 <div className="flex items-center justify-between">

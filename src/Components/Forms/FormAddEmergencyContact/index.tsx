@@ -55,15 +55,15 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit)}>
-                <div className="w-full lg:w-11/12 h-fit flex-col justify-center items-center">
-                    <div className='flex justify-between items-center w-full'>
-                        <div className="my-6 m-auto w-full font-semibold text-2xl sm:text-3xl text-primary-200">
+                <div className="w-full flex flex-col">
+                    <div className='flex justify-between items-center mb-4 pb-3 border-b border-surface-300/80'>
+                        <div className="form-title-modern !mb-0 border-b-0 !pb-0">
                             Contato de emergência
                         </div>
                         <XSquareIcon onClick={() => {
                             setModalEmergencyContactShow(false)
                             Router.back()
-                        }} className="text-red-400 cursor-pointer rounded-sm hover:scale-110" />
+                        }} className="text-red-400 hover:text-red-500 cursor-pointer rounded-sm hover:scale-105 transition-all" />
                     </div>
 
                     <Input
@@ -104,8 +104,8 @@ export default function FormAddEmergencyContact({ congregation_id }: FormAddEmer
                     />
                     {errors?.isTj && <InputError type={errors.isTj.type} field="isTj" />}
 
-                    <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type="submit">
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type="submit">
                             Criar contato
                         </Button>
                     </div>

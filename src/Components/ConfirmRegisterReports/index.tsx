@@ -41,7 +41,7 @@ export function ConfirmRegisterReports({ button, onRegister }: ConfirmRegisterRe
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="hover:bg-gray-100">
+          <AlertDialogCancel className="hover:bg-surface-200">
             Cancelar
           </AlertDialogCancel>
 

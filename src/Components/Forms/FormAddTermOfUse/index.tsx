@@ -81,13 +81,14 @@ export default function FormAddTermOfUse() {
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Novo Termo de Uso</div>
-                    <div className="flex flex-col gap-2">
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Novo Termo de Uso</div>
+                    <div className="flex flex-col gap-3 mb-2">
                         <Dropdown
                             selectedItem={type}
                             textVisible
                             border
+                            full
                             title="Tipo do termo"
                             handleClick={(option) => setType(option as "congregation" | "publisher")}
                             options={optionDropdown}
@@ -96,6 +97,7 @@ export default function FormAddTermOfUse() {
                             selectedItem={version}
                             textVisible
                             border
+                            full
                             title="Versão"
                             handleClick={(option) => setVersion(option)}
                             options={optionDropdownVersion}
@@ -117,8 +119,8 @@ export default function FormAddTermOfUse() {
                     {errors?.content?.type && <InputError type={errors.content.type} field='content' />}
 
 
-                    <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button className="text-typography-200" type='submit'>Criar Termo</Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" type='submit'>Criar Termo</Button>
                     </div>
                 </div>
             </FormStyle>

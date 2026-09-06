@@ -93,20 +93,68 @@ body {
 
 
 
-.outline input:focus-within~label,
-.outline input:not(:placeholder-shown)~label {
-  @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
+/* ===== Floating Labels ===== */
+
+.outline input:focus ~ label,
+.outline input:focus-within ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
   color: rgb(var(--color-primary-200));
   height: auto;
-
 }
 
-.outline textarea:focus-within~label,
-.outline textarea:not(:placeholder-shown)~label {
-  @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
+.outline input:not(:placeholder-shown) ~ label,
+.outline input:-webkit-autofill ~ label,
+.outline input:autofill ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
+  color: rgb(var(--color-typography-500));
+  height: auto;
+}
+
+.outline input:not(:placeholder-shown):focus ~ label,
+.outline input:-webkit-autofill:focus ~ label,
+.outline input:autofill:focus ~ label {
+  color: rgb(var(--color-primary-200));
+}
+
+.outline textarea:focus ~ label,
+.outline textarea:focus-within ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
   color: rgb(var(--color-primary-200));
   height: auto;
+}
 
+.outline textarea:not(:placeholder-shown) ~ label,
+.outline textarea:-webkit-autofill ~ label,
+.outline textarea:autofill ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
+  color: rgb(var(--color-typography-500));
+  height: auto;
+}
+
+.outline textarea:not(:placeholder-shown):focus ~ label,
+.outline textarea:-webkit-autofill:focus ~ label,
+.outline textarea:autofill:focus ~ label {
+  color: rgb(var(--color-primary-200));
+}
+
+/* ===== Autofill Background / Text Color for Dark & Light Themes ===== */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--color-surface-100)) inset !important;
+  -webkit-text-fill-color: rgb(var(--color-typography-800)) !important;
+  caret-color: rgb(var(--color-typography-800)) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  border-radius: inherit;
+}
+
+.form-title-modern {
+  @apply text-xl sm:text-2xl font-bold text-typography-800 tracking-tight pb-3 mb-5 border-b border-surface-300/80 w-full;
 }
 
 .input-component input::-webkit-outer-spin-button,

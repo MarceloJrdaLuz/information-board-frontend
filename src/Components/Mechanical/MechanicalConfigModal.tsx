@@ -98,7 +98,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
 
                 <div className="flex flex-col gap-4 py-2">
                     {/* Toggle Mesmo Grupo a Semana Toda */}
-                    <div className="flex items-center justify-between p-3.5 bg-surface-200/50 rounded-xl border border-typography-200/40">
+                    <div className="flex items-center justify-between p-3.5 bg-surface-200/50 rounded-xl border border-surface-300">
                         <div className="flex flex-col pr-4">
                             <span className="text-sm font-semibold text-typography-800">
                                 Mesmo grupo para a semana toda?
@@ -122,7 +122,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                 }
                             }}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                sameTeamWholeWeek ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
+                                sameTeamWholeWeek ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
@@ -134,7 +134,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                     </div>
 
                     {/* Toggle Som e Mídias Combinados */}
-                    <div className="flex items-center justify-between p-3.5 bg-surface-200/50 rounded-xl border border-typography-200/40">
+                    <div className="flex items-center justify-between p-3.5 bg-surface-200/50 rounded-xl border border-surface-300">
                         <div className="flex flex-col pr-4">
                             <span className="text-sm font-semibold text-typography-800">
                                 Unificar Som e Mídias?
@@ -147,7 +147,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                             type="button"
                             onClick={() => setCombineSoundAndMedia(!combineSoundAndMedia)}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                combineSoundAndMedia ? "bg-primary-200" : "bg-gray-300 dark:bg-zinc-700"
+                                combineSoundAndMedia ? "bg-primary-200" : "bg-surface-300"
                             }`}
                         >
                             <span
@@ -160,7 +160,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
 
                     {/* CONTEÚDO: Se for o mesmo grupo na semana, exibe 1 seção unificada. Se não, exibe Meio de Semana e Fim de Semana separados */}
                     {sameTeamWholeWeek ? (
-                        <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
+                        <div className="border border-surface-300 rounded-xl p-4 bg-surface-100">
                             <div className="flex items-center gap-2 mb-2">
                                 <Sliders className="h-4 w-4 text-primary-200" />
                                 <h4 className="text-sm font-bold text-typography-900">
@@ -186,7 +186,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             setMidweekAttendants(val);
                                             setWeekendAttendants(val);
                                         }}
-                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                     />
                                 </div>
 
@@ -207,7 +207,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                 setWeekendSound(val);
                                                 setWeekendMedia(val);
                                             }}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
                                 ) : (
@@ -226,7 +226,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     setMidweekSound(val);
                                                     setWeekendSound(val);
                                                 }}
-                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                             />
                                         </div>
                                         <div>
@@ -243,7 +243,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     setMidweekMedia(val);
                                                     setWeekendMedia(val);
                                                 }}
-                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                             />
                                         </div>
                                     </>
@@ -263,7 +263,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             setMidweekRovingMics(val);
                                             setWeekendRovingMics(val);
                                         }}
-                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                     />
                                 </div>
 
@@ -281,7 +281,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             setMidweekStageMics(val);
                                             setWeekendStageMics(val);
                                         }}
-                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                        className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                     />
                                 </div>
                             </div>
@@ -289,7 +289,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                     ) : (
                         <>
                             {/* Meio de Semana */}
-                            <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
+                            <div className="border border-surface-300 rounded-xl p-4 bg-surface-100">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Sliders className="h-4 w-4 text-primary-200" />
                                     <h4 className="text-sm font-bold text-typography-900">
@@ -308,7 +308,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="10"
                                             value={midweekAttendants}
                                             onChange={(e) => setMidweekAttendants(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
 
@@ -327,7 +327,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     setMidweekSound(val);
                                                     setMidweekMedia(val);
                                                 }}
-                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                             />
                                         </div>
                                     ) : (
@@ -342,7 +342,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     max="5"
                                                     value={midweekSound}
                                                     onChange={(e) => setMidweekSound(Math.max(0, parseInt(e.target.value) || 0))}
-                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                                 />
                                             </div>
                                             <div>
@@ -355,7 +355,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     max="5"
                                                     value={midweekMedia}
                                                     onChange={(e) => setMidweekMedia(Math.max(0, parseInt(e.target.value) || 0))}
-                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                                 />
                                             </div>
                                         </>
@@ -371,7 +371,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="10"
                                             value={midweekRovingMics}
                                             onChange={(e) => setMidweekRovingMics(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
 
@@ -385,14 +385,14 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="5"
                                             value={midweekStageMics}
                                             onChange={(e) => setMidweekStageMics(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Fim de Semana */}
-                            <div className="border border-typography-200/60 rounded-xl p-4 bg-surface-100">
+                            <div className="border border-surface-300 rounded-xl p-4 bg-surface-100">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Sliders className="h-4 w-4 text-primary-200" />
                                     <h4 className="text-sm font-bold text-typography-900">
@@ -411,7 +411,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="10"
                                             value={weekendAttendants}
                                             onChange={(e) => setWeekendAttendants(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
 
@@ -430,7 +430,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     setWeekendSound(val);
                                                     setWeekendMedia(val);
                                                 }}
-                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                             />
                                         </div>
                                     ) : (
@@ -445,7 +445,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     max="5"
                                                     value={weekendSound}
                                                     onChange={(e) => setWeekendSound(Math.max(0, parseInt(e.target.value) || 0))}
-                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                                 />
                                             </div>
                                             <div>
@@ -458,7 +458,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                                     max="5"
                                                     value={weekendMedia}
                                                     onChange={(e) => setWeekendMedia(Math.max(0, parseInt(e.target.value) || 0))}
-                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                                    className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                                 />
                                             </div>
                                         </>
@@ -474,7 +474,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="10"
                                             value={weekendRovingMics}
                                             onChange={(e) => setWeekendRovingMics(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
 
@@ -488,7 +488,7 @@ export const MechanicalConfigModal: React.FC<MechanicalConfigModalProps> = ({
                                             max="5"
                                             value={weekendStageMics}
                                             onChange={(e) => setWeekendStageMics(Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-typography-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                                            className="w-full px-3 py-1.5 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-200"
                                         />
                                     </div>
                                 </div>

@@ -196,15 +196,14 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
 
     return (
         <section className="w-full flex flex-col items-center">
-            <div className={`w-full h-auto flex-col justify-center items-center`}>
-                <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Assistência</div>
-            </div>
-
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div>
-                    <Dropdown textVisible selectedItem={monthWithYear} border handleClick={(option) => handleClick(option)} options={optionsDropdown} title="Selecione o mês" />
-                    <div className="flex flex-col w-full  border border-surface-300 py-6 px-16 my-4">
-                        <h2 className="font-semibold text-typography-800">Reunião do meio de semana</h2>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Assistência</div>
+
+                    <Dropdown textVisible full selectedItem={monthWithYear} border handleClick={(option) => handleClick(option)} options={optionsDropdown} title="Selecione o mês" />
+
+                    <div className="flex flex-col w-full border border-surface-300 rounded-xl bg-surface-200/20 p-5 sm:p-6 my-4 shadow-xs">
+                        <h2 className="font-semibold text-base sm:text-lg text-typography-800 mb-3 pb-2 border-b border-surface-300">Reunião do meio de semana</h2>
                         <Input type="number" placeholder="1ª semana" registro={{ ...register('midWeek1') }} invalid={errors?.midWeek1?.message ? 'invalido' : ''} />
                         {errors?.midWeek1?.type && <InputError type={errors.midWeek1.type} field='midWeek1' />}
                         <Input type="number" placeholder="2ª semana" registro={{ ...register('midWeek2') }} invalid={errors?.midWeek2?.message ? 'invalido' : ''} />
@@ -215,17 +214,20 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
                         {errors?.midWeek4?.type && <InputError type={errors.midWeek4.type} field='midWeek4' />}
                         <Input type="number" placeholder="5ª semana" registro={{ ...register('midWeek5') }} invalid={errors?.midWeek5?.message ? 'invalido' : ''} />
                         {errors?.midWeek5?.type && <InputError type={errors.midWeek5.type} field='midWeek5' />}
-                        <div className="font-semibold text-typography-800">
-                            <span className="pr-2">Totais:</span>
-                            <span>{midWeekTotal}</span>
-                        </div>
-                        <div className="font-semibold text-typography-800">
-                            <span className="pr-2">Média:</span>
-                            <span>{midWeekAverage}</span>
+                        <div className="mt-3 pt-3 border-t border-surface-300/80 flex flex-col gap-1">
+                            <div className="flex justify-between items-center font-semibold text-sm text-typography-800">
+                                <span>Totais:</span>
+                                <span>{midWeekTotal}</span>
+                            </div>
+                            <div className="flex justify-between items-center font-semibold text-sm text-typography-800">
+                                <span>Média:</span>
+                                <span>{midWeekAverage}</span>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full border border-surface-300 py-6 px-16 my-4">
-                        <h2 className="font-semibold text-typography-800">Reunião do fim de semana</h2>
+
+                    <div className="flex flex-col w-full border border-surface-300 rounded-xl bg-surface-200/20 p-5 sm:p-6 my-4 shadow-xs">
+                        <h2 className="font-semibold text-base sm:text-lg text-typography-800 mb-3 pb-2 border-b border-surface-300">Reunião do fim de semana</h2>
                         <Input type="number" placeholder="1ª semana" registro={{ ...register('endWeek1') }} invalid={errors?.endWeek1?.message ? 'invalido' : ''} />
                         {errors?.endWeek1?.type && <InputError type={errors.endWeek1.type} field='endWeek1' />}
                         <Input type="number" placeholder="2ª semana" registro={{ ...register('endWeek2') }} invalid={errors?.endWeek2?.message ? 'invalido' : ''} />
@@ -237,27 +239,29 @@ export default function FormAssistance({ congregation_id }: IFormAssistanceProps
                         <Input type="number" placeholder="5ª semana" registro={{ ...register('endWeek5') }} invalid={errors?.endWeek5?.message ? 'invalido' : ''} />
                         {errors?.endWeek5?.type && <InputError type={errors.endWeek5.type} field='endWeek5' />}
 
-                        <div className="font-semibold text-typography-800">
-                            <span className="pr-2">Totais:</span>
-                            <span>{endWeekTotal}</span>
-                        </div>
-                        <div className="font-semibold text-typography-800">
-                            <span className="pr-2">Média:</span>
-                            <span>{endWeekAverage}</span>
+                        <div className="mt-3 pt-3 border-t border-surface-300/80 flex flex-col gap-1">
+                            <div className="flex justify-between items-center font-semibold text-sm text-typography-800">
+                                <span>Totais:</span>
+                                <span>{endWeekTotal}</span>
+                            </div>
+                            <div className="flex justify-between items-center font-semibold text-sm text-typography-800">
+                                <span>Média:</span>
+                                <span>{endWeekAverage}</span>
+                            </div>
                         </div>
                     </div>
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 sm:my-[5%]`}>
+                    <div className="w-full mt-6">
                         <Button
                             size="lg"
                             disabled={disabled}
                             error={dataError}
                             success={dataSuccess}
                             type='submit'
-                            className="text-typography-200"
+                            className="w-full text-typography-200"
                         >Enviar</Button>
                     </div>
                 </div>
-            </FormStyle >
+            </FormStyle>
         </section>
     )
 }

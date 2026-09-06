@@ -117,7 +117,7 @@ export default function SlotPreferencesModal({
                 return (
                   <div
                     key={slot.id}
-                    className="p-3.5 rounded-xl border border-surface-300 bg-surface-50/60 flex flex-col gap-2.5"
+                    className="p-3.5 rounded-xl border border-surface-300 bg-surface-200/60 flex flex-col gap-2.5"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">

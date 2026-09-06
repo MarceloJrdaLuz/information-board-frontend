@@ -84,17 +84,19 @@ export default function FormAddDomain() {
     return (
         <section className="flex w-full justify-center items-center h-full m-2 ">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Atribuir usuário ao domínio</div>
-                    <Dropdown textVisible selectedItem={congregationSelect} handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Selecionar congregação" border />
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atribuir usuário ao domínio</div>
+                    <div className="mb-4">
+                        <Dropdown textVisible full selectedItem={congregationSelect} handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Selecionar congregação" border />
+                    </div>
                     <Input type="text" placeholder="Código do usuário" registro={{
                         ...register('userCode',
                             { required: "Campo obrigatório" })
                     }}
                         invalid={errors?.userCode?.message ? 'invalido' : ''} />
                     {errors?.userCode?.type && <InputError type={errors.userCode.type} field='userCode' />}
-                    <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={(congregationSelect === '' || disabled)} type='submit'>Atribuir à domínio</Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" success={dataSuccess} error={dataError} disabled={(congregationSelect === '' || disabled)} type='submit'>Atribuir à domínio</Button>
                     </div>
                 </div>
             </FormStyle>

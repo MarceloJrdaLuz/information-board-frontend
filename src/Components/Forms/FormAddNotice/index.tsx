@@ -96,11 +96,11 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
     É importante também lembrar que se você não colocar uma data de expiração o anúncio vai ficar sempre sendo exibido. 
                         `} />}
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className="flex justify-end ">
-                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer" />
+                <div className="w-full flex flex-col">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-surface-300/80">
+                        <div className="form-title-modern !mb-0 border-b-0 !pb-0">Novo anúncio</div>
+                        <HelpCircle onClick={() => setModalHelpShow(!modalHelpShow)} className="text-primary-200 cursor-pointer hover:opacity-80 transition-opacity" />
                     </div>
-                    <div className={`my-6  w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Novo anúncio</div>
 
                     <Input type="text" placeholder="Título" registro={{
                         ...register('title',
@@ -116,34 +116,42 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                         invalid={errors?.text?.message ? 'invalido' : ''} />
                     {errors?.text?.type && <InputError type={errors.text.type} field='text' />}
 
-                    <CheckboxBoolean
-                        checked={recurrentNotice}
-                        label="Anúncio recorrente"
-                        handleCheckboxChange={(isChecked) => handleRecurrentNoticeChange(isChecked)}
-                    />
+                    <div className="my-2">
+                        <CheckboxBoolean
+                            checked={recurrentNotice}
+                            label="Anúncio recorrente"
+                            handleCheckboxChange={(isChecked) => handleRecurrentNoticeChange(isChecked)}
+                        />
+                    </div>
 
                     {recurrentNotice && (
-                        <>
-                            <Input type="number" placeholder="Dia inicial" registro={{
-                                ...register('startDay',
-                                    { required: "Campo obrigatório" })
-                            }}
-                                invalid={errors?.startDay?.message ? 'invalido' : ''} />
-                            {errors?.startDay?.type && <InputError type={errors.startDay.type} field='startDay' />}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2">
+                            <div>
+                                <Input type="number" placeholder="Dia inicial" registro={{
+                                    ...register('startDay',
+                                        { required: "Campo obrigatório" })
+                                }}
+                                    invalid={errors?.startDay?.message ? 'invalido' : ''} />
+                                {errors?.startDay?.type && <InputError type={errors.startDay.type} field='startDay' />}
+                            </div>
 
-                            <Input type="number" placeholder="Dia final" registro={{
-                                ...register('endDay',
-                                    { required: "Campo obrigatório" })
-                            }}
-                                invalid={errors?.endDay?.message ? 'invalido' : ''} />
-                            {errors?.endDay?.type && <InputError type={errors.endDay.type} field='endDay' />}
-                        </>
+                            <div>
+                                <Input type="number" placeholder="Dia final" registro={{
+                                    ...register('endDay',
+                                        { required: "Campo obrigatório" })
+                                }}
+                                    invalid={errors?.endDay?.message ? 'invalido' : ''} />
+                                {errors?.endDay?.type && <InputError type={errors.endDay.type} field='endDay' />}
+                            </div>
+                        </div>
                     )}
 
-                    <Calendar label="Data da expiração:" minDate={moment().format()} selectedDate={selectedDate} handleDateChange={handleDateChange} />
+                    <div className="my-2">
+                        <Calendar label="Data da expiração:" minDate={moment().format()} selectedDate={selectedDate} handleDateChange={handleDateChange} />
+                    </div>
 
-                    <div className={`flex justify-center items-center m-auto w-8/12 h-12 my-[10%]`}>
-                        <Button className="text-typography-200" success={dataSuccess} error={dataError} disabled={disabled} type='submit'>Criar Anúncio</Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Criar Anúncio</Button>
                     </div>
                 </div>
             </FormStyle>

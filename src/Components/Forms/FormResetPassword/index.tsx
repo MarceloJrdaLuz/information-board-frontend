@@ -59,40 +59,38 @@ export default function FormResetPassword() {
     }
 
     return (
-        <>
-            <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-3xl md:text-2xl text-primary-200`}>Nova senha</div>
-                    <p>Insira abaixo a nova senha!</p>
-                    <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{
-                        ...register('password',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.password?.message ? 'invalido' : ''} >
-                        {passwordVisible ? (
-                            <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
-                        ) : (
-                            <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
-                        )}
-                    </Input>
-                    {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
-                    <Input type={confirmPasswordVisible ? "text" : "password"} placeholder="Repetir Senha" registro={{
-                        ...register('confirmPassword',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.confirmPassword?.message ? 'invalido' : ''} >
-                        {confirmPasswordVisible ? (
-                            <EyeOffIcon onClick={() => setConfirmPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
-                        ) : (
-                            <EyeIcon onClick={() => setConfirmPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
-                        )}
-                    </Input>
-                    {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Resetar senha</Button>
-                    </div>
+        <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
+            <div className="w-full flex flex-col">
+                <div className="form-title-modern">Nova senha</div>
+                <p className="text-sm text-typography-500 mb-6">Insira abaixo a nova senha!</p>
+                <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{
+                    ...register('password',
+                        { required: "Campo obrigatório" })
+                }}
+                    invalid={errors?.password?.message ? 'invalido' : ''} >
+                    {passwordVisible ? (
+                        <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer transition-opacity' />
+                    ) : (
+                        <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer transition-opacity' />
+                    )}
+                </Input>
+                {errors?.password?.type && <InputError type={errors.password.type} field='password' />}
+                <Input type={confirmPasswordVisible ? "text" : "password"} placeholder="Repetir Senha" registro={{
+                    ...register('confirmPassword',
+                        { required: "Campo obrigatório" })
+                }}
+                    invalid={errors?.confirmPassword?.message ? 'invalido' : ''} >
+                    {confirmPasswordVisible ? (
+                        <EyeOffIcon onClick={() => setConfirmPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer transition-opacity' />
+                    ) : (
+                        <EyeIcon onClick={() => setConfirmPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer transition-opacity' />
+                    )}
+                </Input>
+                {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
+                <div className="w-full mt-6">
+                    <Button className='w-full text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Resetar senha</Button>
                 </div>
-            </FormStyle>
-        </>
+            </div>
+        </FormStyle>
     )
 }

@@ -83,10 +83,10 @@ export default function FormAddCongregation() {
     }
 
     return !showCongregationCreated ? (
-        <section className="flex w-full justify-center items-center h-full m-2">
+        <section className="flex w-full justify-center items-center h-full p-2 sm:p-4">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Nova Congregação</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Nova Congregação</div>
                     <Input type="text" placeholder="Nome da Congregação" registro={{
                         ...register('name',
                             { required: "Campo obrigatório" })
@@ -111,19 +111,24 @@ export default function FormAddCongregation() {
                         invalid={errors?.circuit?.message ? 'invalido' : ''} />
                     {errors?.circuit?.type && <InputError type={errors.circuit.type} field='circuit' />}
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <CheckboxUnique visibleLabel checked={congregationTypeCheckboxSelected} label="Tipo" options={optionsCheckboxCongregationType[0]} handleCheckboxChange={(selectedItems) => handleCheckboxCongregationType(selectedItems)} />
                     </div>
 
-                    <input className="text-sm text-grey-500
-            file:mr-5 file:py-3 file:px-10
-            file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-secondary-100 hover:file:text-typography-900
-            file:bg-gradient-to-r file:bg-primary-200
-            hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
+                    <div className="my-3">
+                        <label className="text-xs font-semibold text-typography-600 uppercase tracking-wider mb-2 block">
+                            Imagem da Congregação
+                        </label>
+                        <input className="text-sm text-typography-700 w-full
+                            file:mr-4 file:py-2.5 file:px-4
+                            file:rounded-xl file:border-0
+                            file:text-sm file:font-semibold file:text-primary-200
+                            file:bg-primary-200/10 hover:file:bg-primary-200/20
+                            hover:file:cursor-pointer transition-all" type="file" name="image" id="image-congregation" onChange={handleUpload} />
+                    </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
+                    <div className="flex justify-center items-center w-full mt-6">
+                        <Button className="w-full text-typography-200" disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>
