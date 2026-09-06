@@ -640,6 +640,28 @@ export default function PublisherList() {
                                                             </span>
                                                         )
                                                     }
+                                                    if (privilege === Privileges.PIONEIROESPECIAL) {
+                                                        return (
+                                                            <span
+                                                                key={publisher.id + privilege}
+                                                                className="inline-flex items-center gap-1 bg-rose-500/10 text-rose-700 dark:text-rose-300 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-rose-500/20"
+                                                            >
+                                                                <Award size={11} />
+                                                                Pioneiro Especial
+                                                            </span>
+                                                        )
+                                                    }
+                                                    if (privilege === Privileges.MISSIONARIOEMCAMPO) {
+                                                        return (
+                                                            <span
+                                                                key={publisher.id + privilege}
+                                                                className="inline-flex items-center gap-1 bg-teal-500/10 text-teal-700 dark:text-teal-300 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-teal-500/20"
+                                                            >
+                                                                <Award size={11} />
+                                                                Missionário em Campo
+                                                            </span>
+                                                        )
+                                                    }
                                                     if (
                                                         (privilege === Privileges.PIONEIROREGULAR ||
                                                             privilege === Privileges.AUXILIARINDETERMINADO) &&
