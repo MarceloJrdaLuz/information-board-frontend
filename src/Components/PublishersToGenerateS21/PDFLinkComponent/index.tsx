@@ -3,8 +3,23 @@ import PdfIcon from "@/Components/Icons/PdfIcon";
 import S21 from "@/Components/PublisherCard";
 import { IMonthsWithYear, IPublisher, IReports, ITotalsReports } from "@/types/types";
 import { BlobProvider, Document } from "@react-pdf/renderer";
+import React from "react";
 
-export function PdfLinkComponent({ pdfData }: { pdfData: { publishers?: IPublisher[], reportsFiltered?: IReports[], monthsServiceYears: IMonthsWithYear[], totals?: boolean, reportsTotalsFromFilter?: ITotalsReports[] } }) {
+export function PdfLinkComponent({
+    pdfData,
+    className,
+    children
+}: {
+    pdfData: {
+        publishers?: IPublisher[],
+        reportsFiltered?: IReports[],
+        monthsServiceYears: IMonthsWithYear[],
+        totals?: boolean,
+        reportsTotalsFromFilter?: ITotalsReports[]
+    },
+    className?: string,
+    children?: React.ReactNode
+}) {
     const { publishers, reportsFiltered, monthsServiceYears, totals, reportsTotalsFromFilter } = pdfData;
 
     if (!publishers && !reportsTotalsFromFilter) return null;
@@ -26,12 +41,17 @@ export function PdfLinkComponent({ pdfData }: { pdfData: { publishers?: IPublish
                 <a
                     href={url ?? "#"}
                     download={publishers && publishers.length === 1 ? `${publishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}
-                    className="flex items-center justify-center w-8 h-8 p-2 rounded-full bg-surface-100 hover:text-red-600 transition-all duration-300 cursor-pointer  text-red-800"
+                    className={className || "flex items-center justify-center w-8 h-8 p-2 rounded-full bg-surface-100 hover:text-red-600 transition-all duration-300 cursor-pointer text-red-800"}
                     title="Gerar PDF"
                 >
-                    <PdfIcon className="w-6 h-6" />
+                    {children ? (
+                        loading ? <span>Gerando PDF...</span> : children
+                    ) : (
+                        <PdfIcon className="w-6 h-6" />
+                    )}
                 </a>
             )}
         </BlobProvider>
     );
-};
+}
+

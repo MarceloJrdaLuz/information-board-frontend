@@ -59,11 +59,7 @@ export default function Layout(props: LayoutProps) {
         const subPart = parts[2]
 
         if (
-            middlePart === 'documentos' ||
-            middlePart === 'pregacao' ||
-            middlePart === 'limpeza' ||
-            middlePart === 'contas' ||
-            middlePart === 'eventosespeciais'
+            middlePart === 'documentos'
         ) {
             setOpenSubMenu('documentos-pdf')
         } else if (
@@ -359,8 +355,8 @@ export default function Layout(props: LayoutProps) {
                                         isSubItem
                                         title="Partes Mecânicas"
                                         onClick={() => {
-                                            { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push('/reunioes/partes-mecanicas')
+                                             { !isDesktop && setIsMenuOpen(false) }
+                                             Router.push('/reunioes/partes-mecanicas')
                                         }}
                                         icon={() => <Radio className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === 'Partes Mecânicas' || pageActive.startsWith('/reunioes/partes-mecanicas')}
@@ -415,6 +411,7 @@ export default function Layout(props: LayoutProps) {
                                             }}
                                             icon={() => <CalendarMicIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                             active={pageActive.startsWith('/reunioes/fimdesemana/programacao') || pageActive === 'Programação do Fim de Semana'}
+                                            active={(pageActive.startsWith('/reunioes/fimdesemana/programacao') && !pageActive.startsWith('/reunioes/fimdesemana/programacao-hospitalidade')) || pageActive === 'Programação do Fim de Semana'}
                                         />
                                         <NavBar.Options
                                             isSubItem
