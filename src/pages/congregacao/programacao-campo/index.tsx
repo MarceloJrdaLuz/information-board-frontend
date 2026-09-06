@@ -11,6 +11,7 @@ import Calendar from "@/Components/Calendar";
 import ContentDashboard from "@/Components/ContentDashboard";
 import { FieldServiceExceptionsCard } from "@/Components/FieldServiceExceptionCard";
 import { FieldServicePdfDownload } from "@/Components/FieldServiceSchedulePdf/PdfLinkComponent";
+import CalendarMicIcon from "@/Components/Icons/CalendarMicIcon";
 import { Button } from "@/Components/ui/button";
 import {
     Dialog,
@@ -351,7 +352,7 @@ function FieldServiceSchedulePage() {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <Layers className="w-6 h-6 text-primary-200" />
+                            <CalendarMicIcon className="w-6 h-6 text-primary-200" />
                             <h1 className="text-2xl font-bold text-typography-800">
                                 Programação do Campo
                             </h1>
@@ -530,7 +531,7 @@ function FieldServiceSchedulePage() {
                     </div>
                 ) : !selectedTemplate ? (
                     <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-surface-300 text-center">
-                        <Layers className="w-12 h-12 text-typography-400 mb-3" />
+                        <CalendarMicIcon className="w-12 h-12 text-typography-400 mb-3" />
                         <h3 className="text-base font-semibold text-typography-700">
                             Nenhuma saída selecionada
                         </h3>
@@ -541,6 +542,7 @@ function FieldServiceSchedulePage() {
                 ) : currentMonthSchedules.length === 0 ? (
                     <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center">
                         <CalendarOff className="w-12 h-12 text-typography-400 mb-3" />
+                        <CalendarMicIcon className="w-12 h-12 text-typography-400 mb-3" />
                         <h3 className="text-base font-semibold text-typography-700">
                             Nenhuma saída agendada para {currentMonth.format("MMMM [de] YYYY")}
                         </h3>

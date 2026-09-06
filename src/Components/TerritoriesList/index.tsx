@@ -33,6 +33,7 @@ import {
 import Router from "next/router";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import TerritoryIcon from "@/Components/Icons/TerritoryIcon";
 import FullScreenImage from "../FullScreenImage";
 import SkeletonTerritoriesList from "./skeletonTerritoriesList";
 
@@ -261,7 +262,7 @@ export default function TerritoriesList() {
                 </div>
             ) : !territories || territories.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center">
-                    <MapPin className="w-12 h-12 text-typography-300 mb-3" />
+                    <TerritoryIcon className="w-12 h-12 text-typography-400 mb-3" />
                     <h3 className="text-base font-semibold text-typography-700">
                         Nenhum território cadastrado
                     </h3>

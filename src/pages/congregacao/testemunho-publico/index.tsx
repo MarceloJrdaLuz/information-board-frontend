@@ -4,6 +4,7 @@ import ArrangementsPageSkeleton from "@/Components/ArrangementsPageSkeleton"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
 import EmptyState from "@/Components/EmptyState"
+import PublicPreachingIcon from "@/Components/Icons/PublicPreachingIcon"
 import { PublicWitnessPdfDownload } from "@/Components/PublicWitnessSchedulePdf/PDFLinkComponent"
 import {
   AlertDialog,
@@ -119,7 +120,7 @@ function ArrangementsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-100 p-4 sm:p-5 rounded-xl border border-surface-300 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-primary-100/20 text-primary-200 shrink-0">
-                <MapPin className="h-6 w-6" />
+                <PublicPreachingIcon className="h-6 w-6" />
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-typography-900">
@@ -293,7 +294,7 @@ function ArrangementsPage() {
             </div>
           ) : (
             <div className="bg-surface-100 border border-dashed border-surface-300 rounded-xl p-12 text-center flex flex-col items-center justify-center gap-3 text-typography-500">
-              <MapPin className="w-10 h-10 text-typography-400" />
+              <PublicPreachingIcon className="w-12 h-12 text-typography-400 mb-1" />
               <p className="text-base font-semibold text-typography-700">
                 Nenhum arranjo de testemunho público encontrado.
               </p>
