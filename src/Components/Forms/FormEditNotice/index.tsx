@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-import moment from 'moment'
+import dayjs from "dayjs"
 
 export interface IUpdateNotice {
     notice_id: string
@@ -69,7 +69,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
             }
             if (data.expired) {
                 const initialDateStr = data.expired
-                const initialDate = moment(initialDateStr).format()
+                const initialDate = dayjs(initialDateStr).format()
                 setSelectedDate(initialDate)
                 setInitialExpired(initialDate)
             }
@@ -177,7 +177,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
                     )}
 
                     <div className="my-2">
-                        <Calendar label="Data da expiração:" minDate={moment().format()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
+                        <Calendar label="Data da expiração:" minDate={dayjs().format()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
                     </div>
 
                     <div className="w-full mt-6">

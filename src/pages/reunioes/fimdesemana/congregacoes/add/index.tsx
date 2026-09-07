@@ -4,7 +4,6 @@ import FormAddCongregationAuxiliary from "@/Components/Forms/FormAddCongregation
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import 'moment/locale/pt-br'
 import { useEffect } from "react"
 
 function AddAuxiliaryCongregationPage() {

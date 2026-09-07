@@ -9,7 +9,6 @@ import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/types/ty
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtomValue } from "jotai"
 import { Calendar, CheckCircle2, FileSpreadsheet, Info, Trash2 } from "lucide-react"
-import 'moment/locale/pt-br'
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useForm } from 'react-hook-form'

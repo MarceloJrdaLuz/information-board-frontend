@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { IRecordHospitalityWeekend } from "@/types/hospitality";
 
 export function buildHospitalityOptions<
@@ -14,20 +14,20 @@ export function buildHospitalityOptions<
 
   // percorre todos os fins de semana e registra a data mais recente de participação
   Object.values(weekends).forEach(w => {
-    const wDate = moment(w.date);
+    const wDate = dayjs(w.date);
     (w.assignments ?? []).forEach(a => {
       if (!a.group_id) return;
 
       // fallback → data mais recente de qualquer participação
       const prevFallback = fallbackMap.get(a.group_id);
-      if (!prevFallback || wDate.isAfter(moment(prevFallback))) {
+      if (!prevFallback || wDate.isAfter(dayjs(prevFallback))) {
         fallbackMap.set(a.group_id, w.date);
       }
 
       // completed → data mais recente de participação concluída
       if (a.completed) {
         const prevCompleted = completedMap.get(a.group_id);
-        if (!prevCompleted || wDate.isAfter(moment(prevCompleted))) {
+        if (!prevCompleted || wDate.isAfter(dayjs(prevCompleted))) {
           completedMap.set(a.group_id, w.date);
         }
       }
@@ -39,7 +39,7 @@ export function buildHospitalityOptions<
     const lastDate = completedMap.get(g.id) ?? fallbackMap.get(g.id);
     const hostName = g.host?.fullName ? ` — Anfitrião: ${g.host.fullName}` : "";
     const displayLabel = `${g.name}${hostName} — [${
-      lastDate ? moment(lastDate).format("DD/MM/YYYY") : "Nunca"
+      lastDate ? dayjs(lastDate).format("DD/MM/YYYY") : "Nunca"
     }]`;
     return { ...g, lastDate, displayLabel };
   });
@@ -51,7 +51,7 @@ export function buildHospitalityOptions<
     if (!a.lastDate && !b.lastDate) return 0;
 
     // compara datas antigas primeiro
-    return moment(a.lastDate).isBefore(moment(b.lastDate)) ? -1 : 1;
+    return dayjs(a.lastDate).isBefore(dayjs(b.lastDate)) ? -1 : 1;
   });
 
   return groupsWithLabel;

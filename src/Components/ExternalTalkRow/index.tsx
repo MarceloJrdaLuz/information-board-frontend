@@ -19,7 +19,10 @@ import {
     Trash2,
     X
 } from "lucide-react"
-import moment from "moment"
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+
+dayjs.extend(customParseFormat)
 import { useState } from "react"
 import { toast } from "react-toastify"
 import Button from "../Button"
@@ -272,14 +275,14 @@ export default function ExternalTalkRow({
                         <div className="flex items-center gap-2 p-2 rounded-lg bg-surface-200/40 border border-surface-300/60">
                           <Calendar className="h-3.5 w-3.5 text-typography-400 flex-shrink-0" />
                           <span className="truncate">
-                            {moment(t.date).format("DD/MM/YYYY")} ({t.destinationCongregation.dayMeetingPublic})
+                            {dayjs(t.date).format("DD/MM/YYYY")} ({t.destinationCongregation.dayMeetingPublic})
                           </span>
                         </div>
 
                         <div className="flex items-center gap-2 p-2 rounded-lg bg-surface-200/40 border border-surface-300/60">
                           <Clock className="h-3.5 w-3.5 text-typography-400 flex-shrink-0" />
                           <span>
-                            {moment(t.destinationCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
+                            {dayjs(t.destinationCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
                           </span>
                         </div>
 
@@ -458,7 +461,7 @@ export default function ExternalTalkRow({
                   <div>
                     <span className="text-typography-400 block text-[10px]">Horário</span>
                     <span className="font-semibold text-typography-900">
-                      {moment(selectedCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
+                      {dayjs(selectedCongregation.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}
                     </span>
                   </div>
                 </div>

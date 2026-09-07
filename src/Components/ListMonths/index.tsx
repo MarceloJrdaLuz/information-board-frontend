@@ -10,8 +10,8 @@ import {
     History,
     Sparkles
 } from "lucide-react"
-import moment from "moment"
-import "moment/locale/pt-br"
+import dayjs from "dayjs"
+import "dayjs/locale/pt-br"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 
@@ -29,8 +29,8 @@ export default function ListMonths(props: ListRelatoriosProps) {
 
     const currentYearService = useMemo(() => getYearService(), [])
     const currentMonthFormatted = useMemo(() => {
-        moment.locale("pt-br")
-        return moment().format("MMMM YYYY").toLowerCase()
+        
+        return dayjs().locale("pt-br").format("MMMM YYYY").toLowerCase()
     }, [])
 
     useEffect(() => {

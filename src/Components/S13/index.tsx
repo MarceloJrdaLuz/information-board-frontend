@@ -1,7 +1,7 @@
 import { getYearService } from '@/functions/meses'
 import { ITerritoryWithHistories } from '@/types/territory'
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-import moment from 'moment'
+import dayjs from "dayjs"
 import React from 'react'
 
 const styles = StyleSheet.create({
@@ -154,7 +154,7 @@ export default function S13({ territoriesHistory }: S13Props) {
                                 <Text style={styles.firstCollText}>{rowData.number || ''}</Text>
                             </View>
                             <View style={[styles.rowUltimaData, { backgroundColor: "white" }]}>
-                                <Text style={styles.firstCollText}>{rowData.last_completion_date ? moment(rowData.last_completion_date).format("DD/MM/YYYY") : ''}</Text>
+                                <Text style={styles.firstCollText}>{rowData.last_completion_date ? dayjs(rowData.last_completion_date).format("DD/MM/YYYY") : ''}</Text>
                             </View>
                         </View>
 
@@ -171,10 +171,10 @@ export default function S13({ territoriesHistory }: S13Props) {
                                         </View>
                                         <View style={styles.rowTwoColl}>
                                             <Text style={styles.rowLeft}>
-                                                {history?.assignment_date ? moment(history.assignment_date).format("DD/MM/YYYY") : ''}
+                                                {history?.assignment_date ? dayjs(history.assignment_date).format("DD/MM/YYYY") : ''}
                                             </Text>
                                             <Text style={styles.rowRight}>
-                                                {history?.completion_date ? moment(history.completion_date).format("DD/MM/YYYY") : ''}
+                                                {history?.completion_date ? dayjs(history.completion_date).format("DD/MM/YYYY") : ''}
                                             </Text>
                                         </View>
                                     </View>

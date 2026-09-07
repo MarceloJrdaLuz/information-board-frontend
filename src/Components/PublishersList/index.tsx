@@ -30,7 +30,7 @@ import {
     UserX,
     X,
 } from "lucide-react"
-import moment from "moment"
+import dayjs from "dayjs"
 import Image from "next/image"
 import Router from "next/router"
 import { useMemo, useState } from "react"
@@ -749,7 +749,7 @@ export default function PublisherList() {
                                                     </span>
                                                     <span className="text-xs sm:text-sm font-semibold text-typography-700 truncate">
                                                         {publisher.dateImmersed
-                                                            ? moment(publisher.dateImmersed).format("DD/MM/YYYY")
+                                                            ? dayjs(publisher.dateImmersed).format("DD/MM/YYYY")
                                                             : "Não informado"}
                                                     </span>
                                                 </div>
@@ -766,7 +766,7 @@ export default function PublisherList() {
                                                     </span>
                                                     <span className="text-xs sm:text-sm font-semibold text-typography-700 truncate">
                                                         {publisher.birthDate
-                                                            ? `${moment(publisher.birthDate).format("DD/MM/YYYY")} (${moment().diff(moment(publisher.birthDate), "years")} anos)`
+                                                            ? `${dayjs(publisher.birthDate).format("DD/MM/YYYY")} (${dayjs().diff(dayjs(publisher.birthDate), "year")} anos)`
                                                             : "Não informado"}
                                                     </span>
                                                 </div>
@@ -943,7 +943,7 @@ export default function PublisherList() {
 
                                             <span className="text-[11px] font-medium text-typography-400 self-end sm:self-auto">
                                                 Atualizado em:{" "}
-                                                {moment(publisher.updated_at).format("DD/MM/YYYY [às] HH:mm")}
+                                                {dayjs(publisher.updated_at).format("DD/MM/YYYY [às] HH:mm")}
                                             </span>
                                         </div>
                                     </div>

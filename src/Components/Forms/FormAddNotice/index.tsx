@@ -9,7 +9,7 @@ import { useNotices } from "@/hooks/useNotices"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtomValue } from "jotai"
 import { HelpCircle } from "lucide-react"
-import moment from "moment"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -147,7 +147,7 @@ export default function FormAddNotice({ congregationNumber }: IFormNoticeProps) 
                     )}
 
                     <div className="my-2">
-                        <Calendar label="Data da expiração:" minDate={moment().format()} selectedDate={selectedDate} handleDateChange={handleDateChange} />
+                        <Calendar label="Data da expiração:" minDate={dayjs().format()} selectedDate={selectedDate} handleDateChange={handleDateChange} />
                     </div>
 
                     <div className="w-full mt-6">

@@ -2,7 +2,10 @@ import { Page, StyleSheet, Text, View, Link } from "@react-pdf/renderer";
 import { ICongregation } from "@/types/types";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
 import { IWeekendSchedule } from "@/types/weekendSchedule";
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 interface ISpeakerInvitationPdfProps {
     schedule: IWeekendSchedule
@@ -122,11 +125,11 @@ export default function SpeakerInvitationPdf({
             <View style={styles.detailsBox}>
                 <View style={styles.detailRow}>
                     <Text style={styles.label}>Data: </Text>
-                    <Text>{moment(schedule?.date).format("DD/MM/YYYY")} - {congregationLocale.dayMeetingPublic}</Text>
+                    <Text>{dayjs(schedule?.date).format("DD/MM/YYYY")} - {congregationLocale.dayMeetingPublic}</Text>
                 </View>
                 <View style={styles.detailRow}>
                     <Text style={styles.label}>Horário: </Text>
-                    <Text>{moment(congregationLocale.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}</Text>
+                    <Text>{dayjs(congregationLocale.hourMeetingPublic, "HH:mm:ss").format("HH:mm")}</Text>
                 </View>
                 <View style={styles.detailRow}>
                     <Text style={styles.label}>Orador: </Text>
