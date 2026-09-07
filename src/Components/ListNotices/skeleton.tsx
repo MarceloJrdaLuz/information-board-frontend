@@ -1,41 +1,37 @@
 import React from "react"
 
 export default function SkeletonListNotices() {
-  return (
-    <ul className="flex flex-col gap-4 w-full items-center mt-6">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <li
-          key={i}
-          className="
-            w-full md:w-10/12
-            bg-surface-100 rounded-xl shadow-sm
-            border border-surface-200/50
-            overflow-hidden animate-pulse
-          "
-        >
-          <div className="flex flex-col p-5 gap-4">
-            {/* Cabeçalho */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-              <div className="flex flex-col gap-2">
-                <div className="h-5 w-40 bg-surface-300 rounded shimmer"></div>
-                <div className="h-3 w-28 bg-surface-300 rounded shimmer"></div>
-              </div>
+    return (
+        <div className="flex flex-col gap-4 w-full">
+            {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="w-full bg-surface-100 rounded-2xl p-5 sm:p-6 shadow-sm border border-surface-300 relative overflow-hidden flex flex-col gap-4"
+                >
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-surface-300"></div>
 
-              <div className="flex gap-2 mt-3 sm:mt-0">
-                <div className="h-8 w-20 bg-surface-300 rounded shimmer"></div>
-                <div className="h-8 w-20 bg-surface-300 rounded shimmer"></div>
-              </div>
-            </div>
+                    {/* Topo */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pl-1">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <div className="h-5 w-20 rounded-full bg-surface-300 shimmer"></div>
+                                <div className="h-5 w-28 rounded-full bg-surface-300 shimmer"></div>
+                            </div>
+                            <div className="h-6 w-48 sm:w-72 rounded-lg bg-surface-300 shimmer mt-1"></div>
+                            <div className="h-3 w-32 rounded bg-surface-300 shimmer"></div>
+                        </div>
 
-            {/* Corpo */}
-            <div className="flex flex-col gap-2 bg-surface-200/30 rounded-lg p-4">
-              <div className="h-3 w-11/12 bg-surface-300 rounded shimmer"></div>
-              <div className="h-3 w-10/12 bg-surface-300 rounded shimmer"></div>
-              <div className="h-3 w-8/12 bg-surface-300 rounded shimmer"></div>
-            </div>
-          </div>
-        </li>
-      ))}
-    </ul>
-  )
+                        <div className="flex items-center gap-2">
+                            <div className="h-8 w-20 rounded-xl bg-surface-300 shimmer"></div>
+                            <div className="h-8 w-16 rounded-xl bg-surface-300 shimmer"></div>
+                            <div className="h-8 w-16 rounded-xl bg-surface-300 shimmer"></div>
+                        </div>
+                    </div>
+
+                    {/* Corpo */}
+                    <div className="h-20 w-full rounded-xl bg-surface-200/50 p-4 shimmer border border-surface-300/40"></div>
+                </div>
+            ))}
+        </div>
+    )
 }
