@@ -137,6 +137,7 @@ export default function FormEditCongregationAuxiliary() {
                         label="Gerar número fake"
                         handleCheckboxChange={handleCheckboxChange}
                     />
+                    
                     <div className="my-2">
                         <CheckboxBoolean
                             checked={generatedCongregationNumberFake}
