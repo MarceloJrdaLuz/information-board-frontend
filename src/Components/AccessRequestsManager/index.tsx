@@ -16,7 +16,7 @@ import {
     User,
     XCircle,
 } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ApproveAccessModal from "../ApproveAccessModal";
 import RejectAccessModal from "../RejectAccessModal";
@@ -104,13 +104,9 @@ export default function AccessRequestsManager({
 
         setProcessingId(approveTarget.id);
         try {
-            await api.patch(`/access-requests/${approveTarget.id}/approve`);
             await api.patch(`/access-requests/${approveTarget.id}/approve`, {
                 congregation_id: selectedCongregationId,
             });
-            await api.patch(
-                `/access-requests/congregation/${selectedCongregationId}/${approveTarget.id}/approve`
-            );
             toast.success(`Acesso de ${approveTarget.userName} aprovado com sucesso!`);
             await loadRequests();
         } catch (err: any) {
@@ -131,12 +127,6 @@ export default function AccessRequestsManager({
                 congregation_id: selectedCongregationId,
                 response_observation: observation || undefined,
             });
-            await api.patch(
-                `/access-requests/congregation/${selectedCongregationId}/${rejectTarget.id}/reject`,
-                {
-                    response_observation: observation || undefined,
-                }
-            );
             toast.success("Solicitação recusada.");
             await loadRequests();
         } catch (err: any) {
