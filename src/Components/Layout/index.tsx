@@ -305,6 +305,20 @@ export default function Layout(props: LayoutProps) {
                                         active={pageActive.startsWith('/congregacao/testemunho-publico')}
                                     />
                                 }
+
+                                {(isAdminCongregation ||
+                                    roleContains('NOTICES_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Anúncios"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/anuncios')
+                                        }}
+                                        icon={() => <NoticesIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/congregacao/anuncios') || pageActive === 'Anúncios'}
+                                    />
+                                }
                             </NavBar.ListOptions>
                         }
 
@@ -600,18 +614,6 @@ export default function Layout(props: LayoutProps) {
                                 }}
                                 icon={() => <SalonIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 active={pageActive.startsWith('/congregacoes')}
-                            />
-                        }
-
-                        {(isAdminCongregation || roleContains('NOTICES_MANAGER')) &&
-                            <NavBar.Options
-                                title="Anúncios"
-                                onClick={() => {
-                                    { !isDesktop && setIsMenuOpen(false) }
-                                    Router.push('/anuncios')
-                                }}
-                                icon={() => <NoticesIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                active={pageActive.startsWith('/anuncios')}
                             />
                         }
 
