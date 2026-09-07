@@ -1,68 +1,67 @@
 export default function WeekendScheduleSkeleton() {
   return (
-    <section className="flex flex-wrap w-full h-full animate-pulse">
-      <div className="w-full space-y-4">
-        {/* Header fixo com filtros e botões de navegação */}
-        <div className="sticky top-0 bg-surface-100 border-b shadow-sm z-10 p-4 rounded-xl flex flex-col gap-3">
-          {/* Filtros */}
-
-          <div className="flex justify-between items-center gap-2">
-            <div className="h-8 w-28 bg-surface-200 shimmer rounded-md" />
-            <div className="h-8 w-28 bg-surface-200 shimmer rounded-md" />
+    <div className="flex flex-col w-full h-full gap-6 animate-pulse">
+      {/* 1. Header Toolbar Skeleton */}
+      <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-surface-200 shimmer rounded-md" />
+            <div className="h-8 w-60 bg-surface-200 shimmer rounded-lg" />
+            <div className="h-4 w-80 bg-surface-200 shimmer rounded-md" />
           </div>
 
-          {/* Botão salvar todas */}
-          <div className="w-full h-10 bg-surface-200 shimmer rounded-md" />
-        </div>
-
-        {/* Gerar PDF + inputs de datas */}
-        <div className="w-full p-4 bg-surface-100 border rounded-xl shadow-sm animate-pulse">
-          {/* Título */}
-          <div className="h-6 w-32 mx-auto bg-surface-200 shimmer rounded-md mb-6" />
-
-          {/* Conteúdo interno */}
-          <div className="flex flex-wrap justify-around gap-4 items-center">
-
-            {/* Calendar - Data inicial */}
-            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
-
-            {/* Calendar - Data final */}
-            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
-
-            {/* Select escala */}
-            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
-
-            {/* Botão de visualizar PDF */}
-            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
-
-            {/* Link do PDF (se renderiza) */}
-            <div className="h-10 w-full max-w-[200px] bg-surface-200 shimmer rounded-md" />
-
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="h-10 w-44 bg-surface-200 shimmer rounded-xl" />
+            <div className="h-10 w-28 bg-surface-200 shimmer rounded-xl" />
+            <div className="h-10 w-28 bg-surface-200 shimmer rounded-xl" />
+            <div className="h-10 w-32 bg-surface-200 shimmer rounded-xl" />
           </div>
         </div>
 
-        {/* Lista de sábados (cards) */}
-        <div className="space-y-4 mt-6">
+        {/* Metric Badges Skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-surface-300">
           {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="bg-surface-100 border rounded-xl shadow-sm p-4 space-y-3"
-            >
-              {/* Data */}
-              <div className="h-6 w-32 bg-surface-200 shimmer rounded-md" />
-              {/* Switch evento especial */}
-              <div className="h-6 w-40 bg-surface-200 shimmer rounded-md" />
-              {/* Dropdowns simulados */}
-              <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-              <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-              <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-              <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-              {/* Campo tema da Sentinela */}
-              <div className="h-10 w-full bg-surface-200 shimmer rounded-md" />
-            </div>
+            <div key={i} className="h-14 bg-surface-200/60 shimmer rounded-xl" />
           ))}
         </div>
       </div>
-    </section>
+
+      {/* 2. Weekend Card Skeletons */}
+      <div className="flex flex-col gap-5">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-surface-100 border border-surface-300 rounded-2xl overflow-hidden shadow-sm flex flex-col"
+          >
+            <div className="h-1.5 w-full bg-surface-200 shimmer" />
+            <div className="p-4 md:p-5 flex flex-col gap-5">
+              {/* Header */}
+              <div className="flex justify-between items-center pb-4 border-b border-surface-300">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-surface-200 shimmer rounded-xl" />
+                  <div className="space-y-1.5">
+                    <div className="h-3 w-28 bg-surface-200 shimmer rounded" />
+                    <div className="h-5 w-44 bg-surface-200 shimmer rounded-md" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-24 bg-surface-200 shimmer rounded-full" />
+                  <div className="h-7 w-28 bg-surface-200 shimmer rounded-lg" />
+                </div>
+              </div>
+
+              {/* Section 1: Chairman */}
+              <div className="h-24 bg-surface-200/40 shimmer rounded-xl border border-surface-300/60" />
+
+              {/* Section 2: Speaker & Talk */}
+              <div className="h-32 bg-surface-200/40 shimmer rounded-xl border border-surface-300/60" />
+
+              {/* Section 3: Watchtower */}
+              <div className="h-24 bg-surface-200/40 shimmer rounded-xl border border-surface-300/60" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

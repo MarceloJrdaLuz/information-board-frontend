@@ -173,6 +173,7 @@ export interface IPublisher {
     emergencyContact?: IEmergencyContact
     user?: UserTypes
     hospitalityGroup?: IHospitalityGroup
+    family_id?: string | null
     created_at: string
     updated_at: string
 }
@@ -260,7 +261,11 @@ export enum Privileges {
     INDICADOR = "Indicador",
     MICROFONEVOLANTE = "Microfone Volante",
     DIRIGENTECAMPO = "Dirigente de Campo",
-    TESTEMUNHOPUBLICO = "Testemunho Público"
+    TESTEMUNHOPUBLICO = "Testemunho Público",
+    SOM = "Som",
+    MIDIAS = "Mídias",
+    SOMEMIDIAS = "Som e Mídias",
+    PEDESTAL = "Pedestal"
 }
 
 export enum PrivilegesMinistry {

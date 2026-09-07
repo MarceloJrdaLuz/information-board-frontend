@@ -14,22 +14,11 @@ function MeetingAssistancePage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Adicionar')
-    }, [setPageActive])
-
-    useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Assistência', link: `/congregacao/assistencia/${congregationId}` }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
+        setPageActive("Adicionar Assistência")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Assistência", link: `/congregacao/assistencia/${congregationId}` }
+        ])
     }, [setCrumbs, setPageActive, congregationId])
 
     return (

@@ -74,10 +74,14 @@ export type FieldServiceFormData = {
 
 export interface IFieldServiceTemplate {
     id: string
-    type: FieldServiceType,
+    type: FieldServiceType
     weekday: number
     time: string
     location?: string
+    leader_id?: string | null
+    leader?: ILeader | null
+    rotation_members?: IRotationMember[]
+    location_overrides?: ITemplateLocationOverride[]
 }
 
 export interface FieldServiceTemplateOption extends IFieldServiceTemplate {

@@ -64,22 +64,18 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
 
     // Criar conjuntos de publishers já membros e já responsáveis, exceto desta família
     const publishersInFamilies = new Set<string>();
-    const publishersResponsible = new Set<string>();
 
     if (data?.families) {
         data.families.forEach(family => {
             if (family.id !== family_id) {
                 family.members?.forEach((p: IPublisher) => publishersInFamilies.add(p.id));
-                if (family.responsible) {
-                    publishersResponsible.add(family.responsible.id);
-                }
             }
         });
     }
 
     // Filtrar publishers disponíveis
     const availablePublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
-        .filter(p => !publishersInFamilies.has(p.id) && !publishersResponsible.has(p.id));
+        .filter(p => !publishersInFamilies.has(p.id));
 
     const validation = yup.object({
         name: yup.string().required("Campo obrigatório"),
@@ -106,11 +102,16 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
             return;
         }
 
+        const allMemberIds = selectedMembers.map(m => m.id);
+        if (!allMemberIds.includes(responsible.id)) {
+            allMemberIds.push(responsible.id);
+        }
+
         await toast.promise(
             updateFamily(family_id, {
                 name: formData.name,
                 responsible_publisher_id: responsible.id,
-                memberIds: selectedMembers.map(m => m.id)
+                memberIds: allMemberIds
             }),
             { pending: "Atualizando família..." }
         ).then(() => {
@@ -129,8 +130,8 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
 
     return (
         <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-            <div className="w-full h-fit flex-col justify-center items-center">
-                <div className="my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200">
+            <div className="w-full flex flex-col">
+                <div className="form-title-modern">
                     Editar Família
                 </div>
 
@@ -142,7 +143,7 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                 />
                 {errors?.name?.type && <InputError type={errors.name.type} field="name" />}
 
-                <div className='mt-3'>
+                <div className='mt-4'>
                     {availablePublishers && (
                         <DropdownObject<IPublisher>
                             title="Responsável da família"
@@ -158,7 +159,7 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                     )}
                 </div>
 
-                <div className="mt-3">
+                <div className="mt-4">
                     <DropdownMulti<IPublisher>
                         title="Membros da família"
                         items={availablePublishers}
@@ -174,9 +175,9 @@ export default function FormEditFamily({ family_id }: FormEditFamilyProps) {
                     />
                 </div>
 
-                <div className="flex justify-center items-center m-auto w-11/12 h-12 my-[5%]">
+                <div className="w-full mt-6">
                     <Button
-                        className="text-typography-200"
+                        className="w-full text-typography-200"
                         error={dataError}
                         disabled={disabled}
                         success={dataSuccess}

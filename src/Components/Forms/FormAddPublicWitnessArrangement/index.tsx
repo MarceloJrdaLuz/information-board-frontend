@@ -1,25 +1,25 @@
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useSetAtom, useAtomValue } from "jotai"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useAtomValue, useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
-import * as yup from "yup"
+import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
+import * as yup from "yup"
 
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 
 import Button from "@/Components/Button"
-import Input from "@/Components/Input"
 import Dropdown from "@/Components/Dropdown"
+import Input from "@/Components/Input"
 
-import { useCongregationContext } from "@/context/CongregationContext"
-import { Weekday, WEEKDAY_LABEL } from "@/types/fieldService"
 import { createPublicWitnessArrangementAtom } from "@/atoms/publicWitnessAtoms.ts"
 import { CreatePublicWitnessArrangementPayload } from "@/atoms/publicWitnessAtoms.ts/types"
-import { useFetch } from "@/hooks/useFetch"
-import { IPublisher } from "@/types/types"
-import InputError from "@/Components/InputError"
 import CheckboxBoolean from "@/Components/CheckboxBoolean"
 import DropdownMulti from "@/Components/DropdownMulti"
+import InputError from "@/Components/InputError"
+import { useCongregationContext } from "@/context/CongregationContext"
+import { useFetch } from "@/hooks/useFetch"
+import { Weekday, WEEKDAY_LABEL } from "@/types/fieldService"
+import { IPublisher } from "@/types/types"
 import FormStyle from "../FormStyle"
 
 type FormValues = {
@@ -31,6 +31,7 @@ type FormValues = {
         start_time: string
         end_time: string
         defaultPublishers: IPublisher[]
+        preferences?: IPublisher[]
         is_rotative?: boolean
     }[]
 }
@@ -82,6 +83,7 @@ export default function FormAddPublicWitnessArrangement() {
                 start_time: "",
                 end_time: "",
                 defaultPublishers: [],
+                preferences: [],
                 is_rotative: false
             }]
 
@@ -111,6 +113,9 @@ export default function FormAddPublicWitnessArrangement() {
                 is_rotative: slot.is_rotative ?? false,
                 defaultPublishers: slot.defaultPublishers.map(p => ({
                     publisher_id: p.id
+                })),
+                preferences: (slot.preferences ?? []).map(p => ({
+                    publisher_id: p.id
                 }))
             }))
         }
@@ -131,7 +136,7 @@ export default function FormAddPublicWitnessArrangement() {
     return (
         <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
             <div className="w-full flex flex-col gap-2">
-                <div className={`my-1 m-auto w-11/12 font-semibold text-xl text-primary-200`}>Novo arranjo</div>
+                <div className="form-title-modern">Novo arranjo</div>
                 <Input
                     placeholder="Título do arranjo"
                     registro={{ ...register("title") }}
@@ -174,10 +179,9 @@ export default function FormAddPublicWitnessArrangement() {
                 )}
 
                 {/* Horários */}
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-4">
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="border p-4 rounded flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="border border-surface-300 rounded-xl bg-surface-200/20 p-4 shadow-xs flex flex-col gap-3">
                                 {/* Horários */}
                                 <div className="flex gap-2 flex-wrap items-center">
                                     <Input
@@ -224,6 +228,35 @@ export default function FormAddPublicWitnessArrangement() {
                                         emptyMessage="Nenhum publicador encontrado"
                                     />
                                 )}
+
+                                {/* Preferências de publicadores para o rodízio */}
+                                {watch(`timeSlots.${index}.is_rotative`) && (
+                                    <div className="flex flex-col gap-1">
+                                        <DropdownMulti<IPublisher>
+                                            title="Preferência de publicadores para este horário (opcional)"
+                                            items={publishers}
+                                            selectedItems={watch(`timeSlots.${index}.preferences`) ?? []}
+                                            handleChange={(selected) => {
+                                                setValue(
+                                                    `timeSlots.${index}.preferences`,
+                                                    selected,
+                                                    { shouldDirty: true }
+                                                )
+                                            }}
+                                            border
+                                            full
+                                            position="left"
+                                            labelKey="fullName"
+                                            textVisible
+                                            searchable
+                                            emptyMessage="Nenhum publicador encontrado"
+                                        />
+                                        <span className="text-xs text-typography-500 italic px-1">
+                                            Publicadores que têm preferência definida apenas neste horário nunca serão colocados em outro pelo gerador automático.
+                                        </span>
+                                    </div>
+                                )}
+
                                 <Button
                                     outline
                                     className="text-red-500"
@@ -245,17 +278,16 @@ export default function FormAddPublicWitnessArrangement() {
                                 append({
                                     start_time: "",
                                     end_time: "",
-                                    defaultPublishers: []
+                                    defaultPublishers: [],
+                                    preferences: [],
+                                    is_rotative: false
                                 })
                             }
                         >
                             + Adicionar horário
                         </Button>
+
                     </div>
-
-
-
-                </div>
 
                 <Button
                     type="submit"

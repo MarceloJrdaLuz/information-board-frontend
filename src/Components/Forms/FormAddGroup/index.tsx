@@ -11,7 +11,7 @@ import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
 import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
-import { IPublisher } from '@/types/types'
+import { IPublisher, Situation } from '@/types/types'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
@@ -59,8 +59,23 @@ export default function FormAddGroup() {
 
     useEffect(() => {
         if (publishersData) {
-            const filterPublishersMale = publishersData.filter(publisher => (publisher.gender === 'Masculino'))
-            const sort = sortArrayByProperty(filterPublishersMale, "fullName")
+            const qualifiedPublishers = publishersData.filter((publisher) => {
+                if (publisher.gender !== "Masculino") return false
+                if (publisher.situation && publisher.situation !== Situation.ATIVO) return false
+
+                return publisher.privileges?.some((priv) => {
+                    const normalized = priv
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                    return (
+                        normalized.includes("anciao") ||
+                        normalized.includes("servo ministerial") ||
+                        normalized === "sm"
+                    )
+                })
+            })
+            const sort = sortArrayByProperty(qualifiedPublishers, "fullName")
             setPublishers(sort)
         }
     }, [publishersData])
@@ -121,9 +136,9 @@ export default function FormAddGroup() {
     return (
         <section className="flex w-full justify-center items-center h-full m-2 ">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
+                <div className="w-full flex flex-col">
 
-                    <div className={`my-6  w-11/12 font-semibold  sm:text-2xl text-primary-200`}>Criar novo grupo</div>
+                    <div className="form-title-modern">Criar novo grupo</div>
 
                     <Input type="text" placeholder="Nome do grupo" registro={{
                         ...register('name',
@@ -132,9 +147,11 @@ export default function FormAddGroup() {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
+                    <div className="mt-2">
+                        <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
+                    </div>
 
-                    <div className='mt-2'>
+                    <div className='mt-4'>
                         {publishers && (
                             <DropdownObject<IPublisher>
                                 title="Dirigente do grupo"
@@ -146,12 +163,13 @@ export default function FormAddGroup() {
                                 textVisible
                                 full                        
                                 searchable
+                                emptyMessage="Nenhum Ancião ou Servo Ministerial encontrado"
                             />
                         )}
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button className='text-typography-200' success={dataSuccess} error={dataError} disabled={(!selectedNumber || !selectedItem || disabled)} type='submit' >Criar Grupo</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' success={dataSuccess} error={dataError} disabled={(!selectedNumber || !selectedItem || disabled)} type='submit' >Criar Grupo</Button>
                     </div>
                 </div>
             </FormStyle>

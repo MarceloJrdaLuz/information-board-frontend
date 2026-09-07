@@ -54,7 +54,7 @@ export default function Calendar({
 
     return (
         <div>
-            {!titleHidden && <h1 className="font-bold my-2 text-typography-700">{label}</h1>}
+            {!titleHidden && <label className="mb-2 text-xs font-semibold uppercase tracking-wider text-typography-600 block">{label}</label>}
 
             <DatePicker
                 filterDate={(date: Date) => {
@@ -63,25 +63,30 @@ export default function Calendar({
                 }}
                 wrapperClassName={full ? "w-full" : ""}
                 disabled={disabled}
-                customInput={<CustomInput label={label} disabled={disabled} error={error} />}
                 locale="pt-BR"
                 selected={parsedSelected}
-                minDate={parsedMin}
+                minDate={parsedMin ?? undefined}
                 dateFormat="dd/MM/yyyy"
                 onChange={(date: Date | null) => {
                     if (!date) {
                         handleDateChange(null)
                         return
                     }
-                    // Date -> "YYYY-MM-DD"
                     const formatted = dayjs(date).format("YYYY-MM-DD")
                     handleDateChange(formatted)
                 }}
+                customInput={
+                    <CustomInput
+                        titleHidden={titleHidden}
+                        label={label}
+                        disabled={disabled}
+                        error={error}
+                    />
+                }
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
-                className={` px-3 py-2.5 w-full text-sm
-                    text-typography-700 appearance-none placeholder-transparent focus:outline-none  rounded-lg bg-transparent read-only:bg-typography-300 read-only:rounded-lg font-sans font-normal text-left border-[1px] border-blue-gray-200`}
+                className="px-3.5 py-2.5 w-full text-sm text-typography-800 appearance-none placeholder-transparent focus:outline-none rounded-xl bg-surface-100 font-sans font-medium text-left border border-surface-300 focus:border-primary-200 focus:ring-2 focus:ring-primary-200/20 shadow-xs transition-all"
                 renderCustomHeader={(props) => (
                     <DatePickerHeader
                         date={props.date}
@@ -103,21 +108,21 @@ const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleH
             onClick={!disabled ? onClick : undefined}
             disabled={disabled}
             ref={ref}
-            className={`flex items-center justify-between gap-5 px-3 py-2.5 w-full min-w-[200px] border text-sm rounded-lg
-             ${disabled
-                    ? "bg-surface-300 text-typography-700 border-transparent cursor-not-allowed"
+            className={`flex items-center justify-between gap-3 px-4 py-2.5 w-full min-w-[200px] border text-sm rounded-xl font-medium shadow-xs transition-all ${
+                disabled
+                    ? "bg-surface-200/50 text-typography-400 border-surface-300 cursor-not-allowed opacity-60"
                     : error
-                        ? "border-red-500 text-typography-700 bg-transparent cursor-pointer"
-                        : "bg-transparent text-typography-700 border-blue-gray-200 cursor-pointer"
-                }
-          `}
+                        ? "border-red-500 text-red-500 bg-surface-100 cursor-pointer focus:ring-2 focus:ring-red-500/20"
+                        : "bg-surface-100 text-typography-800 border-surface-300 hover:border-primary-200/80 cursor-pointer focus:ring-2 focus:ring-primary-200/20"
+            }`}
         >
-            <span className={`${error ? "text-red-500" : "text-typography-700"}`}>{value || (titleHidden ? label : "Selecione uma data")}</span>
-            <CalendarIcon className={`w-4 h-4 ${error ? "text-red-500" : "text-typography-700"}`} />
+            <span className={`${error ? "text-red-500" : value ? "text-typography-800 font-semibold" : "text-typography-500"}`}>{value || (titleHidden ? label : "Selecione uma data")}</span>
+            <CalendarIcon className={`w-4 h-4 shrink-0 ${error ? "text-red-500" : "text-typography-400"}`} />
         </button>
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
 ))
 
 CustomInput.displayName = "CustomInput"
+
 

@@ -59,8 +59,8 @@ export default function FormRegister() {
     return (
         <>
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full lg:w-11/12 h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-full  font-semibold text-2xl sm:text-3xl text-primary-200`}>Cadastro</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Cadastro</div>
                     <Input type="text" placeholder="Email" registro={{
                         ...register('email',
                             { required: "Campo obrigatório" })
@@ -77,9 +77,9 @@ export default function FormRegister() {
 
                     <Input type={passwordVisible ? "text" : "password"} placeholder="Senha" registro={{ ...register('password', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''} >
                         {passwordVisible ? (
-                            <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                            <EyeOffIcon onClick={() => setPasswordVisible(false)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                         ) : (
-                            <EyeIcon onClick={() => setPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                            <EyeIcon onClick={() => setPasswordVisible(true)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                         )}
                     </Input>
 
@@ -87,14 +87,14 @@ export default function FormRegister() {
 
                     <Input type={confirmPasswordVisible ? "text" : "password"} placeholder="Confirmar senha" registro={{ ...register('confirmPassword', { required: "Campo obrigatório" }) }} invalid={errors?.password?.message ? 'invalido' : ''}>
                         {confirmPasswordVisible ? (
-                            <EyeOffIcon onClick={() => setConfirmPasswordVisible(false)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                            <EyeOffIcon onClick={() => setConfirmPasswordVisible(false)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                         ) : (
-                            <EyeIcon onClick={() => setConfirmPasswordVisible(true)} className='text-primary-200 hover:opacity-80 mr-2 cursor-pointer' />
+                            <EyeIcon onClick={() => setConfirmPasswordVisible(true)} className='text-typography-400 hover:text-primary-200 transition-colors mr-2 cursor-pointer w-5 h-5' />
                         )}
                     </Input>
                     {errors?.confirmPassword?.type && <InputError type={errors.confirmPassword.type} field='confirmPassword' />}
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Criar conta</Button>
+                    <div className="flex justify-center items-center w-full mt-6">
+                        <Button className="w-full" error={dataError} success={dataSuccess} disabled={disabled} type='submit' >Criar conta</Button>
                     </div>
                 </div>
             </FormStyle>

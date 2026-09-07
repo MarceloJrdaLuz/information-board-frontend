@@ -125,8 +125,8 @@ export default function FormAddCongregationAuxiliary() {
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 w-11/12 font-semibold text-2xl sm:text-2xl text-primary-200`}>Nova Congregação</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Nova Congregação</div>
                     <Input type="text" placeholder="Nome da Congregação*" registro={{
                         ...register('name',
                             { required: "Campo obrigatório" })
@@ -134,11 +134,13 @@ export default function FormAddCongregationAuxiliary() {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <CheckboxBoolean
-                        checked={generatedCongregationNumberFake}
-                        label="Gerar número fake"
-                        handleCheckboxChange={handleCheckboxChange}
-                    />
+                    <div className="my-2">
+                        <CheckboxBoolean
+                            checked={generatedCongregationNumberFake}
+                            label="Gerar número fake"
+                            handleCheckboxChange={handleCheckboxChange}
+                        />
+                    </div>
 
                     <Input type="text" placeholder="Nº da congregação*" registro={{
                         ...register('number', { required: "Campo obrigatório" })
@@ -176,7 +178,9 @@ export default function FormAddCongregationAuxiliary() {
                         invalid={errors?.longitude?.message ? 'invalido' : ''} />
                     {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
 
-                    <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana*' border full textVisible />
+                    <div className="my-2">
+                        <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana*' border full textVisible />
+                    </div>
 
                     <Input type="time" placeholder="Horário da reunião*" registro={{
                         ...register('hourMeetingPublic')
@@ -184,8 +188,8 @@ export default function FormAddCongregationAuxiliary() {
                         invalid={errors?.hourMeetingPublic?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingPublic?.type && <InputError type={errors.hourMeetingPublic.type} field='hourMeetingPublic' />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[15%]`}>
-                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit' >Criar Congregação</Button>
                     </div>
                 </div>
             </FormStyle>

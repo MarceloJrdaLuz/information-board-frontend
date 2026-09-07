@@ -171,6 +171,45 @@ export const generateFieldServiceAtom = atom(
   }
 )
 
+export const updateFieldServiceScheduleAtom = atom(
+  null,
+  async (_get, _set, schedule_id: string, payload: { leader_id?: string; date?: string }) => {
+    try {
+      const res = await api.patch(`/field-service/schedules/${schedule_id}`, payload)
+      return res.data
+    } catch (err: any) {
+      console.error(err)
+      throw err
+    }
+  }
+)
+
+export const deleteFieldServiceScheduleAtom = atom(
+  null,
+  async (_get, _set, schedule_id: string) => {
+    try {
+      await api.delete(`/field-service/schedules/${schedule_id}`)
+      return true
+    } catch (err: any) {
+      console.error(err)
+      throw err
+    }
+  }
+)
+
+export const createFieldServiceScheduleAtom = atom(
+  null,
+  async (_get, _set, template_id: string, payload: { date: string; leader_id: string }) => {
+    try {
+      const res = await api.post(`${API_ROUTES.FIELD_SERVICE_TEMPLATES}/${template_id}/schedules`, payload)
+      return res.data
+    } catch (err: any) {
+      console.error(err)
+      throw err
+    }
+  }
+)
+
 // Field Service Exceptions 
 
 export const createFieldServiceExceptionAtom = atom(

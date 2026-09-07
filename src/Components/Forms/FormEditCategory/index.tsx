@@ -122,8 +122,8 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar categoria</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar categoria</div>
 
                     <Input type="text" placeholder="Título" registro={{
                         ...register('name',
@@ -139,8 +139,8 @@ export default function FormEditCategory({ category_id }: IUpdateCategory) {
                         invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 mt-[10%]`}>
-                        <Button className='text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Categoria</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' disabled={disabled} success={dataSuccess} error={dataError} type='submit'>Atualizar Categoria</Button>
                     </div>
                 </div>
             </FormStyle>

@@ -41,7 +41,6 @@
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.263.2-beta.0",
-    "moment": "^2.29.4",
     "next": "^16.0.7",
     "nookies": "^2.5.2",
     "postcss": "^8.4.21",
@@ -70,7 +69,6 @@
   },
   "devDependencies": {
     "@types/cookie": "^0.5.1",
-    "@types/moment": "^2.13.0",
     "@types/node": "18.11.18",
     "@types/nookies": "^2.0.3",
     "@types/react": "18.0.27",

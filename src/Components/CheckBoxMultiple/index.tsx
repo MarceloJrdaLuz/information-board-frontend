@@ -23,41 +23,38 @@ export default function CheckboxMultiple(props: ICheckboxMultiple) {
   return (
     <div>
       {props.visibleLabel && (
-        <h3 className="my-4 font-semibold text-typography-700">
+        <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-typography-600">
           {props.label}
         </h3>
       )}
 
-      <ul
-        className="
-          flex flex-wrap items-center justify-between 
-          bg-surface-100 border rounded-lg 
-          text-sm font-medium text-foreground
-        "
-      >
-        {props.options.map((option) => (
-          <li
-            key={option}
-            className={`w-full ${!props.full && "sm:w-1/2"
-              } border-b sm:border-r border-border`}
-          >
-            <div className="flex items-center gap-2 pl-3 py-3">
-              <Checkbox
-              className="border-[2px] border-typography-600 bg-surface-100 data-[state=checked]:bg-surface-100 data-[state=checked]:text-primary-200 data-[state=checked]:border-primary-200"
-                id={`${props.label}-${option}`}
-                checked={props.checkedOptions?.includes(option) || false}
-                onCheckedChange={() => handleCheckboxChange(option)}
-              />
-
-              <label
-                htmlFor={`${props.label}-${option}`}
-                className="text-sm font-semibold text-typography-900 cursor-pointer"
-              >
-                {option}
-              </label>
-            </div>
-          </li>
-        ))}
+      <ul className="flex flex-wrap items-center justify-between bg-surface-100 border border-surface-300 rounded-xl overflow-hidden shadow-xs text-sm font-medium text-typography-800">
+        {props.options.map((option) => {
+          const isChecked = props.checkedOptions?.includes(option) || false
+          return (
+            <li
+              key={option}
+              className={`w-full ${!props.full && "sm:w-1/2"} border-b sm:border-r border-surface-300 transition-colors ${
+                isChecked ? 'bg-primary-200/5' : 'hover:bg-surface-200/50'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 pl-3.5 py-2.5">
+                <Checkbox
+                  className="border border-surface-300 bg-surface-100 data-[state=checked]:bg-primary-200 data-[state=checked]:text-white data-[state=checked]:border-primary-200"
+                  id={`${props.label}-${option}`}
+                  checked={isChecked}
+                  onCheckedChange={() => handleCheckboxChange(option)}
+                />
+                <label
+                  htmlFor={`${props.label}-${option}`}
+                  className="text-sm font-medium text-typography-800 cursor-pointer select-none"
+                >
+                  {option}
+                </label>
+              </div>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

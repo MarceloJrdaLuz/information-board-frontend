@@ -11,19 +11,12 @@ function AddFamilyPage() {
     const [, setPageActive] = useAtom(pageActiveAtom);
 
     useEffect(() => {
-        setCrumbs(prev => [...prev, {
-            label: "Famílias",
-            link: "/congregacao/familias"
-        }]);
-
-        return () => {
-            setCrumbs(prev => prev.slice(0, -1));
-        };
-    }, [setCrumbs]);
-
-    useEffect(() => {
         setPageActive("Adicionar Família");
-    }, [setPageActive]);
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Famílias", link: "/congregacao/familias" }
+        ]);
+    }, [setCrumbs, setPageActive]);
 
     return (
         <ContentDashboard>

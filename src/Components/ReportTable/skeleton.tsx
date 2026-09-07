@@ -1,73 +1,43 @@
 export function ReportTableSkeleton() {
-  // mês atual (1–12)
-  const currentMonth = new Date().getMonth() + 1
-
-  // calcula quantos meses desde setembro
-  const monthsSinceSeptember = currentMonth >= 9
-    ? currentMonth - 8 // ex: novembro (11) → 3 meses (set, out, nov)
-    : currentMonth + 4 // ex: fevereiro (2) → 6 meses (set → fev)
-
-  const skeletonRows = Array(monthsSinceSeptember - 1).fill(0)
+  const skeletonRows = Array(6).fill(0)
 
   return (
-    <div className="w-full flex flex-col items-center">
-      {/* Tabela para desktop */}
-      <div className="hidden md:block w-full overflow-x-auto">
-        <table className="w-full border-collapse shadow-md">
-          <thead className="bg-surface-200">
-            <tr>
-              <th className="p-3 text-left shimmer h-6 w-24 rounded"></th>
-              <th className="p-3 text-left shimmer h-6 w-16 rounded"></th>
-              <th className="p-3 text-left shimmer h-6 w-16 rounded"></th>
-              <th className="p-3 text-left shimmer h-6 w-28 rounded"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {skeletonRows.map((_, i) => (
-              <tr key={i} className="border-b odd:bg-surface-100 even:bg-surface-200">
-                <td className="p-3">
-                  <div className="h-4 w-24 bg-surface-200 rounded shimmer"></div>
-                </td>
-                <td className="p-3">
-                  <div className="h-4 w-12 bg-surface-200 rounded shimmer"></div>
-                </td>
-                <td className="p-3">
-                  <div className="h-4 w-12 bg-surface-200 rounded shimmer"></div>
-                </td>
-                <td className="p-3">
-                  <div className="h-4 w-32 bg-surface-200 rounded shimmer"></div>
-                </td>
-              </tr>
-            ))}
-            <tr className="bg-surface-100">
-              <td className="p-3">
-                <div className="h-4 w-16 bg-surface-200 rounded shimmer"></div>
-              </td>
-              <td colSpan={3} className="p-3">
-                <div className="h-4 w-1/3 bg-surface-200 rounded shimmer"></div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Cards (mobile) */}
-      <div className="md:hidden w-full flex flex-col gap-4 mt-4">
-        {skeletonRows.map((_, i) => (
-          <div key={i} className="bg-surface-100 p-4 rounded-lg">
-            <div className="flex justify-between mb-2">
-              <div className="h-6 w-24 bg-surface-200 rounded shimmer"></div>
-              <div className="h-6 w-12 bg-surface-200 rounded shimmer"></div>
-            </div>
-            <div className="h-6 w-1/2 bg-surface-200 rounded mb-2 shimmer"></div>
+    <div className="w-full flex flex-col space-y-4 animate-pulse">
+      {/* Skeleton KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="p-3.5 bg-surface-100 border border-surface-300 rounded-2xl shadow-xs space-y-2"
+          >
+            <div className="h-3.5 bg-surface-200 rounded-md w-24" />
+            <div className="h-7 bg-surface-200 rounded-lg w-16" />
           </div>
         ))}
-        <div className="bg-surface-300 p-4 rounded-lg">
-          <div className="flex justify-between mb-2">
-            <div className="h-6 w-24 bg-surface-100 rounded shimmer"></div>
-            <div className="h-6 w-12 bg-surface-100 rounded shimmer"></div>
+      </div>
+
+      {/* Skeleton Desktop Table */}
+      <div className="hidden md:block w-full bg-surface-100 border border-surface-300 rounded-2xl shadow-sm overflow-hidden p-4 space-y-3">
+        <div className="h-8 bg-surface-200 rounded-xl w-full" />
+        {skeletonRows.map((_, i) => (
+          <div key={i} className="h-10 bg-surface-200/60 rounded-xl w-full" />
+        ))}
+      </div>
+
+      {/* Skeleton Mobile Cards */}
+      <div className="md:hidden flex flex-col gap-3">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-surface-100 border border-surface-300 rounded-2xl p-4 space-y-3"
+          >
+            <div className="h-5 bg-surface-200 rounded-md w-1/3" />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-14 bg-surface-200 rounded-xl" />
+              <div className="h-14 bg-surface-200 rounded-xl" />
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   )

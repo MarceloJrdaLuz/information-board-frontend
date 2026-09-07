@@ -11,34 +11,22 @@ function AddRolePage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Funções', link: '/administracao/funcoes' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Nova função')
-    }, [setPageActive])
+        setPageActive("Criar Funções")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Funções", link: "/administracao/funcoes" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
-            <ContentDashboard>
-                <BreadCrumbs crumbs={crumbs} pageActive={"Criar Funções"} />
-                <section className="flex m-10 justify-center items-center">
-                    <FormAddRole />
-                </section>
-            </ContentDashboard>
+        <ContentDashboard>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Criar Funções"} />
+            <section className="flex m-10 justify-center items-center">
+                <FormAddRole />
+            </section>
+        </ContentDashboard>
     )
 }
-
 
 AddRolePage.getLayout = withProtectedLayout(["ADMIN"])
 

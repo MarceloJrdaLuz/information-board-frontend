@@ -84,8 +84,8 @@ export default function FormAddReminder() {
             <FormStyle
                 onSubmit={handleSubmit(onSubmit, onError)}
             >
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <span className={`my-6  w-11/12 font-semibold  sm:text-2xl text-primary-200`}>Criar novo lembrete</span>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Criar novo lembrete</div>
 
                     <Input type="text" placeholder="Título" registro={{
                         ...register('title',
@@ -145,7 +145,7 @@ export default function FormAddReminder() {
                         />
                     </div>
                     {isRecurring && (
-                        <div className="flex flex-col gap-2 p-4 bg-surface-50 rounded-md border border-surface-300 mb-8">
+                        <div className="flex flex-col gap-2 p-4 bg-surface-200/50 rounded-md border border-surface-300 mb-8">
                             <span className="text-sm text-typography-800 shrink-0">Repetir a cada</span>
                             <div className="flex items-center gap-4">
                                 <div className="w-20">
@@ -201,9 +201,11 @@ export default function FormAddReminder() {
                         </div>
                     )}
 
-                    <Button className="text-typography-200" type="submit">
-                        Criar lembrete
-                    </Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" type="submit">
+                            Criar lembrete
+                        </Button>
+                    </div>
                 </div>
 
             </FormStyle>

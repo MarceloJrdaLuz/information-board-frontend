@@ -89,6 +89,7 @@ export type IWeekendScheduleFormData = {
   readers: IPublisher[]
   chairmans: IPublisher[]
   hospitalityGroups: IHospitalityGroup[]
+  workbookWeeks?: { weekDate: string; watchtowerStudyTheme: string | null }[]
 }
 
 export type IExternalTalkFormData = {

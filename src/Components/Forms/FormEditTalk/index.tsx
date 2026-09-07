@@ -56,22 +56,21 @@ export default function FormEditTalk() {
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar discurso</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar discurso</div>
 
-                    <>
-                        <Input type="number" placeholder="Número" registro={{
-                            ...register('number',
-                                { required: "Campo obrigatório" })
-                        }}
-                            invalid={errors?.number?.message ? 'invalido' : ''} />
-                        {errors?.number?.type && <InputError type={errors.number.type} field='number' />}
+                    <Input type="number" placeholder="Número" registro={{
+                        ...register('number',
+                            { required: "Campo obrigatório" })
+                    }}
+                        invalid={errors?.number?.message ? 'invalido' : ''} />
+                    {errors?.number?.type && <InputError type={errors.number.type} field='number' />}
 
-                        <Input type="text" placeholder="Tema" registro={{ ...register('title') }} invalid={errors?.title?.message ? 'invalido' : ''} />
-                        {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
-                    </>
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar discurso</Button>
+                    <Input type="text" placeholder="Tema" registro={{ ...register('title') }} invalid={errors?.title?.message ? 'invalido' : ''} />
+                    {errors?.title?.type && <InputError type={errors.title.type} field='title' />}
+
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar discurso</Button>
                     </div>
                 </div>
             </FormStyle>

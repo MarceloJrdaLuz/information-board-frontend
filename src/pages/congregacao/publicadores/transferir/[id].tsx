@@ -1,6 +1,5 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
-import FormAddPublisher from "@/Components/Forms/FormAddPublisher"
 import FormTransferPublisher from "@/Components/Forms/FormTransferPublisher"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
@@ -27,23 +26,12 @@ function TransferPublishersPage() {
     const filteredPublisherSelected = publishers?.find(p => p.id === id)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/congregacao/publicadores' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Transferir publicador')
-    }, [setPageActive])
+        setPageActive("Transferir Publicador")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Publicadores", link: "/congregacao/publicadores" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

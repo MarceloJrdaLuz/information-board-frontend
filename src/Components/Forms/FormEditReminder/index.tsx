@@ -104,8 +104,8 @@ export default function FormEditReminder({ reminder_id }: Props) {
             <FormStyle
                 onSubmit={handleSubmit(onSubmit, onError)}
             >
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <span className={`my-6  w-11/12 font-semibold  sm:text-2xl text-primary-200`}>Atualizar lembrete</span>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar lembrete</div>
                     <Input
                         placeholder="Título"
                         registro={{ ...register("title") }}
@@ -166,7 +166,7 @@ export default function FormEditReminder({ reminder_id }: Props) {
                     </div>
 
                     {isRecurring && (
-                        <div className="flex flex-col gap-4 p-4 bg-surface-50 rounded-md border border-surface-300">
+                        <div className="flex flex-col gap-4 p-4 bg-surface-200/50 rounded-md border border-surface-300">
                             <span className="text-sm text-typography-800 font-medium">Repetir a cada</span>
 
                             <div className="flex items-center gap-4">
@@ -228,9 +228,11 @@ export default function FormEditReminder({ reminder_id }: Props) {
                         />
                     </div>
 
-                    <Button className="text-typography-200" type="submit">
-                        Salvar alterações
-                    </Button>
+                    <div className="w-full mt-6">
+                        <Button className="w-full text-typography-200" type="submit">
+                            Salvar alterações
+                        </Button>
+                    </div>
                 </div>
             </FormStyle>
         </section >

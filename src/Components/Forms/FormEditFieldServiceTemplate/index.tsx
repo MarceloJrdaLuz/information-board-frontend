@@ -157,9 +157,8 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
 
   return (
     <FormStyle onSubmit={handleSubmit(onSubmit)}>
-      <div className="w-full h-fit flex-col justify-center items-center">
-
-        <div className="my-6 m-auto w-11/12 font-semibold text-lg text-primary-200">
+      <div className="w-full flex flex-col">
+        <div className="form-title-modern">
           Editar Saída de Campo
         </div>
 
@@ -325,8 +324,8 @@ export default function FormEditFieldServiceTemplate({ template_id }: FormEditPr
           </div>
         )}
 
-        <div className="flex justify-center items-center m-auto w-11/12 h-12 my-6">
-          <Button type="submit">Atualizar Saída</Button>
+        <div className="w-full mt-6">
+          <Button className="w-full text-typography-200" type="submit">Atualizar Saída</Button>
         </div>
 
       </div>

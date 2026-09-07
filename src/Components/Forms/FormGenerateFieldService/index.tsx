@@ -24,9 +24,12 @@ export default function FormGenerateFieldService({ templates }: any) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Dropdown
         title="Template"
+        border
+        full
+        textVisible
         options={templates.map((t: any) => t.name)}
         handleClick={(name) =>
           setTemplateId(templates.find((t: any) => t.name === name).id)
@@ -38,13 +41,18 @@ export default function FormGenerateFieldService({ templates }: any) {
 
       <Dropdown
         title="Modo"
+        border
+        full
+        textVisible
         options={["append", "reconcile"]}
         handleClick={(v) => setMode(v as any)}
       />
 
-      <Button onClick={handleGenerate}>
-        Gerar programação
-      </Button>
+      <div className="w-full pt-2">
+        <Button className="w-full text-typography-200" onClick={handleGenerate}>
+          Gerar programação
+        </Button>
+      </div>
     </div>
   )
 }

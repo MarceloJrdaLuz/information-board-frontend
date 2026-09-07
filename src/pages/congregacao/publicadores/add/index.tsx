@@ -11,23 +11,12 @@ function AddPublishersPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Publicadores', link: '/congregacao/publicadores' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Adicionar pessoa')
-    }, [setPageActive])
+        setPageActive("Adicionar Publicador")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Publicadores", link: "/congregacao/publicadores" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

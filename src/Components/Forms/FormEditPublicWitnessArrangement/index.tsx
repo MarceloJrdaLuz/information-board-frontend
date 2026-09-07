@@ -69,6 +69,10 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
   const [slotPublishers, setSlotPublishers] =
     useState<IPublicWitnessPublisher[][]>([])
 
+  /** 🔹 Preferências por slot */
+  const [slotPreferences, setSlotPreferences] =
+    useState<IPublicWitnessPublisher[][]>([])
+
   const {
     register,
     control,
@@ -97,6 +101,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
       title: arrangement.title,
       date: arrangement.date ?? "",
       timeSlots: arrangement.timeSlots.map(slot => ({
+        id: slot.id,
         start_time: slot.start_time,
         end_time: slot.end_time,
         is_rotative: slot.is_rotative
@@ -105,8 +110,16 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
 
     setSlotPublishers(
       arrangement.timeSlots.map(slot =>
-        slot.defaultPublishers
+        (slot.defaultPublishers ?? [])
           .map(dp => publishers.find(p => p.id === dp.publisher_id))
+          .filter(Boolean) as IPublicWitnessPublisher[]
+      )
+    )
+
+    setSlotPreferences(
+      arrangement.timeSlots.map(slot =>
+        (slot.preferences ?? [])
+          .map(pref => publishers.find(p => p.id === pref.publisher_id))
           .filter(Boolean) as IPublicWitnessPublisher[]
       )
     )
@@ -128,6 +141,9 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
         defaultPublishers: (slotPublishers[index] ?? []).map((p, i) => ({
           publisher_id: p.id,
           order: i
+        })),
+        preferences: (slotPreferences[index] ?? []).map(p => ({
+          publisher_id: p.id
         }))
       }))
     }
@@ -141,6 +157,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
   return (
     <FormStyle onSubmit={handleSubmit(onSubmit)}>
       <div className="w-full flex flex-col gap-4">
+        <div className="form-title-modern">Editar arranjo</div>
 
         <Input
           placeholder="Título do arranjo"
@@ -182,7 +199,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
 
         {/* 🔹 Slots */}
         {fields.map((field, index) => (
-          <div key={field.id} className="border p-4 rounded flex flex-col gap-3">
+          <div key={field.id} className="border border-surface-300 rounded-xl bg-surface-200/20 p-4 shadow-xs flex flex-col gap-3">
             <div className="flex gap-2 flex-wrap items-center">
               <Input
                 placeholder="Início"
@@ -224,6 +241,31 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
               />
             )}
 
+            {watch(`timeSlots.${index}.is_rotative`) && (
+              <div className="flex flex-col gap-1">
+                <DropdownMulti<IPublicWitnessPublisher>
+                  title="Preferência de publicadores para este horário (opcional)"
+                  items={publishers ?? []}
+                  selectedItems={slotPreferences[index] ?? []}
+                  handleChange={items => {
+                    setSlotPreferences(prev => {
+                      const copy = [...prev]
+                      copy[index] = items
+                      return copy
+                    })
+                  }}
+                  labelKey="fullName"
+                  searchable
+                  full
+                  border
+                  textVisible
+                />
+                <span className="text-xs text-typography-500 italic px-1">
+                  Publicadores com preferência definida apenas neste horário nunca serão colocados em outro pelo gerador automático.
+                </span>
+              </div>
+            )}
+
             <Button
               outline
               type="button"
@@ -231,6 +273,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
               onClick={() => {
                 remove(index)
                 setSlotPublishers(prev => prev.filter((_, i) => i !== index))
+                setSlotPreferences(prev => prev.filter((_, i) => i !== index))
               }}
             >
               Remover horário
@@ -245,6 +288,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
           onClick={() => {
             append({ start_time: "", end_time: "", is_rotative: false })
             setSlotPublishers(prev => [...prev, []])
+            setSlotPreferences(prev => [...prev, []])
           }}
         >
           + Adicionar horário

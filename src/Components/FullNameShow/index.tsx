@@ -14,7 +14,7 @@ export function FullNameShow({ defaultName }: FullNameShowProps) {
         </button>
       </Popover.Trigger>
 
-      <Popover.Content side="bottom" align="start" className="bg-white rounded-md shadow-lg p-2">
+      <Popover.Content side="bottom" align="start" className="bg-surface-100 border border-surface-300 text-typography-800 rounded-md shadow-lg p-2">
         {/* Aqui você pode colocar conteúdo extra se quiser mostrar algo ao clicar */}
         {defaultName}
       </Popover.Content>

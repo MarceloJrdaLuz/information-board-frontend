@@ -11,19 +11,12 @@ function AddCleaningGroupPage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs(prev => [...prev, {
-            label: "Grupos de limpeza",
-            link: "/congregacao/grupos-limpeza"
-        }])
-
-        return () => {
-            setCrumbs(prev => prev.slice(0, -1))
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive("Criar grupo de limpeza")
-    }, [setPageActive])
+        setPageActive("Adicionar Grupo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Grupos de Limpeza", link: "/congregacao/grupos-limpeza" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>

@@ -74,10 +74,10 @@ export default function FormAddTerritory() {
     }
 
     return (
-        <section className="flex w-full justify-center items-center h-full m-2">
+        <section className="flex w-full justify-center items-center h-full p-2 sm:p-4">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Adicionar território</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Adicionar território</div>
 
                     <Input type="text" placeholder="Nome" registro={{
                         ...register('name', { required: "Campo obrigatório" })
@@ -85,28 +85,34 @@ export default function FormAddTerritory() {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do território' options={availableNumbers} />
-
+                    <div className="my-1">
+                        <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do território' options={availableNumbers} />
+                    </div>
 
                     <TextArea placeholder="Referência" registro={{ ...register('description', { required: "Campo obrigatório" }) }} invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
                     {uploadedFile && (
-                        <div className="mt-4 mb-4">
+                        <div className="mt-4 mb-2 rounded-xl overflow-hidden border border-surface-300 shadow-xs">
                             {/* eslint-disable-next-line */}
-                            <img src={URL.createObjectURL(uploadedFile)} alt="Uploaded" style={{ maxWidth: '100%' }} />
+                            <img src={URL.createObjectURL(uploadedFile)} alt="Uploaded" className="w-full h-auto object-contain max-h-60" />
                         </div>
                     )}
 
-                    <input className="text-sm text-typography-700
-            file:mr-5 file:py-3 file:px-10
-            file:rounded-full file:border-0
-            file:text-md file:font-semibold  file:text-typography-200 hover:file:text-typography-900
-            file:bg-gradient-to-r file:bg-primary-200
-            hover:file:cursor-pointer hover:file:opacity-80" type="file" name="image" id="image-congregation" onChange={handleUpload} />
+                    <div className="my-3">
+                        <label className="text-xs font-semibold text-typography-600 uppercase tracking-wider mb-2 block">
+                            Mapa do Território (Imagem)
+                        </label>
+                        <input className="text-sm text-typography-700 w-full
+                            file:mr-4 file:py-2.5 file:px-4
+                            file:rounded-xl file:border-0
+                            file:text-sm file:font-semibold file:text-primary-200
+                            file:bg-primary-200/10 hover:file:bg-primary-200/20
+                            hover:file:cursor-pointer transition-all" type="file" name="image" id="image-congregation" onChange={handleUpload} />
+                    </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Criar Território</Button>
+                    <div className="flex justify-center items-center w-full mt-6">
+                        <Button className="w-full text-typography-200" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Criar Território</Button>
                     </div>
                 </div>
             </FormStyle>

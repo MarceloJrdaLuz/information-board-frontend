@@ -1,8 +1,10 @@
-'use-client'
+﻿'use client'
+
 import { isDesktopAtom, toogleMenu } from "@/atoms/atom"
 import { useAtom } from "jotai"
 import { ReactNode, useCallback, useEffect } from "react"
 import { NavBar } from "."
+
 interface NavBarRootProps {
     children: ReactNode
 }
@@ -22,7 +24,7 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     }, [setIsDesktop, setMenuOpen])
 
     useEffect(() => {
-        checkScreenWidth() // atualiza inicial
+        checkScreenWidth()
     }, [checkScreenWidth])
 
     useEffect(() => {
@@ -30,36 +32,47 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
     }, [isDesktop, setMenuOpen])
 
     useEffect(() => {
-        // Adiciona um ouvinte de evento de redimensionamento
         window.addEventListener("resize", checkScreenWidth)
-
-        // Remove o ouvinte de evento ao desmontar o componente
         return () => {
             window.removeEventListener("resize", checkScreenWidth)
         }
     }, [checkScreenWidth])
 
     return (
-        <nav
-            className={`
-    fixed top-0 left-0 h-screen z-40
-    bg-gradient-to-b from-primary-200 to-primary-150 
-    text-typography-100 shadow-xl
+        <>
+            {/* Backdrop escuro no mobile para fechar ao clicar fora */}
+            {!isDesktop && isMenuOpen && (
+                <div
+                    onClick={() => setMenuOpen(false)}
+                    className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 transition-opacity duration-300 md:hidden"
+                    aria-hidden="true"
+                />
+            )}
 
-    transform transition-transform duration-300
-    ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
+            <nav
+                className={`
+                    fixed top-0 left-0 h-[100dvh] z-50
+                    bg-gradient-to-b from-primary-200 via-primary-200 to-primary-150 
+                    text-white shadow-2xl border-r border-white/10
+                    flex flex-col select-none
 
-    w-2/3 max-w-[300px]
+                    transform transition-transform duration-300 ease-in-out
+                    ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
 
-    md:relative md:translate-x-0 md:w-3/12 md:min-w-[185px] 
-  `}
-        >
-            <div className={`sticky top-0 z-50`}>
-                <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop />
-            </div>
-            <div className="overflow-y-auto hide-scrollbar h-[calc(100vh-80px)] pb-9">
-                {children}
-            </div>
-        </nav>
+                    w-[270px] sm:w-[290px]
+                    md:relative md:translate-x-0 md:w-64 lg:w-72 md:min-w-[240px] md:max-w-[288px] md:shadow-none
+                `}
+            >
+                {/* Header com Logo */}
+                <div className="shrink-0 border-b border-white/15">
+                    <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop={isDesktop} />
+                </div>
+
+                {/* Lista de Navegação com Scrollbar suave */}
+                <div className="flex-1 overflow-y-auto thin-scrollbar px-3 py-3 space-y-1">
+                    {children}
+                </div>
+            </nav>
+        </>
     )
 }

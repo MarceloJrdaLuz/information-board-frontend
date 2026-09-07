@@ -94,10 +94,10 @@ export default function FormAddSpeaker() {
     }
 
     return (
-        <section className="flex w-full justify-center items-center h-auto m-2">
+        <section className="flex w-full justify-center items-center h-auto p-2 sm:p-4">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Novo orador</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Novo orador</div>
 
                     <CheckboxBoolean
                         checked={speakerIsPublisher}
@@ -161,9 +161,9 @@ export default function FormAddSpeaker() {
                         />
                     </>}
 
-                    <div className='border border-typography-300 my-4 p-4'>
+                    <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
                         <div className='flex flex-1 justify-between items-center'>
-                            <span className='my-2 font-semibold text-typography-900'>Selecionar discursos</span>
+                            <span className='mb-2 text-xs font-semibold uppercase tracking-wider text-typography-600'>Selecionar discursos</span>
                         </div>
                         <DropdownMulti<ITalk>
                             title="Selecione os discursos"
@@ -181,8 +181,8 @@ export default function FormAddSpeaker() {
                         />
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Criar orador</Button>
+                    <div className="flex justify-center items-center w-full mt-6">
+                        <Button className="w-full text-typography-200" error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Criar orador</Button>
                     </div>
                 </div>
             </FormStyle>

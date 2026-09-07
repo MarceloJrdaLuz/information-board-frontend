@@ -1,35 +1,21 @@
 export default function SkeletonModalReport() {
     return (
-        <li className="flex flex-col w-80 bg-surface-100 border border-1 border-typography-700 m-2 p-2 animate-pulse">
-            <span className="py-1 w-9/12 m-auto h-6 bg-surface-200 shimmer animate-pulse"></span>
-            <div className="flex mt-1">
-                <span className="mx-1 w-2/12  h-6 bg-surface-200 shimmer animate-pulse"></span>
-                <span className="mx-1 w-9/12  h-6 bg-surface-200 shimmer animate-pulse"></span>
-            </div>
-            <div className="flex mt-1">
-                <span className="mx-1 w-2/12  h-6 bg-surface-200 shimmer animate-pulse"></span>
-                <span className="mx-1 w-9/12  h-6 bg-surface-200 shimmer animate-pulse"></span>
-            </div>
-            <div className="mt-2 border border-typography-700 divide-y divide-typography-700">
-                <div className="flex justify-between items-center pr-2">
-                    <span className="m-2 w-9/12 h-5 bg-surface-200 shimmer animate-pulse"></span>
-                    <span className="w-8 h-5 bg-surface-200 shimmer animate-pulse"></span>
+        <li className="flex flex-col bg-surface-100 border border-surface-300 rounded-2xl p-4 shadow-sm min-h-[220px] justify-between animate-pulse">
+            <div>
+                <div className="flex items-start gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-surface-200 shrink-0" />
+                    <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-surface-200 rounded-md w-3/4" />
+                        <div className="h-3 bg-surface-200 rounded-md w-1/2" />
+                    </div>
                 </div>
-                <div className="flex justify-between">
-                    <span className="m-2 w-5/12 h-4 bg-surface-200 shimmer animate-pulse"></span>
-                    <span className="border-l border-surface-700 shimmer w-10 bg-surface-200 shimmer animate-pulse"></span>
-                </div>
-                <div className="flex justify-between">
-                    <span className="m-2 w-9/12 h-5 bg-surface-200 shimmer animate-pulse"></span>
-                    <span className="border-l border-surface-700 shimmer w-10 bg-surface-200 shimmer animate-pulse"></span>
+                <div className="h-7 bg-surface-200 rounded-lg w-full mb-3" />
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="h-14 bg-surface-200 rounded-xl" />
+                    <div className="h-14 bg-surface-200 rounded-xl" />
                 </div>
             </div>
-            <div className="flex justify-between border border-typography-700 mt-2 ">
-                <span className="m-2 w-3/12 h-3 bg-surface-200 shimmer animate-pulse"></span>
-                <span className="m-2 w-9/12 h-9 pl-2 bg-surface-200 shimmer animate-pulse"></span>
-            </div>
-
+            <div className="h-8 bg-surface-200 rounded-xl w-full" />
         </li>
-
     )
 }

@@ -137,8 +137,8 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar função</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar função</div>
 
                     <Input type="text" placeholder="Nome" registro={{
                         ...register('name',
@@ -150,16 +150,20 @@ export default function FormEditRole({ role_id }: IUpdateRole) {
                     <Input type="text" placeholder="Descrição" registro={{ ...register('description', { required: "Campo obrigatório" }) }} invalid={errors?.description?.message ? 'invalido' : ''} />
                     {errors?.description?.type && <InputError type={errors.description.type} field='description' />}
 
-                    <Dropdown textVisible handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Permissões" border />
-                    <div className="mt-4 flex flex-wrap">
-                        {permissionSelected && permissionSelected.map(permission => <span className='flex justify-center items-center py-2 px-5 text-xs bg-typography-300 rounded-3xl m-1 w-fit' key={permission} >
-                            {permission}
-                            <span className="py-2 ml-2  flex justify-center items-center" onClick={() => removePermissionSelected(permission)}>{IconDelete}</span>
-                        </span>)}
+                    <div className="mt-2">
+                        <Dropdown textVisible full handleClick={option => handleClick(option)} options={optionsDrop ?? []} title="Permissões" border />
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                        {permissionSelected && permissionSelected.map(permission => (
+                            <span className='inline-flex items-center gap-1.5 py-1.5 px-3.5 text-xs font-medium bg-surface-200 border border-surface-300 rounded-full text-typography-700 shadow-2xs' key={permission}>
+                                {permission}
+                                <button type="button" className="opacity-60 hover:opacity-100 hover:text-red-500 transition-opacity ml-1 flex items-center" onClick={() => removePermissionSelected(permission)}>{IconDelete}</button>
+                            </span>
+                        ))}
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Permissão</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Permissão</Button>
                     </div>
                 </div>
             </FormStyle>

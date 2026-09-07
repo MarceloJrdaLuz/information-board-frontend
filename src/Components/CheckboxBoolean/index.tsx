@@ -21,16 +21,17 @@ export default function CheckboxBoolean(props: ICheckbox) {
   }
 
   return (
-    <div className='flex justify-end items-center'>
-      <label className="flex justify-end items-center">
-      </label>
+    <div className='flex items-center gap-2.5 py-1.5'>
       <input
         type="checkbox"
+        id={`checkbox-bool-${props.label}`}
         checked={checked ?? false}
         onChange={(e) => handleCheckboxChange(e.target.checked)}
-        className="w-4 h-4 cursor-pointer text-primary-200 bg-typography-100 border-typography-300 rounded focus:bg-primary-200 accent-primary-200  mr-2"
+        className="w-4 h-4 cursor-pointer text-primary-200 bg-surface-100 border border-surface-300 rounded focus:ring-primary-200 accent-primary-200"
       />
-      <span className='text-sm text-typography-700'>{props.label}</span>
+      <label htmlFor={`checkbox-bool-${props.label}`} className='text-sm font-medium text-typography-800 cursor-pointer select-none'>
+        {props.label}
+      </label>
     </div>
   )
 }

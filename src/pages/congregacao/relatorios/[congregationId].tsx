@@ -16,7 +16,10 @@ function ListReportsPage() {
 
     useEffect(() => {
         setPageActive('Relatórios')
-    }, [setPageActive])
+        setCrumbs([
+            { label: "Início", link: "/dashboard" }
+        ])
+    }, [setPageActive, setCrumbs])
 
     return (
         <ContentDashboard>

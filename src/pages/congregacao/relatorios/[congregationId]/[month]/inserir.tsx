@@ -16,22 +16,12 @@ function InsertReportPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive('Relatórios')
-    }, [setPageActive])
-
-    useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: `${capitalizeFirstLetter(month as string)}`, link: `/congregacao/relatorios/${congregationId}/${month}` }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
+        setPageActive("Inserir Relatório")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Relatórios", link: `/congregacao/relatorios/${congregationId}` },
+            { label: `${capitalizeFirstLetter(month as string)}`, link: `/congregacao/relatorios/${congregationId}/${month}` }
+        ])
     }, [setCrumbs, setPageActive, congregationId, month])
 
     return (

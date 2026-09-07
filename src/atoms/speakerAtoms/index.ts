@@ -35,7 +35,7 @@ export const updateSpeakerAtom = atom(
       const res = await api.patch(`/speaker/${speaker_id}`, payload)
       _set(handleSubmitSuccessAtom, {
         messageSuccess: "Orador atualizado com sucesso!",
-        redirectTo: "/arranjo-oradores/oradores", 
+        redirectTo: "/reunioes/fimdesemana/oradores", 
       })
       return res.data
     } catch (err: any) {

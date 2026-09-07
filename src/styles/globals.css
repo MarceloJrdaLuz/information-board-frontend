@@ -5,6 +5,7 @@
 html, body {
   height: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -92,20 +93,68 @@ body {
 
 
 
-.outline input:focus-within~label,
-.outline input:not(:placeholder-shown)~label {
-  @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
+/* ===== Floating Labels ===== */
+
+.outline input:focus ~ label,
+.outline input:focus-within ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
   color: rgb(var(--color-primary-200));
   height: auto;
-
 }
 
-.outline textarea:focus-within~label,
-.outline textarea:not(:placeholder-shown)~label {
-  @apply transform scale-75 -translate-y-3 z-0 ml-0 px-2 py-0;
+.outline input:not(:placeholder-shown) ~ label,
+.outline input:-webkit-autofill ~ label,
+.outline input:autofill ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
+  color: rgb(var(--color-typography-500));
+  height: auto;
+}
+
+.outline input:not(:placeholder-shown):focus ~ label,
+.outline input:-webkit-autofill:focus ~ label,
+.outline input:autofill:focus ~ label {
+  color: rgb(var(--color-primary-200));
+}
+
+.outline textarea:focus ~ label,
+.outline textarea:focus-within ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
   color: rgb(var(--color-primary-200));
   height: auto;
+}
 
+.outline textarea:not(:placeholder-shown) ~ label,
+.outline textarea:-webkit-autofill ~ label,
+.outline textarea:autofill ~ label {
+  @apply transform scale-75 -translate-y-3.5 z-10 ml-0 px-1.5 py-0 font-medium;
+  color: rgb(var(--color-typography-500));
+  height: auto;
+}
+
+.outline textarea:not(:placeholder-shown):focus ~ label,
+.outline textarea:-webkit-autofill:focus ~ label,
+.outline textarea:autofill:focus ~ label {
+  color: rgb(var(--color-primary-200));
+}
+
+/* ===== Autofill Background / Text Color for Dark & Light Themes ===== */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--color-surface-100)) inset !important;
+  -webkit-text-fill-color: rgb(var(--color-typography-800)) !important;
+  caret-color: rgb(var(--color-typography-800)) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  border-radius: inherit;
+}
+
+.form-title-modern {
+  @apply text-xl sm:text-2xl font-bold text-typography-800 tracking-tight pb-3 mb-5 border-b border-surface-300/80 w-full;
 }
 
 .input-component input::-webkit-outer-spin-button,
@@ -213,7 +262,8 @@ input[type=number] {
 
 /* 💡 Temas claros → gradiente mais escuro para visibilidade */
 .theme-blue .shimmer::after,
-.theme-purple .shimmer::after {
+.theme-purple .shimmer::after,
+.theme-pink .shimmer::after {
   background: linear-gradient(90deg,
       rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, 0.08) 50%,
@@ -357,17 +407,14 @@ input[type=number] {
 }
 
 .theme-purple {
-  --color-primary-200: 98 70 140;
-  /* #62468C — tom mais escuro e sólido */
-  --color-primary-150: 134 106 170;
-  /* #866AAA — transição equilibrada */
-  --color-primary-100: 174 152 206;
-  /* #AE98CE — destaque suave */
-
+  --color-primary-200: 123 99 173;
+  /* #7B63AD — tom roxo da referência */
+  --color-primary-150: 147 124 196;
+  --color-primary-100: 212 201 235;
 
   /* Secundárias */
-  --color-secondary-100: 237 246 249;
-  --color-secondary-200: 233 233 233;
+  --color-secondary-100: 247 245 252;
+  --color-secondary-200: 238 235 245;
 
   /* Texto */
   --color-typography-100: 245 245 245;
@@ -384,6 +431,144 @@ input[type=number] {
   --color-surface-100: 255 255 255;
   --color-surface-200: 245 245 245;
   --color-surface-300: 230 233 236;
+}
+
+.theme-pink {
+  --color-primary-200: 182 88 125;
+  /* #B6587D — tom rosa da referência */
+  --color-primary-150: 202 110 146;
+  --color-primary-100: 240 196 213;
+
+  /* Secundárias */
+  --color-secondary-100: 253 245 248;
+  --color-secondary-200: 247 235 240;
+
+  /* Texto */
+  --color-typography-100: 245 245 245;
+  --color-typography-200: 238 238 238;
+  --color-typography-300: 224 224 224;
+  --color-typography-400: 189 189 189;
+  --color-typography-500: 158 158 158;
+  --color-typography-600: 117 117 117;
+  --color-typography-700: 97 97 97;
+  --color-typography-800: 66 66 66;
+  --color-typography-900: 33 33 33;
+
+  /* Fundos */
+  --color-surface-100: 255 255 255;
+  --color-surface-200: 245 245 245;
+  --color-surface-300: 230 233 236;
+}
+
+/* ==================== TEMAS ESCUROS ==================== */
+
+.theme-dark-teal {
+  /* Primárias */
+  --color-primary-50: 15 35 34;
+  --color-primary-100: 131 197 190;
+  --color-primary-150: 80 165 160;
+  --color-primary-200: 23 133 130;
+
+  /* Secundárias */
+  --color-secondary-100: 14 26 26;
+  --color-secondary-200: 22 38 38;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 242 242;
+  --color-typography-300: 210 225 225;
+  --color-typography-400: 175 195 195;
+  --color-typography-500: 145 165 165;
+  --color-typography-600: 120 140 140;
+  --color-typography-700: 205 225 225;
+  --color-typography-800: 235 242 242;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 10 20 20;
+  --color-surface-200: 17 32 32;
+  --color-surface-300: 32 55 55;
+}
+
+.theme-dark-blue {
+  /* Primárias */
+  --color-primary-100: 159 185 227;
+  --color-primary-150: 95 138 196;
+  --color-primary-200: 62 107 163;
+
+  /* Secundárias */
+  --color-secondary-100: 14 22 35;
+  --color-secondary-200: 22 32 50;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 240 248;
+  --color-typography-300: 215 225 238;
+  --color-typography-400: 180 195 215;
+  --color-typography-500: 150 165 185;
+  --color-typography-600: 125 140 160;
+  --color-typography-700: 210 225 245;
+  --color-typography-800: 235 240 248;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 11 18 29;
+  --color-surface-200: 18 28 44;
+  --color-surface-300: 35 50 75;
+}
+
+.theme-dark-purple {
+  /* Primárias */
+  --color-primary-100: 193 167 226;
+  --color-primary-150: 153 119 197;
+  --color-primary-200: 111 78 161;
+
+  /* Secundárias */
+  --color-secondary-100: 22 20 25;
+  --color-secondary-200: 35 30 40;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 235 235 240;
+  --color-typography-300: 215 215 225;
+  --color-typography-400: 190 190 200;
+  --color-typography-500: 160 160 170;
+  --color-typography-600: 130 130 140;
+  --color-typography-700: 210 210 220;
+  --color-typography-800: 235 235 240;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 15 10 20;
+  --color-surface-200: 25 18 35;
+  --color-surface-300: 52 55 58;
+}
+
+.theme-dark-pink {
+  /* Primárias */
+  --color-primary-100: 240 196 213;
+  --color-primary-150: 202 110 146;
+  --color-primary-200: 182 88 125;
+
+  /* Secundárias */
+  --color-secondary-100: 32 16 24;
+  --color-secondary-200: 48 24 36;
+
+  /* Texto */
+  --color-typography-100: 255 255 255;
+  --color-typography-200: 248 235 242;
+  --color-typography-300: 238 215 228;
+  --color-typography-400: 215 180 200;
+  --color-typography-500: 185 150 170;
+  --color-typography-600: 160 125 145;
+  --color-typography-700: 245 210 230;
+  --color-typography-800: 248 235 242;
+  --color-typography-900: 255 255 255;
+
+  /* Fundos */
+  --color-surface-100: 24 12 19;
+  --color-surface-200: 38 20 30;
+  --color-surface-300: 65 35 52;
 }
 
 

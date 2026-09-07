@@ -2,7 +2,8 @@ import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPione
 import { getMonthsPast } from "@/functions/meses"
 import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/types/types"
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
-import moment from "moment"
+import dayjs from "dayjs"
+
 
 export interface S21Props {
     publisher: IPublisher
@@ -95,11 +96,11 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de nascimento:</Text>
-                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.birthDate && moment(publisher.birthDate).format("DD/MM/YYYY")}</Text>
+                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.birthDate && dayjs(publisher.birthDate).format("DD/MM/YYYY")}</Text>
                             </View>
                             <View style={{ flexDirection: "row", marginBottom: 3 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 2 }}>Data de batismo:</Text>
-                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.dateImmersed && moment(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
+                                <Text style={{ fontFamily: "Times-Roman" }}>{publisher.dateImmersed && dayjs(publisher.dateImmersed).format("DD/MM/YYYY")}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: "column", alignSelf: "flex-end" }}>

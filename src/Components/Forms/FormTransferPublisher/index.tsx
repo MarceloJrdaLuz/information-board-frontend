@@ -3,7 +3,7 @@ import DropdownObject from "@/Components/DropdownObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
 import { ICongregationToTransferPublisher, IPublisher, ITransferPublishers } from "@/types/types"
-import moment from "moment"
+import dayjs from "dayjs"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
@@ -91,13 +91,13 @@ export default function TransferPublishers({ initialPublisher, allPublishers }: 
                                     {p.birthDate && <p className="flex flex-col font-semibold text-typography-800 text-base">
                                         Data de nascimento
                                         <span className="text-typography-500 text-sm font-normal">
-                                            {moment(p.birthDate).format("DD/MM/YYYY")}
+                                            {dayjs(p.birthDate).format("DD/MM/YYYY")}
                                         </span>
                                     </p>}
                                     {p.dateImmersed && <p className="flex flex-col font-semibold text-typography-800 text-base">
                                         Data de batismo
                                         <span className="text-typography-500 text-sm font-normal">
-                                            {moment(p.dateImmersed).format("DD/MM/YYYY")}
+                                            {dayjs(p.dateImmersed).format("DD/MM/YYYY")}
                                         </span>
                                     </p>}
                                 </div>

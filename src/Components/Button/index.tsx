@@ -4,36 +4,36 @@ import { tv, VariantProps } from "tailwind-variants"
 
 const button = tv({
   base: `
-    flex justify-center items-center transition-all gap-2 duration-500
-    active:shadow-none shadow-xl rounded-lg
+    flex justify-center items-center transition-all gap-2 duration-200
+    active:scale-[0.98] shadow-sm hover:shadow rounded-xl
     border text-xs xs:text-sm sm:text-md lg:text-base
-    justify-self-center h-[40px] w-48 text-typography-200
+    justify-self-center h-[42px] min-w-[140px] px-5 font-semibold select-none
   `,
   variants: {
     size: {
-      default: "px-2 py-2",
+      default: "py-2 px-5",
       sm: "w-28 py-2",
-      md: "w-36 py-3",
-      lg: "w-40 py-3"
+      md: "w-36 py-2.5",
+      lg: "w-44 py-3"
     },
     outline: {
-      false: "bg-gradient-to-tl from-primary-150 to-primary-200  text-surface-100 border-none hover:opacity-90",
-      true: "border-typography-300 hover:border-current bg-surface-100 hover:bg-surface-100 p-3 text-primary-200 font-semibold shadow-none"
+      false: "bg-primary-200 hover:bg-primary-150 text-white border-transparent shadow-sm hover:shadow",
+      true: "border-surface-300 hover:border-primary-200 bg-surface-100 hover:bg-surface-200 text-typography-700 hover:text-primary-200 font-semibold shadow-xs"
     },
     disabled: {
-      true: "bg-typography-500 hover:opacity-100 cursor-not-allowed shadow-none"
+      true: "opacity-50 cursor-not-allowed bg-surface-300 text-typography-400 border-transparent shadow-none hover:shadow-none active:scale-100"
     },
     alignLeft: {
-      true: "justify-start px-10"
+      true: "justify-start px-8"
     },
     success: {
-      true: "bg-success-100"
+      true: "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent shadow-sm"
     },
     remove: {
-      true: "text-red-400 border-red-400"
+      true: "text-red-500 border-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 shadow-none"
     },
     error: {
-      true: "bg-red-400"
+      true: "bg-red-500 hover:bg-red-600 text-white border-transparent shadow-sm"
     }
   },
   defaultVariants: {

@@ -147,7 +147,6 @@ export default function FormReport(props: IRelatorioFormProps) {
                 toast
                     .promise(createReport(payload), {
                         pending: "Enviando relatório...",
-                        success: "Relatório enviado com sucesso! 🎉",
                         error: "Erro ao enviar relatório."
                     })
                     .then(() => {

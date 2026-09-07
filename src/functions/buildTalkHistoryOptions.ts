@@ -1,20 +1,26 @@
 import { ITalk } from "@/types/types"
 import { IRecordWeekendSchedule } from "@/types/weekendSchedule"
-import moment from "moment"
+import dayjs from "dayjs"
+import { formatRelativeTime } from "./buildHistoryOptions"
 
 export function buildTalkOptions(
   talks: ITalk[] | undefined,
-  schedules: Record<string, IRecordWeekendSchedule>
+  schedules: Record<string, IRecordWeekendSchedule>,
+  limitDate?: string
 ) {
   if (!talks) return []
 
   const historyMap = new Map<string, string>() // talk.id -> última data
+  const limit = limitDate ? dayjs(limitDate) : null
 
   Object.values(schedules).forEach(s => {
     const talkId = s.talk_id
     if (talkId) {
+      const d = dayjs(s.date)
+      if (limit && !d.isBefore(limit)) return
+
       const prevDate = historyMap.get(talkId)
-      if (!prevDate || new Date(s.date) > new Date(prevDate)) {
+      if (!prevDate || d.isAfter(dayjs(prevDate))) {
         historyMap.set(talkId, s.date)
       }
     }
@@ -23,17 +29,18 @@ export function buildTalkOptions(
   return talks
     .map(t => {
       const lastDate = historyMap.get(t.id)
+      const info = formatRelativeTime(lastDate, limitDate, "Nunca proferido")
       return {
         ...t,
         lastDate,
-        displayLabel: `${t.number} - ${t.title} ${
-          lastDate ? `— [${moment(lastDate).format("DD/MM/YYYY")}]` : "— [Sem histórico]"
-        }`
+        relativeText: info.relativeText,
+        formattedDate: info.formattedDate,
+        displayLabel: `Nº ${t.number} - ${t.title} ${info.fullLabel}`
       }
     })
     .sort((a, b) => {
       if (!a.lastDate) return -1
       if (!b.lastDate) return 1
-      return new Date(a.lastDate).getTime() - new Date(b.lastDate).getTime()
+      return dayjs(a.lastDate).valueOf() - dayjs(b.lastDate).valueOf()
     })
 }

@@ -100,8 +100,8 @@ export default function FormEditHospitalityGroup() {
     return (
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar grupo</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar grupo</div>
 
                     <Input type="text" placeholder="Nome completo" registro={{
                         ...register('name', { required: "Campo obrigatório" })
@@ -109,19 +109,21 @@ export default function FormEditHospitalityGroup() {
                         invalid={errors?.name?.message ? 'invalido' : ''} />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
-                    <DropdownObject<IPublisher>
-                        title="Anfitrião do grupo"
-                        items={hosts}
-                        selectedItem={selectedPublisherHost}
-                        handleChange={setSelectedPublisherHost}
-                        labelKey="fullName"
-                        border
-                        textVisible
-                        full
-                        searchable
-                    />
+                    <div className="mt-2">
+                        <DropdownObject<IPublisher>
+                            title="Anfitrião do grupo"
+                            items={hosts}
+                            selectedItem={selectedPublisherHost}
+                            handleChange={setSelectedPublisherHost}
+                            labelKey="fullName"
+                            border
+                            textVisible
+                            full
+                            searchable
+                        />
+                    </div>
 
-                    <div className='mt-3'>
+                    <div className='mt-4'>
                         <DropdownMulti<IPublisher>
                             title="Selecione os membros"
                             items={members}
@@ -137,8 +139,8 @@ export default function FormEditHospitalityGroup() {
                         />
                     </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar grupo</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' error={dataError} disabled={disabled} success={dataSuccess} type='submit'>Atualizar grupo</Button>
                     </div>
                 </div>
             </FormStyle>

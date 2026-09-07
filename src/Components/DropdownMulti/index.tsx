@@ -116,15 +116,14 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
       <div>
         <Menu.Button
           onClick={() => setOpen(!open)}
-          className={`inline-flex w-full justify-between rounded-md bg-transparent border px-3 md:px-4 py-2 text-typography-700 hover:underline focus:outline-none focus:ring-1 focus:ring-primary-200 focus:ring-offset-1  ${props.border ? "border border-blue-gray-200" : "border-none"
-            }`}
+          className={`inline-flex w-full items-center justify-between rounded-xl bg-surface-100 px-4 py-2.5 text-sm font-medium shadow-xs transition-all focus:outline-none focus:ring-2 focus:ring-primary-200/20 ${props.border ? "border border-surface-300 hover:border-primary-200/80" : "border-none"} text-typography-800`}
         >
-          <span className={`${!props.textVisible && "hidden"} sm:flex`}>
-            {selectedItems.length === 0 && props.title}
-            {selectedItems.length === 1 && getLabel(selectedItems[0])}
-            {selectedItems.length > 1 && `${selectedItems.length} selecionados`}
+          <span className={`${!props.textVisible && "hidden"} sm:flex truncate`}>
+            {selectedItems.length === 0 && <span className="text-typography-500">{props.title}</span>}
+            {selectedItems.length === 1 && <span className="font-semibold text-typography-800">{getLabel(selectedItems[0])}</span>}
+            {selectedItems.length > 1 && <span className="font-semibold text-primary-200">{selectedItems.length} selecionados</span>}
           </span>
-          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5 text-typography-500" aria-hidden="true" />
+          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5 text-typography-400 shrink-0" aria-hidden="true" />
         </Menu.Button>
       </div>
 
@@ -140,19 +139,21 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
       >
         <div
           className={`absolute thin-scrollbar cursor-pointer ${props.position ? props.position : "right"
-            }-0 z-10 mt-2 w-60 origin-top-right rounded-md bg-surface-100 shadow-lg ring-1 ring-typography-900 ring-opacity-5 focus:outline-none h-fit max-h-80 overflow-auto`}
+            }-0 z-20 mt-2 w-64 origin-top-right rounded-xl bg-surface-100 shadow-2xl border border-surface-300 focus:outline-none h-fit max-h-80 overflow-auto p-1.5`}
         >
-          <div className="py-1">
+          <div>
             {searchable && (
-              <input
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full px-3 py-2 text-sm border-b bg-surface-100 border-typography-700 focus:outline-none text-typography-800"
-                placeholder="Pesquisar..."
-              />
+              <div className="p-1 border-b border-surface-300 mb-1">
+                <input
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full px-3 py-2 text-sm rounded-lg bg-surface-200/50 border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200/20 text-typography-800"
+                  placeholder="Pesquisar..."
+                />
+              </div>
             )}
             {props.showOrder && props.orderHint && selectedItems.length > 1 && (
               <div className="mt-1 text-xs text-typography-500 flex items-center gap-1 p-2">
@@ -170,18 +171,18 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
                   key={index}
                   onClick={() => toggleSelect(item)}
                   className={classNames(
-                    "flex items-center gap-x-2 px-4 py-2 text-sm cursor-pointer hover:bg-surface-200 hover:text-typography-900",
+                    "flex items-center gap-x-2 px-3.5 py-2 text-sm cursor-pointer rounded-lg hover:bg-surface-200 hover:text-typography-900 transition-colors",
                     isSelected(item)
-                      ? "font-medium text-primary-200"
+                      ? "font-medium text-primary-200 bg-primary-200/10"
                       : "text-typography-700"
                   )}
                 >
                   {isSelected(item) ? (
                     <CheckIcon className="flex-shrink-0 w-5 h-5 text-primary-200" />
                   ) : (
-                    <span className="flex-shrink-0 w-5 h-5 border rounded-sm"></span>
+                    <span className="flex-shrink-0 w-5 h-5 border border-surface-300 rounded-sm"></span>
                   )}
-                  <span className="pr-2"><span className="flex items-center gap-2 pr-2">
+                  <span className="flex items-center gap-2 pr-2">
                     {props.showOrder && isSelected(item) && (
                       <span className="text-xs font-semibold text-primary-200 w-5 text-right">
                         {selectedItems.findIndex(
@@ -192,10 +193,10 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
 
                     <span>{getLabel(item)}</span>
                   </span>
-                  </span>
                   <span>{getLabelSecondary(item) !== "" && getLabelSecondary(item)}</span>
-                </div>)
-              ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </Transition>

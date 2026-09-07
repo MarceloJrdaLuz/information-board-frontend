@@ -1,4 +1,9 @@
-import moment from "moment"
+import dayjs, { Dayjs } from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import isoWeek from "dayjs/plugin/isoWeek"
+
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isoWeek)
 
 export type DayMeetingPublic = "Sexta-feira" | "Sábado" | "Domingo"
 
@@ -6,10 +11,9 @@ export function getWeekendDays(
   monthOffset: number = 0,
   dayMeetingPublic: DayMeetingPublic = "Sábado"
 ): Date[] {
-  const start = moment().startOf("month").add(monthOffset, "months")
-  const end = start.clone().endOf("month")
+  const start = dayjs().startOf("month").add(monthOffset, "month")
+  const end = start.endOf("month")
 
-  // Mapeia o nome do dia para o número usado pelo moment
   const dayOfWeekMap: Record<DayMeetingPublic, number> = {
     "Sexta-feira": 5,
     "Sábado": 6,
@@ -19,50 +23,47 @@ export function getWeekendDays(
   const targetDay = dayOfWeekMap[dayMeetingPublic]
   const dates: Date[] = []
 
-  // Encontra o primeiro dia correspondente no mês
-  let current = start.clone().day(targetDay)
+  let current = start.day(targetDay)
 
-  // Se caiu antes do início do mês, pula para a próxima semana
   if (current.isBefore(start)) {
-    current.add(7, "days")
+    current = current.add(7, "day")
   }
 
   while (current.isSameOrBefore(end)) {
     dates.push(current.startOf("day").toDate())
-    current.add(7, "days")
+    current = current.add(7, "day")
   }
 
   return dates
 }
 
-export function getWeekendRange(localMeetingDate: Date) {
-  const base = moment(localMeetingDate);
+export function getWeekendRange(localMeetingDate: Date): { friday: Dayjs; saturday: Dayjs; sunday: Dayjs } {
+  const base = dayjs(localMeetingDate)
 
-  const sunday = base.clone().isoWeekday(7);
-  const saturday = sunday.clone().subtract(1, "day");
-  const friday = sunday.clone().subtract(2, "days");
+  const sunday = base.isoWeekday(7)
+  const saturday = sunday.subtract(1, "day")
+  const friday = sunday.subtract(2, "day")
 
   return {
     friday,
     saturday,
     sunday,
-  };
+  }
 }
 
-// Corrige a data real do discurso na congregação de destino
 export function getRealDateForDestination(
   destDay: DayMeetingPublic,
   localDate: Date
-) {
-  const weekend = getWeekendRange(localDate);
+): Dayjs {
+  const weekend = getWeekendRange(localDate)
 
-  const map = {
+  const map: Record<DayMeetingPublic, Dayjs> = {
     "Sexta-feira": weekend.friday,
     "Sábado": weekend.saturday,
     "Domingo": weekend.sunday,
-  };
+  }
 
-  return map[destDay];
+  return map[destDay]
 }
 
 export const WEEKDAYS_PT: Record<string, string> = {
@@ -73,5 +74,4 @@ export const WEEKDAYS_PT: Record<string, string> = {
   Thursday: "Quinta-feira",
   Friday: "Sexta-feira",
   Saturday: "Sábado"
-};
-
+}

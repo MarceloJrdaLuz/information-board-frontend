@@ -15,17 +15,12 @@ function EditCleaningGroupPage() {
     const { id: group_id } = router.query
 
     useEffect(() => {
-        setCrumbs(prev => [...prev, {
-            label: "Grupos de limpeza",
-            link: "/congregacao/grupos-limpeza"
-        }])
-
-        return () => setCrumbs(prev => prev.slice(0, -1))
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive("Editar grupo de limpeza")
-    }, [setPageActive])
+        setPageActive("Editar Grupo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Grupos de Limpeza", link: "/congregacao/grupos-limpeza" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     if (!group_id) return null
 

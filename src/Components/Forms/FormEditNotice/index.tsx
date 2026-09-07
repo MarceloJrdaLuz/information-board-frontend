@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FormStyle from '../FormStyle'
 import { FormValues } from './type'
-import moment from 'moment'
+import dayjs from "dayjs"
 
 export interface IUpdateNotice {
     notice_id: string
@@ -69,7 +69,7 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
             }
             if (data.expired) {
                 const initialDateStr = data.expired
-                const initialDate = moment(initialDateStr).format()
+                const initialDate = dayjs(initialDateStr).format()
                 setSelectedDate(initialDate)
                 setInitialExpired(initialDate)
             }
@@ -136,8 +136,8 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
     return (
         <section className="flex w-full justify-center items-center h-full m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
-                <div className={`w-full h-fit flex-col justify-center items-center`}>
-                    <div className={`my-6 m-auto w-11/12 font-semibold text-2xl sm:text-3xl text-primary-200`}>Atualizar anúncio</div>
+                <div className="w-full flex flex-col">
+                    <div className="form-title-modern">Atualizar anúncio</div>
 
                     <Input type="text" placeholder="Título" registro={{
                         ...register('title', { required: "Campo obrigatório" })
@@ -148,32 +148,40 @@ export default function FormEditNotice({ notice_id }: IUpdateNotice) {
                     <TextArea placeholder="Conteúdo" registro={{ ...register('text', { required: "Campo obrigatório" }) }} invalid={errors?.text?.message ? 'invalido' : ''} />
                     {errors?.text?.type && <InputError type={errors.text.type} field='text' />}
 
-                    <CheckboxBoolean
-                        checked={recurrentNotice}
-                        label="Anúncio recorrente"
-                        handleCheckboxChange={(isChecked) => handleRecurrentNoticeChange(isChecked)}
-                    />
+                    <div className="my-2">
+                        <CheckboxBoolean
+                            checked={recurrentNotice}
+                            label="Anúncio recorrente"
+                            handleCheckboxChange={(isChecked) => handleRecurrentNoticeChange(isChecked)}
+                        />
+                    </div>
 
                     {recurrentNotice && (
-                        <>
-                            <Input type="number" placeholder="Dia inicial" registro={{
-                                ...register('startDay', { required: "Campo obrigatório" })
-                            }}
-                                invalid={errors?.startDay?.message ? 'invalido' : ''} />
-                            {errors?.startDay?.type && <InputError type={errors.startDay.type} field='startDay' />}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2">
+                            <div>
+                                <Input type="number" placeholder="Dia inicial" registro={{
+                                    ...register('startDay', { required: "Campo obrigatório" })
+                                }}
+                                    invalid={errors?.startDay?.message ? 'invalido' : ''} />
+                                {errors?.startDay?.type && <InputError type={errors.startDay.type} field='startDay' />}
+                            </div>
 
-                            <Input type="number" placeholder="Dia final" registro={{
-                                ...register('endDay', { required: "Campo obrigatório" })
-                            }}
-                                invalid={errors?.endDay?.message ? 'invalido' : ''} />
-                            {errors?.endDay?.type && <InputError type={errors.endDay.type} field='endDay' />}
-                        </>
+                            <div>
+                                <Input type="number" placeholder="Dia final" registro={{
+                                    ...register('endDay', { required: "Campo obrigatório" })
+                                }}
+                                    invalid={errors?.endDay?.message ? 'invalido' : ''} />
+                                {errors?.endDay?.type && <InputError type={errors.endDay.type} field='endDay' />}
+                            </div>
+                        </div>
                     )}
 
-                    <Calendar label="Data da expiração:" minDate={moment().format()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
+                    <div className="my-2">
+                        <Calendar label="Data da expiração:" minDate={dayjs().format()} handleDateChange={handleDateChange} selectedDate={selectedDate} />
+                    </div>
 
-                    <div className={`flex justify-center items-center m-auto w-11/12 h-12 my-[5%]`}>
-                        <Button className='text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Anúncio</Button>
+                    <div className="w-full mt-6">
+                        <Button className='w-full text-typography-200' error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar Anúncio</Button>
                     </div>
                 </div>
             </FormStyle>

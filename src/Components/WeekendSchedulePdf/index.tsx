@@ -1,7 +1,7 @@
 import { IWeekendScheduleWithExternalTalks } from "@/types/weekendSchedule";
 import { formatNameCongregation } from "@/utils/formatCongregationName";
 import { Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import moment from "moment";
+import dayjs from "dayjs";
 
 export interface IWeekendSchedulesPdfProps {
     schedules: IWeekendScheduleWithExternalTalks[];
@@ -9,7 +9,7 @@ export interface IWeekendSchedulesPdfProps {
 }
 
 const formatDate = (dateString: string) => {
-    const date = moment(dateString, "YYYY-MM-DD").toDate();
+    const date = dayjs(dateString).toDate();
     const day = date.getDate().toString().padStart(2, "0");
     const monthNames = [
         "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",

@@ -11,23 +11,12 @@ function AddGroupPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setCrumbs((prevCrumbs) => {
-            const updatedCrumbs = [...prevCrumbs, { label: 'Grupos', link: '/congregacao/grupos-campo' }]
-            return updatedCrumbs
-        })
-
-        const removeCrumb = () => {
-            setCrumbs((prevCrumbs) => prevCrumbs.slice(0, -1))
-        }
-
-        return () => {
-            removeCrumb()
-        }
-    }, [setCrumbs])
-
-    useEffect(() => {
-        setPageActive('Criar grupo')
-    }, [setPageActive])
+        setPageActive("Criar Grupo")
+        setCrumbs([
+            { label: "Início", link: "/dashboard" },
+            { label: "Grupos de Campo", link: "/congregacao/grupos-campo" }
+        ])
+    }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>
