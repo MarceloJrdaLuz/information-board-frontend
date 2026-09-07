@@ -150,7 +150,6 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.longitude?.message ? 'invalido' : ''} />
                     {errors?.longitude?.type && <InputError type={errors.longitude.type} field='longitude' />}
 
-                    <Dropdown selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
                     <div className="my-2">
                         <Dropdown selectedItem={dayMeetingLifeAndMinistary} handleClick={(option) => handleClickLifeAndMinistaryDropdown(option)} options={Object.values(MidweekDays)} title='Dia da reunião do meio de semana' border full textVisible />
                     </div>
@@ -161,7 +160,6 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.hourMeetingLifeAndMinistary?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingLifeAndMinistary?.type && <InputError type={errors.hourMeetingLifeAndMinistary.type} field='hourMeetingLifeAndMinistary' />}
 
-                    <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
                     <div className="my-2">
                         <Dropdown selectedItem={dayMeetingPublic} handleClick={(option) => handleClickPublicDropdown(option)} options={Object.values(EndweekDays)} title='Dia da reunião do fim de semana' border full textVisible />
                     </div>
@@ -172,10 +170,6 @@ export default function FormUpdateCongregation() {
                         invalid={errors?.hourMeetingPublic?.message ? 'invalido' : ''} />
                     {errors?.hourMeetingPublic?.type && <InputError type={errors.hourMeetingPublic.type} field='hourMeetingPublic' />}
 
-                    {congregationUser?.image_url && <div className='w-full mb-4'>
-                        <span className='text-typography-700'>Foto Atual</span>
-                        <Image src={`${congregationUser?.image_url}`} alt="Foto atual da congregação" width={400} height={400} />
-                    </div>}
                     {congregationUser?.image_url && (
                         <div className='w-full mb-4 flex flex-col gap-2'>
                             <span className='text-sm font-medium text-typography-700'>Foto Atual</span>
