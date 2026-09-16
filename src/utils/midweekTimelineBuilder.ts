@@ -1,4 +1,4 @@
-import { IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType, IPublisherMini } from "@/types/midweek";
+import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
 import { ITimelineItem } from "@/types/midweekChairman";
 import { getLessonDetails } from "./midweekLessons";
 
@@ -42,12 +42,21 @@ function getPublisherName(pub?: IPublisherMini | string | null, customName?: str
 }
 
 /**
+ * Helper para formatar o título da parte com número sequencial sem duplicidade.
+ */
+function formatNumberedTitle(num: number, title: string): string {
+    const clean = title.replace(/^(\d+[\.\-\)]*\s*)+/, "").trim();
+    return `${num}. ${clean}`;
+}
+
+/**
  * Constrói a sequência completa da linha do tempo da reunião de meio de semana
  * calculando os horários previstos de início e término para cada momento.
  */
 export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTime: string): ITimelineItem[] {
     const items: ITimelineItem[] = [];
     let currentMinutes = timeToMinutes(meetingStartTime || '19:00');
+    let partCounter = 1;
 
     const pushItem = (itemData: Omit<ITimelineItem, 'startTime' | 'endTime'>) => {
         const start = minutesToTime(currentMinutes);
@@ -139,9 +148,12 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             }
         }
 
+        const currentPartNumber = partCounter++;
+
         pushItem({
             id: part.id,
-            title: part.title,
+            title: formatNumberedTitle(currentPartNumber, part.title),
+            partNumber: currentPartNumber,
             section: 'TREASURES',
             sectionTitle: "Tesouros da Palavra de Deus",
             sectionColor: '#2F7682',
@@ -200,9 +212,12 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         const isTalk = part.partType === MidweekPartType.TALK || part.partType === MidweekPartType.STUDENT_TALK;
         const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
 
+        const currentPartNumber = partCounter++;
+
         pushItem({
             id: part.id,
-            title: part.title,
+            title: formatNumberedTitle(currentPartNumber, part.title),
+            partNumber: currentPartNumber,
             section: 'MINISTRY',
             sectionTitle: "Faça Seu Melhor no Ministério",
             sectionColor: '#D49000',
@@ -221,7 +236,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         // O presidente faz conselhos/comentários de 1 minuto após CADA parte de estudante
         pushItem({
             id: `chairman_comment_ministry_${part.id}`,
-            title: `Comentários do Presidente (Parte ${index + 1})`,
+            title: `Comentários do Presidente (Parte ${currentPartNumber})`,
             section: 'MINISTRY',
             sectionTitle: "Faça Seu Melhor no Ministério",
             sectionColor: '#D49000',
@@ -257,14 +272,18 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             p.room === MidweekRoom.MAIN &&
             p.partType !== MidweekPartType.CBS &&
             !p.title.toLowerCase().includes("discurso de serviço") &&
+            !p.title.toLowerCase().includes("estudo bíblico") &&
             (p.isActive ?? true)
         )
         .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
 
     livingParts.forEach(part => {
+        const currentPartNumber = partCounter++;
+
         pushItem({
             id: part.id,
-            title: part.title,
+            title: formatNumberedTitle(currentPartNumber, part.title),
+            partNumber: currentPartNumber,
             section: 'LIVING',
             sectionTitle: "Nossa Vida Cristã",
             sectionColor: '#973934',
@@ -278,9 +297,12 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
 
     // Estudo Bíblico de Congregação (30 min) ou Discurso de Serviço do SC (30 min)
     if (isCoVisit) {
+        const currentPartNumber = partCounter++;
+
         pushItem({
             id: `co_service_talk_${schedule.id}`,
-            title: "Discurso de Serviço",
+            title: formatNumberedTitle(currentPartNumber, "Discurso de Serviço"),
+            partNumber: currentPartNumber,
             section: 'LIVING',
             sectionTitle: "Nossa Vida Cristã",
             sectionColor: '#973934',
@@ -291,12 +313,16 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         });
     } else {
         const cbsPart = (schedule.parts || []).find(
-            p => p.section === MidweekSection.LIVING && p.partType === MidweekPartType.CBS && p.isActive
+            p => p.section === MidweekSection.LIVING &&
+                (p.partType === MidweekPartType.CBS || p.title.toLowerCase().includes("estudo bíblico")) &&
+                p.isActive
         );
+        const currentPartNumber = partCounter++;
 
         pushItem({
             id: cbsPart?.id || `cbs_${schedule.id}`,
-            title: cbsPart?.title || "Estudo Bíblico de Congregação",
+            title: formatNumberedTitle(currentPartNumber, cbsPart?.title || "Estudo Bíblico de Congregação"),
+            partNumber: currentPartNumber,
             section: 'LIVING',
             sectionTitle: "Nossa Vida Cristã",
             sectionColor: '#973934',
@@ -313,7 +339,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
     // =========================================================================
     pushItem({
         id: `chairman_conclusion_${schedule.id}`,
-        title: "Comentário finais",
+        title: "Comentários finais",
         section: 'CONCLUSION',
         sectionTitle: "Conclusão da Reunião",
         sectionColor: '#973934',

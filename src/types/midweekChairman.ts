@@ -25,6 +25,7 @@ export interface ITimelineItem {
     isSong?: boolean;
     partType?: string;
     room?: string;
+    partNumber?: number | null;
 }
 
 export interface ITimerState {
