@@ -485,6 +485,7 @@ function MidweekScheduleAssistantPage() {
                             parts={currentMinistryParts}
                             onUpdatePart={handleUpdatePart}
                             onDuplicateRoom={handleDuplicateRoom}
+                            onDeletePart={handleDeletePart}
                         />
 
                         {/* Seção 3: Nossa Vida Cristã */}
