@@ -18,6 +18,7 @@ import { api } from "@/services/api";
 import {
     IMidweekMeetingPart,
     IMidweekSchedule,
+    MidweekPartType,
     MidweekRoom,
     MidweekSection,
     MidweekSpecialType
@@ -71,6 +72,11 @@ function MidweekScheduleAssistantPage() {
     const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
+    const [customPartSection, setCustomPartSection] = useState<MidweekSection>(MidweekSection.LIVING);
+    const openCustomPartForSection = (section: MidweekSection) => {
+        setCustomPartSection(section);
+        setIsCustomPartModalOpen(true);
+    };
 
     const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
 
@@ -189,31 +195,34 @@ function MidweekScheduleAssistantPage() {
         timeMinutes: number;
         method?: string;
         assigned_publisher_id?: string;
+        section?: MidweekSection;
+        partType?: MidweekPartType;
     }) => {
         if (!currentSchedule || !congregationId) return;
         try {
+            const payload = {
+                ...data,
+                section: data.section ?? customPartSection,
+                partType: data.partType ?? MidweekPartType.CUSTOM,
+            };
             const res = await api.post(
                 `/midweek/schedules/${currentSchedule.id}/custom-part/congregation/${congregationId}`,
-                `/midweek/schedules/${currentSchedule.id}/parts/congregation/${congregationId}`,
-                data
+                payload
             );
             setSchedules(prev => prev.map(s => {
                 if (s.id === currentSchedule.id) {
-                    return {
-                        ...s,
-                        parts: [...s.parts, res.data]
-                    };
+                    return { ...s, parts: [...s.parts, res.data] };
                 }
                 return s;
             }));
-            toast.success("Parte personalizada adicionada!");
-            await fetchSchedules();
             setIsCustomPartModalOpen(false);
+            await fetchSchedules();
         } catch (error) {
             toast.error("Erro ao adicionar parte.");
             throw error;
         }
     };
+
 
     const handleDeletePart = async (partId: string) => {
         if (!currentSchedule || !congregationId) return;

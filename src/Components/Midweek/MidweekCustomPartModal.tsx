@@ -2,7 +2,7 @@ import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import { MidweekPartType, MidweekSection } from "@/types/midweek";
 import { PlusCircle } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface MidweekCustomPartModalProps {
@@ -15,18 +15,26 @@ interface MidweekCustomPartModalProps {
         partType: MidweekPartType;
         method?: string;
     }) => Promise<void>;
+    initialSection?: MidweekSection;
 }
 
 export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
     open,
     onClose,
-    onCreate
+    onCreate,
+    initialSection,
 }) => {
     const [title, setTitle] = useState("");
     const [timeMinutes, setTimeMinutes] = useState(15);
-    const [section, setSection] = useState<MidweekSection>(MidweekSection.LIVING);
+    const [section, setSection] = useState<MidweekSection>(initialSection ?? MidweekSection.LIVING);
     const [method, setMethod] = useState("Discurso");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (open) {
+            setSection(initialSection ?? MidweekSection.LIVING);
+        }
+    }, [open, initialSection]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
