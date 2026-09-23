@@ -194,6 +194,7 @@ function MidweekScheduleAssistantPage() {
         try {
             const res = await api.post(
                 `/midweek/schedules/${currentSchedule.id}/custom-part/congregation/${congregationId}`,
+                `/midweek/schedules/${currentSchedule.id}/parts/congregation/${congregationId}`,
                 data
             );
             setSchedules(prev => prev.map(s => {
@@ -206,9 +207,11 @@ function MidweekScheduleAssistantPage() {
                 return s;
             }));
             toast.success("Parte personalizada adicionada!");
+            await fetchSchedules();
             setIsCustomPartModalOpen(false);
         } catch (error) {
             toast.error("Erro ao adicionar parte.");
+            throw error;
         }
     };
 
