@@ -1,7 +1,7 @@
 import { MidweekLivingIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
-import { BookOpen, Check, Clock, Loader2, Mic, Plus, Trash2, User } from "lucide-react";
+import { BookOpen, Check, Clock, Loader2, Mic, Pencil, Plus, Trash2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
@@ -64,6 +64,21 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
     );
     const [savingTalk, setSavingTalk] = useState(false);
     const [savedSuccess, setSavedSuccess] = useState(false);
+    const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
+    const [editingTimeValue, setEditingTimeValue] = useState<number>(0);
+
+    const startEditTime = (part: IMidweekMeetingPart) => {
+        setEditingTimePartId(part.id);
+        setEditingTimeValue(part.timeMinutes);
+    };
+
+    const saveEditTime = async (partId: string) => {
+        if (editingTimeValue >= 1 && editingTimeValue <= 60) {
+            await onUpdatePart(partId, { timeMinutes: editingTimeValue });
+        }
+        setEditingTimePartId(null);
+    };
+
 
     useEffect(() => {
         if (serviceTalkPart) {
@@ -143,10 +158,46 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                         >
                             <div className="flex flex-col gap-1 md:w-1/2">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
-                                        <Clock className="h-3 w-3 text-typography-500" />
-                                        {part.timeMinutes} min
-                                    </span>
+                                    {/* Badge de tempo — clicável para editar */}
+                                    {editingTimePartId === part.id ? (
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3 text-typography-500" />
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={60}
+                                                value={editingTimeValue}
+                                                onChange={(e) => setEditingTimeValue(Number(e.target.value))}
+                                                onBlur={() => saveEditTime(part.id)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") saveEditTime(part.id);
+                                                    if (e.key === "Escape") setEditingTimePartId(null);
+                                                }}
+                                                autoFocus
+                                                className="w-12 text-[11px] font-semibold text-typography-700 bg-white border border-red-400 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-red-400"
+                                            />
+                                            <span className="text-[11px] text-typography-500">min</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => saveEditTime(part.id)}
+                                                className="text-emerald-600 hover:text-emerald-700"
+                                                title="Confirmar"
+                                            >
+                                                <Check className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => startEditTime(part)}
+                                            title="Clique para alterar o tempo"
+                                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded hover:bg-red-100 hover:text-red-800 transition-colors cursor-pointer group"
+                                        >
+                                            <Clock className="h-3 w-3 text-typography-500 group-hover:text-red-600" />
+                                            {part.timeMinutes} min
+                                            <Pencil className="h-2.5 w-2.5 text-typography-400 group-hover:text-red-600 ml-0.5" />
+                                        </button>
+                                    )}
 
                                     {isLocalNeeds && (
                                         <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">
@@ -272,11 +323,47 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 mb-3 border-b border-surface-300">
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
-                                        <Clock className="h-3 w-3 text-typography-500" />
-                                        30 min
-                                    </span>
+                                    {cbsPart && editingTimePartId === cbsPart.id ? (
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3 text-typography-500" />
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={60}
+                                                value={editingTimeValue}
+                                                onChange={(e) => setEditingTimeValue(Number(e.target.value))}
+                                                onBlur={() => cbsPart && saveEditTime(cbsPart.id)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter" && cbsPart) saveEditTime(cbsPart.id);
+                                                    if (e.key === "Escape") setEditingTimePartId(null);
+                                                }}
+                                                autoFocus
+                                                className="w-12 text-[11px] font-semibold text-typography-700 bg-white border border-red-400 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-red-400"
+                                            />
+                                            <span className="text-[11px] text-typography-500">min</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => cbsPart && saveEditTime(cbsPart.id)}
+                                                className="text-emerald-600 hover:text-emerald-700"
+                                                title="Confirmar"
+                                            >
+                                                <Check className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => cbsPart && startEditTime(cbsPart)}
+                                            title="Clique para alterar o tempo"
+                                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded hover:bg-red-100 hover:text-red-800 transition-colors cursor-pointer group"
+                                        >
+                                            <Clock className="h-3 w-3 text-typography-500 group-hover:text-red-600" />
+                                            {cbsPart?.timeMinutes ?? 30} min
+                                            <Pencil className="h-2.5 w-2.5 text-typography-400 group-hover:text-red-600 ml-0.5" />
+                                        </button>
+                                    )}
                                 </div>
+
                                 <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400">
                                     {formatNumberedTitle(startPartNumber + mainParts.length, "Estudo Bíblico de Congregação")}
                                 </h4>

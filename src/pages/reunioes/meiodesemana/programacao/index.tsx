@@ -18,6 +18,7 @@ import { api } from "@/services/api";
 import {
     IMidweekMeetingPart,
     IMidweekSchedule,
+    MidweekPartType,
     MidweekRoom,
     MidweekSection,
     MidweekSpecialType
@@ -71,6 +72,11 @@ function MidweekScheduleAssistantPage() {
     const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
+    const [customPartSection, setCustomPartSection] = useState<MidweekSection>(MidweekSection.LIVING);
+    const openCustomPartForSection = (section: MidweekSection) => {
+        setCustomPartSection(section);
+        setIsCustomPartModalOpen(true);
+    };
 
     const currentSchedule = schedules.find(s => s.id === selectedScheduleId);
 
@@ -84,6 +90,12 @@ function MidweekScheduleAssistantPage() {
     const currentTreasuresParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.TREASURES && p.isActive) || [];
     const currentMinistryParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive) || [];
     const currentLivingParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.LIVING && p.isActive) || [];
+
+    // Cálculo dinâmico dos números de ordem — garante que ao adicionar/remover partes a numeração seja contínua
+    const treasuresMainCount = currentTreasuresParts.filter(p => p.room === MidweekRoom.MAIN).length;
+    const ministryMainCount = currentMinistryParts.filter(p => p.room === MidweekRoom.MAIN).length;
+    const startMinistryPartNumber = treasuresMainCount + 1;
+    const startLivingPartNumber = treasuresMainCount + ministryMainCount + 1;
 
     useEffect(() => {
         setPageActive("Programação do Meio de Semana");
@@ -189,28 +201,34 @@ function MidweekScheduleAssistantPage() {
         timeMinutes: number;
         method?: string;
         assigned_publisher_id?: string;
+        section?: MidweekSection;
+        partType?: MidweekPartType;
     }) => {
         if (!currentSchedule || !congregationId) return;
         try {
+            const payload = {
+                ...data,
+                section: data.section ?? customPartSection,
+                partType: data.partType ?? MidweekPartType.CUSTOM,
+            };
             const res = await api.post(
                 `/midweek/schedules/${currentSchedule.id}/custom-part/congregation/${congregationId}`,
-                data
+                payload
             );
             setSchedules(prev => prev.map(s => {
                 if (s.id === currentSchedule.id) {
-                    return {
-                        ...s,
-                        parts: [...s.parts, res.data]
-                    };
+                    return { ...s, parts: [...s.parts, res.data] };
                 }
                 return s;
             }));
-            toast.success("Parte personalizada adicionada!");
             setIsCustomPartModalOpen(false);
+            await fetchSchedules();
         } catch (error) {
             toast.error("Erro ao adicionar parte.");
+            throw error;
         }
     };
+
 
     const handleDeletePart = async (partId: string) => {
         if (!currentSchedule || !congregationId) return;
@@ -466,6 +484,7 @@ function MidweekScheduleAssistantPage() {
                         <MidweekSectionTreasures
                             parts={currentTreasuresParts}
                             onUpdatePart={handleUpdatePart}
+                            onDeletePart={handleDeletePart}
                         />
 
                         {/* Seção 2: Faça Seu Melhor no Ministério */}
@@ -473,6 +492,8 @@ function MidweekScheduleAssistantPage() {
                             parts={currentMinistryParts}
                             onUpdatePart={handleUpdatePart}
                             onDuplicateRoom={handleDuplicateRoom}
+                            onDeletePart={handleDeletePart}
+                            startPartNumber={startMinistryPartNumber}
                         />
 
                         {/* Seção 3: Nossa Vida Cristã */}
@@ -484,6 +505,7 @@ function MidweekScheduleAssistantPage() {
                             onAddCustomPart={handleAddCustomPart}
                             onDeletePart={handleDeletePart}
                             onOpenCustomPartModal={() => setIsCustomPartModalOpen(true)}
+                            startPartNumber={startLivingPartNumber}
                         />
                     </div>
                 ) : null}

@@ -2,7 +2,7 @@ import { MidweekMinistryIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, MidweekPartType, MidweekRoom } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Clock, Copy, Layers } from "lucide-react";
+import { Check, Clock, Copy, Layers, Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 
@@ -10,14 +10,20 @@ interface MidweekSectionMinistryProps {
     parts: IMidweekMeetingPart[];
     onUpdatePart: (partId: string, data: Partial<IMidweekMeetingPart>) => Promise<void>;
     onDuplicateRoom: (targetRoom: MidweekRoom) => Promise<void>;
+    onDeletePart?: (partId: string) => Promise<void>;
+    startPartNumber?: number;
 }
 
 export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
     parts,
     onUpdatePart,
-    onDuplicateRoom
+    onDuplicateRoom,
+    onDeletePart,
+    startPartNumber = 4,
 }) => {
     const [activeRoom, setActiveRoom] = useState<MidweekRoom>(MidweekRoom.MAIN);
+    const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
+    const [editingTimeValue, setEditingTimeValue] = useState<number>(0);
 
     const filteredParts = parts
         .filter(p => p.room === activeRoom)
@@ -33,6 +39,18 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
     const formatNumberedTitle = (num: number, title: string) => {
         if (/^\d+\./.test(title)) return title;
         return `${num}. ${title}`;
+    };
+
+    const startEditTime = (part: IMidweekMeetingPart) => {
+        setEditingTimePartId(part.id);
+        setEditingTimeValue(part.timeMinutes);
+    };
+
+    const saveEditTime = async (partId: string) => {
+        if (editingTimeValue >= 1 && editingTimeValue <= 60) {
+            await onUpdatePart(partId, { timeMinutes: editingTimeValue });
+        }
+        setEditingTimePartId(null);
     };
 
     return (
@@ -114,9 +132,11 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
             {/* Lista de Partes */}
             <div className="divide-y divide-surface-300 p-2">
                 {filteredParts.map((part, index) => {
-                    const partNum = 4 + index;
+                    const partNum = startPartNumber + index;
                     const isTalk = part.partType === MidweekPartType.STUDENT_TALK || part.partType === MidweekPartType.EXPLAIN_BELIEFS;
                     const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
+                    const isCustom = part.partType === MidweekPartType.CUSTOM;
+                    const isEditingTime = editingTimePartId === part.id;
 
                     const lessonInfo = getLessonDetails(
                         part.lessonNumber ? "lmd-T" : (part.brochure || "LovePeople"),
@@ -133,10 +153,52 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                             {/* Detalhes da Parte */}
                             <div className="flex flex-col gap-1.5 lg:w-5/12">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
-                                        <Clock className="h-3 w-3 text-typography-500" />
-                                        {part.timeMinutes} min
-                                    </span>
+                                    {/* Badge de tempo — clicável para editar */}
+                                    {isEditingTime ? (
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3 text-typography-500" />
+                                            <input
+                                                type="number"
+                                                min={1}
+                                                max={60}
+                                                value={editingTimeValue}
+                                                onChange={(e) => setEditingTimeValue(Number(e.target.value))}
+                                                onBlur={() => saveEditTime(part.id)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") saveEditTime(part.id);
+                                                    if (e.key === "Escape") setEditingTimePartId(null);
+                                                }}
+                                                autoFocus
+                                                className="w-12 text-[11px] font-semibold text-typography-700 bg-white border border-amber-400 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                                            />
+                                            <span className="text-[11px] text-typography-500">min</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => saveEditTime(part.id)}
+                                                className="text-emerald-600 hover:text-emerald-700"
+                                                title="Confirmar"
+                                            >
+                                                <Check className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => startEditTime(part)}
+                                            title="Clique para alterar o tempo"
+                                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded hover:bg-amber-100 hover:text-amber-800 transition-colors cursor-pointer group"
+                                        >
+                                            <Clock className="h-3 w-3 text-typography-500 group-hover:text-amber-600" />
+                                            {part.timeMinutes} min
+                                            <Pencil className="h-2.5 w-2.5 text-typography-400 group-hover:text-amber-600 ml-0.5" />
+                                        </button>
+                                    )}
+
+                                    {isCustom && (
+                                        <span className="text-[11px] font-medium text-typography-700 bg-surface-200 px-1.5 py-0.5 rounded">
+                                            Personalizada
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* Título em Amarelo com Numeração */}
@@ -144,7 +206,7 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                     {formatNumberedTitle(partNum, part.title)}
                                 </h4>
 
-                                {/* Fonte de Matéria / Cenário (ex: DE CASA EM CASA. Ofereça um estudo bíblico.) */}
+                                {/* Fonte de Matéria / Cenário */}
                                 {part.sourceMaterial && (
                                     <p className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-relaxed">
                                         {part.sourceMaterial}
@@ -157,7 +219,6 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                         {lessonInfo.fullDisplay}
                                     </span>
                                 )}
-
                             </div>
 
                             {/* Seleção do Titular e Ajudante */}
@@ -192,6 +253,19 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                             disabled={!part.assigned_publisher_id}
                                         />
                                     </div>
+                                )}
+
+                                {/* Botão de Excluir — apenas partes personalizadas */}
+                                {isCustom && onDeletePart && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => onDeletePart(part.id)}
+                                        className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer flex-shrink-0 self-end"
+                                        title="Excluir parte personalizada"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
                                 )}
                             </div>
                         </div>
