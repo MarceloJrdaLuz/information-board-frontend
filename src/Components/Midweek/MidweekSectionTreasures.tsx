@@ -1,18 +1,22 @@
 import { MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons";
+import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, MidweekPartType, MidweekRoom } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Check, Clock, Pencil } from "lucide-react";
+import { Check, Clock, Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 
 interface MidweekSectionTreasuresProps {
     parts: IMidweekMeetingPart[];
     onUpdatePart: (partId: string, data: Partial<IMidweekMeetingPart>) => Promise<void>;
+    onDeletePart?: (partId: string) => Promise<void>;
 }
+
 
 export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = ({
     parts,
-    onUpdatePart
+    onUpdatePart,
+    onDeletePart,
 }) => {
     const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
     const [editingTimeValue, setEditingTimeValue] = useState<number>(0);
@@ -62,6 +66,7 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                     const isBibleReading = part.partType === MidweekPartType.BIBLE_READING;
                     const isGems = part.partType === MidweekPartType.GEMS;
                     const isTalk = part.partType === MidweekPartType.TALK;
+                    const isCustom = part.partType === MidweekPartType.CUSTOM;
                     const isEditingTime = editingTimePartId === part.id;
 
                     const lessonInfo = getLessonDetails(
@@ -135,6 +140,11 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                             Leitura da Bíblia (Estudante)
                                         </span>
                                     )}
+                                    {isCustom && (
+                                        <span className="text-[11px] font-medium text-typography-700 bg-surface-200 px-1.5 py-0.5 rounded">
+                                            Personalizada
+                                        </span>
+                                    )}
                                 </div>
 
                                 <h4 className="font-bold text-sm text-[#2F7682] dark:text-teal-400 leading-snug">
@@ -205,6 +215,19 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                             placeholder="Selecione o irmão..."
                                         />
                                     </div>
+                                )}
+
+                                {/* Botão de Excluir — apenas partes personalizadas */}
+                                {isCustom && onDeletePart && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => onDeletePart(part.id)}
+                                        className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer flex-shrink-0 self-end"
+                                        title="Excluir parte personalizada"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
                                 )}
                             </div>
                         </div>

@@ -478,6 +478,7 @@ function MidweekScheduleAssistantPage() {
                         <MidweekSectionTreasures
                             parts={currentTreasuresParts}
                             onUpdatePart={handleUpdatePart}
+                            onDeletePart={handleDeletePart}
                         />
 
                         {/* Seção 2: Faça Seu Melhor no Ministério */}
