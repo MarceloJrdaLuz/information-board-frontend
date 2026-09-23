@@ -11,6 +11,7 @@ interface MidweekSectionMinistryProps {
     onUpdatePart: (partId: string, data: Partial<IMidweekMeetingPart>) => Promise<void>;
     onDuplicateRoom: (targetRoom: MidweekRoom) => Promise<void>;
     onDeletePart?: (partId: string) => Promise<void>;
+    startPartNumber?: number;
 }
 
 export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
@@ -18,6 +19,7 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
     onUpdatePart,
     onDuplicateRoom,
     onDeletePart,
+    startPartNumber = 4,
 }) => {
     const [activeRoom, setActiveRoom] = useState<MidweekRoom>(MidweekRoom.MAIN);
     const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
@@ -130,7 +132,7 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
             {/* Lista de Partes */}
             <div className="divide-y divide-surface-300 p-2">
                 {filteredParts.map((part, index) => {
-                    const partNum = 4 + index;
+                    const partNum = startPartNumber + index;
                     const isTalk = part.partType === MidweekPartType.STUDENT_TALK || part.partType === MidweekPartType.EXPLAIN_BELIEFS;
                     const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
                     const isCustom = part.partType === MidweekPartType.CUSTOM;

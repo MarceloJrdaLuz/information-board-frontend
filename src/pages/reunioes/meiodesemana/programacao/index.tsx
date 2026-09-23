@@ -91,6 +91,12 @@ function MidweekScheduleAssistantPage() {
     const currentMinistryParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.MINISTRY && p.isActive) || [];
     const currentLivingParts = currentSchedule?.parts?.filter(p => p.section === MidweekSection.LIVING && p.isActive) || [];
 
+    // Cálculo dinâmico dos números de ordem — garante que ao adicionar/remover partes a numeração seja contínua
+    const treasuresMainCount = currentTreasuresParts.filter(p => p.room === MidweekRoom.MAIN).length;
+    const ministryMainCount = currentMinistryParts.filter(p => p.room === MidweekRoom.MAIN).length;
+    const startMinistryPartNumber = treasuresMainCount + 1;
+    const startLivingPartNumber = treasuresMainCount + ministryMainCount + 1;
+
     useEffect(() => {
         setPageActive("Programação do Meio de Semana");
         setCrumbs([
@@ -487,6 +493,7 @@ function MidweekScheduleAssistantPage() {
                             onUpdatePart={handleUpdatePart}
                             onDuplicateRoom={handleDuplicateRoom}
                             onDeletePart={handleDeletePart}
+                            startPartNumber={startMinistryPartNumber}
                         />
 
                         {/* Seção 3: Nossa Vida Cristã */}
@@ -498,6 +505,7 @@ function MidweekScheduleAssistantPage() {
                             onAddCustomPart={handleAddCustomPart}
                             onDeletePart={handleDeletePart}
                             onOpenCustomPartModal={() => setIsCustomPartModalOpen(true)}
+                            startPartNumber={startLivingPartNumber}
                         />
                     </div>
                 ) : null}
