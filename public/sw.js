@@ -69,10 +69,10 @@ function saveThemeToIndexedDB(theme) {
   } catch (e) {}
 }
 
-// Normaliza o tema para a pasta correspondente dos ícones
+// Normaliza o tema para a pasta correspondente dos icones
 function resolveThemeFolder(theme) {
   if (!theme) return ''
-  // Mapeia variações claras e escuras para a pasta correta existente em /icons/notifications/
+  // Mapeia variacoes claras e escuras para a pasta correta existente em /icons/notifications/
   if (theme === 'theme-blue' || theme === 'theme-dark-blue') return 'theme-blue/'
   if (theme === 'theme-purple' || theme === 'theme-dark-purple') return 'theme-purple/'
   if (theme === 'theme-pink' || theme === 'theme-dark-pink') return 'theme-pink/'
@@ -80,7 +80,7 @@ function resolveThemeFolder(theme) {
   return ''
 }
 
-// Escuta mensagem da aplicação informando o tema atual
+// Escuta mensagem da aplicacao informando o tema atual
 self.addEventListener('message', function (event) {
   if (event.data && event.data.type === 'SET_THEME') {
     currentAppTheme = event.data.theme || ''
@@ -91,20 +91,13 @@ self.addEventListener('message', function (event) {
 self.addEventListener('push', function (event) {
   if (!event.data) return
 
-  try {
-    var payload = event.data.json()
-    var title = payload.title || 'Quadro de Informações'
   event.waitUntil(
     (async function () {
       try {
         var payload = event.data.json()
-        var title = payload.title || 'Quadro de Informações'
+        var title = payload.title || 'Quadro de Informacoes'
 
-    // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação
-    // Determina o tema (pode vir no payload ou sincronizado via message)
-    var activeTheme = payload.data?.theme || payload.theme || currentAppTheme || ''
-    var themeFolder = activeTheme ? activeTheme + '/' : ''
-        // Determina o tema: payload > memória > IndexedDB
+        // Determina o tema: payload > memoria > IndexedDB
         var rawTheme = payload.data?.theme || payload.theme || currentAppTheme
         if (!rawTheme) {
           rawTheme = await getSavedTheme()
@@ -113,22 +106,10 @@ self.addEventListener('push', function (event) {
           }
         }
 
-    // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação e a cor do tema
-    var typeIcons = {
-      SPEAKER: '/icons/notifications/' + themeFolder + 'speaker.png',
-      READING: '/icons/notifications/' + themeFolder + 'reading.png',
-      CHAIRMAN: '/icons/notifications/' + themeFolder + 'chairman.png',
-      CLEANING: '/icons/notifications/' + themeFolder + 'cleaning.png',
-      FIELD_SERVICE: '/icons/notifications/' + themeFolder + 'field_service.png',
-      PUBLICWITNESS: '/icons/notifications/' + themeFolder + 'publicwitness.png',
-      HOSPITALITY: '/icons/notifications/' + themeFolder + 'hospitality.png',
-      REMINDER: '/icons/notifications/' + themeFolder + 'reminder.png',
-    }
+        // Converte o tema para a pasta correta em /icons/notifications/
         var themeFolder = resolveThemeFolder(rawTheme)
 
-    var notifType = payload.data?.type || payload.type
-    var iconUrl = payload.icon || (notifType && typeIcons[notifType]) || ('/icons/notifications/' + themeFolder + 'reminder.png')
-        // Mapeamento dinâmico do ícone da direita de acordo com o tipo da notificação e a cor do tema
+        // Mapeamento dinamico do icone da direita de acordo com o tipo da notificacao e a cor do tema
         var typeIcons = {
           SPEAKER: '/icons/notifications/' + themeFolder + 'speaker.png',
           READING: '/icons/notifications/' + themeFolder + 'reading.png',
@@ -140,36 +121,16 @@ self.addEventListener('push', function (event) {
           REMINDER: '/icons/notifications/' + themeFolder + 'reminder.png',
         }
 
-    var options = {
-      body: payload.body || '',
-      icon: iconUrl,
-      badge: payload.badge || '/icons/badge.png', // Ícone monocromático para a barra de status
-      vibrate: [100, 50, 100],
-      data: payload.data || { url: '/dashboard' },
-    }
         var notifType = payload.data?.type || payload.type
         var iconUrl =
           payload.icon ||
           (notifType && typeIcons[notifType]) ||
           ('/icons/notifications/' + themeFolder + 'reminder.png')
 
-    event.waitUntil(self.registration.showNotification(title, options))
-  } catch (e) {
-    var text = event.data.text()
-    var themeFolder = currentAppTheme ? currentAppTheme + '/' : ''
-    event.waitUntil(
-      self.registration.showNotification('Quadro de Informações', {
-        body: text,
-        icon: '/icons/notifications/' + themeFolder + 'reminder.png',
-        badge: '/icons/badge.png', // Ícone monocromático para a barra de status
-        data: { url: '/dashboard' },
-      })
-    )
-  }
         var options = {
           body: payload.body || '',
           icon: iconUrl,
-          badge: payload.badge || '/icons/badge.png', // Ícone monocromático para a barra de status
+          badge: payload.badge || '/icons/badge.png',
           vibrate: [100, 50, 100],
           data: payload.data || { url: '/dashboard' },
         }
@@ -179,7 +140,7 @@ self.addEventListener('push', function (event) {
         var text = event.data.text()
         var rawTheme = currentAppTheme || (await getSavedTheme())
         var themeFolder = resolveThemeFolder(rawTheme)
-        await self.registration.showNotification('Quadro de Informações', {
+        await self.registration.showNotification('Quadro de Informacoes', {
           body: text,
           icon: '/icons/notifications/' + themeFolder + 'reminder.png',
           badge: '/icons/badge.png',
