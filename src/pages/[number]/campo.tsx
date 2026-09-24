@@ -131,7 +131,7 @@ function Campo() {
             </div>
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
+            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-16 sm:pb-24 flex flex-col gap-6">
                 {/* Título da Seção */}
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 text-primary-200 font-bold text-xs uppercase tracking-wider">
@@ -185,12 +185,10 @@ function Campo() {
                             <>
                                 {/* 1. Programação Dinâmica (Carrossel) */}
                                 {hasDynamicFieldService && (
-                                    <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                        <FieldServiceCarousel
-                                            fixedSchedules={allSchedules.fixedSchedules}
-                                            rotationBlocks={allSchedules.rotationBlocks}
-                                        />
-                                    </div>
+                                    <FieldServiceCarousel
+                                        fixedSchedules={allSchedules.fixedSchedules}
+                                        rotationBlocks={allSchedules.rotationBlocks}
+                                    />
                                 )}
 
                                 {/* 2. Documentos em PDF */}
@@ -258,12 +256,10 @@ function Campo() {
                             <>
                                 {/* 1. Programação Dinâmica (Carrossel de Carrinho) */}
                                 {hasDynamicPublicWitness && (
-                                    <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                        <PublicWitnessCarousel
-                                            fixedSchedules={allSchedulesPublicWitness.fixedSchedules}
-                                            rotationBlocks={allSchedulesPublicWitness.rotationBlocks}
-                                        />
-                                    </div>
+                                    <PublicWitnessCarousel
+                                        fixedSchedules={allSchedulesPublicWitness.fixedSchedules}
+                                        rotationBlocks={allSchedulesPublicWitness.rotationBlocks}
+                                    />
                                 )}
 
                                 {/* 2. Documentos em PDF */}

@@ -26,26 +26,26 @@ try {
 
 const styles = StyleSheet.create({
     page: {
-        paddingTop: 24,
-        paddingBottom: 24,
-        paddingHorizontal: 22,
+        paddingTop: 22,
+        paddingBottom: 22,
+        paddingHorizontal: 20,
         fontSize: 10,
         color: "#2a2b2b",
         fontFamily: "Crimson Pro",
     },
     header: {
-        fontSize: 20,
+        fontSize: 18,
         textAlign: "center",
-        marginBottom: 4,
+        marginBottom: 3,
         fontWeight: "bold",
         color: "#28456C",
         textTransform: "uppercase",
         letterSpacing: 0.8,
     },
     congregationName: {
-        fontSize: 12,
+        fontSize: 11,
         textAlign: "center",
-        marginBottom: 14,
+        marginBottom: 10,
         color: "#3F4C59",
     },
     tableContainer: {
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     headerCell: {
         color: "#FFFFFF",
         fontWeight: "bold",
-        fontSize: 9.5,
+        fontSize: 10.5,
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 0.3,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     headerCellLast: {
         color: "#FFFFFF",
         fontWeight: "bold",
-        fontSize: 9.5,
+        fontSize: 10.5,
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 0.3,
@@ -83,13 +83,13 @@ const styles = StyleSheet.create({
     },
     weekHeaderRow: {
         backgroundColor: "#DEEAF6",
-        paddingVertical: 3.5,
+        paddingVertical: 4,
         paddingHorizontal: 6,
         borderBottomWidth: 1,
         borderBottomColor: "#9CC2E5",
     },
     weekHeaderText: {
-        fontSize: 9,
+        fontSize: 10.5,
         fontWeight: "bold",
         color: "#28456C",
         textTransform: "uppercase",
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         borderBottomWidth: 1,
         borderColor: "#9CC2E5",
-        minHeight: 28,
+        minHeight: 32,
         alignItems: "stretch",
     },
     rowEven: {
@@ -106,51 +106,51 @@ const styles = StyleSheet.create({
     },
     cell: {
         justifyContent: "center",
-        paddingVertical: 5,
+        paddingVertical: 5.5,
         paddingHorizontal: 5,
         borderRightWidth: 1,
         borderRightColor: "#9CC2E5",
     },
     cellLast: {
         justifyContent: "center",
-        paddingVertical: 5,
+        paddingVertical: 5.5,
         paddingHorizontal: 5,
     },
     dateCell: {
         justifyContent: "center",
         alignItems: "center",
-        paddingVertical: 5,
+        paddingVertical: 5.5,
         paddingHorizontal: 4,
         borderRightWidth: 1,
         borderRightColor: "#9CC2E5",
         backgroundColor: "#F0F5FA",
     },
     weekLabel: {
-        fontSize: 10.5,
+        fontSize: 12,
         fontWeight: "bold",
         color: "#28456C",
         textAlign: "center",
         marginBottom: 1,
     },
     weekDates: {
-        fontSize: 8,
+        fontSize: 9.5,
         color: "#475569",
         textAlign: "center",
     },
     meetingTypeTitle: {
-        fontSize: 9.5,
+        fontSize: 11,
         fontWeight: "bold",
         color: "#28456C",
         textAlign: "center",
     },
     meetingDateSubtitle: {
-        fontSize: 8,
+        fontSize: 9.5,
         color: "#64748B",
         textAlign: "center",
         marginTop: 1,
     },
     itemText: {
-        fontSize: 8.5,
+        fontSize: 10.5,
         color: "#1e293b",
         marginBottom: 2,
     },
@@ -159,17 +159,18 @@ const styles = StyleSheet.create({
         color: "#334155",
     },
     emptySlotText: {
-        fontSize: 8,
+        fontSize: 9.5,
         color: "#94a3b8",
         fontStyle: "italic",
     },
     footer: {
-        marginTop: 12,
+        marginTop: 10,
         textAlign: "center",
-        fontSize: 8,
+        fontSize: 8.5,
         color: "#64748B",
     },
 });
+
 
 interface MechanicalSchedulePdfProps {
     weeks: IMechanicalWeek[];
@@ -246,21 +247,24 @@ export const MechanicalSchedulePdf: React.FC<MechanicalSchedulePdfProps> = ({
     const widthRovingMics = `${Math.round((weightRovingMics / totalWeight) * remainingWidth)}%`;
     const widthStageMics = `${Math.round((weightStageMics / totalWeight) * remainingWidth)}%`;
 
-    const isCompact = weeks.length > 6;
-    const dynamicRowPadding = isCompact ? 3 : 5;
-    const dynamicItemFontSize = isCompact ? 7.2 : 8.5;
-    const dynamicWeekLabelFontSize = isCompact ? 9 : 10.5;
-    const dynamicWeekDatesFontSize = isCompact ? 6.8 : 8;
+    const isVeryLong = weeks.length > 16;
+    const dynamicRowPadding = isVeryLong ? 3.5 : 5.5;
+    const dynamicItemFontSize = isVeryLong ? 9 : 10.5;
+    const dynamicWeekLabelFontSize = isVeryLong ? 10 : 12;
+    const dynamicWeekDatesFontSize = isVeryLong ? 8 : 9.5;
+    const dynamicHeaderFontSize = isVeryLong ? 15 : 18;
+    const dynamicSubheaderFontSize = isVeryLong ? 9.5 : 11;
+    const dynamicTableHeaderFontSize = isVeryLong ? 9 : 10.5;
 
     return (
         <Document>
-            <Page size="A4" orientation="portrait" style={[styles.page, isCompact ? { padding: 18 } : {}]}>
+            <Page size="A4" orientation="portrait" style={[styles.page, isVeryLong ? { padding: 16 } : {}]}>
                 {/* Cabeçalho do Documento */}
                 <View fixed>
-                    <Text style={[styles.header, isCompact ? { fontSize: 13, marginBottom: 2 } : {}]}>
+                    <Text style={[styles.header, { fontSize: dynamicHeaderFontSize, marginBottom: isVeryLong ? 2 : 3 }]}>
                         Programação de Partes Mecânicas
                     </Text>
-                    <Text style={[styles.congregationName, isCompact ? { fontSize: 8.5, marginBottom: 6 } : {}]}>
+                    <Text style={[styles.congregationName, { fontSize: dynamicSubheaderFontSize, marginBottom: isVeryLong ? 6 : 9 }]}>
                         {congregationName ? `${congregationName} • ` : ""}
                         {monthFormatted}
                     </Text>
@@ -269,12 +273,12 @@ export const MechanicalSchedulePdf: React.FC<MechanicalSchedulePdfProps> = ({
                 {/* Tabela Vertical */}
                 <View style={styles.tableContainer}>
                     {/* Linha de Cabeçalho da Tabela */}
-                    <View style={[styles.tableHeader, isCompact ? { paddingVertical: 4 } : {}]}>
-                        <Text style={[styles.headerCell, { width: widthDate }, isCompact ? { fontSize: 8 } : {}]}>
+                    <View style={[styles.tableHeader, isVeryLong ? { paddingVertical: 4 } : { paddingVertical: 6 }]}>
+                        <Text style={[styles.headerCell, { width: widthDate, fontSize: dynamicTableHeaderFontSize }]}>
                             {isSameTeamWholeWeek ? "Semana / Reuniões" : "Reunião"}
                         </Text>
                         {hasAttendants && (
-                            <Text style={[styles.headerCell, { width: widthAttendants }, isCompact ? { fontSize: 8 } : {}]}>
+                            <Text style={[styles.headerCell, { width: widthAttendants, fontSize: dynamicTableHeaderFontSize }]}>
                                 Indicadores
                             </Text>
                         )}
@@ -282,8 +286,7 @@ export const MechanicalSchedulePdf: React.FC<MechanicalSchedulePdfProps> = ({
                             <Text
                                 style={[
                                     hasRovingMics || hasStageMics ? styles.headerCell : styles.headerCellLast,
-                                    { width: widthSoundMedia },
-                                    isCompact ? { fontSize: 8 } : {}
+                                    { width: widthSoundMedia, fontSize: dynamicTableHeaderFontSize }
                                 ]}
                             >
                                 {isCombined ? "Som & Mídias" : "Som / Mídias"}
@@ -293,15 +296,14 @@ export const MechanicalSchedulePdf: React.FC<MechanicalSchedulePdfProps> = ({
                             <Text
                                 style={[
                                     hasStageMics ? styles.headerCell : styles.headerCellLast,
-                                    { width: widthRovingMics },
-                                    isCompact ? { fontSize: 8 } : {}
+                                    { width: widthRovingMics, fontSize: dynamicTableHeaderFontSize }
                                 ]}
                             >
                                 Microfones Volantes
                             </Text>
                         )}
                         {hasStageMics && (
-                            <Text style={[styles.headerCellLast, { width: widthStageMics }, isCompact ? { fontSize: 8 } : {}]}>
+                            <Text style={[styles.headerCellLast, { width: widthStageMics, fontSize: dynamicTableHeaderFontSize }]}>
                                 Pedestal
                             </Text>
                         )}
@@ -327,10 +329,10 @@ export const MechanicalSchedulePdf: React.FC<MechanicalSchedulePdfProps> = ({
                                         <Text style={[styles.weekDates, { fontSize: dynamicWeekDatesFontSize }]}>{datesSummary}</Text>
                                     </View>
                                     <View style={[styles.cellLast, { width: `${remainingWidth}%`, justifyContent: "center", alignItems: "center", paddingVertical: dynamicRowPadding + 2, backgroundColor: "#F1F5F9" }]}>
-                                        <Text style={{ fontSize: isCompact ? 8 : 9, fontWeight: "bold", color: "#28456C", textAlign: "center" }}>
+                                        <Text style={{ fontSize: isVeryLong ? 8.5 : 10.5, fontWeight: "bold", color: "#28456C", textAlign: "center" }}>
                                             🏛️ {eventName}
                                         </Text>
-                                        <Text style={{ fontSize: isCompact ? 6.5 : 7.5, color: "#64748B", textAlign: "center", marginTop: 1 }}>
+                                        <Text style={{ fontSize: isVeryLong ? 7.5 : 9, color: "#64748B", textAlign: "center", marginTop: 2 }}>
                                             (Não haverá designações de partes mecânicas nesta semana)
                                         </Text>
                                     </View>

@@ -5,11 +5,38 @@ import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Sparkles, Users } from "lucide-react";
+import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Landmark, Sparkles, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 dayjs.locale("pt-br");
 
+// ---- Tipos de Tarefas Mecânicas (área pública) ----
+export interface IPublicMechanicalAssignment {
+    role: string;
+    order: number;
+    publisherName?: string | null;
+}
+
+export interface IPublicMechanicalSchedule {
+    id: string;
+    date: string;
+    weekStartDate: string;
+    meetingType: "MIDWEEK" | "WEEKEND";
+    hasNoMeeting?: boolean;
+    eventTitle?: string | null;
+    assignments: IPublicMechanicalAssignment[];
+}
+
+export const MechanicalRoleLabels: Record<string, string> = {
+    ATTENDANT: "Indicador",
+    SOUND: "Som",
+    MEDIA: "Mídias",
+    SOUND_AND_MEDIA: "Som e Mídias",
+    ROVING_MIC: "Microfone Volante",
+    STAGE_MIC: "Pedestal",
+};
+
+// ---- Tipos da programação de meio de semana ----
 export interface IPublicMidweekPart {
     id: string;
     title: string;
@@ -62,7 +89,7 @@ const formatNumberedTitle = (num: number, title: string) => {
     return `${num}. ${clean}`;
 };
 
-export default function MidweekPublicCarousel({ schedules }: { schedules: MidweekScheduleResponse }) {
+export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }: { schedules: MidweekScheduleResponse; mechanicalSchedules?: IPublicMechanicalSchedule[] }) {
     // Filtra para exibir apenas semanas atuais e futuras (excluindo semanas passadas)
     const months = useMemo(() => {
         const startOfCurrentWeek = dayjs().startOf("week");
@@ -677,6 +704,57 @@ export default function MidweekPublicCarousel({ schedules }: { schedules: Midwee
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Tarefas do Salão (Mecânicas) */}
+                                {(() => {
+                                    const mechSched = (mechanicalSchedules || []).find(
+                                        s => s.weekStartDate === week.weekDate && s.meetingType === "MIDWEEK" && !s.hasNoMeeting
+                                    );
+                                    if (!mechSched || mechSched.assignments.length === 0) return null;
+
+                                    // Agrupa por role para exibir uma linha por função
+                                    const grouped: Record<string, string[]> = {};
+                                    for (const a of mechSched.assignments) {
+                                        if (!a.publisherName) continue;
+                                        if (!grouped[a.role]) grouped[a.role] = [];
+                                        grouped[a.role].push(a.publisherName);
+                                    }
+                                    const roles = Object.keys(grouped);
+                                    if (roles.length === 0) return null;
+
+                                    return (
+                                        <div className="pt-5 flex flex-col gap-3">
+                                            <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#3B5278] text-white shadow-2xs">
+                                                <Landmark className="h-5 w-5" />
+                                                <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
+                                                    Tarefas do Salão
+                                                </h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                {roles.map(role => (
+                                                    <div
+                                                        key={role}
+                                                        className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-1"
+                                                    >
+                                                        <span className="text-[11px] font-bold uppercase tracking-wider text-[#3B5278] dark:text-blue-300">
+                                                            {MechanicalRoleLabels[role] ?? role}
+                                                        </span>
+                                                        <div className="flex flex-wrap gap-1.5 justify-end">
+                                                            {grouped[role].map((name, i) => (
+                                                                <span
+                                                                    key={i}
+                                                                    className="font-bold text-xs text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs"
+                                                                >
+                                                                    {name}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
 
                                 {/* Cântico Final & Oração Final */}
                                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm pt-4">
