@@ -199,7 +199,16 @@ export function usePushNotifications() {
             if (Notification.permission === "granted") {
                 const reg = await navigator.serviceWorker.ready
                 if (reg && reg.showNotification) {
-                    const themeFolder = currentTheme ? `${currentTheme}/` : ""
+                    // Mapeia o tema para a pasta correta (espelhando o resolveThemeFolder do sw.js)
+                    const resolveThemeFolder = (theme: string): string => {
+                        if (!theme) return ''
+                        if (theme === 'theme-blue' || theme === 'theme-dark-blue') return 'theme-blue/'
+                        if (theme === 'theme-purple' || theme === 'theme-dark-purple') return 'theme-purple/'
+                        if (theme === 'theme-pink' || theme === 'theme-dark-pink') return 'theme-pink/'
+                        if (theme === 'theme-dark') return 'theme-dark/'
+                        return ''
+                    }
+                    const themeFolder = resolveThemeFolder(currentTheme || '')
                     reg.showNotification("Notificações Ativadas! 🎉", {
                         body: "Você começará a receber suas designações e lembretes aqui.",
                         icon: `/icons/notifications/${themeFolder}reminder.png`,
