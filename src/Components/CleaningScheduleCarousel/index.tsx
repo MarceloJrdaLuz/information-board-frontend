@@ -1,10 +1,10 @@
-import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow";
-import { ICleaningScheduleResponse } from "@/types/cleaning";
-import { WEEKDAYS_PT } from "@/utils/dateUtil";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarDays, ChevronLeft, ChevronRight, Sparkles, Users } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ICleaningScheduleResponse } from "@/types/cleaning";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow";
+import { WEEKDAYS_PT } from "@/utils/dateUtil";
 
 dayjs.locale("pt-br");
 
@@ -15,50 +15,44 @@ interface Props {
 export default function CleaningScheduleCarousel({ schedule }: Props) {
     const schedules = schedule.schedules;
 
-    // Filtra somente semanas desta semana em diante
-    const startOfToday = dayjs().startOf("day");
-
-    const futureSchedules = useMemo(() =>
-        schedules.filter(item => dayjs(item.date).isSame(startOfToday, "day") || dayjs(item.date).isAfter(startOfToday)),
-        [schedules]
-    );
-
-    // Meses únicos no formato YYYY-MM (apenas futuros)
+    // Meses únicos no formato YYYY-MM
     const months = useMemo(() => {
         const unique = new Set<string>();
-        futureSchedules.forEach(item => {
+        schedules.forEach(item => {
             unique.add(dayjs(item.date).format("YYYY-MM"));
         });
         return Array.from(unique).sort();
-    }, [futureSchedules]);
+    }, [schedules]);
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Inicia no mês atual
-    useEffect(() => {
-        const nowMonth = dayjs().format("YYYY-MM");
-        const idx = months.findIndex(m => m >= nowMonth);
-        setCurrentIndex(idx >= 0 ? idx : 0);
-    }, [months]);
-
     const currentMonth = months[currentIndex];
 
-    const currentMonthSchedules = useMemo(() =>
-        futureSchedules.filter(item =>
+    const currentMonthSchedules = useMemo(() => {
+        return schedules.filter(item =>
             dayjs(item.date).format("YYYY-MM") === currentMonth
-        ),
-        [futureSchedules, currentMonth]
-    );
+        );
+    }, [schedules, currentMonth]);
 
-    if (months.length === 0) return null;
+    function next() {
+        if (currentIndex < months.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        }
+    }
+
+    function prev() {
+        if (currentIndex > 0) {
+            setCurrentIndex(prev => prev - 1);
+        }
+    }
 
     return (
-        <div className="relative w-full flex flex-col gap-4 pb-4">
-            {/* Navegação de Meses — mesmo estilo de SchedulesCarousel */}
+        <div className="w-full flex flex-col gap-4">
+            {/* Header / Seletor de Meses separado com ícone de calendário */}
             <div className="flex justify-between items-center bg-surface-100 p-3 rounded-2xl border border-surface-300 shadow-sm">
                 <button
+                    onClick={prev}
                     disabled={currentIndex === 0}
-                    onClick={() => setCurrentIndex(i => Math.max(i - 1, 0))}
                     className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
                     title="Mês anterior"
                 >
@@ -71,8 +65,8 @@ export default function CleaningScheduleCarousel({ schedule }: Props) {
                 </h2>
 
                 <button
+                    onClick={next}
                     disabled={currentIndex === months.length - 1}
-                    onClick={() => setCurrentIndex(i => Math.min(i + 1, months.length - 1))}
                     className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
                     title="Próximo mês"
                 >
@@ -80,90 +74,43 @@ export default function CleaningScheduleCarousel({ schedule }: Props) {
                 </button>
             </div>
 
-            {/* Cards do mês atual */}
-            {currentMonthSchedules.length === 0 ? (
-                <div className="py-8 flex flex-col items-center justify-center gap-2 text-typography-400">
-                    <CalendarDays className="h-8 w-8 opacity-40" />
-                    <span className="text-sm">Nenhuma programação para este mês.</span>
-                </div>
-            ) : (
-                <div className="flex flex-col gap-3">
+            {/* Container original da programação de limpeza */}
+            <div className="w-full rounded-xl shadow bg-surface-100 p-4">
+                <h2 className="font-bold text-primary-200 text-lg my-2">Programação de Limpeza</h2>
+
+                {/* Cards do mês atual (estilo original) */}
+                <div className="grid gap-3 sm:grid-cols-2 mt-4">
                     {currentMonthSchedules.map(item => {
                         const publishersDisplay = (item.group?.publishers ?? [])
                             .map(pub => {
                                 if (!pub) return "";
                                 return (pub.nickname?.trim() || pub.fullName?.trim() || "");
                             })
-                            .filter(Boolean);
-
-                        const isCurrentWeek = (() => {
-                            const itemDate = dayjs(item.date);
-                            const weekStart = dayjs().startOf("isoWeek" as dayjs.OpUnitType);
-                            const weekEnd = dayjs().endOf("isoWeek" as dayjs.OpUnitType);
-                            return itemDate.isSame(weekStart, "day") || (itemDate.isAfter(weekStart) && itemDate.isBefore(weekEnd)) || itemDate.isSame(weekEnd, "day");
-                        })();
+                            .filter(Boolean)
+                            .join(" – ");
 
                         return (
                             <div
                                 key={item.date}
-                                className="rounded-2xl border border-surface-300 shadow-sm overflow-hidden bg-surface-100"
+                                className="border border-typography-200 rounded-lg p-3 bg-surface-100 hover:bg-surface-200 text-primary-200 transition"
                             >
-                                {/* Cabeçalho do card — mesmo estilo azul #28456C */}
-                                <div className="bg-[#28456C] text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-blue-200">
-                                            {dayjs(item.date).format("DD [de] MMMM")} — {WEEKDAYS_PT[item.weekdayName] ?? item.weekdayName}
-                                        </span>
-                                        {isCurrentWeek && (
-                                            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white uppercase tracking-wider shadow-xs shrink-0">
-                                                Esta Semana
-                                            </span>
-                                        )}
-                                    </div>
+                                <p className="font-semibold text-sm">
+                                    {`${dayjs(item.date).format("DD/MM/YYYY")} - ${WEEKDAYS_PT[item.weekdayName] ?? item.weekdayName}`}
+                                </p>
 
-                                    {item.group?.name && (
-                                        <div className="bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-xs flex items-center gap-2 self-start sm:self-auto border border-white/10">
-                                            <Sparkles className="h-4 w-4 text-blue-200" />
-                                            <div className="flex flex-col text-xs">
-                                                <span className="text-[10px] text-blue-200 font-semibold uppercase tracking-wider">Grupo</span>
-                                                <span className="font-bold text-white">{item.group.name}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                <p className="mt-2 text-typography-700 text-sm">
+                                    <span className="font-semibold">Grupo:</span> {item.group.name}
+                                </p>
 
-                                {/* Corpo do card */}
-                                <div className="p-4 sm:p-5 flex flex-col gap-3">
-                                    {/* Seção de responsáveis */}
-                                    <div className="flex flex-col gap-2.5">
-                                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-200/10 border border-primary-200/20">
-                                            <Users className="h-4 w-4 text-primary-200 shrink-0" />
-                                            <span className="text-xs font-bold uppercase tracking-wider text-primary-200">
-                                                Responsáveis
-                                            </span>
-                                        </div>
-
-                                        {publishersDisplay.length > 0 ? (
-                                            <div className="flex flex-wrap gap-2">
-                                                {publishersDisplay.map((name, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="font-bold text-xs text-typography-900 bg-surface-200/60 px-3 py-1.5 rounded-lg border border-surface-300 shadow-2xs"
-                                                    >
-                                                        {name}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <span className="text-sm text-typography-400 italic">Não definido</span>
-                                        )}
-                                    </div>
-                                </div>
+                                <p className="mt-1 text-typography-700 text-sm">
+                                    <span className="font-semibold">Responsáveis:</span><br />
+                                    {publishersDisplay}
+                                </p>
                             </div>
                         );
                     })}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

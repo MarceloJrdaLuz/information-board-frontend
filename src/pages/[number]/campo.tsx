@@ -185,12 +185,10 @@ function Campo() {
                             <>
                                 {/* 1. Programação Dinâmica (Carrossel) */}
                                 {hasDynamicFieldService && (
-                                    <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                        <FieldServiceCarousel
-                                            fixedSchedules={allSchedules.fixedSchedules}
-                                            rotationBlocks={allSchedules.rotationBlocks}
-                                        />
-                                    </div>
+                                    <FieldServiceCarousel
+                                        fixedSchedules={allSchedules.fixedSchedules}
+                                        rotationBlocks={allSchedules.rotationBlocks}
+                                    />
                                 )}
 
                                 {/* 2. Documentos em PDF */}
@@ -258,12 +256,10 @@ function Campo() {
                             <>
                                 {/* 1. Programação Dinâmica (Carrossel de Carrinho) */}
                                 {hasDynamicPublicWitness && (
-                                    <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                        <PublicWitnessCarousel
-                                            fixedSchedules={allSchedulesPublicWitness.fixedSchedules}
-                                            rotationBlocks={allSchedulesPublicWitness.rotationBlocks}
-                                        />
-                                    </div>
+                                    <PublicWitnessCarousel
+                                        fixedSchedules={allSchedulesPublicWitness.fixedSchedules}
+                                        rotationBlocks={allSchedulesPublicWitness.rotationBlocks}
+                                    />
                                 )}
 
                                 {/* 2. Documentos em PDF */}

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { ChevronLeft, ChevronRight, Clock, MapPin, User } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, User } from "lucide-react";
 import { FieldServiceFixedSchedule, FieldServiceRotationBlock } from "@/types/fieldService";
 import { resolveFixedLocation } from "@/utils/resolveFixedLocation";
 import { resolveNextFixedLocations } from "@/utils/resolveNextFixedLocation";
@@ -204,33 +204,37 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
             )}
 
             {/* SEÇÃO: CARROSSEL DE RODÍZIOS (Fim de semana / Datas específicas) */}
-            <div ref={rotationCarouselRef} className="w-full rounded-xl shadow bg-surface-100 p-4">
+            <div ref={rotationCarouselRef} className="w-full flex flex-col gap-4">
 
-                {/* Header do Carousel */}
-                <div className="flex items-center justify-between mb-4">
+                {/* Header do Carousel / Seletor de Meses separado com ícone de calendário */}
+                <div className="flex justify-between items-center bg-surface-100 p-3 rounded-2xl border border-surface-300 shadow-sm">
                     <button
                         onClick={prev}
                         disabled={currentIndex === 0}
-                        className="disabled:text-typography-600 p-2 rounded-full text-primary-200 transition hover:bg-surface-200"
+                        className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
+                        title="Mês anterior"
                     >
-                        <ChevronLeft size={26} />
+                        <ChevronLeft size={24} />
                     </button>
 
-                    <h3 className="font-semibold text-lg text-typography-700">
-                        {currentMonth ? capitalize(dayjs(currentMonth + "-01").format("MMMM YYYY")) : "Sem rodízio"}
-                    </h3>
+                    <h2 className="text-base sm:text-lg font-extrabold text-typography-900 capitalize tracking-tight flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-primary-200" />
+                        <span>{currentMonth ? capitalize(dayjs(currentMonth + "-01").format("MMMM YYYY")) : "Sem rodízio"}</span>
+                    </h2>
 
                     <button
                         onClick={next}
                         disabled={currentIndex === months.length - 1}
-                        className="disabled:text-typography-600 p-2 rounded-full text-primary-200 transition hover:bg-surface-200"
+                        className="disabled:opacity-30 disabled:cursor-not-allowed p-2 rounded-xl text-primary-200 hover:bg-surface-200 transition cursor-pointer"
+                        title="Próximo mês"
                     >
-                        <ChevronRight size={26} />
+                        <ChevronRight size={24} />
                     </button>
                 </div>
 
-                {/* Grid de Cards de Rodízio */}
-                <div className="flex justify-around flex-wrap gap-4">
+                <div className="w-full rounded-xl shadow bg-surface-100 p-4">
+                    {/* Grid de Cards de Rodízio */}
+                    <div className="flex justify-around flex-wrap gap-4">
                     {currentMonthSchedules.map((item, idx) => (
                         <div
                             key={idx}
@@ -275,6 +279,7 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                     )}
                 </div>
             </div>
+        </div>
         </div>
     );
 }
