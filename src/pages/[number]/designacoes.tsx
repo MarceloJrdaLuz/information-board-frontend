@@ -6,7 +6,7 @@ import Footer from '@/Components/Footer'
 import HeadComponent from '@/Components/HeadComponent'
 import LifeAndMinistryIcon from '@/Components/Icons/LifeAndMinistryIcon'
 import PublicMeetingIcon from '@/Components/Icons/PublicMeetingIcon'
-import MidweekPublicCarousel, { MidweekScheduleResponse } from '@/Components/Midweek/MidweekPublicCarousel'
+import MidweekPublicCarousel, { IPublicMechanicalSchedule, MidweekScheduleResponse } from '@/Components/Midweek/MidweekPublicCarousel'
 import NotFoundDocument from '@/Components/NotFoundDocument'
 import PdfViewer from '@/Components/PdfViewer'
 import SchedulesCarousel from '@/Components/SchedulesCarousel'
@@ -70,6 +70,14 @@ function Designacoes() {
 
     const { data: midweekSchedules, isLoading: isLoadingMidweekSchedules } =
         useFetch<MidweekScheduleResponse>(fetchConfigMidweekSchedulesData)
+
+    const fetchConfigMechanicalSchedulesData =
+        number && congregation?.id
+            ? `/congregation/${congregation.id}/mechanical-schedules/public`
+            : ""
+
+    const { data: mechanicalSchedules } =
+        useFetch<IPublicMechanicalSchedule[]>(fetchConfigMechanicalSchedulesData)
 
     useEffect(() => {
         if (congregation) {
@@ -295,7 +303,7 @@ function Designacoes() {
                                         )
                                     ) ? (
                                     <div className="flex flex-col gap-4">
-                                        <MidweekPublicCarousel schedules={midweekSchedules} />
+                                        <MidweekPublicCarousel schedules={midweekSchedules} mechanicalSchedules={mechanicalSchedules ?? []} />
 
                                         {/* Se também houver PDFs anexados pela congregação, exibe como opção complementar */}
                                         {((documentsLifeAndMinistryFilterMonths && documentsLifeAndMinistryFilterMonths.length > 0) || (documentsOthersFilter && documentsOthersFilter.length > 0)) && (
@@ -458,7 +466,7 @@ function Designacoes() {
                                         )
                                     ) ? (
                                     <div className="flex flex-col gap-4">
-                                        <SchedulesCarousel schedules={schedules} />
+                                        <SchedulesCarousel schedules={schedules} mechanicalSchedules={mechanicalSchedules ?? []} />
 
                                         {/* Se também houver PDFs anexados pela congregação, exibe como opção complementar */}
                                         {documentsPublicFilter && documentsPublicFilter.length > 0 && (

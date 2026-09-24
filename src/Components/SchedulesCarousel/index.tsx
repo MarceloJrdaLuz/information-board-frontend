@@ -6,9 +6,10 @@ import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, Landmark, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
+import { IPublicMechanicalSchedule, MechanicalRoleLabels } from "../Midweek/MidweekPublicCarousel"
 
 dayjs.extend(isoWeek)
 dayjs.extend(isBetween)
@@ -16,7 +17,7 @@ dayjs.locale("pt-br")
 
 export type ScheduleResponse = Record<string, IPublicSchedule[]>
 
-export default function SchedulesCarousel({ schedules }: { schedules: ScheduleResponse }) {
+export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { schedules: ScheduleResponse; mechanicalSchedules?: IPublicMechanicalSchedule[] }) {
   // Filtra para exibir apenas semanas atuais e futuras (excluindo semanas passadas)
   const months = useMemo(() => {
     const startOfCurrentWeek = dayjs().startOf("week")
@@ -330,6 +331,62 @@ export default function SchedulesCarousel({ schedules }: { schedules: ScheduleRe
                     {item.hospitality && item.hospitality.length > 0 && (
                       <HospitalityCard item={item} />
                     )}
+
+                    {/* Tarefas do Salão (Mecânicas) */}
+                    {(() => {
+                      // Deriva o weekStartDate (segunda-feira) a partir da data da reunião
+                      const itemDay = dayjs(item.date)
+                      const diffToMonday = itemDay.day() === 0 ? 6 : itemDay.day() - 1
+                      const weekStartDate = itemDay.subtract(diffToMonday, "day").format("YYYY-MM-DD")
+
+                      const mechSched = (mechanicalSchedules || []).find(
+                        s => s.weekStartDate === weekStartDate && s.meetingType === "WEEKEND" && !s.hasNoMeeting
+                      )
+                      if (!mechSched || mechSched.assignments.length === 0) return null
+
+                      // Agrupa por role
+                      const grouped: Record<string, string[]> = {}
+                      for (const a of mechSched.assignments) {
+                        if (!a.publisherName) continue
+                        if (!grouped[a.role]) grouped[a.role] = []
+                        grouped[a.role].push(a.publisherName)
+                      }
+                      const roles = Object.keys(grouped)
+                      if (roles.length === 0) return null
+
+                      return (
+                        <div className="pt-5 flex flex-col gap-3">
+                          <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#3B5278] text-white shadow-2xs">
+                            <Landmark className="h-5 w-5" />
+                            <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
+                              Tarefas do Salão
+                            </h4>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {roles.map(role => (
+                              <div
+                                key={role}
+                                className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-1"
+                              >
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-[#3B5278] dark:text-blue-300">
+                                  {MechanicalRoleLabels[role] ?? role}
+                                </span>
+                                <div className="flex flex-wrap gap-1.5 justify-end">
+                                  {grouped[role].map((name, i) => (
+                                    <span
+                                      key={i}
+                                      className="font-bold text-xs text-typography-900 bg-surface-100 px-2.5 py-1 rounded-lg border border-surface-300 shadow-2xs"
+                                    >
+                                      {name}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })()}
                   </div>
                 </div>
               )}
