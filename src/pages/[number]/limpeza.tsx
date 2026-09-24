@@ -133,9 +133,7 @@ function Limpeza() {
                     <div className="flex flex-col gap-4">
                         {/* 1) Programação interativa do banco */}
                         {scheduleData?.schedules && scheduleData.schedules.length > 0 ? (
-                            <div className="w-full bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm">
-                                <CleaningScheduleCarousel schedule={scheduleData} />
-                            </div>
+                            <CleaningScheduleCarousel schedule={scheduleData} />
                         ) : documentsFilter && documentsFilter.length > 0 ? (
                             /* 2) Documentos em PDF */
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
