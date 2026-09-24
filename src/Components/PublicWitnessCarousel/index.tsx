@@ -246,25 +246,41 @@ export default function PublicWitnessCarousel({
        *  ARRANJOS ESPECIAIS (POR DATA)
        * ================================================= */}
             {specialDates.length > 0 && (
-                <div className="w-full rounded-xl shadow bg-surface-100 p-4 border-l-4 border-primary-200">
-                    <h2 className="font-bold text-primary-200 text-lg mb-4">
-                        Arranjos Especiais
-                    </h2>
+                <div className="w-full rounded-2xl shadow-sm bg-surface-100 p-4 sm:p-5 border border-surface-300 border-l-4 border-l-primary-200">
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-primary-200" />
+                            <h2 className="font-bold text-typography-900 text-base sm:text-lg">
+                                Arranjos Especiais
+                            </h2>
+                        </div>
+                        <span className="text-xs font-semibold text-typography-500 bg-surface-200/70 px-2.5 py-1 rounded-lg border border-surface-300">
+                            {specialDates.length} {specialDates.length === 1 ? "data" : "datas"}
+                        </span>
+                    </div>
 
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-col gap-4">
                         {specialDates.map(([date, schedules]) => (
                             <div
                                 key={date}
-                                className="w-full border rounded-lg p-4 bg-surface-100"
+                                className="w-full flex flex-col p-4 sm:p-5 rounded-xl bg-surface-200/40 border border-surface-300/80 shadow-2xs gap-4"
                             >
                                 {/* Cabeçalho da data */}
-                                <div className="flex justify-between mb-3">
-                                    <p className="font-bold text-primary-200">
-                                        {dayjs(date).format("DD/MM/YYYY")}
-                                    </p>
-                                    <p className="text-xs text-typography-600">
-                                        {capitalize(dayjs(date).format("dddd"))}
-                                    </p>
+                                <div className="flex items-center justify-between pb-3 border-b border-surface-300/60 gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-primary-200/10 text-primary-200 rounded-xl font-bold border border-primary-200/20 shrink-0">
+                                            <span className="text-base leading-none">{dayjs(date).format("DD")}</span>
+                                            <span className="text-[10px] tracking-wider uppercase">{dayjs(date).format("MMM")}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-bold text-primary-200 uppercase tracking-wide">
+                                                {capitalize(dayjs(date).format("dddd"))}
+                                            </span>
+                                            <h4 className="text-sm font-bold text-typography-800">
+                                                {dayjs(date).format("DD [de] MMMM [de] YYYY")}
+                                            </h4>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">
@@ -276,51 +292,53 @@ export default function PublicWitnessCarousel({
                                         }, {})
                                     ).map(([title, items]) => (
                                         <div key={title} className="space-y-2">
-                                            {/* TÍTULO DO ARRANJO (UMA VEZ SÓ) */}
-                                            <h4 className="font-semibold text-primary-200">
-                                                {title}
+                                            {/* TÍTULO DO ARRANJO */}
+                                            <h4 className="text-xs font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary-200" />
+                                                <span>{title}</span>
                                             </h4>
 
                                             {/* HORÁRIOS */}
-                                            {items.map((s, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="border rounded-md p-3 bg-surface-100 hover:bg-surface-200"
-                                                >
-                                                    <div className="flex items-center gap-2 text-sm">
-                                                        <Clock size={14} className="text-primary-200" />
-                                                        <span className="text-typography-700">
-                                                            {formatHour(s.start_time)} - {formatHour(s.end_time)}
-                                                        </span>
-                                                    </div>
+                                            <div className="grid gap-2.5 sm:grid-cols-2">
+                                                {items.map((s, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="flex flex-col justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300 shadow-2xs gap-2"
+                                                    >
+                                                        <div className="flex items-center gap-1.5 text-xs text-typography-800 font-semibold">
+                                                            <Clock size={13} className="text-primary-200" />
+                                                            <span>
+                                                                {formatHour(s.start_time)} - {formatHour(s.end_time)}
+                                                            </span>
+                                                        </div>
 
-                                                    <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-surface-300">
-                                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-typography-600">
-                                                            <Users className="w-3.5 h-3.5 text-typography-400" />
-                                                            <span>Publicadores:</span>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {s.publishers && s.publishers.length > 0 ? (
-                                                                s.publishers.map((p, i) => (
-                                                                    <span
-                                                                        key={i}
-                                                                        className="px-2 py-0.5 rounded-md text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
-                                                                    >
-                                                                        {p.name}
+                                                        <div className="pt-2 border-t border-surface-300/60">
+                                                            <div className="flex items-center gap-1 text-[11px] font-semibold text-typography-500 mb-1.5">
+                                                                <Users className="w-3 h-3 text-typography-400" />
+                                                                <span>Publicadores:</span>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {s.publishers && s.publishers.length > 0 ? (
+                                                                    s.publishers.map((p, i) => (
+                                                                        <span
+                                                                            key={i}
+                                                                            className="px-2 py-0.5 rounded-md text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
+                                                                        >
+                                                                            {p.name}
+                                                                        </span>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="text-xs text-typography-400 italic">
+                                                                        Sem publicadores vinculados
                                                                     </span>
-                                                                ))
-                                                            ) : (
-                                                                <span className="text-xs text-typography-400 italic">
-                                                                    Sem publicadores vinculados
-                                                                </span>
-                                                            )}
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     ))}
-
                                 </div>
                             </div>
                         ))}
@@ -332,59 +350,66 @@ export default function PublicWitnessCarousel({
        *  FIXOS SEMANAIS
        * ================================================= */}
             {weeklyFixed.length > 0 && (
-                <div className="w-full rounded-xl shadow bg-surface-100 p-4 border-l-4 border-primary-200">
-                    <h2 className="font-bold text-primary-200 text-lg mb-3">
-                        Horários Fixos
-                    </h2>
+                <div className="w-full rounded-2xl shadow-sm bg-surface-100 p-4 sm:p-5 border border-surface-300 border-l-4 border-l-primary-200">
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                        <div className="flex items-center gap-2">
+                            <Clock className="w-5 h-5 text-primary-200" />
+                            <h2 className="font-bold text-typography-900 text-base sm:text-lg">
+                                Horários Fixos
+                            </h2>
+                        </div>
+                        <span className="text-xs font-semibold text-typography-500 bg-surface-200/70 px-2.5 py-1 rounded-lg border border-surface-300">
+                            {weeklyFixed.length} {weeklyFixed.length === 1 ? "horário" : "horários"}
+                        </span>
+                    </div>
 
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {weeklyFixed.map((item, idx) => (
                             <div
                                 key={idx}
-                                className="bg-surface-100 hover:bg-surface-200 p-3 rounded-lg border"
+                                className="flex flex-col justify-between p-4 rounded-xl bg-surface-200/40 border border-surface-300/80 shadow-2xs hover:border-primary-200 hover:shadow-xs transition-all duration-200 gap-3"
                             >
-                                <p className="font-semibold text-primary-200 text-sm mb-1">
-                                    {item.title}
-                                </p>
-
-                                {/* WEEK LABEL */}
-                                <div className="w-full flex justify-end">
-                                    {item.weekday !== null && (
-                                        <span className="inline-block mb-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary-200/10 text-primary-200">
-                                            {WEEKDAY_LABEL[item.weekday as Weekday]}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="font-bold text-sm text-primary-200">
+                                            {item.title}
                                         </span>
-                                    )}
-                                </div>
 
-                                <div className="text-xs space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <Clock size={14} className="text-typography-700" />
-                                        <span className="text-typography-700">
+                                        {item.weekday !== null && (
+                                            <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-primary-200/10 text-primary-200 border border-primary-200/20 shadow-2xs">
+                                                {WEEKDAY_LABEL[item.weekday as Weekday]}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 text-xs text-typography-700 font-semibold">
+                                        <Clock size={13} className="text-primary-200" />
+                                        <span>
                                             {formatHour(item.start_time)} - {formatHour(item.end_time)}
                                         </span>
                                     </div>
+                                </div>
 
-                                    <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-surface-300">
-                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-typography-600">
-                                            <Users className="w-3.5 h-3.5 text-typography-400" />
-                                            <span>Publicadores:</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-1">
-                                            {item.publishers && item.publishers.length > 0 ? (
-                                                item.publishers.map((p, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="px-2 py-0.5 rounded-md text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
-                                                    >
-                                                        {p.name}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-xs text-typography-400 italic">
-                                                    Sem publicadores vinculados
+                                <div className="pt-2 border-t border-surface-300/60">
+                                    <div className="flex items-center gap-1 text-[11px] font-semibold text-typography-500 mb-1.5">
+                                        <Users className="w-3 h-3 text-typography-400" />
+                                        <span>Publicadores:</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                        {item.publishers && item.publishers.length > 0 ? (
+                                            item.publishers.map((p, i) => (
+                                                <span
+                                                    key={i}
+                                                    className="px-2 py-0.5 rounded-md text-xs bg-surface-100 text-typography-800 border border-surface-300 font-medium"
+                                                >
+                                                    {p.name}
                                                 </span>
-                                            )}
-                                        </div>
+                                            ))
+                                        ) : (
+                                            <span className="text-xs text-typography-400 italic">
+                                                Sem publicadores vinculados
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -392,6 +417,7 @@ export default function PublicWitnessCarousel({
                     </div>
                 </div>
             )}
+
 
         </div>
     )
