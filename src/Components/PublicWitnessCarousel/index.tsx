@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
-import { Calendar, ChevronLeft, ChevronRight, Clock, Users } from "lucide-react"
+import isoWeek from "dayjs/plugin/isoWeek"
+import { Calendar, CalendarDays, ChevronLeft, ChevronRight, Clock, Sparkles, Users } from "lucide-react"
 import {
     IPublicWitnessFixedSchedule,
     IPublicWitnessRotationBlock
@@ -9,6 +10,7 @@ import {
 import { formatHour } from "@/utils/formatTime"
 import { Weekday, WEEKDAY_LABEL } from "@/types/fieldService"
 
+dayjs.extend(isoWeek)
 dayjs.locale("pt-br")
 
 const capitalize = (str: string) =>
@@ -60,6 +62,18 @@ export default function PublicWitnessCarousel({
     }, [rotationBlocks])
 
     const [currentIndex, setCurrentIndex] = useState(0)
+
+    // Inicia preferencialmente no mês atual ou no mais próximo
+    useEffect(() => {
+        if (months.length > 0) {
+            const currentYearMonth = dayjs().format("YYYY-MM")
+            const foundIndex = months.findIndex(m => m >= currentYearMonth)
+            if (foundIndex !== -1) {
+                setCurrentIndex(foundIndex)
+            }
+        }
+    }, [months])
+
     const currentMonth = months[currentIndex]
 
     /* =====================================================
@@ -138,52 +152,95 @@ export default function PublicWitnessCarousel({
                     </button>
                 </div>
 
-                <div className="w-full rounded-xl shadow bg-surface-100 p-4">
-                    <div className="flex flex-wrap gap-4">
-                    {currentMonthSchedules.map((item, idx) => (
-                        <div
-                            key={idx}
-                            className="w-full border rounded-lg p-4 bg-surface-100 hover:bg-surface-200"
-                        >
-                            <div className="flex justify-between mb-2">
-                                <p className="font-bold text-primary-200">
-                                    {dayjs(item.date).format("DD/MM/YYYY")}
-                                </p>
-                                <p className="text-xs text-typography-600">
-                                    {capitalize(dayjs(item.date).format("dddd"))}
-                                </p>
-                            </div>
+                {/* Lista de Cards da Escala de Testemunho Público */}
+                {currentMonthSchedules.length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center gap-2 text-typography-400 bg-surface-100 rounded-2xl border border-surface-300">
+                        <CalendarDays className="h-8 w-8 opacity-40 text-primary-200" />
+                        <span className="text-sm font-medium">Nenhum rodízio para este mês.</span>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        {currentMonthSchedules.map((item, idx) => {
+                            const itemDate = dayjs(item.date)
+                            const isCurrentWeek = itemDate.isSame(dayjs(), "isoWeek")
+                            const dayFormatted = itemDate.format("DD")
+                            const monthFormatted = itemDate.format("MMM").toUpperCase()
+                            const weekDayName = capitalize(itemDate.format("dddd"))
 
-                            <div className="h-px bg-typography-200 mb-3" />
+                            return (
+                                <div
+                                    key={idx}
+                                    className="flex flex-col justify-between p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200 gap-3"
+                                >
+                                    <div className="space-y-3">
+                                        {/* Cabeçalho da Data */}
+                                        <div className="flex items-center justify-between pb-3 border-b border-surface-300 gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200 rounded-xl font-bold border border-primary-200/20 shrink-0">
+                                                    <span className="text-base leading-none">{dayFormatted}</span>
+                                                    <span className="text-[10px] tracking-wider uppercase">{monthFormatted}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs font-bold text-primary-200 uppercase tracking-wide">
+                                                        {weekDayName}
+                                                    </span>
+                                                    <h4 className="text-sm font-bold text-typography-800">
+                                                        {itemDate.format("DD [de] MMMM [de] YYYY")}
+                                                    </h4>
+                                                </div>
+                                            </div>
 
-                            <p className="font-semibold text-sm mb-1 text-typography-700">{item.title}</p>
+                                            {isCurrentWeek && (
+                                                <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase tracking-wider shrink-0">
+                                                    Esta semana
+                                                </span>
+                                            )}
+                                        </div>
 
-                            <div className="flex items-center gap-2 text-sm">
-                                <Clock size={14} className="text-primary-200" />
-                                <span className="text-typography-700">
-                                    {formatHour(item.start_time)} - {formatHour(item.end_time)}
-                                </span>
-                            </div>
+                                        {/* Ponto / Arranjo e Horário */}
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-200/10 text-primary-200 border border-primary-200/20 shadow-2xs">
+                                                {item.title}
+                                            </span>
+                                            <div className="flex items-center gap-1.5 text-xs text-typography-700 font-semibold shrink-0">
+                                                <Clock size={14} className="text-primary-200" />
+                                                <span>
+                                                    {formatHour(item.start_time)} - {formatHour(item.end_time)}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                            <div className="flex items-start gap-2 text-sm mt-1">
-                                <Users size={14} className="text-primary-200 mt-1" />
-                                <span className="text-typography-700">
-                                    {item.publishers.length
-                                        ? item.publishers.join(", ")
-                                        : "Sem publicadores"}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-
-                    {currentMonthSchedules.length === 0 && (
-                        <p className="py-10 italic text-typography-600">
-                            Nenhum rodízio para este mês.
-                        </p>
-                    )}
-                </div>
+                                        {/* Publicadores */}
+                                        <div className="pt-2 border-t border-surface-300">
+                                            <div className="flex items-center gap-1.5 text-xs font-semibold text-typography-600 mb-2">
+                                                <Users className="w-3.5 h-3.5 text-typography-400" />
+                                                <span>Publicadores:</span>
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {item.publishers && item.publishers.length > 0 ? (
+                                                    item.publishers.map((p, i) => (
+                                                        <span
+                                                            key={i}
+                                                            className="px-2.5 py-1 rounded-lg text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
+                                                        >
+                                                            {p}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs text-typography-400 italic">
+                                                        Sem publicadores vinculados
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
-            </div>
+
 
             {/* =================================================
        *  ARRANJOS ESPECIAIS (POR DATA)
@@ -237,13 +294,27 @@ export default function PublicWitnessCarousel({
                                                         </span>
                                                     </div>
 
-                                                    <div className="flex items-start gap-2 text-sm mt-1">
-                                                        <Users size={14} className="text-primary-200 mt-1" />
-                                                        <span className="text-typography-700">
-                                                            {s.publishers.length
-                                                                ? s.publishers.map(p => p.name).join(", ")
-                                                                : "Sem publicadores"}
-                                                        </span>
+                                                    <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-surface-300">
+                                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-typography-600">
+                                                            <Users className="w-3.5 h-3.5 text-typography-400" />
+                                                            <span>Publicadores:</span>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {s.publishers && s.publishers.length > 0 ? (
+                                                                s.publishers.map((p, i) => (
+                                                                    <span
+                                                                        key={i}
+                                                                        className="px-2 py-0.5 rounded-md text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
+                                                                    >
+                                                                        {p.name}
+                                                                    </span>
+                                                                ))
+                                                            ) : (
+                                                                <span className="text-xs text-typography-400 italic">
+                                                                    Sem publicadores vinculados
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ))}
@@ -293,13 +364,27 @@ export default function PublicWitnessCarousel({
                                         </span>
                                     </div>
 
-                                    <div className="flex items-start gap-2">
-                                        <Users size={14} className="mt-1 text-typography-700" />
-                                        <span className="text-typography-700">
-                                            {item.publishers.length
-                                                ? item.publishers.map(p => p.name).join(", ")
-                                                : "Sem publicadores"}
-                                        </span>
+                                    <div className="flex flex-col gap-1.5 mt-2 pt-2 border-t border-surface-300">
+                                        <div className="flex items-center gap-1.5 text-xs font-semibold text-typography-600">
+                                            <Users className="w-3.5 h-3.5 text-typography-400" />
+                                            <span>Publicadores:</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-1">
+                                            {item.publishers && item.publishers.length > 0 ? (
+                                                item.publishers.map((p, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className="px-2 py-0.5 rounded-md text-xs bg-surface-200/70 text-typography-800 border border-surface-300 font-medium"
+                                                    >
+                                                        {p.name}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="text-xs text-typography-400 italic">
+                                                    Sem publicadores vinculados
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
