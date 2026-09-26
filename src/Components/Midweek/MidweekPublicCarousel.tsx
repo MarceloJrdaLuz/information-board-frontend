@@ -5,7 +5,7 @@ import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Landmark, Sparkles, Users } from "lucide-react";
+import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Clock, Landmark, Sparkles, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 dayjs.locale("pt-br");
@@ -78,6 +78,7 @@ export interface IPublicMidweekSchedule {
     cbsConductor?: string | null;
     cbsReader?: string | null;
     cbsSourceMaterial?: string | null;
+    cbsTimeMinutes?: number | null;
     parts: IPublicMidweekPart[];
 }
 
@@ -384,9 +385,17 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                         className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                     >
                                                         <div className="flex flex-col max-w-xl">
-                                                            <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
-                                                                {formatNumberedTitle(partNum, part.title)}
-                                                            </span>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
+                                                                    {formatNumberedTitle(partNum, part.title)}
+                                                                </span>
+                                                                {Boolean(part.timeMinutes) && (
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                        <Clock className="h-3 w-3 text-typography-500" />
+                                                                        {part.timeMinutes} min
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             {part.sourceMaterial && (
                                                                 <span className="text-[11px] text-typography-500 italic mt-0.5">
                                                                     {part.sourceMaterial}
@@ -409,9 +418,15 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                 return (
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
                                                         <div className="flex flex-col max-w-xl">
-                                                             <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
-                                                                {formatNumberedTitle(bibleNum, bibleReadingMain?.title || bibleReadingAux1?.title || "Leitura da Bíblia")}
-                                                            </span>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
+                                                                    {formatNumberedTitle(bibleNum, bibleReadingMain?.title || bibleReadingAux1?.title || "Leitura da Bíblia")}
+                                                                </span>
+                                                                <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                    <Clock className="h-3 w-3 text-typography-500" />
+                                                                    {bibleReadingMain?.timeMinutes || bibleReadingAux1?.timeMinutes || 4} min
+                                                                </span>
+                                                            </div>
                                                             {(bibleReadingMain?.sourceMaterial || bibleReadingAux1?.sourceMaterial) && (
                                                                 <span className="text-[11px] text-typography-500 italic mt-0.5">
                                                                     {bibleReadingMain?.sourceMaterial || bibleReadingAux1?.sourceMaterial}
@@ -487,9 +502,17 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                         className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                     >
                                                         <div className="flex flex-col max-w-xl">
-                                                            <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
-                                                                {formatNumberedTitle(partNum, part.title)}
-                                                            </span>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
+                                                                    {formatNumberedTitle(partNum, part.title)}
+                                                                </span>
+                                                                {Boolean(part.timeMinutes) && (
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                        <Clock className="h-3 w-3 text-typography-500" />
+                                                                        {part.timeMinutes} min
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             {part.sourceMaterial && (
                                                                 <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
                                                                     {part.sourceMaterial}
@@ -540,9 +563,17 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                             className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                         >
                                                             <div className="flex flex-col max-w-xl">
-                                                                <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
-                                                                    {formatNumberedTitle(matchingMainNum, part.title)}
-                                                                </span>
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
+                                                                        {formatNumberedTitle(matchingMainNum, part.title)}
+                                                                    </span>
+                                                                    {Boolean(part.timeMinutes) && (
+                                                                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                            <Clock className="h-3 w-3 text-typography-500" />
+                                                                            {part.timeMinutes} min
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                                 {part.sourceMaterial && (
                                                                     <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
                                                                         {part.sourceMaterial}
@@ -592,9 +623,17 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                             className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                         >
                                                             <div className="flex flex-col max-w-xl">
-                                                                <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
-                                                                    {formatNumberedTitle(matchingMainNum, part.title)}
-                                                                </span>
+                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                    <span className="font-bold text-xs sm:text-sm text-[#A87200] dark:text-[#FBBF24]">
+                                                                        {formatNumberedTitle(matchingMainNum, part.title)}
+                                                                    </span>
+                                                                    {Boolean(part.timeMinutes) && (
+                                                                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                            <Clock className="h-3 w-3 text-typography-500" />
+                                                                            {part.timeMinutes} min
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                                 {part.sourceMaterial && (
                                                                     <span className="text-xs text-typography-700 dark:text-typography-300 font-medium mt-0.5 leading-snug">
                                                                         {part.sourceMaterial}
@@ -652,9 +691,17 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                         className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2"
                                                     >
                                                         <div className="flex flex-col max-w-xl">
-                                                            <span className="font-bold text-xs sm:text-sm text-[#BA2A12] dark:text-[#FB7185]">
-                                                                {formatNumberedTitle(partNum, part.title)}
-                                                            </span>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#BA2A12] dark:text-[#FB7185]">
+                                                                    {formatNumberedTitle(partNum, part.title)}
+                                                                </span>
+                                                                {Boolean(part.timeMinutes) && (
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                        <Clock className="h-3 w-3 text-typography-500" />
+                                                                        {part.timeMinutes} min
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             {part.sourceMaterial && (
                                                                 <span className="text-[11px] text-typography-500 italic mt-0.5">
                                                                     {part.sourceMaterial}
@@ -677,9 +724,15 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                                 return (
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
                                                         <div className="flex flex-col">
-                                                            <span className="font-bold text-xs sm:text-sm text-[#BA2A12] dark:text-[#FB7185]">
-                                                                {formatNumberedTitle(cbsNum, cbsPart?.title || "Estudo Bíblico de Congregação")}
-                                                            </span>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className="font-bold text-xs sm:text-sm text-[#BA2A12] dark:text-[#FB7185]">
+                                                                    {formatNumberedTitle(cbsNum, cbsPart?.title || "Estudo Bíblico de Congregação")}
+                                                                </span>
+                                                                <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-typography-700 bg-surface-200/90 dark:bg-surface-200 px-2 py-0.5 rounded shrink-0">
+                                                                    <Clock className="h-3 w-3 text-typography-500" />
+                                                                    {week.cbsTimeMinutes || cbsPart?.timeMinutes || 30} min
+                                                                </span>
+                                                            </div>
                                                             {(week.cbsSourceMaterial || cbsPart?.sourceMaterial) && (
                                                                 <span className="text-[11px] text-typography-600 dark:text-typography-400 font-medium italic mt-0.5">
                                                                     {week.cbsSourceMaterial || cbsPart?.sourceMaterial}
