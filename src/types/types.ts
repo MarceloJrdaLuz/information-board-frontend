@@ -90,6 +90,7 @@ export interface ICongregation {
     creatorCongregation?: ICongregation
     speakers?: ISpeaker[]
     speakerCoordinator?: IPublisher
+    watchtowerConductor?: IPublisher
 }
 export interface ICongregationToTransferPublisher {
     id: string

@@ -170,7 +170,7 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                         ) : (
                             filtered.map((candidate, idx) => {
                                 const isSelected = candidate.id === assignment.publisher_id;
-                                const isTopPick = idx === 0 && !candidate.isUnavailable && !candidate.isMidweekChairman;
+                                const isTopPick = idx === 0 && !candidate.isUnavailable && !candidate.isMidweekChairman && !candidate.isWatchtowerConductor;
 
                                 return (
                                     <button
@@ -205,6 +205,13 @@ export const MechanicalSlotSelector: React.FC<MechanicalSlotSelectorProps> = ({
                                             <div className="flex items-center gap-1 text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">
                                                 <AlertTriangle className="h-3 w-3 shrink-0" />
                                                 <span>Presidente da Reunião do Meio de Semana</span>
+                                            </div>
+                                        )}
+
+                                        {candidate.isWatchtowerConductor && (
+                                            <div className="flex items-center gap-1 text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">
+                                                <AlertTriangle className="h-3 w-3 shrink-0" />
+                                                <span>Dirigente de A Sentinela (Fim de Semana)</span>
                                             </div>
                                         )}
 

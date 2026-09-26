@@ -89,6 +89,7 @@ export interface IMechanicalCandidateSuggestion {
     isUnavailable: boolean;
     unavailabilityReason?: string | null;
     isMidweekChairman: boolean;
+    isWatchtowerConductor?: boolean;
     isAssignedThisMeeting: boolean;
     daysSinceLastAny: number | null;
     daysSinceLastThisRole: number | null;
