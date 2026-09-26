@@ -297,7 +297,7 @@ function AdminWeekendArrangement() {
                             </div>
 
                             <p className="text-xs text-typography-500">
-                                Selecione um ancião ou servo ministerial batizado para dirigir o estudo da congregação.
+                                Selecione um ancião ou servo ministerial para dirigir o estudo da congregação.
                             </p>
 
                             <div className="flex flex-col gap-2 mt-1">
