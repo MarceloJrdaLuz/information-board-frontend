@@ -9,7 +9,6 @@ import {
     Calendar,
     CalendarDays,
     Clock,
-    Cpu,
     MapPin,
     Mic,
     Monitor,
@@ -35,7 +34,7 @@ interface UpcomingAssignmentsCardProps {
 
 export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCardProps) {
     const [activeTab, setActiveTab] = useState<TabType>("ALL");
-    const [selectedMonth, setSelectedMonth] = useState<string>("ALL");
+    const [selectedMonth, setSelectedMonth] = useState<string>("THIS_WEEK");
 
     const isMeetingAssignment = (a: IAssignment) => {
         return (
@@ -565,7 +564,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                 <div className="flex items-center gap-1 bg-surface-200/60 p-1 rounded-xl self-start sm:self-auto overflow-x-auto max-w-full">
                     <button
                         type="button"
-                        onClick={() => { setActiveTab("ALL"); setSelectedMonth("ALL"); }}
+                        onClick={() => setActiveTab("ALL")}
                         className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                             activeTab === "ALL"
                                 ? "bg-surface-100 text-typography-900 shadow-2xs"
@@ -580,7 +579,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                     <button
                         type="button"
-                        onClick={() => { setActiveTab("MEETINGS"); setSelectedMonth("ALL"); }}
+                        onClick={() => setActiveTab("MEETINGS")}
                         className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                             activeTab === "MEETINGS"
                                 ? "bg-surface-100 text-typography-900 shadow-2xs"
@@ -596,7 +595,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     {/* Aba Tarefas Mecânicas */}
                     <button
                         type="button"
-                        onClick={() => { setActiveTab("MECHANICAL"); setSelectedMonth("ALL"); }}
+                        onClick={() => setActiveTab("MECHANICAL")}
                         className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                             activeTab === "MECHANICAL"
                                 ? "bg-surface-100 text-typography-900 shadow-2xs"
@@ -611,7 +610,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                     <button
                         type="button"
-                        onClick={() => { setActiveTab("MINISTRY"); setSelectedMonth("ALL"); }}
+                        onClick={() => setActiveTab("MINISTRY")}
                         className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                             activeTab === "MINISTRY"
                                 ? "bg-surface-100 text-typography-900 shadow-2xs"
@@ -626,7 +625,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
 
                     <button
                         type="button"
-                        onClick={() => { setActiveTab("OTHERS"); setSelectedMonth("ALL"); }}
+                        onClick={() => setActiveTab("OTHERS")}
                         className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                             activeTab === "OTHERS"
                                 ? "bg-surface-100 text-typography-900 shadow-2xs"
@@ -646,6 +645,19 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-4 scrollbar-none">
                     <button
                         type="button"
+                        onClick={() => setSelectedMonth("THIS_WEEK")}
+                        className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap border shrink-0 flex items-center gap-1.5 ${
+                            selectedMonth === "THIS_WEEK"
+                                ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                                : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20 hover:bg-emerald-500/20"
+                        }`}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Esta semana ({thisWeekCount})
+                    </button>
+
+                    <button
+                        type="button"
                         onClick={() => setSelectedMonth("ALL")}
                         className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap border shrink-0 ${
                             selectedMonth === "ALL"
@@ -655,21 +667,6 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     >
                         Todos os meses ({filteredByCategory.length})
                     </button>
-
-                    {thisWeekCount > 0 && (
-                        <button
-                            type="button"
-                            onClick={() => setSelectedMonth("THIS_WEEK")}
-                            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap border shrink-0 flex items-center gap-1.5 ${
-                                selectedMonth === "THIS_WEEK"
-                                    ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
-                                    : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20 hover:bg-emerald-500/20"
-                            }`}
-                        >
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            Esta semana ({thisWeekCount})
-                        </button>
-                    )}
 
                     {availableMonths.map((m) => (
                         <button
@@ -740,6 +737,15 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                             ? "Nenhum outro serviço agendado no momento."
                             : "Você não possui designações futuras agendadas no momento."}
                     </p>
+                    {selectedMonth === "THIS_WEEK" && filteredByCategory.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setSelectedMonth("ALL")}
+                            className="mt-3 text-xs font-semibold text-primary-200 hover:underline cursor-pointer"
+                        >
+                            Ver todas as designações ({filteredByCategory.length})
+                        </button>
+                    )}
                 </div>
             )}
         </div>

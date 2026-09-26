@@ -68,8 +68,8 @@ export default function NavBarRoot({ children }: NavBarRootProps) {
                     <NavBar.Logo isMenuOpen={isMenuOpen} isDesktop={isDesktop} />
                 </div>
 
-                {/* Lista de Navegação com Scrollbar suave */}
-                <div className="flex-1 overflow-y-auto thin-scrollbar px-3 py-3 space-y-1">
+                {/* Lista de Navegação com Scrollbar invisível */}
+                <div className="flex-1 overflow-y-auto hide-scrollbar px-3 py-3 space-y-1">
                     {children}
                 </div>
             </nav>
