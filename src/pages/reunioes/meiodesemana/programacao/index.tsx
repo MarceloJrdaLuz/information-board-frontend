@@ -25,6 +25,7 @@ import {
 } from "@/types/midweek";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
 import { useAtom } from "jotai";
 import {
     Calendar as CalendarIcon,
@@ -42,6 +43,8 @@ import {
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+dayjs.extend(isoWeek);
 
 const MONTH_NAMES = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -114,7 +117,17 @@ function MidweekScheduleAssistantPage() {
             setSchedules(res.data);
             if (res.data && res.data.length > 0) {
                 if (!selectedScheduleId || !res.data.some((s: IMidweekSchedule) => s.id === selectedScheduleId)) {
-                    setSelectedScheduleId(res.data[0].id);
+                    const currentWeek = res.data.find((s: IMidweekSchedule) => {
+                        const mDate = dayjs(s.meetingDate || s.weekDate);
+                        const wDate = dayjs(s.weekDate);
+                        return (
+                            mDate.isSame(dayjs(), "isoWeek") ||
+                            wDate.isSame(dayjs(), "isoWeek") ||
+                            mDate.isSame(dayjs(), "week") ||
+                            wDate.isSame(dayjs(), "week")
+                        );
+                    });
+                    setSelectedScheduleId(currentWeek ? currentWeek.id : res.data[0].id);
                 }
             } else {
                 setSelectedScheduleId(null);
@@ -376,6 +389,14 @@ function MidweekScheduleAssistantPage() {
                         {schedules.map((s) => {
                             const isSelected = s.id === selectedScheduleId;
                             const weekDay = dayjs(s.meetingDate || s.weekDate).format("DD/MM");
+                            const mDate = dayjs(s.meetingDate || s.weekDate);
+                            const wDate = dayjs(s.weekDate);
+                            const isCurrent = (
+                                mDate.isSame(dayjs(), "isoWeek") ||
+                                wDate.isSame(dayjs(), "isoWeek") ||
+                                mDate.isSame(dayjs(), "week") ||
+                                wDate.isSame(dayjs(), "week")
+                            );
                             const isWeekCancelled = s.isSpecial && (
                                 s.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
                                 s.specialType === MidweekSpecialType.REGIONAL_CONVENTION ||
@@ -398,6 +419,12 @@ function MidweekScheduleAssistantPage() {
                                             : "bg-surface-100 text-typography-700 border border-surface-300 hover:bg-surface-200"
                                     }`}
                                 >
+                                    {isCurrent && (
+                                        <span
+                                            className={`w-2 h-2 rounded-full ${isSelected ? "bg-white" : "bg-emerald-500 animate-pulse"}`}
+                                            title="Semana Atual"
+                                        />
+                                    )}
                                     <span>Semana de {weekDay}</span>
                                     {isCompleted && (
                                         <CheckCircle2 className={`h-3.5 w-3.5 ${isSelected ? "text-white" : "text-emerald-500"}`} />
