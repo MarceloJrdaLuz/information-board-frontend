@@ -56,6 +56,7 @@ interface EventTypeOption {
         cancelWeekendMeeting: boolean;
         isCircuitOverseerVisit: boolean;
         cancelCleaning: boolean;
+        cancelMechanical: boolean;
         fieldServiceImpact: EventImpactScope;
         publicWitnessingImpact: EventImpactScope;
         showOnPublicBoard: boolean;
@@ -80,6 +81,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: true,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: true,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -102,6 +104,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: true,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: true,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -124,6 +127,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -146,6 +150,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: true,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -168,6 +173,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -190,6 +196,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -217,6 +224,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     const [cancelWeekendMeeting, setCancelWeekendMeeting] = useState(true);
     const [isCircuitOverseerVisit, setIsCircuitOverseerVisit] = useState(false);
     const [cancelCleaning, setCancelCleaning] = useState(false);
+    const [cancelMechanical, setCancelMechanical] = useState(true);
     const [fieldServiceImpact, setFieldServiceImpact] = useState<EventImpactScope>(EventImpactScope.EVENT_DAYS_ONLY);
     const [publicWitnessingImpact, setPublicWitnessingImpact] = useState<EventImpactScope>(EventImpactScope.EVENT_DAYS_ONLY);
     const [showOnPublicBoard, setShowOnPublicBoard] = useState(true);
@@ -240,6 +248,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
             setCancelWeekendMeeting(event.cancelWeekendMeeting ?? false);
             setIsCircuitOverseerVisit(event.isCircuitOverseerVisit ?? false);
             setCancelCleaning(event.cancelCleaning ?? false);
+            setCancelMechanical(event.cancelMechanical ?? false);
             setFieldServiceImpact(event.fieldServiceImpact || EventImpactScope.NONE);
             setPublicWitnessingImpact(event.publicWitnessingImpact || EventImpactScope.NONE);
             setShowOnPublicBoard(event.showOnPublicBoard ?? true);
@@ -258,6 +267,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
             setCancelWeekendMeeting(def.defaults.cancelWeekendMeeting);
             setIsCircuitOverseerVisit(def.defaults.isCircuitOverseerVisit);
             setCancelCleaning(def.defaults.cancelCleaning);
+            setCancelMechanical(def.defaults.cancelMechanical);
             setFieldServiceImpact(def.defaults.fieldServiceImpact);
             setPublicWitnessingImpact(def.defaults.publicWitnessingImpact);
             setShowOnPublicBoard(def.defaults.showOnPublicBoard);
@@ -279,6 +289,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         setCancelWeekendMeeting(preset.defaults.cancelWeekendMeeting);
         setIsCircuitOverseerVisit(preset.defaults.isCircuitOverseerVisit);
         setCancelCleaning(preset.defaults.cancelCleaning);
+        setCancelMechanical(preset.defaults.cancelMechanical);
         setFieldServiceImpact(preset.defaults.fieldServiceImpact);
         setPublicWitnessingImpact(preset.defaults.publicWitnessingImpact);
         setShowOnPublicBoard(preset.defaults.showOnPublicBoard);
@@ -330,6 +341,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                 cancelWeekendMeeting,
                 isCircuitOverseerVisit,
                 cancelCleaning,
+                cancelMechanical,
                 fieldServiceImpact,
                 publicWitnessingImpact,
                 showOnPublicBoard,
@@ -633,6 +645,31 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 </div>
                             </div>
 
+                            {/* Partes Mecânicas (Indicadores e Som) */}
+                            <div className={`p-3 rounded-xl border flex items-start justify-between gap-3 transition-colors ${
+                                cancelMechanical ? "bg-amber-500/10 border-amber-500/30" : "bg-surface-100 border-surface-300"
+                            }`}>
+                                <div className="flex flex-col gap-0.5">
+                                    <strong className="text-xs font-bold text-typography-900">
+                                        Partes Mecânicas (Indicadores e Som)
+                                    </strong>
+                                    <span className="text-[11px] text-typography-500">
+                                        {cancelMechanical
+                                            ? "Escala e geração automática suspensas nesta semana/período"
+                                            : "Escala mantida normalmente"}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-[10px] font-bold uppercase text-typography-500">
+                                        Suspender?
+                                    </span>
+                                    <Switch
+                                        checked={cancelMechanical}
+                                        onCheckedChange={setCancelMechanical}
+                                    />
+                                </div>
+                            </div>
+
                             {/* Exibir no Mural Público */}
                             <div className={`p-3 rounded-xl border flex items-start justify-between gap-3 transition-colors ${
                                 showOnPublicBoard ? "bg-primary-100/15 border-primary-200/40" : "bg-surface-100 border-surface-300"
@@ -841,6 +878,12 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 <span className="truncate">Limpeza do Salão:</span>
                                 <span className={`shrink-0 ${cancelCleaning ? "font-bold text-amber-600 dark:text-amber-400" : "font-semibold text-emerald-600"}`}>
                                     {cancelCleaning ? "Suspensa" : "Mantida"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Partes Mecânicas:</span>
+                                <span className={`shrink-0 ${cancelMechanical ? "font-bold text-amber-600 dark:text-amber-400" : "font-semibold text-emerald-600"}`}>
+                                    {cancelMechanical ? "Suspensa" : "Mantida"}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between gap-2 min-w-0">
