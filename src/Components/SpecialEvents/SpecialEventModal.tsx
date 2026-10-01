@@ -381,7 +381,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     return (
         <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="max-w-3xl w-[95vw] max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
+            <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
                 <DialogHeader className="pb-3 border-b border-surface-300">
                     <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 flex items-center gap-2">
                         <CalendarDays className="h-5 w-5 text-primary-200" />
@@ -734,88 +734,91 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
         {/* Modal de Confirmação de Salvamento com Datas em Destaque */}
         <Dialog open={confirmSaveOpen} onOpenChange={setConfirmSaveOpen}>
-            <DialogContent className="max-w-md w-[95vw] bg-surface-100 border border-surface-300 p-5 rounded-2xl shadow-xl z-[70]">
-                <DialogHeader className="flex flex-col items-center text-center gap-2">
-                    <div className="w-12 h-12 rounded-full bg-primary-200/15 text-primary-200 flex items-center justify-center">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+                    <div className="w-12 h-12 rounded-full bg-primary-200/15 text-primary-200 flex items-center justify-center shrink-0">
                         <CalendarCheck className="h-6 w-6" />
                     </div>
-                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-center break-words">
                         {isEditing ? "Confirmar Alterações do Evento" : "Confirmar Criação do Evento"}
                     </DialogTitle>
-                    <DialogDescription className="text-xs text-typography-600">
+                    <DialogDescription className="text-xs text-typography-600 text-center break-words max-w-full">
                         Confira atentamente as datas e impactos antes de confirmar o salvamento.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-3 py-2">
+                <div className="flex flex-col gap-3 py-1 min-w-0">
                     {/* Título do Evento */}
-                    <div className="flex items-center gap-2 p-2.5 rounded-lg bg-surface-200/60 border border-surface-300">
-                        <span className="text-xs font-semibold text-typography-500 uppercase tracking-wide">Evento:</span>
-                        <span className="text-sm font-bold text-typography-900 truncate">{title}</span>
+                    <div className="flex items-start gap-2 p-2.5 rounded-lg bg-surface-200/60 border border-surface-300 min-w-0">
+                        <span className="text-[11px] font-semibold text-typography-500 uppercase tracking-wide shrink-0 pt-0.5">Evento:</span>
+                        <span className="text-xs sm:text-sm font-bold text-typography-900 break-words min-w-0 flex-1">{title}</span>
                     </div>
 
                     {/* Datas em Grande Destaque */}
-                    <div className="p-3.5 rounded-xl bg-primary-200/10 border-2 border-primary-200/40 flex flex-col gap-2">
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-primary-200/10 border-2 border-primary-200/40 flex flex-col gap-2 min-w-0">
                         <div className="flex items-center justify-between text-xs font-semibold text-primary-200 uppercase tracking-wider">
                             <span>Período Selecionado</span>
-                            <span className="bg-primary-200/20 px-2 py-0.5 rounded-full text-[11px] font-bold">
+                            <span className="bg-primary-200/20 px-2 py-0.5 rounded-full text-[11px] font-bold shrink-0">
                                 {totalDays} {totalDays === 1 ? "dia" : "dias"}
                             </span>
                         </div>
 
                         {isSingleDay ? (
-                            <div className="flex flex-col items-center text-center py-1">
-                                <span className="text-base sm:text-lg font-extrabold text-typography-900 capitalize">
+                            <div className="flex flex-col items-center text-center py-1 px-1 min-w-0">
+                                <span className="text-sm sm:text-base font-extrabold text-typography-900 capitalize text-center break-words leading-snug">
                                     {sDateObj.format("dddd, DD [de] MMMM [de] YYYY")}
                                 </span>
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-2 pt-1">
+                            <div className="flex flex-col gap-2 pt-1 min-w-0">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center">
-                                    <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                    <div className="flex flex-col p-2 sm:p-2.5 rounded-lg bg-surface-100 border border-primary-200/30 min-w-0">
                                         <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">Início</span>
-                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize">
+                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize break-words">
                                             {sDateObj.format("dddd")}
                                         </span>
-                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize">
+                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize break-words">
                                             {sDateObj.format("DD [de] MMMM [de] YYYY")}
                                         </span>
                                     </div>
-                                    <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                    <div className="flex flex-col p-2 sm:p-2.5 rounded-lg bg-surface-100 border border-primary-200/30 min-w-0">
                                         <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">Término</span>
-                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize">
+                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize break-words">
                                             {eDateObj.format("dddd")}
                                         </span>
-                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize">
+                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize break-words">
                                             {eDateObj.format("DD [de] MMMM [de] YYYY")}
                                         </span>
                                     </div>
                                 </div>
+                                <span className="text-xs font-bold text-typography-900 capitalize text-center break-words mt-0.5">
+                                    {sDateObj.format("DD [de] MMMM [de] YYYY")} até {eDateObj.format("DD [de] MMMM [de] YYYY")}
+                                </span>
                             </div>
                         )}
                     </div>
 
                     {/* Resumo dos Impactos */}
-                    <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-surface-200/40 border border-surface-300 text-xs">
+                    <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-surface-200/40 border border-surface-300 text-xs min-w-0">
                         <span className="font-semibold text-typography-700 text-[11px] uppercase tracking-wide">
                             Impactos Programados:
                         </span>
-                        <div className="grid grid-cols-1 gap-1 text-[11px] text-typography-700">
-                            <div className="flex items-center justify-between">
-                                <span>Reunião de Meio de Semana:</span>
-                                <span className={cancelMidweekMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                        <div className="grid grid-cols-1 gap-1.5 text-[11px] text-typography-700">
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Reunião de Meio de Semana:</span>
+                                <span className={`shrink-0 ${cancelMidweekMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}`}>
                                     {cancelMidweekMeeting ? "Cancelada" : "Mantida"}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span>Reunião de Fim de Semana:</span>
-                                <span className={cancelWeekendMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Reunião de Fim de Semana:</span>
+                                <span className={`shrink-0 ${cancelWeekendMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}`}>
                                     {cancelWeekendMeeting ? "Cancelada" : "Mantida"}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span>Limpeza do Salão:</span>
-                                <span className={cancelCleaning ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Limpeza do Salão:</span>
+                                <span className={`shrink-0 ${cancelCleaning ? "font-bold text-red-500" : "font-semibold text-emerald-600"}`}>
                                     {cancelCleaning ? "Cancelada" : "Mantida"}
                                 </span>
                             </div>
@@ -823,14 +826,14 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </div>
                 </div>
 
-                <DialogFooter className="mt-2 flex sm:justify-end items-center gap-2">
+                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         disabled={loading}
                         onClick={() => setConfirmSaveOpen(false)}
-                        className="text-xs text-typography-700"
+                        className="w-full sm:w-auto text-xs text-typography-700 h-9"
                     >
                         Voltar e Corrigir
                     </Button>
@@ -839,65 +842,65 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         size="sm"
                         disabled={loading}
                         onClick={executeSave}
-                        className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
+                        className="w-full sm:w-auto bg-primary-200 hover:opacity-90 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm h-9"
                     >
                         {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         <span>Confirmar e Salvar</span>
                     </Button>
-                </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
 
         {/* Modal de Confirmação de Exclusão */}
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-            <DialogContent className="max-w-md w-[95vw] bg-surface-100 border border-surface-300 p-5 rounded-2xl shadow-xl z-[70]">
-                <DialogHeader className="flex flex-col items-center text-center gap-2">
-                    <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-600 flex items-center justify-center">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+                    <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-600 flex items-center justify-center shrink-0">
                         <AlertTriangle className="h-6 w-6" />
                     </div>
-                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-center break-words">
                         Excluir Evento Especial
                     </DialogTitle>
-                    <DialogDescription className="text-xs text-typography-600 text-center">
-                        Tem certeza que deseja excluir o evento <strong className="text-typography-900">"{title || event?.title}"</strong>?
+                    <DialogDescription className="text-xs text-typography-600 text-center break-words max-w-full">
+                        Tem certeza que deseja excluir o evento <strong className="text-typography-900 break-words">"{title || event?.title}"</strong>?
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-2.5 my-1">
+                <div className="flex flex-col gap-2.5 my-1 min-w-0">
                     {/* Data por extenso em destaque */}
                     {deleteStartDate && (
-                        <div className="p-3 rounded-xl bg-surface-200/60 border border-surface-300 flex flex-col gap-1.5 text-center">
+                        <div className="p-3 rounded-xl bg-surface-200/60 border border-surface-300 flex flex-col gap-1.5 text-center min-w-0">
                             <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-typography-500 uppercase tracking-wider">
-                                <CalendarDays className="h-3.5 w-3.5 text-primary-200" />
+                                <CalendarDays className="h-3.5 w-3.5 text-primary-200 shrink-0" />
                                 <span>{isDeleteSingleDay ? "Data do Evento" : "Período do Evento"}</span>
                             </div>
                             {isDeleteSingleDay ? (
-                                <span className="text-sm sm:text-base font-bold text-typography-900 capitalize">
+                                <span className="text-sm sm:text-base font-bold text-typography-900 capitalize break-words">
                                     {sDelObj.format("dddd, DD [de] MMMM [de] YYYY")}
                                 </span>
                             ) : (
-                                <div className="flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1.5 min-w-0">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center pt-0.5">
-                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300">
+                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300 min-w-0">
                                             <span className="text-[9px] font-semibold text-typography-500 uppercase">Início</span>
-                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight">
+                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight break-words">
                                                 {sDelObj.format("dddd")}
                                             </span>
-                                            <span className="text-xs font-bold text-primary-200 capitalize">
+                                            <span className="text-xs font-bold text-primary-200 capitalize break-words">
                                                 {sDelObj.format("DD [de] MMMM [de] YYYY")}
                                             </span>
                                         </div>
-                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300">
+                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300 min-w-0">
                                             <span className="text-[9px] font-semibold text-typography-500 uppercase">Término</span>
-                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight">
+                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight break-words">
                                                 {eDelObj.format("dddd")}
                                             </span>
-                                            <span className="text-xs font-bold text-primary-200 capitalize">
+                                            <span className="text-xs font-bold text-primary-200 capitalize break-words">
                                                 {eDelObj.format("DD [de] MMMM [de] YYYY")}
                                             </span>
                                         </div>
                                     </div>
-                                    <span className="text-xs font-bold text-typography-900 capitalize mt-0.5">
+                                    <span className="text-xs font-bold text-typography-900 capitalize mt-0.5 break-words">
                                         {sDelObj.format("DD [de] MMMM [de] YYYY")} até {eDelObj.format("DD [de] MMMM [de] YYYY")}
                                     </span>
                                 </div>
@@ -905,24 +908,24 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         </div>
                     )}
 
-                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-700 dark:text-red-400 flex flex-col gap-1">
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-700 dark:text-red-400 flex flex-col gap-1 min-w-0">
                         <span className="font-bold flex items-center gap-1.5">
                             <ShieldAlert className="h-4 w-4 shrink-0" /> Atenção
                         </span>
-                        <p className="text-[11px] leading-relaxed">
+                        <p className="text-[11px] leading-relaxed break-words">
                             Ao excluir este evento, os cancelamentos de reuniões e programações vinculadas serão revertidos ao estado normal.
                         </p>
                     </div>
                 </div>
 
-                <DialogFooter className="mt-3 flex sm:justify-end items-center gap-2">
+                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         disabled={deleting}
                         onClick={() => setConfirmDeleteOpen(false)}
-                        className="text-xs text-typography-700"
+                        className="w-full sm:w-auto text-xs text-typography-700 h-9"
                     >
                         Cancelar
                     </Button>
@@ -931,12 +934,12 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         size="sm"
                         disabled={deleting}
                         onClick={executeDelete}
-                        className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
+                        className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm h-9"
                     >
                         {deleting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                         <span>Sim, Excluir</span>
                     </Button>
-                </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
         </>
