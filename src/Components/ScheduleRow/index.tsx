@@ -584,8 +584,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 {checkedOptions.includes("Orador manual") && (
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-semibold text-typography-700">Orador manual</span>
-                    <Input
-                      className="!my-0 bg-surface-100"
+                    <input
+                      className="w-full min-h-[58px] rounded-xl border border-surface-300 bg-surface-100 px-4 py-2.5 text-sm text-typography-800 shadow-xs hover:border-primary-200/80 focus:border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200/20 font-medium transition-all placeholder:text-typography-400 placeholder:text-xs"
                       value={current.manualSpeaker || ""}
                       onChange={(e) => handleManualChange("manualSpeaker", e.target.value)}
                       type="text"
@@ -596,8 +596,8 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                 {checkedOptions.includes("Tema manual") && (
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-semibold text-typography-700">Tema manual</span>
-                    <Input
-                      className="!my-0 bg-surface-100"
+                    <input
+                      className="w-full min-h-[58px] rounded-xl border border-surface-300 bg-surface-100 px-4 py-2.5 text-sm text-typography-800 shadow-xs hover:border-primary-200/80 focus:border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200/20 font-medium transition-all placeholder:text-typography-400 placeholder:text-xs"
                       value={current.manualTalk || ""}
                       onChange={(e) => handleManualChange("manualTalk", e.target.value)}
                       type="text"
@@ -671,12 +671,11 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
                   </span>
                 )}
               </div>
-              <Input
-                className="!my-0 bg-surface-100"
+              <input
+                className="w-full min-h-[58px] rounded-xl border border-surface-300 bg-surface-100 px-4 py-2.5 text-sm text-typography-800 shadow-xs hover:border-primary-200/80 focus:border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200/20 font-medium transition-all"
                 value={current.watchTowerStudyTitle || ""}
                 onChange={(e) => handleManualChange("watchTowerStudyTitle", e.target.value)}
                 type="text"
-                placeholder="Tema do estudo"
               />
             </div>
           </div>
