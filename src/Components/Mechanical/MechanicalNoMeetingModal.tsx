@@ -131,6 +131,20 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                             Nenhum irmão será escalado automaticamente nesta semana e os cartões mecânicos ficarão pausados.
                         </span>
                     </div>
+
+                    {/* Dica para Eventos Oficiais */}
+                    <div className="p-3 bg-blue-500/10 dark:bg-blue-950/30 rounded-xl border border-blue-500/20 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between gap-2">
+                        <div className="flex flex-col gap-0.5">
+                            <span className="font-semibold">Assembleia, Congresso ou Visita?</span>
+                            <span className="text-[11px] text-typography-500">Para sincronizar também discursos, reuniões e campo automaticamente.</span>
+                        </div>
+                        <a
+                            href="/congregacao/eventos-especiais"
+                            className="text-xs font-bold text-primary-200 hover:underline shrink-0"
+                        >
+                            Central de Eventos →
+                        </a>
+                    </div>
                 </div>
 
                 <DialogFooter className="flex sm:justify-end gap-2 pt-2 border-t border-surface-300">

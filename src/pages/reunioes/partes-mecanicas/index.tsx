@@ -20,12 +20,15 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { useAtom } from "jotai";
+import { useRouter } from "next/router";
 import {
     Calendar,
     CalendarCheck2,
+    CalendarDays,
     CalendarX2,
     ChevronLeft,
     ChevronRight,
+    ExternalLink,
     FileDown,
     Landmark,
     Loader2,
@@ -48,6 +51,7 @@ const MONTH_NAMES = [
 ];
 
 function MechanicalSchedulePage() {
+    const router = useRouter();
     const { user } = useAuthContext();
     const congregationId = user?.congregation?.id;
     const congregationName = user?.congregation?.name;
@@ -443,15 +447,30 @@ function MechanicalSchedulePage() {
                                                 </p>
                                             </div>
                                             <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
-                                                    className="text-xs text-typography-700 border-surface-300 hover:bg-surface-200"
-                                                >
-                                                    Alterar Motivo
-                                                </Button>
+                                                {week.isSpecialEvent ? (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => router.push("/congregacao/eventos-especiais")}
+                                                        className="text-xs text-primary-200 border-primary-200/40 hover:bg-primary-100/10 font-semibold gap-1.5"
+                                                        title="Abrir Central de Eventos Especiais para editar este evento"
+                                                    >
+                                                        <CalendarDays className="w-3.5 h-3.5" />
+                                                        <span>Gerenciar em Eventos Especiais</span>
+                                                        <ExternalLink className="w-3 h-3 opacity-70" />
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleOpenNoMeetingModal(week.weekStartDate, week.formattedWeek, week.eventTitle)}
+                                                        className="text-xs text-typography-700 border-surface-300 hover:bg-surface-200"
+                                                    >
+                                                        Alterar Motivo
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     type="button"
                                                     variant="outline"
