@@ -760,3 +760,19 @@ input[type=number] {
   }
 
 }
+
+/* Animação visível e cadenciada para botões e indicadores com alterações pendentes */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(0.98);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite !important;
+}

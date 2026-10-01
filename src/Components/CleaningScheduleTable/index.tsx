@@ -1,16 +1,16 @@
+import { ICleaningScheduleResponse } from "@/types/cleaning";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { ICleaningScheduleResponse } from "@/types/cleaning";
-import { CalendarDays, Sparkles, Users } from "lucide-react";
-import React from "react";
+import { Sparkles, Trash2, Users } from "lucide-react";
 
 dayjs.locale("pt-br");
 
 interface Props {
     schedule: ICleaningScheduleResponse;
+    onDelete?: (id: string) => Promise<void>;
 }
 
-export default function CleaningScheduleTable({ schedule }: Props) {
+export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
     if (!schedule.schedules || schedule.schedules.length === 0) {
         return null;
     }
@@ -47,19 +47,31 @@ export default function CleaningScheduleTable({ schedule }: Props) {
                         >
                             <div className="space-y-3">
                                 {/* Header da Data */}
-                                <div className="flex items-center gap-3 pb-3 border-b border-surface-300">
-                                    <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200  rounded-xl font-bold border border-primary-200/20 shrink-0">
-                                        <span className="text-base leading-none">{dayFormatted}</span>
-                                        <span className="text-[10px] tracking-wider uppercase">{monthFormatted}</span>
+                                <div className="flex items-center justify-between pb-3 border-b border-surface-300">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200  rounded-xl font-bold border border-primary-200/20 shrink-0">
+                                            <span className="text-base leading-none">{dayFormatted}</span>
+                                            <span className="text-[10px] tracking-wider uppercase">{monthFormatted}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-semibold text-primary-200 uppercase tracking-wide">
+                                                {weekDayFormatted}
+                                            </span>
+                                            <h4 className="text-sm font-bold text-typography-800">
+                                                {itemDate.format("DD [de] MMMM [de] YYYY")}
+                                            </h4>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <span className="text-xs font-semibold text-primary-200 uppercase tracking-wide">
-                                            {weekDayFormatted}
-                                        </span>
-                                        <h4 className="text-sm font-bold text-typography-800">
-                                            {itemDate.format("DD [de] MMMM [de] YYYY")}
-                                        </h4>
-                                    </div>
+                                    {onDelete && item.id && (
+                                        <button
+                                            type="button"
+                                            onClick={() => onDelete(item.id)}
+                                            className="p-1.5 text-typography-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                                            title="Excluir esta data da limpeza"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
 
                                 {/* Grupo Designado */}

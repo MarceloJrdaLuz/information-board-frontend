@@ -8,6 +8,8 @@ export interface IPublicSchedule {
   isCurrentWeek: boolean
   isSpecial?: boolean
   specialName?: string
+  specialTheme?: string | null
+  specialLocation?: string | null
   chairman?: { name: string }
   reader?: { name: string }
   speaker?: { name: string; congregation?: string }

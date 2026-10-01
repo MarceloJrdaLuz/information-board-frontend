@@ -1,14 +1,14 @@
-import React, { useState } from "react";
 import { IMidweekSchedule } from "@/types/midweek";
+import { ArrowRightLeft, BookOpen, Calendar, Music, ShieldAlert, UserCheck } from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 import { MidweekSongSelect } from "./MidweekSongSelect";
-import { Music, UserCheck, ShieldAlert, BookOpen, ArrowRightLeft } from "lucide-react";
-import { Button } from "@/Components/ui/button";
 
 interface MidweekWeekHeaderProps {
     schedule: IMidweekSchedule;
     onUpdateSchedule: (data: Partial<IMidweekSchedule>) => Promise<void>;
-    onOpenSpecialWeekModal: () => void;
+    onOpenSpecialWeekModal?: () => void;
 }
 
 export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
@@ -55,22 +55,23 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
 
                 <div className="flex items-center gap-2">
                     {schedule.isSpecial ? (
-                        <div
-                            onClick={onOpenSpecialWeekModal}
-                            className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200/60 transition-colors"
+                        <Link
+                            href="/congregacao/eventos-especiais"
+                            title="Gerenciar este evento na Central de Eventos Especiais"
+                            className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200/60 transition-colors shadow-sm"
                         >
                             <ShieldAlert className="h-4 w-4 text-amber-600" />
                             <span>{schedule.specialName || "Semana Especial"}</span>
-                        </div>
+                        </Link>
                     ) : (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onOpenSpecialWeekModal}
-                            className="text-xs text-typography-700 border-surface-300 hover:bg-surface-200"
+                        <Link
+                            href="/congregacao/eventos-especiais?action=new"
+                            title="Cadastrar evento na Central de Eventos Especiais"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-300 bg-surface-100 hover:bg-surface-200 text-typography-700 text-xs font-semibold transition-colors shadow-sm"
                         >
-                            Configurar Semana Especial
-                        </Button>
+                            <Calendar className="h-4 w-4 text-primary-500" />
+                            <span>Configurar Evento Especial</span>
+                        </Link>
                     )}
                 </div>
             </div>

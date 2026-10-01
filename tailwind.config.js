@@ -83,6 +83,15 @@ module.exports = {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			keyframes: {
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1', transform: 'scale(1)' },
+					'50%': { opacity: '0.65', transform: 'scale(0.98)' },
+				}
+			},
+			animation: {
+				'pulse-slow': 'pulse-slow 1s ease-in-out infinite',
 			}
 		}
 	},

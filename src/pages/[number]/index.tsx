@@ -7,15 +7,20 @@ import PrechingHomeIcon from "@/Components/Icons/PreachingHomeIcon"
 import PublicMeetingIcon from "@/Components/Icons/PublicMeetingIcon"
 import ReportIcon from "@/Components/Icons/ReportIcon"
 import { useFetch } from "@/hooks/useFetch"
+import { ISpecialEvent } from "@/types/specialEvent"
 import { ICongregation, INotice } from "@/types/types"
+import dayjs from "dayjs"
+import 'dayjs/locale/pt-br'
 import { AnimatePresence, motion } from "framer-motion"
 import { useAtomValue } from "jotai"
 import {
     Bell,
     Calculator as CalculatorIcon,
+    CalendarClock,
     CalendarDays as CalendarDaysIcon,
     ChevronRight,
-    LogIn
+    LogIn,
+    MapPin
 } from "lucide-react"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
@@ -70,6 +75,22 @@ function Home({ serverNumber }: HomeProps) {
         : ""
     const { data: noticesData, isLoading: isLoadingNotices } =
         useFetch<INotice[]>(fetchConfigNoticesData)
+
+    const fetchConfigSpecialEvents = congregation?.id
+        ? `/congregation/${congregation.id}/special-events/public`
+        : ""
+    const { data: specialEventsData } =
+        useFetch<ISpecialEvent[]>(fetchConfigSpecialEvents)
+
+    const upcomingEvent = useMemo(() => {
+        if (!specialEventsData || specialEventsData.length === 0) return null
+        const now = dayjs()
+        const oneMonthFromNow = now.add(1, "month").endOf("day")
+        return specialEventsData.find((evt) => {
+            const start = dayjs(evt.startDate)
+            return start.isBefore(oneMonthFromNow)
+        }) || null
+    }, [specialEventsData])
 
     useEffect(() => {
         if (noticesData) {
@@ -287,12 +308,62 @@ function Home({ serverNumber }: HomeProps) {
                         ))}
                     </div>
                 ) : (
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
-                    >
+                    <>
+                        {upcomingEvent && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-3.5 sm:mb-4"
+                            >
+                                <Link
+                                    href={`/${number}/eventos`}
+                                    className="group flex items-center justify-between p-3.5 sm:p-4 rounded-xl bg-surface-100 border border-primary-200/40 hover:border-primary-200 shadow-xs hover:shadow-md transition-all text-left"
+                                >
+                                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                                        <div className="w-10 h-10 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center shrink-0 group-hover:bg-primary-200 group-hover:text-white transition-colors">
+                                            <CalendarClock size={20} />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-1.5 mb-0.5">
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary-200 bg-primary-200/10 px-1.5 py-0.2 rounded">
+                                                    Evento Especial Próximo
+                                                </span>
+                                            </div>
+                                            <h4 className="font-bold text-sm sm:text-base text-typography-900 group-hover:text-primary-200 transition-colors truncate">
+                                                {upcomingEvent.title}
+                                            </h4>
+                                            {upcomingEvent.theme && (
+                                                <p className="text-xs font-semibold text-primary-200 italic mt-0.5 line-clamp-1">
+                                                    &ldquo;{upcomingEvent.theme}&rdquo;
+                                                </p>
+                                            )}
+                                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-typography-500 mt-1">
+                                                <span>
+                                                    {dayjs(upcomingEvent.startDate).format("DD [de] MMMM")}
+                                                </span>
+                                                {upcomingEvent.location && (
+                                                    <span className="flex items-center gap-1 text-[11px] text-typography-600 font-medium">
+                                                        <MapPin size={11} className="text-primary-200 shrink-0" />
+                                                        <span className="truncate max-w-[220px]">{upcomingEvent.location}</span>
+                                                    </span>
+                                                )}
+                                                <span>• Ver detalhes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-typography-400 group-hover:text-primary-200 group-hover:bg-primary-200/10 transition-all shrink-0 ml-2">
+                                        <ChevronRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        )}
+
+                        <motion.div
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                        >
                         {boardItems.map((item) => {
                             const IconComponent = item.icon
                             return (
@@ -337,6 +408,7 @@ function Home({ serverNumber }: HomeProps) {
                             )
                         })}
                     </motion.div>
+                    </>
                 )}
             </main>
 

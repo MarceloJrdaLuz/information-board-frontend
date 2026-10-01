@@ -319,6 +319,23 @@ export default function Layout(props: LayoutProps) {
                                         active={pageActive.startsWith('/congregacao/anuncios') || pageActive === 'Anúncios'}
                                     />
                                 }
+                                {(isAdminCongregation || isAdmin ||
+                                    roleContains('MIDWEEK_MANAGER') ||
+                                    roleContains('TALK_MANAGER') ||
+                                    roleContains('CLEANING_MANAGER') ||
+                                    roleContains('FIELD_SERVICE_MANAGER') ||
+                                    roleContains('PUBLIC_WITNESS_MANAGER')) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Eventos Especiais"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/congregacao/eventos-especiais')
+                                        }}
+                                        icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/congregacao/eventos-especiais') || pageActive === 'Eventos Especiais'}
+                                    />
+                                }
                             </NavBar.ListOptions>
                         }
 

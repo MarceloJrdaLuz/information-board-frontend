@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { IMidweekSchedule, MidweekSpecialType } from "@/types/midweek";
 import {
     AlertCircle,
+    ArrowUpRight,
     Calendar,
     CalendarPlus,
     CheckCircle2,
@@ -14,6 +15,7 @@ import {
     Sparkles,
     Users
 } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -200,6 +202,27 @@ export const MidweekSpecialWeekModal: React.FC<MidweekSpecialWeekModalProps> = (
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto flex flex-col gap-4 py-2 pr-1">
+                    {/* Dica / Link para o Gestor Unificado de Eventos Especiais */}
+                    <div className="flex items-start gap-3 p-3.5 rounded-xl border border-primary-200 bg-primary-50/50 dark:bg-primary-950/20 text-xs">
+                        <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400 shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                            <p className="font-semibold text-primary-900 dark:text-primary-200">
+                                Gestão Centralizada de Eventos Especiais
+                            </p>
+                            <p className="text-typography-600 dark:text-typography-400 mt-0.5 leading-relaxed">
+                                Prefere sincronizar este evento com todas as áreas (Fim de Semana, Limpeza, Campo, Testemunho Público e Mural)? Cadastre-o na central de eventos.
+                            </p>
+                            <Link
+                                href="/congregacao/eventos-especiais"
+                                target="_blank"
+                                className="inline-flex items-center gap-1 font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 underline underline-offset-2 mt-2"
+                            >
+                                Ir para Central de Eventos Especiais
+                                <ArrowUpRight className="h-3.5 w-3.5" />
+                            </Link>
+                        </div>
+                    </div>
+
                     {/* Grid de Cards de Seleção de Eventos */}
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold text-typography-800 uppercase tracking-wider">

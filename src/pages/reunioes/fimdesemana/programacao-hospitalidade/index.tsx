@@ -212,7 +212,7 @@ function HospitalityWeekendPage() {
                         </div>
 
                         <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
-                            <div className={`p-2 rounded-lg ${pendingChangesCount > 0 ? "bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 animate-pulse" : "bg-surface-300 text-typography-500"}`}>
+                            <div className={`p-2 rounded-lg ${pendingChangesCount > 0 ? "bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 animate-pulse-slow" : "bg-surface-300 text-typography-500"}`}>
                                 <Sparkles className="h-4 w-4" />
                             </div>
                             <div>

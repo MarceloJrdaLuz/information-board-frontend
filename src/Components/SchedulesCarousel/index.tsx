@@ -6,7 +6,7 @@ import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
 import isBetween from "dayjs/plugin/isBetween"
 import isoWeek from "dayjs/plugin/isoWeek"
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, Landmark, MapPin, Mic, Send, Sparkles, Users, Utensils } from "lucide-react"
+import { BookOpen, Calendar, CalendarClock, ChevronLeft, ChevronRight, Landmark, MapPin, Mic, Send, Users, Utensils } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { HospitalityCard } from "../HospitalityCard"
 import { IPublicMechanicalSchedule, MechanicalRoleLabels } from "../Midweek/MidweekPublicCarousel"
@@ -162,6 +162,11 @@ export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { 
           dayjs(ext.date).isBetween(weekendStart, weekendEnd, "day", "[]")
         )
 
+        const isSpecialEvent = Boolean(item.isSpecial || item.specialName)
+        const hasTalk = Boolean(item.talk?.title?.trim()) && item.talk?.title?.trim() !== "Discurso Público"
+        const hasSpeaker = Boolean(item.speaker?.name?.trim())
+        const hasPublicTalk = !isSpecialEvent || (hasTalk || hasSpeaker)
+
         return (
           <div
             key={item.id || idx}
@@ -181,7 +186,7 @@ export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { 
                   )}
                 </div>
                 <h3 className="text-base sm:text-xl font-black tracking-tight text-white mt-0.5">
-                  Reunião Pública e Sentinela
+                  {hasPublicTalk ? "Reunião Pública e Sentinela" : "Estudo de A Sentinela"}
                 </h3>
               </div>
 
@@ -201,55 +206,70 @@ export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { 
 
             {/* Tarja de Evento Especial (se houver) */}
             {item.specialName && (
-              <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2.5 text-center font-semibold text-sm flex items-center justify-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                <span>{item.specialName}</span>
+              <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2.5 text-center font-semibold text-sm flex flex-col items-center justify-center gap-0.5">
+                <div className="flex items-center gap-1.5">
+                  <CalendarClock className="h-4 w-4 shrink-0" />
+                  <span className="font-bold">{item.specialName}</span>
+                </div>
+                {item.specialTheme && (
+                  <span className="text-xs font-medium italic opacity-95">
+                    &ldquo;{item.specialTheme}&rdquo;
+                  </span>
+                )}
+                {item.specialLocation && (
+                  <span className="text-[11px] font-normal opacity-90 flex items-center gap-1 mt-0.5">
+                    <MapPin size={12} className="shrink-0 text-red-300" />
+                    <span>{item.specialLocation}</span>
+                  </span>
+                )}
               </div>
             )}
 
             {/* CORPO DO CARD COM AS 3 SEÇÕES DEFINIDAS */}
             <div className="p-4 sm:p-6 flex flex-col gap-6 divide-y divide-surface-300">
               {/* SEÇÃO 1: DISCURSO PÚBLICO (Azul Tesouros #2F7682 com ícone de Microfone) */}
-              <div className="pt-1 flex flex-col gap-3">
-                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#2F7682] text-white shadow-2xs">
-                  <Mic className="h-5 w-5" size={20} />
-                  <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
-                    Discurso Público
-                  </h4>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
-                  <div className="flex flex-col max-w-xl">
-                    <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
-                      {item.talk
-                        ? item.talk.number
-                          ? `Nº ${item.talk.number} - ${item.talk.title}`
-                          : item.talk.title
-                        : "Discurso Público"}
-                    </span>
-                    {item.speaker?.congregation && (
-                      <span className="text-xs text-typography-500 flex items-center gap-1 mt-0.5">
-                        <MapPin size={12} className="text-typography-400 shrink-0" />
-                        Congregação {item.speaker.congregation}
-                      </span>
-                    )}
+              {hasPublicTalk && (
+                <div className="pt-1 flex flex-col gap-3">
+                  <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#2F7682] text-white shadow-2xs">
+                    <Mic className="h-5 w-5" size={20} />
+                    <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
+                      Discurso Público
+                    </h4>
                   </div>
 
-                  {item.speaker?.name && (
-                    <div className="flex items-center gap-1.5 self-start sm:self-auto bg-surface-100 dark:bg-surface-300/50 px-3 py-1.5 rounded-lg border border-surface-300 shadow-2xs shrink-0">
-                      <span className="text-[11px] text-typography-500 font-semibold uppercase">
-                        Orador:
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-200/40 border border-surface-300/70 gap-2">
+                    <div className="flex flex-col max-w-xl">
+                      <span className="font-bold text-xs sm:text-sm text-[#205B6F] dark:text-[#38BDF8]">
+                        {item.talk
+                          ? item.talk.number
+                            ? `Nº ${item.talk.number} - ${item.talk.title}`
+                            : item.talk.title
+                          : "Discurso Público"}
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-typography-900">
-                        {item.speaker.name}
-                      </span>
+                      {item.speaker?.congregation && (
+                        <span className="text-xs text-typography-500 flex items-center gap-1 mt-0.5">
+                          <MapPin size={12} className="text-typography-400 shrink-0" />
+                          Congregação {item.speaker.congregation}
+                        </span>
+                      )}
                     </div>
-                  )}
+
+                    {item.speaker?.name && (
+                      <div className="flex items-center gap-1.5 self-start sm:self-auto bg-surface-100 dark:bg-surface-300/50 px-3 py-1.5 rounded-lg border border-surface-300 shadow-2xs shrink-0">
+                        <span className="text-[11px] text-typography-500 font-semibold uppercase">
+                          Orador:
+                        </span>
+                        <span className="text-xs sm:text-sm font-bold text-typography-900">
+                          {item.speaker.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* SEÇÃO 2: ESTUDO DE A SENTINELA (Vermelho Vida Cristã #961526 com ícone de Livro/Sentinela) */}
-              <div className="pt-5 flex flex-col gap-3">
+              <div className={`flex flex-col gap-3 ${hasPublicTalk ? "pt-5" : "pt-1"}`}>
                 <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#961526] text-white shadow-2xs">
                   <BookOpen className="h-5 w-5" size={20} />
                   <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">

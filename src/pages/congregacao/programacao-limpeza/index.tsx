@@ -26,16 +26,15 @@ import { BlobProvider, Document } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import { useAtom, useSetAtom } from "jotai";
 import {
-    CalendarDays,
     CalendarOff,
     FileDown,
     Layers,
     Loader2,
     Settings2,
     Sparkles,
-    Wand2,
+    Wand2
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 function CleaningSchedulePage() {
