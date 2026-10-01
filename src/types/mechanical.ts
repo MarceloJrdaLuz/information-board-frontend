@@ -70,6 +70,8 @@ export interface IMechanicalWeek {
     formattedWeek: string;
     hasNoMeeting?: boolean;
     eventTitle?: string | null;
+    isSpecialEvent?: boolean;
+    specialEventId?: string | null;
     schedules: IMechanicalSchedule[];
 }
 
