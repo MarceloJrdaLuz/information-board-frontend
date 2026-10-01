@@ -25,6 +25,7 @@ export interface ISpecialEvent {
     cancelWeekendMeeting: boolean;
     isCircuitOverseerVisit: boolean;
     cancelCleaning: boolean;
+    cancelMechanical?: boolean;
     fieldServiceImpact: EventImpactScope;
     publicWitnessingImpact: EventImpactScope;
     showOnPublicBoard: boolean;
@@ -45,6 +46,7 @@ export interface CreateSpecialEventDTO {
     cancelWeekendMeeting: boolean;
     isCircuitOverseerVisit: boolean;
     cancelCleaning: boolean;
+    cancelMechanical?: boolean;
     fieldServiceImpact: EventImpactScope;
     publicWitnessingImpact: EventImpactScope;
     showOnPublicBoard: boolean;

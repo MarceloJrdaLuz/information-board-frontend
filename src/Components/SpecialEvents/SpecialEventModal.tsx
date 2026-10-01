@@ -56,6 +56,7 @@ interface EventTypeOption {
         cancelWeekendMeeting: boolean;
         isCircuitOverseerVisit: boolean;
         cancelCleaning: boolean;
+        cancelMechanical: boolean;
         fieldServiceImpact: EventImpactScope;
         publicWitnessingImpact: EventImpactScope;
         showOnPublicBoard: boolean;
@@ -80,6 +81,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: true,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: true,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -102,6 +104,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: true,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: true,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -124,6 +127,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.EVENT_DAYS_ONLY,
             publicWitnessingImpact: EventImpactScope.EVENT_DAYS_ONLY,
             showOnPublicBoard: true
@@ -146,6 +150,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: true,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -168,6 +173,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -190,6 +196,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
             cancelWeekendMeeting: false,
             isCircuitOverseerVisit: false,
             cancelCleaning: false,
+            cancelMechanical: false,
             fieldServiceImpact: EventImpactScope.NONE,
             publicWitnessingImpact: EventImpactScope.NONE,
             showOnPublicBoard: true
@@ -217,6 +224,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     const [cancelWeekendMeeting, setCancelWeekendMeeting] = useState(true);
     const [isCircuitOverseerVisit, setIsCircuitOverseerVisit] = useState(false);
     const [cancelCleaning, setCancelCleaning] = useState(false);
+    const [cancelMechanical, setCancelMechanical] = useState(true);
     const [fieldServiceImpact, setFieldServiceImpact] = useState<EventImpactScope>(EventImpactScope.EVENT_DAYS_ONLY);
     const [publicWitnessingImpact, setPublicWitnessingImpact] = useState<EventImpactScope>(EventImpactScope.EVENT_DAYS_ONLY);
     const [showOnPublicBoard, setShowOnPublicBoard] = useState(true);
@@ -240,6 +248,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
             setCancelWeekendMeeting(event.cancelWeekendMeeting ?? false);
             setIsCircuitOverseerVisit(event.isCircuitOverseerVisit ?? false);
             setCancelCleaning(event.cancelCleaning ?? false);
+            setCancelMechanical(event.cancelMechanical ?? false);
             setFieldServiceImpact(event.fieldServiceImpact || EventImpactScope.NONE);
             setPublicWitnessingImpact(event.publicWitnessingImpact || EventImpactScope.NONE);
             setShowOnPublicBoard(event.showOnPublicBoard ?? true);
@@ -258,6 +267,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
             setCancelWeekendMeeting(def.defaults.cancelWeekendMeeting);
             setIsCircuitOverseerVisit(def.defaults.isCircuitOverseerVisit);
             setCancelCleaning(def.defaults.cancelCleaning);
+            setCancelMechanical(def.defaults.cancelMechanical);
             setFieldServiceImpact(def.defaults.fieldServiceImpact);
             setPublicWitnessingImpact(def.defaults.publicWitnessingImpact);
             setShowOnPublicBoard(def.defaults.showOnPublicBoard);
@@ -279,6 +289,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         setCancelWeekendMeeting(preset.defaults.cancelWeekendMeeting);
         setIsCircuitOverseerVisit(preset.defaults.isCircuitOverseerVisit);
         setCancelCleaning(preset.defaults.cancelCleaning);
+        setCancelMechanical(preset.defaults.cancelMechanical);
         setFieldServiceImpact(preset.defaults.fieldServiceImpact);
         setPublicWitnessingImpact(preset.defaults.publicWitnessingImpact);
         setShowOnPublicBoard(preset.defaults.showOnPublicBoard);
@@ -330,6 +341,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                 cancelWeekendMeeting,
                 isCircuitOverseerVisit,
                 cancelCleaning,
+                cancelMechanical,
                 fieldServiceImpact,
                 publicWitnessingImpact,
                 showOnPublicBoard,
@@ -406,7 +418,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
             <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
-                <DialogHeader className="pb-3 border-b border-surface-300">
+                <DialogHeader className="shrink-0 pb-3 border-b border-surface-300">
                     <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 flex items-center gap-2">
                         <CalendarDays className="h-5 w-5 text-primary-200" />
                         {isEditing ? "Editar Evento Especial" : "Cadastrar Novo Evento Especial"}
@@ -633,6 +645,31 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 </div>
                             </div>
 
+                            {/* Partes Mecânicas (Indicadores e Som) */}
+                            <div className={`p-3 rounded-xl border flex items-start justify-between gap-3 transition-colors ${
+                                cancelMechanical ? "bg-amber-500/10 border-amber-500/30" : "bg-surface-100 border-surface-300"
+                            }`}>
+                                <div className="flex flex-col gap-0.5">
+                                    <strong className="text-xs font-bold text-typography-900">
+                                        Partes Mecânicas (Indicadores e Som)
+                                    </strong>
+                                    <span className="text-[11px] text-typography-500">
+                                        {cancelMechanical
+                                            ? "Escala e geração automática suspensas nesta semana/período"
+                                            : "Escala mantida normalmente"}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-[10px] font-bold uppercase text-typography-500">
+                                        Suspender?
+                                    </span>
+                                    <Switch
+                                        checked={cancelMechanical}
+                                        onCheckedChange={setCancelMechanical}
+                                    />
+                                </div>
+                            </div>
+
                             {/* Exibir no Mural Público */}
                             <div className={`p-3 rounded-xl border flex items-start justify-between gap-3 transition-colors ${
                                 showOnPublicBoard ? "bg-primary-100/15 border-primary-200/40" : "bg-surface-100 border-surface-300"
@@ -712,7 +749,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         />
                     </div>
 
-                    <DialogFooter className="mt-2 flex sm:justify-between items-center gap-2 pt-3 border-t border-surface-300">
+                    <DialogFooter className="shrink-0 mt-2 flex sm:justify-between items-center gap-2 pt-3 border-t border-surface-300">
                         {isEditing && onDelete ? (
                             <Button
                                 type="button"
@@ -758,8 +795,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
         {/* Modal de Confirmação de Salvamento com Datas em Destaque */}
         <Dialog open={confirmSaveOpen} onOpenChange={setConfirmSaveOpen}>
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
-                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[90vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="shrink-0 flex flex-col items-center text-center gap-2 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-primary-200/15 text-primary-200 flex items-center justify-center shrink-0">
                         <CalendarCheck className="h-6 w-6" />
                     </div>
@@ -771,7 +808,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-3 py-1 min-w-0">
+                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3 py-1 min-w-0">
                     {/* Título do Evento */}
                     <div className="flex items-start gap-2 p-2.5 rounded-lg bg-surface-200/60 border border-surface-300 min-w-0">
                         <span className="text-[11px] font-semibold text-typography-500 uppercase tracking-wide shrink-0 pt-0.5">Evento:</span>
@@ -844,6 +881,12 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 </span>
                             </div>
                             <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Partes Mecânicas:</span>
+                                <span className={`shrink-0 ${cancelMechanical ? "font-bold text-amber-600 dark:text-amber-400" : "font-semibold text-emerald-600"}`}>
+                                    {cancelMechanical ? "Suspensa" : "Mantida"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
                                 <span className="truncate">Saídas de Campo:</span>
                                 <span className={`shrink-0 ${fieldServiceImpactInfo.color}`}>
                                     {fieldServiceImpactInfo.label}
@@ -859,7 +902,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </div>
                 </div>
 
-                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
+                <div className="shrink-0 mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-2 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"
@@ -886,8 +929,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
         {/* Modal de Confirmação de Exclusão */}
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
-                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[90vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="shrink-0 flex flex-col items-center text-center gap-2 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-600 flex items-center justify-center shrink-0">
                         <AlertTriangle className="h-6 w-6" />
                     </div>
@@ -899,7 +942,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-2.5 my-1 min-w-0">
+                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2.5 my-1 min-w-0">
                     {/* Data por extenso em destaque */}
                     {deleteStartDate && (
                         <div className="p-3 rounded-xl bg-surface-200/60 border border-surface-300 flex flex-col gap-1.5 text-center min-w-0">
@@ -948,7 +991,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </div>
                 </div>
 
-                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
+                <div className="shrink-0 mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-2 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"

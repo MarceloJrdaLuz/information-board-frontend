@@ -372,10 +372,28 @@ function EventosEspeciaisPage() {
                                                     </span>
                                                 )}
 
+                                                {/* Partes Mecânicas */}
+                                                {evt.cancelMechanical ? (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 font-medium">
+                                                        <XCircle size={11} /> Mecânicas: Suspensa
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-200 text-typography-600 font-medium">
+                                                        Mecânicas: Mantida
+                                                    </span>
+                                                )}
+
                                                 {/* Campo */}
                                                 {evt.fieldServiceImpact !== EventImpactScope.NONE && (
                                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 font-medium">
-                                                        Campo: {evt.fieldServiceImpact === EventImpactScope.EVENT_DAYS_ONLY ? "Pausa nos dias do evento" : "Pausa na semana"}
+                                                        Campo: {evt.fieldServiceImpact === EventImpactScope.EVENT_DAYS_ONLY ? "Pausa nos dias" : "Pausa na semana"}
+                                                    </span>
+                                                )}
+
+                                                {/* Testemunho Público */}
+                                                {evt.publicWitnessingImpact !== EventImpactScope.NONE && (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 font-medium">
+                                                        Carrinho: {evt.publicWitnessingImpact === EventImpactScope.EVENT_DAYS_ONLY ? "Pausa nos dias" : "Pausa na semana"}
                                                     </span>
                                                 )}
 
