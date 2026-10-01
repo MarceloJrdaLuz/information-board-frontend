@@ -5,6 +5,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
+import { normalizeText } from '@/utils/normalizeText'
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
@@ -95,10 +96,11 @@ export default function DropdownSearch(props: IDropdownSearch) {
     }
 
     // 🔥 filtro único (serve pros dois casos)
+    const term = normalizeText(query)
     const filtered = baseList.filter(option => {
-      const fullNameMatch = option.fullName.toLowerCase().includes(query.toLowerCase())
-      const nicknameMatch = option.nickname?.toLowerCase().includes(query.toLowerCase())
-      const congregationIdMatch = option.congregation_id.toLowerCase().includes(query.toLowerCase())
+      const fullNameMatch = normalizeText(option.fullName).includes(term)
+      const nicknameMatch = option.nickname ? normalizeText(option.nickname).includes(term) : false
+      const congregationIdMatch = normalizeText(option.congregation_id).includes(term)
 
       return fullNameMatch || nicknameMatch || congregationIdMatch
     })

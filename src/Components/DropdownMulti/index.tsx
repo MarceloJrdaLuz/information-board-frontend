@@ -2,6 +2,8 @@ import { Fragment, useEffect, useRef, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon, CheckIcon } from "@heroicons/react/20/solid"
 
+import { normalizeText } from "@/utils/normalizeText"
+
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
 }
@@ -36,12 +38,13 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
     if (!searchQuery) {
       setFilteredItems(items)
     } else {
+      const term = normalizeText(searchQuery)
       const filtered = items.filter((item) => {
-        const label = getLabel(item).toLowerCase()
-        const secondary = getLabelSecondary(item).toLowerCase()
+        const label = normalizeText(getLabel(item))
+        const secondary = normalizeText(getLabelSecondary(item))
         return (
-          label.includes(searchQuery.toLowerCase()) ||
-          secondary.includes(searchQuery.toLowerCase())
+          label.includes(term) ||
+          secondary.includes(term)
         )
       })
       setFilteredItems(filtered)

@@ -791,9 +791,6 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                         </span>
                                     </div>
                                 </div>
-                                <span className="text-xs font-bold text-typography-900 capitalize text-center break-words mt-0.5">
-                                    {sDateObj.format("DD [de] MMMM [de] YYYY")} até {eDateObj.format("DD [de] MMMM [de] YYYY")}
-                                </span>
                             </div>
                         )}
                     </div>
@@ -900,9 +897,6 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                             </span>
                                         </div>
                                     </div>
-                                    <span className="text-xs font-bold text-typography-900 capitalize mt-0.5 break-words">
-                                        {sDelObj.format("DD [de] MMMM [de] YYYY")} até {eDelObj.format("DD [de] MMMM [de] YYYY")}
-                                    </span>
                                 </div>
                             )}
                         </div>
