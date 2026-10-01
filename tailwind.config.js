@@ -87,11 +87,11 @@ module.exports = {
 			keyframes: {
 				'pulse-slow': {
 					'0%, 100%': { opacity: '1', transform: 'scale(1)' },
-					'50%': { opacity: '0.82', transform: 'scale(0.99)' },
+					'50%': { opacity: '0.65', transform: 'scale(0.98)' },
 				}
 			},
 			animation: {
-				'pulse-slow': 'pulse-slow 3.5s ease-in-out infinite',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
 			}
 		}
 	},
