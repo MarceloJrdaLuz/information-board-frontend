@@ -1,32 +1,19 @@
+import { deleteFieldServiceExceptionAtom } from "@/atoms/fieldServiceAtoms";
 import { API_ROUTES } from "@/constants/apiRoutes";
+import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import Calendar from "../Calendar";
-import { Button } from "@/Components/ui/button";
 import { useSetAtom } from "jotai";
-import {
-    createFieldServiceExceptionAtom,
-    deleteFieldServiceExceptionAtom,
-} from "@/atoms/fieldServiceAtoms";
-import { CreateFieldServiceExceptionPayload } from "@/atoms/fieldServiceAtoms/types";
-import { useCongregationContext } from "@/context/CongregationContext";
-import { CalendarOff, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowUpRight, Calendar, CalendarOff, CalendarPlus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { toast } from "react-toastify";
 
 dayjs.locale("pt-br");
 
 export function FieldServiceExceptionsCard() {
     const { congregation } = useCongregationContext();
-    const createException = useSetAtom(createFieldServiceExceptionAtom);
     const deleteException = useSetAtom(deleteFieldServiceExceptionAtom);
-
-    const [date, setDate] = useState<string | null>(
-        dayjs().format("YYYY-MM-DD")
-    );
-    const [reason, setReason] = useState("");
-    const [loading, setLoading] = useState(false);
 
     const url = congregation
         ? `${API_ROUTES.FIELD_SERVICE_EXCEPTIONS}/congregation/${congregation?.id}`
@@ -35,31 +22,6 @@ export function FieldServiceExceptionsCard() {
     const { data: exceptions, mutate } = useAuthorizedFetch<any[]>(url, {
         allowedRoles: ["ADMIN_CONGREGATION", "FIELD_SERVICE_MANAGER"],
     });
-
-    const handleAdd = async () => {
-        if (!date) {
-            toast.error("Informe a data.");
-            return;
-        }
-
-        const payload: CreateFieldServiceExceptionPayload = {
-            date,
-            reason: reason.trim() || "Sem saída",
-        };
-
-        setLoading(true);
-        try {
-            await createException(congregation?.id ?? "", payload);
-            toast.success("Exceção adicionada com sucesso!");
-            setReason("");
-            await mutate();
-        } catch (err) {
-            console.error(err);
-            toast.error("Erro ao adicionar exceção.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleDelete = async (id: string) => {
         try {
@@ -77,41 +39,33 @@ export function FieldServiceExceptionsCard() {
             <div className="flex items-center gap-2 pb-3 border-b border-surface-300">
                 <CalendarOff className="w-5 h-5 text-rose-500" />
                 <h3 className="font-bold text-base text-typography-800">
-                    Cadastrar Data sem Saída de Campo
+                    Datas sem Saída de Campo (Exceções)
                 </h3>
             </div>
 
-            {/* Formulário de Adição */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
-                <Calendar
-                    label="Data da Exceção"
-                    selectedDate={date}
-                    handleDateChange={setDate}
-                    full
-                />
-
-                <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-typography-700">
-                        Motivo (opcional):
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Ex: Congresso, Assembleia, Feriado"
-                        value={reason}
-                        onChange={(e) => setReason(e.target.value)}
-                        className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                    />
+            {/* Redirecionamento Unificado para a Central de Eventos */}
+            <div className="flex flex-col gap-3 p-4 rounded-xl bg-primary-50/60 dark:bg-primary-950/20 border border-primary-200 dark:border-primary-800 text-xs">
+                <div className="flex items-start gap-2.5">
+                    <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                        <p className="font-semibold text-primary-900 dark:text-primary-200 text-sm">
+                            Gestão Centralizada de Eventos Especiais
+                        </p>
+                        <p className="text-typography-600 dark:text-typography-400 leading-relaxed">
+                            Para suspender saídas de campo em dias de Congresso, Assembleia, Celebração ou Visita do SC, cadastre diretamente na <strong>Central de Eventos Especiais</strong>. O sistema aplicará o cancelamento automático dos arranjos sem conflitos.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <Button
-                onClick={handleAdd}
-                disabled={loading || !date}
-                className="w-full bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm h-10"
-            >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                <span>Adicionar Data sem Saída</span>
-            </Button>
+                <Link
+                    href="/congregacao/eventos-especiais?action=new"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-200 hover:bg-primary-300 text-white rounded-xl font-semibold shadow-sm transition-colors text-xs"
+                >
+                    <CalendarPlus className="w-4 h-4" />
+                    <span>Cadastrar Evento Especial na Central</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+            </div>
 
             {/* Lista de Exceções */}
             <div className="mt-2 space-y-2 pt-3 border-t border-surface-300">

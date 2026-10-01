@@ -5,7 +5,7 @@ import ScrollToTopButton from "@/Components/ScrollToTopButton";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarOff, ChevronLeft, ChevronRight, Clock, Landmark, Sparkles, Users } from "lucide-react";
+import { Calendar, CalendarClock, CalendarOff, ChevronLeft, ChevronRight, Clock, Landmark, MapPin, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 dayjs.locale("pt-br");
@@ -68,6 +68,8 @@ export interface IPublicMidweekSchedule {
     isSpecial: boolean;
     specialType?: string | null;
     specialName?: string | null;
+    specialTheme?: string | null;
+    specialLocation?: string | null;
     notes?: string | null;
     isCurrentWeek: boolean;
     chairman?: string | null;
@@ -314,9 +316,22 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
 
                         {/* Banner de Evento Especial com Reunião (ex: Visita do SC) */}
                         {!isNoMeetingSpecial && week.isSpecial && week.specialName && (
-                            <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2.5 text-center font-semibold text-sm flex items-center justify-center gap-2">
-                                <Sparkles className="h-4 w-4" />
-                                <span>{week.specialName}</span>
+                            <div className="bg-gradient-to-r from-[#28456C] to-[#730817] text-typography-100 px-4 py-2.5 text-center font-semibold text-sm flex flex-col items-center justify-center gap-0.5">
+                                <div className="flex items-center gap-1.5">
+                                    <CalendarClock className="h-4 w-4 shrink-0" />
+                                    <span className="font-bold">{week.specialName}</span>
+                                </div>
+                                {week.specialTheme && (
+                                    <span className="text-xs font-medium italic opacity-95">
+                                        &ldquo;{week.specialTheme}&rdquo;
+                                    </span>
+                                )}
+                                {week.specialLocation && (
+                                    <span className="text-[11px] font-normal opacity-90 flex items-center gap-1 mt-0.5">
+                                        <MapPin size={12} className="shrink-0 text-red-300" />
+                                        <span>{week.specialLocation}</span>
+                                    </span>
+                                )}
                             </div>
                         )}
 
@@ -332,7 +347,18 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                         <h4 className="font-black text-base sm:text-lg text-typography-900">
                                             {week.specialName || "Semana de Evento Especial"}
                                         </h4>
-                                        <p className="text-xs sm:text-sm font-semibold text-red-600 dark:text-red-400">
+                                        {week.specialTheme && (
+                                            <p className="text-xs sm:text-sm font-bold text-primary-200 italic">
+                                                &ldquo;{week.specialTheme}&rdquo;
+                                            </p>
+                                        )}
+                                        {week.specialLocation && (
+                                            <p className="text-xs text-typography-600 flex items-center justify-center gap-1 mt-0.5 font-medium">
+                                                <MapPin size={13} className="text-red-500 shrink-0" />
+                                                <span>{week.specialLocation}</span>
+                                            </p>
+                                        )}
+                                        <p className="text-xs sm:text-sm font-semibold text-red-600 dark:text-red-400 mt-1">
                                             Não haverá reunião congregacional de meio de semana no Salão do Reino.
                                         </p>
                                     </div>

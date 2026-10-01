@@ -7,7 +7,6 @@ import { MidweekS89PdfModal } from "@/Components/Midweek/MidweekS89Pdf";
 import { MidweekSectionLiving } from "@/Components/Midweek/MidweekSectionLiving";
 import { MidweekSectionMinistry } from "@/Components/Midweek/MidweekSectionMinistry";
 import { MidweekSectionTreasures } from "@/Components/Midweek/MidweekSectionTreasures";
-import { MidweekSpecialWeekModal } from "@/Components/Midweek/MidweekSpecialWeekModal";
 import { MidweekUploadXmlModal } from "@/Components/Midweek/MidweekUploadXmlModal";
 import { MidweekWeekHeader } from "@/Components/Midweek/MidweekWeekHeader";
 import ScrollToTopButton from "@/Components/ScrollToTopButton";
@@ -40,6 +39,7 @@ import {
     Users,
     Wand2
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -72,7 +72,6 @@ function MidweekScheduleAssistantPage() {
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [isAutoAssignModalOpen, setIsAutoAssignModalOpen] = useState(false);
     const [isCustomPartModalOpen, setIsCustomPartModalOpen] = useState(false);
-    const [isSpecialWeekModalOpen, setIsSpecialWeekModalOpen] = useState(false);
     const [isS89ModalOpen, setIsS89ModalOpen] = useState(false);
     const [isPrintMonthModalOpen, setIsPrintMonthModalOpen] = useState(false);
     const [customPartSection, setCustomPartSection] = useState<MidweekSection>(MidweekSection.LIVING);
@@ -489,14 +488,13 @@ function MidweekScheduleAssistantPage() {
                                 </div>
                             )}
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setIsSpecialWeekModalOpen(true)}
-                            className="mt-2 text-xs border-surface-300 text-typography-700 hover:bg-surface-200"
+                        <Link
+                            href="/congregacao/eventos-especiais"
+                            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-300 bg-surface-100 text-xs font-semibold text-typography-700 hover:bg-surface-200 transition-colors shadow-sm"
                         >
-                            Alterar Configuração do Evento
-                        </Button>
+                            <CalendarIcon className="h-4 w-4 text-primary-500" />
+                            Gerenciar na Central de Eventos Especiais
+                        </Link>
                     </div>
                 ) : currentSchedule ? (
                     <div className="flex flex-col gap-6 pb-20 sm:pb-28">
@@ -504,7 +502,6 @@ function MidweekScheduleAssistantPage() {
                         <MidweekWeekHeader
                             schedule={currentSchedule}
                             onUpdateSchedule={handleUpdateSchedule}
-                            onOpenSpecialWeekModal={() => setIsSpecialWeekModalOpen(true)}
                         />
 
                         {/* Seção 1: Tesouros da Palavra de Deus */}
@@ -553,13 +550,6 @@ function MidweekScheduleAssistantPage() {
 
             {currentSchedule && (
                 <>
-                    <MidweekSpecialWeekModal
-                        open={isSpecialWeekModalOpen}
-                        onClose={() => setIsSpecialWeekModalOpen(false)}
-                        schedule={currentSchedule}
-                        onSave={handleUpdateSchedule}
-                    />
-
                     <MidweekS89PdfModal
                         open={isS89ModalOpen}
                         onClose={() => setIsS89ModalOpen(false)}

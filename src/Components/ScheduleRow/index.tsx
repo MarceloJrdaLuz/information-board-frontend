@@ -388,9 +388,19 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         {/* Configurações de Evento Especial (se ativado) */}
         {current.isSpecial && (
           <div className="p-4 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-800/40 flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-purple-800 dark:text-purple-300 font-semibold text-sm">
-              <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              <span>Configuração do Evento Especial</span>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-purple-800 dark:text-purple-300 font-semibold text-sm">
+                <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <span>Configuração do Evento Especial</span>
+              </div>
+              <Link
+                href="/congregacao/eventos-especiais"
+                target="_blank"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-300 underline underline-offset-2"
+              >
+                Central de Eventos
+                <ExternalLink className="h-3 w-3" />
+              </Link>
             </div>
             <Input
               value={current.specialName || ""}

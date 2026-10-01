@@ -1,7 +1,7 @@
 import { MidweekLivingIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
-import { BookOpen, Check, Clock, Loader2, Mic, Pencil, Plus, Trash2, User } from "lucide-react";
+import { BookOpen, Check, Clock, Loader2, Pencil, Plus, Trash2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
@@ -259,17 +259,23 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                 {/* CASO 1: Visita do Superintendente de Circuito -> Discurso de Serviço (30 min) */}
                 {isCoVisit ? (
                     <div className="p-4 bg-amber-500/10 rounded-xl my-2 border border-amber-500/30 flex flex-col gap-3">
-                        <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
-                            <div className="flex items-center gap-2">
-                                <Mic className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                                <div>
-                                    <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 flex items-center gap-2">
-                                        <span>{formatNumberedTitle(startPartNumber + mainParts.length, "Discurso de Serviço (30 min)")}</span>
-                                    </h4>
-                                    <p className="text-xs text-typography-500">
-                                        Proferido pelo Superintendente de Circuito durante a semana da visita.
-                                    </p>
+                        <div className="border-b border-amber-500/20 pb-2">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-typography-700 bg-surface-200 px-2 py-0.5 rounded">
+                                        <Clock className="h-3 w-3 text-typography-500" />
+                                        30 min
+                                    </span>
+                                    <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">
+                                        Visita do SC
+                                    </span>
                                 </div>
+                                <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 leading-snug">
+                                    {formatNumberedTitle(startPartNumber + mainParts.length, "Discurso de Serviço")}
+                                </h4>
+                                <p className="text-xs text-typography-500">
+                                    Proferido pelo Superintendente de Circuito durante a semana da visita.
+                                </p>
                             </div>
                         </div>
 
