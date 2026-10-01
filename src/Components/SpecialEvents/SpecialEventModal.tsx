@@ -378,6 +378,30 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     const sDelObj = dayjs(deleteStartDate).locale("pt-br");
     const eDelObj = dayjs(deleteEndDate).locale("pt-br");
 
+    const fieldServiceImpactInfo = (() => {
+        switch (fieldServiceImpact) {
+            case EventImpactScope.EVENT_DAYS_ONLY:
+                return { label: "Suspensa (dias do evento)", color: "font-bold text-amber-600 dark:text-amber-400" };
+            case EventImpactScope.ALL_DAYS:
+                return { label: "Suspensa (semana toda)", color: "font-bold text-red-500" };
+            case EventImpactScope.NONE:
+            default:
+                return { label: "Mantida", color: "font-semibold text-emerald-600" };
+        }
+    })();
+
+    const publicWitnessingImpactInfo = (() => {
+        switch (publicWitnessingImpact) {
+            case EventImpactScope.EVENT_DAYS_ONLY:
+                return { label: "Suspenso (dias do evento)", color: "font-bold text-amber-600 dark:text-amber-400" };
+            case EventImpactScope.ALL_DAYS:
+                return { label: "Suspenso (semana toda)", color: "font-bold text-red-500" };
+            case EventImpactScope.NONE:
+            default:
+                return { label: "Mantido", color: "font-semibold text-emerald-600" };
+        }
+    })();
+
     return (
         <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
@@ -803,8 +827,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         <div className="grid grid-cols-1 gap-1.5 text-[11px] text-typography-700">
                             <div className="flex items-center justify-between gap-2 min-w-0">
                                 <span className="truncate">Reunião de Meio de Semana:</span>
-                                <span className={`shrink-0 ${cancelMidweekMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}`}>
-                                    {cancelMidweekMeeting ? "Cancelada" : "Mantida"}
+                                <span className={`shrink-0 ${cancelMidweekMeeting ? "font-bold text-red-500" : isCircuitOverseerVisit ? "font-bold text-amber-600 dark:text-amber-400" : "font-semibold text-emerald-600"}`}>
+                                    {cancelMidweekMeeting ? "Cancelada" : isCircuitOverseerVisit ? "Visita do SC" : "Mantida"}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between gap-2 min-w-0">
@@ -815,8 +839,20 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                             </div>
                             <div className="flex items-center justify-between gap-2 min-w-0">
                                 <span className="truncate">Limpeza do Salão:</span>
-                                <span className={`shrink-0 ${cancelCleaning ? "font-bold text-red-500" : "font-semibold text-emerald-600"}`}>
-                                    {cancelCleaning ? "Cancelada" : "Mantida"}
+                                <span className={`shrink-0 ${cancelCleaning ? "font-bold text-amber-600 dark:text-amber-400" : "font-semibold text-emerald-600"}`}>
+                                    {cancelCleaning ? "Suspensa" : "Mantida"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Saídas de Campo:</span>
+                                <span className={`shrink-0 ${fieldServiceImpactInfo.color}`}>
+                                    {fieldServiceImpactInfo.label}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                                <span className="truncate">Testemunho Público:</span>
+                                <span className={`shrink-0 ${publicWitnessingImpactInfo.color}`}>
+                                    {publicWitnessingImpactInfo.label}
                                 </span>
                             </div>
                         </div>
