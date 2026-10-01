@@ -1,7 +1,7 @@
-import React from "react";
 import { Button } from "@/Components/ui/button";
 import { ITimelineItem, ITimerState } from "@/types/midweekChairman";
-import { AlertTriangle, CheckCircle2, Circle, Clock, Music, Pause, Play, RotateCcw } from "lucide-react";
+import { AlertTriangle, BookOpen, CheckCircle2, Circle, Clock, Music, Pause, Play, RotateCcw } from "lucide-react";
+import React from "react";
 
 interface MidweekChairmanTimelineItemProps {
     item: ITimelineItem;
@@ -132,12 +132,21 @@ export const MidweekChairmanTimelineItem: React.FC<MidweekChairmanTimelineItemPr
                 </div>
             )}
 
-            {/* Para Leitura da Bíblia em Tesouros (apenas ponto de estudo / lição, se houver) */}
-            {item.section === 'TREASURES' && item.partType === 'BIBLE_READING' && item.lessonInfo && (
-                <div className="w-full">
-                    <span className="text-[11px] sm:text-xs text-typography-500 italic leading-snug break-words">
-                        {item.lessonInfo}
-                    </span>
+            {/* Para Leitura da Bíblia e Partes de Tesouros/Vida Cristã (trecho bíblico designado e ponto de estudo) */}
+            {(item.section === 'TREASURES' || item.section === 'LIVING') && (item.sourceMaterial || item.lessonInfo) && (
+                <div className="flex flex-col gap-0.5 w-full">
+                    {item.sourceMaterial && (
+                        <span className="text-xs sm:text-sm text-typography-800 dark:text-typography-200 font-medium leading-snug break-words flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-[#2F7682] dark:text-teal-400 shrink-0" />
+                            <span>{item.sourceMaterial}</span>
+                        </span>
+                    )}
+
+                    {item.lessonInfo && (
+                        <span className="text-[11px] sm:text-xs text-typography-500 italic leading-snug break-words">
+                            {item.lessonInfo}
+                        </span>
+                    )}
                 </div>
             )}
 

@@ -1,6 +1,8 @@
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
+import { MidweekChairmanFloatingTimer } from "@/Components/Midweek/Chairman/MidweekChairmanFloatingTimer";
 import { MidweekChairmanHeader } from "@/Components/Midweek/Chairman/MidweekChairmanHeader";
+import { MidweekChairmanNextWeekPreview } from "@/Components/Midweek/Chairman/MidweekChairmanNextWeekPreview";
 import { MidweekChairmanTimelineItem } from "@/Components/Midweek/Chairman/MidweekChairmanTimelineItem";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
@@ -12,7 +14,7 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { useAtom } from "jotai";
-import { AlertCircle, CalendarOff, Loader2 } from "lucide-react";
+import { AlertCircle, CalendarOff, Clock, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -40,6 +42,41 @@ function MidweekChairmanPage() {
             { label: "Início", link: "/dashboard" }
         ]);
     }, [setPageActive, setCrumbs]);
+
+    // Relógio em tempo real
+    const [currentTime, setCurrentTime] = useState<string>("");
+    const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+    useEffect(() => {
+        const updateClock = () => {
+            const date = new Date();
+            setCurrentTime(date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+        };
+        updateClock();
+        const interval = setInterval(updateClock, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Detecta rolagem para exibir o relógio flutuante de forma discreta sem ocupar espaço na tela
+    useEffect(() => {
+        const scrollContainer = document.getElementById("dashboard-scroll-container");
+        const handleScroll = () => {
+            const top = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+            setIsScrolled(top > 140);
+        };
+
+        if (scrollContainer) {
+            scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+        }
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener("scroll", handleScroll);
+            }
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
 
     // Busca programações do mês através da rota da congregação
     const fetchSchedules = async () => {
@@ -113,6 +150,123 @@ function MidweekChairmanPage() {
     const hasPrevWeek = currentIndex > 0 || month > 1 || year > now.year() - 1;
     const hasNextWeek = currentIndex < schedules.length - 1 || month < 12 || year < now.year() + 1;
 
+    // Prefetch da programação do próximo mês se estiver na última semana
+    const [nextMonthSchedules, setNextMonthSchedules] = useState<IMidweekSchedule[]>([]);
+
+    useEffect(() => {
+        if (!congregationId) return;
+        const isLastWeekOfMonth = currentIndex === schedules.length - 1 && schedules.length > 0;
+        if (isLastWeekOfMonth) {
+            const nextMonth = month === 12 ? 1 : month + 1;
+            const nextYear = month === 12 ? year + 1 : year;
+            api.get(`/midweek/schedules/congregation/${congregationId}?year=${nextYear}&month=${nextMonth}`)
+                .then(res => {
+                    const fetched: IMidweekSchedule[] = res.data || [];
+                    fetched.sort((a, b) => (a.weekDate || "").localeCompare(b.weekDate || ""));
+                    setNextMonthSchedules(fetched);
+                })
+                .catch(() => setNextMonthSchedules([]));
+        } else {
+            setNextMonthSchedules([]);
+        }
+    }, [currentIndex, schedules.length, congregationId, year, month]);
+
+    // Próxima programação (mesmo mês ou próximo mês)
+    const nextSchedule = useMemo(() => {
+        if (currentIndex >= 0 && currentIndex < schedules.length - 1) {
+            return schedules[currentIndex + 1];
+        }
+        if (nextMonthSchedules.length > 0) {
+            return nextMonthSchedules[0];
+        }
+        return null;
+    }, [currentIndex, schedules, nextMonthSchedules]);
+
+    // Item ativo para o cronômetro flutuante (item rodando ou com tempo pausado não concluído)
+    const activeTimelineItem = useMemo(() => {
+        const running = timelineItems.find(item => timer.timers[item.id]?.isRunning);
+        if (running) return running;
+        const pausedWithTime = timelineItems.find(item => {
+            const t = timer.timers[item.id];
+            return t && t.elapsedSeconds > 0 && !t.isCompleted;
+        });
+        return pausedWithTime || null;
+    }, [timelineItems, timer.timers]);
+
+    // Copia o relatório de todos os tempos da reunião formatado para compartilhamento (WhatsApp / Texto)
+    const handleCopyReport = () => {
+        if (!currentSchedule) return;
+
+        const formattedMeetingDate = currentSchedule.meetingDate
+            ? dayjs(currentSchedule.meetingDate).format("dddd, DD [de] MMMM [de] YYYY")
+            : dayjs(currentSchedule.weekDate).format("Semana de DD [de] MMMM [de] YYYY");
+
+        let text = `📋 *RELATÓRIO DE TEMPOS — REUNIÃO DO MEIO DE SEMANA*\n`;
+        text += `🗓 *Data:* ${formattedMeetingDate}\n`;
+        if (currentSchedule.weeklyBibleReading) {
+            text += `📖 *Leitura Bíblica:* ${currentSchedule.weeklyBibleReading}\n`;
+        }
+        if (currentSchedule.chairman?.fullName) {
+            text += `👤 *Presidente:* ${currentSchedule.chairman.fullName}\n`;
+        }
+        text += `⏱ *Início da Reunião:* ${timer.meetingStartTime}\n`;
+
+        let currentSection = "";
+
+        timelineItems.forEach(item => {
+            if (item.sectionTitle !== currentSection) {
+                currentSection = item.sectionTitle;
+                text += `\n*── ${currentSection.toUpperCase()} ──*\n`;
+            }
+
+            const t = timer.getTimer(item.id);
+            const targetSec = item.durationMinutes * 60;
+            const elapsedSec = t.elapsedSeconds;
+            const isDone = t.isCompleted;
+
+            const timeStr = timer.formatTimeDisplay(elapsedSec);
+            const targetStr = `${String(item.durationMinutes).padStart(2, '0')}:00`;
+
+            let diffStr = "";
+            if (elapsedSec > 0) {
+                const diff = elapsedSec - targetSec;
+                if (diff > 0) {
+                    diffStr = ` (+${timer.formatTimeDisplay(diff)})`;
+                } else if (diff < 0) {
+                    diffStr = ` (-${timer.formatTimeDisplay(Math.abs(diff))})`;
+                } else {
+                    diffStr = ` (exato)`;
+                }
+            }
+
+            const checkMark = isDone ? "✅ " : elapsedSec > 0 ? "⏱ " : "⚪ ";
+            let assigned = item.assignedName ? ` — ${item.assignedName}` : "";
+            if (item.assistantName) {
+                assigned += ` (Ajudante: ${item.assistantName})`;
+            }
+            if (item.auxReaderName) {
+                assigned += ` (Sala B: ${item.auxReaderName})`;
+            }
+
+            const sourceInfo = item.sourceMaterial ? ` (${item.sourceMaterial})` : "";
+            text += `${checkMark}*${item.title}*${sourceInfo} [Previsto: ${targetStr}]\n`;
+            text += `   Tempo: ${timeStr}${diffStr}${assigned}\n`;
+        });
+
+        text += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+        const completedCount = timelineItems.filter(i => timer.getTimer(i.id).isCompleted).length;
+        text += `📊 *Total Concluídas:* ${completedCount} de ${timelineItems.length} partes\n`;
+        text += `⏱ Gerado em ${dayjs().format("DD/MM/YYYY [às] HH:mm")}`;
+
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.success("Relatório de tempos copiado para a área de transferência!");
+            }).catch(() => {
+                toast.error("Não foi possível copiar o relatório.");
+            });
+        }
+    };
+
     const handlePrevWeek = () => {
         if (currentIndex > 0) {
             setSelectedScheduleId(schedules[currentIndex - 1].id);
@@ -151,6 +305,17 @@ function MidweekChairmanPage() {
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Presidente" />
+
+            {/* Relógio Flutuante Compacto que surge apenas quando a página é rolada para baixo, sem ocupar espaço da tela */}
+            {isScrolled && (
+                <div className="fixed top-[4.75rem] right-3 sm:right-6 z-30 transition-all duration-300 pointer-events-auto">
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-100/95 dark:bg-surface-900/95 backdrop-blur-md border border-surface-300 rounded-full shadow-md text-xs font-mono text-typography-900">
+                        <Clock className="w-3.5 h-3.5 text-primary-500 animate-pulse" />
+                        <span>Agora: <strong>{currentTime}</strong></span>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-5xl mx-auto w-full">
 
                 {loading ? (
@@ -180,6 +345,7 @@ function MidweekChairmanPage() {
                             onPrevWeek={handlePrevWeek}
                             onNextWeek={handleNextWeek}
                             onResetAll={timer.resetAllTimers}
+                            onCopyReport={handleCopyReport}
                             hasPrevWeek={hasPrevWeek}
                             hasNextWeek={hasNextWeek}
                         />
@@ -193,10 +359,17 @@ function MidweekChairmanPage() {
                                 Esta semana está marcada como <strong>{currentSchedule.specialName || "Evento Especial"}</strong>. Não há partes regulares para serem cronometradas.
                             </p>
                         </div>
+
+                        {/* Prévia da próxima semana para navegação */}
+                        <MidweekChairmanNextWeekPreview
+                            nextSchedule={nextSchedule}
+                            hasNextWeek={hasNextWeek}
+                            onNextWeek={handleNextWeek}
+                        />
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4">
-                        {/* Cabeçalho do Presidente com Navegação e Relógio */}
+                        {/* Cabeçalho do Presidente com Navegação, Relógio e Ações */}
                         <MidweekChairmanHeader
                             schedule={currentSchedule}
                             meetingStartTime={timer.meetingStartTime}
@@ -207,6 +380,7 @@ function MidweekChairmanPage() {
                             onPrevWeek={handlePrevWeek}
                             onNextWeek={handleNextWeek}
                             onResetAll={timer.resetAllTimers}
+                            onCopyReport={handleCopyReport}
                             hasPrevWeek={hasPrevWeek}
                             hasNextWeek={hasNextWeek}
                         />
@@ -227,7 +401,28 @@ function MidweekChairmanPage() {
                                 />
                             ))}
                         </div>
+
+                        {/* Prévia dos Participantes da Próxima Semana & Botão Avançar */}
+                        <MidweekChairmanNextWeekPreview
+                            nextSchedule={nextSchedule}
+                            hasNextWeek={hasNextWeek}
+                            onNextWeek={handleNextWeek}
+                        />
                     </div>
+                )}
+
+                {/* Cronômetro Flutuante com Suporte a Picture-in-Picture */}
+                {activeTimelineItem && (
+                    <MidweekChairmanFloatingTimer
+                        activeItem={activeTimelineItem}
+                        timerState={timer.getTimer(activeTimelineItem.id)}
+                        status={timer.getTimerStatus(activeTimelineItem.id, activeTimelineItem.durationMinutes)}
+                        onStart={timer.startTimer}
+                        onPause={timer.pauseTimer}
+                        onReset={timer.resetTimer}
+                        onToggleCompleted={timer.toggleCompleted}
+                        formatTime={timer.formatTimeDisplay}
+                    />
                 )}
             </div>
         </ContentDashboard>
