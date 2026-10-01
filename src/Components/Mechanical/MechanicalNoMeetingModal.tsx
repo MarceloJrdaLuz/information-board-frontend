@@ -57,8 +57,8 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !loading && !isOpen && onClose()}>
-            <DialogContent className="sm:max-w-[480px]">
-                <DialogHeader>
+            <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[480px] max-h-[90vh] flex flex-col p-4 sm:p-6 overflow-hidden">
+                <DialogHeader className="shrink-0">
                     <div className="flex items-center gap-2.5 text-amber-600 dark:text-amber-500">
                         <div className="p-2 bg-amber-500/10 dark:bg-amber-950/40 rounded-xl border border-amber-500/20">
                             <CalendarX2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -77,7 +77,7 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-4 py-2">
+                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 py-2">
                     {/* Sugestões rápidas */}
                     <div>
                         <label className="text-[11px] font-semibold text-typography-500 uppercase tracking-wider block mb-2">
@@ -147,7 +147,7 @@ export const MechanicalNoMeetingModal: React.FC<MechanicalNoMeetingModalProps> =
                     </div>
                 </div>
 
-                <DialogFooter className="flex sm:justify-end gap-2 pt-2 border-t border-surface-300">
+                <DialogFooter className="shrink-0 flex sm:justify-end gap-2 pt-3 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"

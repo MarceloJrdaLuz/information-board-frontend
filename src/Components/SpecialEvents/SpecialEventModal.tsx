@@ -418,7 +418,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
             <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
-                <DialogHeader className="pb-3 border-b border-surface-300">
+                <DialogHeader className="shrink-0 pb-3 border-b border-surface-300">
                     <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 flex items-center gap-2">
                         <CalendarDays className="h-5 w-5 text-primary-200" />
                         {isEditing ? "Editar Evento Especial" : "Cadastrar Novo Evento Especial"}
@@ -749,7 +749,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                         />
                     </div>
 
-                    <DialogFooter className="mt-2 flex sm:justify-between items-center gap-2 pt-3 border-t border-surface-300">
+                    <DialogFooter className="shrink-0 mt-2 flex sm:justify-between items-center gap-2 pt-3 border-t border-surface-300">
                         {isEditing && onDelete ? (
                             <Button
                                 type="button"
@@ -795,8 +795,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
         {/* Modal de Confirmação de Salvamento com Datas em Destaque */}
         <Dialog open={confirmSaveOpen} onOpenChange={setConfirmSaveOpen}>
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
-                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[90vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="shrink-0 flex flex-col items-center text-center gap-2 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-primary-200/15 text-primary-200 flex items-center justify-center shrink-0">
                         <CalendarCheck className="h-6 w-6" />
                     </div>
@@ -808,7 +808,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-3 py-1 min-w-0">
+                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3 py-1 min-w-0">
                     {/* Título do Evento */}
                     <div className="flex items-start gap-2 p-2.5 rounded-lg bg-surface-200/60 border border-surface-300 min-w-0">
                         <span className="text-[11px] font-semibold text-typography-500 uppercase tracking-wide shrink-0 pt-0.5">Evento:</span>
@@ -902,7 +902,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </div>
                 </div>
 
-                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
+                <div className="shrink-0 mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-2 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"
@@ -929,8 +929,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
         {/* Modal de Confirmação de Exclusão */}
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
-                <DialogHeader className="flex flex-col items-center text-center gap-2 min-w-0">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[90vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl shadow-xl z-[70] overflow-hidden min-w-0">
+                <DialogHeader className="shrink-0 flex flex-col items-center text-center gap-2 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-600 flex items-center justify-center shrink-0">
                         <AlertTriangle className="h-6 w-6" />
                     </div>
@@ -942,7 +942,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-2.5 my-1 min-w-0">
+                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2.5 my-1 min-w-0">
                     {/* Data por extenso em destaque */}
                     {deleteStartDate && (
                         <div className="p-3 rounded-xl bg-surface-200/60 border border-surface-300 flex flex-col gap-1.5 text-center min-w-0">
@@ -991,7 +991,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                     </div>
                 </div>
 
-                <div className="mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-1">
+                <div className="shrink-0 mt-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 w-full pt-2 border-t border-surface-300">
                     <Button
                         type="button"
                         variant="outline"
