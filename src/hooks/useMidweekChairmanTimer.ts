@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
 import { IChairmanMeetingState, ITimerState, TimersMap } from "@/types/midweekChairman";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_PREFIX = "midweek_chairman_";
 const MAX_STORAGE_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 dias
@@ -101,38 +101,67 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
         }
     }, [scheduleId]);
 
-    // Intervalo de contagem a cada segundo para todos os cronômetros ativos
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTimers(prev => {
-                const hasRunning = Object.values(prev).some(t => t.isRunning);
-                if (!hasRunning) return prev;
+    // Sincroniza cronômetros ativos usando timestamp real para não sofrer throttling em segundo plano
+    const syncActiveTimers = useCallback(() => {
+        setTimers(prev => {
+            const hasRunning = Object.values(prev).some(t => t.isRunning && t.startedAtTimestamp);
+            if (!hasRunning) return prev;
 
-                const updated: TimersMap = {};
-                let changed = false;
+            const now = Date.now();
+            const updated: TimersMap = {};
+            let changed = false;
 
-                Object.entries(prev).forEach(([id, timer]) => {
-                    if (timer.isRunning) {
+            Object.entries(prev).forEach(([id, timer]) => {
+                if (timer.isRunning && timer.startedAtTimestamp) {
+                    const deltaSeconds = Math.floor((now - timer.startedAtTimestamp) / 1000);
+                    if (deltaSeconds > 0) {
                         updated[id] = {
                             ...timer,
-                            elapsedSeconds: timer.elapsedSeconds + 1
+                            elapsedSeconds: timer.elapsedSeconds + deltaSeconds,
+                            startedAtTimestamp: timer.startedAtTimestamp + (deltaSeconds * 1000)
                         };
                         changed = true;
                     } else {
                         updated[id] = timer;
                     }
-                });
-
-                if (changed) {
-                    saveToLocalStorage(updated, meetingStartTime);
-                    return updated;
+                } else {
+                    updated[id] = timer;
                 }
-                return prev;
             });
-        }, 1000);
 
-        return () => clearInterval(interval);
+            if (changed) {
+                saveToLocalStorage(updated, meetingStartTime);
+                return updated;
+            }
+            return prev;
+        });
     }, [meetingStartTime, saveToLocalStorage]);
+
+    // Intervalo de contagem a cada 500ms e listeners de foco/visibilidade para precisão atômica
+    useEffect(() => {
+        const interval = setInterval(syncActiveTimers, 500);
+
+        const handleVisibilityOrFocus = () => {
+            syncActiveTimers();
+        };
+
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', handleVisibilityOrFocus);
+        }
+        if (typeof window !== 'undefined') {
+            window.addEventListener('focus', handleVisibilityOrFocus);
+        }
+
+        return () => {
+            clearInterval(interval);
+            if (typeof document !== 'undefined') {
+                document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+            }
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('focus', handleVisibilityOrFocus);
+            }
+        };
+    }, [syncActiveTimers]);
 
     // Altera o horário de início da reunião
     const setMeetingStartTime = useCallback((newTime: string) => {
@@ -140,7 +169,7 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
         saveToLocalStorage(timers, newTime);
     }, [timers, saveToLocalStorage]);
 
-    // Inicia cronômetro para uma parte (pausando outros cronômetros em execução)
+    // Inicia cronômetro para uma parte (pausando outros cronômetros em execução com cálculo exato)
     const startTimer = useCallback((itemId: string) => {
         setTimers(prev => {
             const now = Date.now();
@@ -154,9 +183,11 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
                         startedAtTimestamp: now
                     };
                 } else if (timer.isRunning) {
-                    // Pausa outros cronômetros ativos
+                    // Pausa outros cronômetros ativos calculando o delta transcorrido
+                    const delta = timer.startedAtTimestamp ? Math.floor((now - timer.startedAtTimestamp) / 1000) : 0;
                     updated[id] = {
                         ...timer,
+                        elapsedSeconds: timer.elapsedSeconds + Math.max(0, delta),
                         isRunning: false,
                         startedAtTimestamp: null
                     };
@@ -179,16 +210,20 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
         });
     }, [meetingStartTime, saveToLocalStorage]);
 
-    // Pausa cronômetro de uma parte
+    // Pausa cronômetro de uma parte salvando o tempo exato acumulado
     const pauseTimer = useCallback((itemId: string) => {
         setTimers(prev => {
             const current = prev[itemId];
             if (!current || !current.isRunning) return prev;
 
+            const now = Date.now();
+            const delta = current.startedAtTimestamp ? Math.floor((now - current.startedAtTimestamp) / 1000) : 0;
+
             const updated: TimersMap = {
                 ...prev,
                 [itemId]: {
                     ...current,
+                    elapsedSeconds: current.elapsedSeconds + Math.max(0, delta),
                     isRunning: false,
                     startedAtTimestamp: null
                 }
@@ -227,13 +262,21 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
                 isCompleted: false
             };
 
+            const now = Date.now();
+            const isFinishing = !current.isCompleted;
+            let elapsed = current.elapsedSeconds;
+            if (isFinishing && current.isRunning && current.startedAtTimestamp) {
+                elapsed += Math.max(0, Math.floor((now - current.startedAtTimestamp) / 1000));
+            }
+
             const updated: TimersMap = {
                 ...prev,
                 [itemId]: {
                     ...current,
-                    isCompleted: !current.isCompleted,
-                    // Ao marcar como concluído, se estiver rodando, pausa
-                    isRunning: !current.isCompleted ? false : current.isRunning
+                    elapsedSeconds: elapsed,
+                    isCompleted: isFinishing,
+                    isRunning: isFinishing ? false : current.isRunning,
+                    startedAtTimestamp: isFinishing ? null : current.startedAtTimestamp
                 }
             };
 

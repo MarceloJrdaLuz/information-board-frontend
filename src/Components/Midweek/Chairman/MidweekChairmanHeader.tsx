@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { IMidweekSchedule } from "@/types/midweek";
-import { Clock, Calendar, User, ChevronLeft, ChevronRight, RotateCcw, BookOpen } from "lucide-react";
 import { Button } from "@/Components/ui/button";
+import { IMidweekSchedule } from "@/types/midweek";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, Clock, RotateCcw, Share2, User } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 dayjs.locale('pt-br');
 
@@ -17,6 +17,7 @@ interface MidweekChairmanHeaderProps {
     onPrevWeek: () => void;
     onNextWeek: () => void;
     onResetAll: () => void;
+    onCopyReport?: () => void;
     hasPrevWeek: boolean;
     hasNextWeek: boolean;
 }
@@ -31,6 +32,7 @@ export const MidweekChairmanHeader: React.FC<MidweekChairmanHeaderProps> = ({
     onPrevWeek,
     onNextWeek,
     onResetAll,
+    onCopyReport,
     hasPrevWeek,
     hasNextWeek
 }) => {
@@ -62,7 +64,7 @@ export const MidweekChairmanHeader: React.FC<MidweekChairmanHeaderProps> = ({
         : dayjs(schedule.weekDate).format("Semana de DD [de] MMMM");
 
     return (
-        <div className="flex flex-col gap-4 bg-surface-100 border border-surface-300 rounded-xl p-4 shadow-sm">
+        <div className="flex flex-col gap-3.5 bg-surface-100 border border-surface-300 rounded-xl p-3.5 sm:p-4 shadow-sm">
             {/* Linha Superior: Navegação de Semanas & Relógio Atual */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-300">
                 <div className="flex items-center gap-2">
@@ -163,16 +165,32 @@ export const MidweekChairmanHeader: React.FC<MidweekChairmanHeaderProps> = ({
                     </div>
                 </div>
 
-                {/* Ação de Zerar Cronômetros */}
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={onResetAll}
-                    className="h-8 text-xs text-typography-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 self-start sm:self-auto gap-1.5"
-                >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    Zerar todos os cronômetros
-                </Button>
+                {/* Ações do Relatório e Zerar Cronômetros */}
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                    {onCopyReport && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={onCopyReport}
+                            className="h-8 text-xs text-typography-700 hover:text-typography-900 gap-1.5"
+                            title="Compartilhar relatório formatado (texto ou imagem) de todos os tempos da reunião"
+                        >
+                            <Share2 className="w-3.5 h-3.5 text-primary-500" />
+                            <span>Compartilhar Relatório</span>
+                        </Button>
+                    )}
+
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={onResetAll}
+                        className="h-8 text-xs text-typography-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 gap-1.5"
+                        title="Zerar todos os cronômetros desta reunião"
+                    >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Zerar cronômetros</span>
+                    </Button>
+                </div>
             </div>
         </div>
     );

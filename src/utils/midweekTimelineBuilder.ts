@@ -161,7 +161,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             assignedRoleLabel: isBibleReading ? "Leitor" : isTalk ? "Orador" : "Dirigente",
             assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
             auxReaderName,
-            sourceMaterial: null,
+            sourceMaterial: part.sourceMaterial || null,
             lessonInfo: isBibleReading && (lessonInfo?.fullDisplay || lessonInfo?.shortBadge) ? (lessonInfo.fullDisplay || lessonInfo.shortBadge) : null,
             partType: part.partType
         });
@@ -330,7 +330,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             assignedRoleLabel: "Dirigente",
             assignedName: getPublisherName(schedule.cbsConductor) || "Dirigente a designar",
             readerName: getPublisherName(schedule.cbsReader) || "Leitor a designar",
-            sourceMaterial: null
+            sourceMaterial: cbsPart?.sourceMaterial || null
         });
     }
 
