@@ -570,7 +570,7 @@ function WeekendSchedulePage() {
                                     disabled={isSaving}
                                     className={`rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 shadow-sm transition-all ${
                                         pendingChangesCount > 0
-                                            ? "bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse"
+                                            ? "bg-emerald-600 hover:bg-emerald-700 text-white animate-pulse-slow"
                                             : "text-typography-200"
                                     }`}
                                 >
