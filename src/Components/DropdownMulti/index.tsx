@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useRef, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
-import { ChevronDownIcon, CheckIcon } from "@heroicons/react/20/solid"
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
+import { Fragment, useEffect, useRef, useState } from "react"
 
 import { normalizeText } from "@/utils/normalizeText"
 
@@ -47,7 +47,6 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
           secondary.includes(term)
         )
       })
-      setFilteredItems(filtered)
     }
   }, [searchQuery, items])
 

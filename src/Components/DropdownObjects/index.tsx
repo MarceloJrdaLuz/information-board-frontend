@@ -46,7 +46,6 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
           secondary.includes(term)
         )
       })
-      setFilteredItems(filtered)
     }
   }, [searchQuery, items])
 

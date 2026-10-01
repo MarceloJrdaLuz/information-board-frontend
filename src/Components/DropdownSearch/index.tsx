@@ -1,11 +1,11 @@
 import { iconeAddPessoa } from '@/assets/icons'
 import { sortArrayByProperty } from '@/functions/sortObjects'
 import { IPublisherList } from '@/types/types'
+import { normalizeText } from '@/utils/normalizeText'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
 import { Fragment, useEffect, useState } from 'react'
-import { normalizeText } from '@/utils/normalizeText'
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
