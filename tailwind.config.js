@@ -91,7 +91,7 @@ module.exports = {
 				}
 			},
 			animation: {
-				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+				'pulse-slow': 'pulse-slow 1s ease-in-out infinite',
 			}
 		}
 	},
