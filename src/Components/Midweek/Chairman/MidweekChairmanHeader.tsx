@@ -2,7 +2,7 @@ import { Button } from "@/Components/ui/button";
 import { IMidweekSchedule } from "@/types/midweek";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
-import { BookOpen, Calendar, ChevronLeft, ChevronRight, Clock, Copy, RotateCcw, User } from "lucide-react";
+import { BookOpen, Calendar, ChevronLeft, ChevronRight, Clock, RotateCcw, Share2, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 dayjs.locale('pt-br');
@@ -173,10 +173,10 @@ export const MidweekChairmanHeader: React.FC<MidweekChairmanHeaderProps> = ({
                             variant="outline"
                             onClick={onCopyReport}
                             className="h-8 text-xs text-typography-700 hover:text-typography-900 gap-1.5"
-                            title="Copiar relatório formatado de todos os tempos da reunião"
+                            title="Compartilhar relatório formatado (texto ou imagem) de todos os tempos da reunião"
                         >
-                            <Copy className="w-3.5 h-3.5 text-primary-500" />
-                            <span>Copiar Relatório</span>
+                            <Share2 className="w-3.5 h-3.5 text-primary-500" />
+                            <span>Compartilhar Relatório</span>
                         </Button>
                     )}
 

@@ -93,12 +93,6 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {nextSchedule.chairman && (
-                        <div className="text-xs text-typography-600 bg-surface-200/80 px-2.5 py-1.5 rounded-lg border border-surface-300">
-                            Presidente: <strong className="text-typography-900">{nextSchedule.chairman.fullName}</strong>
-                        </div>
-                    )}
-
                     <Button
                         onClick={onNextWeek}
                         disabled={!hasNextWeek}

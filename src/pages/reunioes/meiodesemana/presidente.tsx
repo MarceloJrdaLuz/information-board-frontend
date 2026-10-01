@@ -3,6 +3,7 @@ import ContentDashboard from "@/Components/ContentDashboard";
 import { MidweekChairmanFloatingTimer } from "@/Components/Midweek/Chairman/MidweekChairmanFloatingTimer";
 import { MidweekChairmanHeader } from "@/Components/Midweek/Chairman/MidweekChairmanHeader";
 import { MidweekChairmanNextWeekPreview } from "@/Components/Midweek/Chairman/MidweekChairmanNextWeekPreview";
+import { MidweekChairmanReportModal } from "@/Components/Midweek/Chairman/MidweekChairmanReportModal";
 import { MidweekChairmanTimelineItem } from "@/Components/Midweek/Chairman/MidweekChairmanTimelineItem";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
@@ -46,6 +47,7 @@ function MidweekChairmanPage() {
     // Relógio em tempo real
     const [currentTime, setCurrentTime] = useState<string>("");
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const updateClock = () => {
@@ -193,78 +195,9 @@ function MidweekChairmanPage() {
         return pausedWithTime || null;
     }, [timelineItems, timer.timers]);
 
-    // Copia o relatório de todos os tempos da reunião formatado para compartilhamento (WhatsApp / Texto)
+    // Abre o modal de compartilhamento do relatório de tempos (texto ou imagem)
     const handleCopyReport = () => {
-        if (!currentSchedule) return;
-
-        const formattedMeetingDate = currentSchedule.meetingDate
-            ? dayjs(currentSchedule.meetingDate).format("dddd, DD [de] MMMM [de] YYYY")
-            : dayjs(currentSchedule.weekDate).format("Semana de DD [de] MMMM [de] YYYY");
-
-        let text = `📋 *RELATÓRIO DE TEMPOS — REUNIÃO DO MEIO DE SEMANA*\n`;
-        text += `🗓 *Data:* ${formattedMeetingDate}\n`;
-        if (currentSchedule.weeklyBibleReading) {
-            text += `📖 *Leitura Bíblica:* ${currentSchedule.weeklyBibleReading}\n`;
-        }
-        if (currentSchedule.chairman?.fullName) {
-            text += `👤 *Presidente:* ${currentSchedule.chairman.fullName}\n`;
-        }
-        text += `⏱ *Início da Reunião:* ${timer.meetingStartTime}\n`;
-
-        let currentSection = "";
-
-        timelineItems.forEach(item => {
-            if (item.sectionTitle !== currentSection) {
-                currentSection = item.sectionTitle;
-                text += `\n*── ${currentSection.toUpperCase()} ──*\n`;
-            }
-
-            const t = timer.getTimer(item.id);
-            const targetSec = item.durationMinutes * 60;
-            const elapsedSec = t.elapsedSeconds;
-            const isDone = t.isCompleted;
-
-            const timeStr = timer.formatTimeDisplay(elapsedSec);
-            const targetStr = `${String(item.durationMinutes).padStart(2, '0')}:00`;
-
-            let diffStr = "";
-            if (elapsedSec > 0) {
-                const diff = elapsedSec - targetSec;
-                if (diff > 0) {
-                    diffStr = ` (+${timer.formatTimeDisplay(diff)})`;
-                } else if (diff < 0) {
-                    diffStr = ` (-${timer.formatTimeDisplay(Math.abs(diff))})`;
-                } else {
-                    diffStr = ` (exato)`;
-                }
-            }
-
-            const checkMark = isDone ? "✅ " : elapsedSec > 0 ? "⏱ " : "⚪ ";
-            let assigned = item.assignedName ? ` — ${item.assignedName}` : "";
-            if (item.assistantName) {
-                assigned += ` (Ajudante: ${item.assistantName})`;
-            }
-            if (item.auxReaderName) {
-                assigned += ` (Sala B: ${item.auxReaderName})`;
-            }
-
-            const sourceInfo = item.sourceMaterial ? ` (${item.sourceMaterial})` : "";
-            text += `${checkMark}*${item.title}*${sourceInfo} [Previsto: ${targetStr}]\n`;
-            text += `   Tempo: ${timeStr}${diffStr}${assigned}\n`;
-        });
-
-        text += `\n━━━━━━━━━━━━━━━━━━━━\n`;
-        const completedCount = timelineItems.filter(i => timer.getTimer(i.id).isCompleted).length;
-        text += `📊 *Total Concluídas:* ${completedCount} de ${timelineItems.length} partes\n`;
-        text += `⏱ Gerado em ${dayjs().format("DD/MM/YYYY [às] HH:mm")}`;
-
-        if (typeof navigator !== "undefined" && navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                toast.success("Relatório de tempos copiado para a área de transferência!");
-            }).catch(() => {
-                toast.error("Não foi possível copiar o relatório.");
-            });
-        }
+        setIsReportModalOpen(true);
     };
 
     const handlePrevWeek = () => {
@@ -421,6 +354,20 @@ function MidweekChairmanPage() {
                         onPause={timer.pauseTimer}
                         onReset={timer.resetTimer}
                         onToggleCompleted={timer.toggleCompleted}
+                        formatTime={timer.formatTimeDisplay}
+                    />
+                )}
+
+                {/* Modal de Compartilhamento do Relatório (Texto ou Imagem com Estilo PDF) */}
+                {currentSchedule && (
+                    <MidweekChairmanReportModal
+                        isOpen={isReportModalOpen}
+                        onClose={() => setIsReportModalOpen(false)}
+                        schedule={currentSchedule}
+                        timelineItems={timelineItems}
+                        timers={timer.timers}
+                        meetingStartTime={timer.meetingStartTime}
+                        congregationName={user?.congregation?.name}
                         formatTime={timer.formatTimeDisplay}
                     />
                 )}
