@@ -146,7 +146,10 @@ function EventosEspeciaisPage() {
         if (!congregation?.id) return;
 
         if (selectedEvent?.id) {
-            await api.put(`/special-events/${selectedEvent.id}`, dto);
+            await api.put(`/special-events/${selectedEvent.id}`, {
+                ...dto,
+                congregation_id: congregation.id
+            });
         } else {
             await api.post(`/congregation/${congregation.id}/special-events`, dto);
         }
@@ -154,7 +157,10 @@ function EventosEspeciaisPage() {
     };
 
     const handleDelete = async (id: string) => {
-        await api.delete(`/special-events/${id}`);
+        if (!congregation?.id) return;
+        await api.delete(`/special-events/${id}`, {
+            params: { congregation_id: congregation.id }
+        });
         await loadEvents();
     };
 

@@ -9,7 +9,11 @@ import {
 } from "@/Components/ui/dialog";
 import { Switch } from "@/Components/ui/switch";
 import { CreateSpecialEventDTO, EventImpactScope, ISpecialEvent, SpecialEventType } from "@/types/specialEvent";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import {
+    AlertTriangle,
+    CalendarCheck,
     CalendarDays,
     CalendarPlus,
     CheckCircle2,
@@ -288,7 +292,11 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // Modais de confirmação
+    const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!title.trim()) {
@@ -306,6 +314,10 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
             return;
         }
 
+        setConfirmSaveOpen(true);
+    };
+
+    const executeSave = async () => {
         setLoading(true);
         try {
             await onSave({
@@ -326,6 +338,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                 notes: notes.trim() || null
             });
             toast.success(isEditing ? "Evento atualizado com sucesso!" : "Evento criado com sucesso!");
+            setConfirmSaveOpen(false);
             onClose();
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Erro ao salvar evento especial.");
@@ -334,25 +347,40 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
         }
     };
 
-    const handleDelete = async () => {
+    const handleDeleteClick = () => {
         if (!event?.id || !onDelete) return;
-        if (!confirm("Tem certeza que deseja excluir este evento especial? As programações associadas voltarão ao estado normal.")) {
-            return;
-        }
+        setConfirmDeleteOpen(true);
+    };
 
+    const executeDelete = async () => {
+        if (!event?.id || !onDelete) return;
         setDeleting(true);
         try {
             await onDelete(event.id);
             toast.success("Evento especial excluído.");
+            setConfirmDeleteOpen(false);
             onClose();
         } catch (error: any) {
-            toast.error("Erro ao excluir evento.");
+            toast.error(error?.response?.data?.message || "Erro ao excluir evento.");
         } finally {
             setDeleting(false);
         }
     };
 
+    const isSingleDay = startDate === endDate;
+    const sDateObj = dayjs(startDate).locale("pt-br");
+    const eDateObj = dayjs(endDate).locale("pt-br");
+    const totalDays = startDate && endDate ? eDateObj.diff(sDateObj, "day") + 1 : 1;
+
+    const deleteStartDate = startDate || event?.startDate;
+    const deleteEndDate = endDate || event?.endDate;
+    const isDeleteSingleDay = !deleteEndDate || deleteStartDate === deleteEndDate;
+    const formattedDeleteDate = isDeleteSingleDay
+        ? (deleteStartDate ? dayjs(deleteStartDate).locale("pt-br").format("DD [de] MMMM [de] YYYY") : "")
+        : `${dayjs(deleteStartDate).locale("pt-br").format("DD [de] MMMM [de] YYYY")} até ${dayjs(deleteEndDate).locale("pt-br").format("DD [de] MMMM [de] YYYY")}`;
+
     return (
+        <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
             <DialogContent className="max-w-3xl w-[95vw] max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
                 <DialogHeader className="pb-3 border-b border-surface-300">
@@ -667,7 +695,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={handleDelete}
+                                onClick={handleDeleteClick}
                                 disabled={deleting || loading}
                                 className="text-xs text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 flex items-center gap-1.5"
                             >
@@ -704,5 +732,186 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                 </form>
             </DialogContent>
         </Dialog>
+
+        {/* Modal de Confirmação de Salvamento com Datas em Destaque */}
+        <Dialog open={confirmSaveOpen} onOpenChange={setConfirmSaveOpen}>
+            <DialogContent className="max-w-md w-[95vw] bg-surface-100 border border-surface-300 p-5 rounded-2xl shadow-xl z-[70]">
+                <DialogHeader className="flex flex-col items-center text-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-primary-200/15 text-primary-200 flex items-center justify-center">
+                        <CalendarCheck className="h-6 w-6" />
+                    </div>
+                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                        {isEditing ? "Confirmar Alterações do Evento" : "Confirmar Criação do Evento"}
+                    </DialogTitle>
+                    <DialogDescription className="text-xs text-typography-600">
+                        Confira atentamente as datas e impactos antes de confirmar o salvamento.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="flex flex-col gap-3 py-2">
+                    {/* Título do Evento */}
+                    <div className="flex items-center gap-2 p-2.5 rounded-lg bg-surface-200/60 border border-surface-300">
+                        <span className="text-xs font-semibold text-typography-500 uppercase tracking-wide">Evento:</span>
+                        <span className="text-sm font-bold text-typography-900 truncate">{title}</span>
+                    </div>
+
+                    {/* Datas em Grande Destaque */}
+                    <div className="p-3.5 rounded-xl bg-primary-200/10 border-2 border-primary-200/40 flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-xs font-semibold text-primary-200 uppercase tracking-wider">
+                            <span>Período Selecionado</span>
+                            <span className="bg-primary-200/20 px-2 py-0.5 rounded-full text-[11px] font-bold">
+                                {totalDays} {totalDays === 1 ? "dia" : "dias"}
+                            </span>
+                        </div>
+
+                        {isSingleDay ? (
+                            <div className="flex flex-col items-center text-center py-1">
+                                <span className="text-base sm:text-lg font-extrabold text-typography-900 capitalize">
+                                    {sDateObj.format("dddd, DD [de] MMMM [de] YYYY")}
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-2 text-center pt-1">
+                                <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                    <span className="text-[10px] font-semibold text-typography-500 uppercase">Início</span>
+                                    <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize leading-tight">
+                                        {sDateObj.format("dddd")}
+                                    </span>
+                                    <span className="text-xs font-semibold text-primary-200">
+                                        {sDateObj.format("DD/MM/YYYY")}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                    <span className="text-[10px] font-semibold text-typography-500 uppercase">Término</span>
+                                    <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize leading-tight">
+                                        {eDateObj.format("dddd")}
+                                    </span>
+                                    <span className="text-xs font-semibold text-primary-200">
+                                        {eDateObj.format("DD/MM/YYYY")}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Resumo dos Impactos */}
+                    <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-surface-200/40 border border-surface-300 text-xs">
+                        <span className="font-semibold text-typography-700 text-[11px] uppercase tracking-wide">
+                            Impactos Programados:
+                        </span>
+                        <div className="grid grid-cols-1 gap-1 text-[11px] text-typography-700">
+                            <div className="flex items-center justify-between">
+                                <span>Reunião de Meio de Semana:</span>
+                                <span className={cancelMidweekMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                                    {cancelMidweekMeeting ? "Cancelada" : "Mantida"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span>Reunião de Fim de Semana:</span>
+                                <span className={cancelWeekendMeeting ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                                    {cancelWeekendMeeting ? "Cancelada" : "Mantida"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span>Limpeza do Salão:</span>
+                                <span className={cancelCleaning ? "font-bold text-red-500" : "font-semibold text-emerald-600"}>
+                                    {cancelCleaning ? "Cancelada" : "Mantida"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter className="mt-2 flex sm:justify-end items-center gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={loading}
+                        onClick={() => setConfirmSaveOpen(false)}
+                        className="text-xs text-typography-700"
+                    >
+                        Voltar e Corrigir
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        disabled={loading}
+                        onClick={executeSave}
+                        className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
+                    >
+                        {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                        <span>Confirmar e Salvar</span>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        {/* Modal de Confirmação de Exclusão */}
+        <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+            <DialogContent className="max-w-md w-[95vw] bg-surface-100 border border-surface-300 p-5 rounded-2xl shadow-xl z-[70]">
+                <DialogHeader className="flex flex-col items-center text-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-red-500/15 text-red-600 flex items-center justify-center">
+                        <AlertTriangle className="h-6 w-6" />
+                    </div>
+                    <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                        Excluir Evento Especial
+                    </DialogTitle>
+                    <DialogDescription className="text-xs text-typography-600 text-center">
+                        Tem certeza que deseja excluir o evento <strong className="text-typography-900">"{title || event?.title}"</strong>?
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="flex flex-col gap-2.5 my-1">
+                    {/* Data por extenso em destaque */}
+                    {formattedDeleteDate && (
+                        <div className="flex items-center justify-center gap-2.5 p-3 rounded-xl bg-surface-200/60 border border-surface-300 text-center">
+                            <CalendarDays className="h-4 w-4 text-primary-200 shrink-0" />
+                            <div className="flex flex-col text-center">
+                                <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">
+                                    {isDeleteSingleDay ? "Data do Evento" : "Período do Evento"}
+                                </span>
+                                <span className="text-sm font-bold text-typography-900 capitalize">
+                                    {formattedDeleteDate}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-700 dark:text-red-400 flex flex-col gap-1">
+                        <span className="font-bold flex items-center gap-1.5">
+                            <ShieldAlert className="h-4 w-4 shrink-0" /> Atenção
+                        </span>
+                        <p className="text-[11px] leading-relaxed">
+                            Ao excluir este evento, os cancelamentos de reuniões e programações vinculadas serão revertidos ao estado normal.
+                        </p>
+                    </div>
+                </div>
+
+                <DialogFooter className="mt-3 flex sm:justify-end items-center gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={deleting}
+                        onClick={() => setConfirmDeleteOpen(false)}
+                        className="text-xs text-typography-700"
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        type="button"
+                        size="sm"
+                        disabled={deleting}
+                        onClick={executeDelete}
+                        className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
+                    >
+                        {deleting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                        <span>Sim, Excluir</span>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 };
