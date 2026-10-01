@@ -250,6 +250,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           talk_id: undefined,
           chairman_id: undefined,
           reader_id: undefined,
+          visitingCongregation_id: undefined,
           watchTowerStudyTitle: undefined,
           manualSpeaker: "",
           manualTalk: "",
