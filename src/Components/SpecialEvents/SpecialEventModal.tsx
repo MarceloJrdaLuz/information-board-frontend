@@ -375,9 +375,8 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     const deleteStartDate = startDate || event?.startDate;
     const deleteEndDate = endDate || event?.endDate;
     const isDeleteSingleDay = !deleteEndDate || deleteStartDate === deleteEndDate;
-    const formattedDeleteDate = isDeleteSingleDay
-        ? (deleteStartDate ? dayjs(deleteStartDate).locale("pt-br").format("DD [de] MMMM [de] YYYY") : "")
-        : `${dayjs(deleteStartDate).locale("pt-br").format("DD [de] MMMM [de] YYYY")} até ${dayjs(deleteEndDate).locale("pt-br").format("DD [de] MMMM [de] YYYY")}`;
+    const sDelObj = dayjs(deleteStartDate).locale("pt-br");
+    const eDelObj = dayjs(deleteEndDate).locale("pt-br");
 
     return (
         <>
@@ -771,24 +770,26 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 </span>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 gap-2 text-center pt-1">
-                                <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
-                                    <span className="text-[10px] font-semibold text-typography-500 uppercase">Início</span>
-                                    <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize leading-tight">
-                                        {sDateObj.format("dddd")}
-                                    </span>
-                                    <span className="text-xs font-semibold text-primary-200">
-                                        {sDateObj.format("DD/MM/YYYY")}
-                                    </span>
-                                </div>
-                                <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
-                                    <span className="text-[10px] font-semibold text-typography-500 uppercase">Término</span>
-                                    <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize leading-tight">
-                                        {eDateObj.format("dddd")}
-                                    </span>
-                                    <span className="text-xs font-semibold text-primary-200">
-                                        {eDateObj.format("DD/MM/YYYY")}
-                                    </span>
+                            <div className="flex flex-col gap-2 pt-1">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center">
+                                    <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                        <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">Início</span>
+                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize">
+                                            {sDateObj.format("dddd")}
+                                        </span>
+                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize">
+                                            {sDateObj.format("DD [de] MMMM [de] YYYY")}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col p-2.5 rounded-lg bg-surface-100 border border-primary-200/30">
+                                        <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">Término</span>
+                                        <span className="text-xs sm:text-sm font-bold text-typography-900 capitalize">
+                                            {eDateObj.format("dddd")}
+                                        </span>
+                                        <span className="text-xs sm:text-sm font-bold text-primary-200 capitalize">
+                                            {eDateObj.format("DD [de] MMMM [de] YYYY")}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -864,17 +865,43 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
 
                 <div className="flex flex-col gap-2.5 my-1">
                     {/* Data por extenso em destaque */}
-                    {formattedDeleteDate && (
-                        <div className="flex items-center justify-center gap-2.5 p-3 rounded-xl bg-surface-200/60 border border-surface-300 text-center">
-                            <CalendarDays className="h-4 w-4 text-primary-200 shrink-0" />
-                            <div className="flex flex-col text-center">
-                                <span className="text-[10px] font-semibold text-typography-500 uppercase tracking-wider">
-                                    {isDeleteSingleDay ? "Data do Evento" : "Período do Evento"}
-                                </span>
-                                <span className="text-sm font-bold text-typography-900 capitalize">
-                                    {formattedDeleteDate}
-                                </span>
+                    {deleteStartDate && (
+                        <div className="p-3 rounded-xl bg-surface-200/60 border border-surface-300 flex flex-col gap-1.5 text-center">
+                            <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-typography-500 uppercase tracking-wider">
+                                <CalendarDays className="h-3.5 w-3.5 text-primary-200" />
+                                <span>{isDeleteSingleDay ? "Data do Evento" : "Período do Evento"}</span>
                             </div>
+                            {isDeleteSingleDay ? (
+                                <span className="text-sm sm:text-base font-bold text-typography-900 capitalize">
+                                    {sDelObj.format("dddd, DD [de] MMMM [de] YYYY")}
+                                </span>
+                            ) : (
+                                <div className="flex flex-col gap-1.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center pt-0.5">
+                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300">
+                                            <span className="text-[9px] font-semibold text-typography-500 uppercase">Início</span>
+                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight">
+                                                {sDelObj.format("dddd")}
+                                            </span>
+                                            <span className="text-xs font-bold text-primary-200 capitalize">
+                                                {sDelObj.format("DD [de] MMMM [de] YYYY")}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col p-2 rounded-lg bg-surface-100 border border-surface-300">
+                                            <span className="text-[9px] font-semibold text-typography-500 uppercase">Término</span>
+                                            <span className="text-xs font-bold text-typography-900 capitalize leading-tight">
+                                                {eDelObj.format("dddd")}
+                                            </span>
+                                            <span className="text-xs font-bold text-primary-200 capitalize">
+                                                {eDelObj.format("DD [de] MMMM [de] YYYY")}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-bold text-typography-900 capitalize mt-0.5">
+                                        {sDelObj.format("DD [de] MMMM [de] YYYY")} até {eDelObj.format("DD [de] MMMM [de] YYYY")}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
 
