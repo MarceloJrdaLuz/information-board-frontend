@@ -55,19 +55,14 @@ function AuthProvider(props: AuthContextProviderProps) {
 
 
     useEffect(() => {
-        const token = getCookie('quadro-token')
-
-        if (isPublic && !token) {
-            // Área pública e sem token de usuário → NÃO recuperar usuário
+        if (isPublic) {
+            // Área pública → NÃO recuperar usuário
             setAuthResolved(true);
             return;
         }
 
         const recoverUser = async () => {
             try {
-                if (token) {
-                    api.defaults.headers['Authorization'] = `Bearer ${String(token).replace(/"/g, '')}`
-                }
                 const res = await api.get('/recover-user-information')
                 setUser(res.data)
             } catch (err: any) {

@@ -1,6 +1,5 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
-import { useAuthContext } from "@/context/AuthContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
@@ -44,7 +43,6 @@ export default function FormReport(props: IRelatorioFormProps) {
         `${API_ROUTES.PUBLISHERS}/congregationNumber/${props.congregationNumber}`
     )
     const { createReport, createConsentRecord } = usePublisher()
-    const { user, authResolved } = useAuthContext()
 
     const [month, setMonth] = useState("")
     const [year, setYear] = useState("")
@@ -152,7 +150,7 @@ export default function FormReport(props: IRelatorioFormProps) {
         })
     }
 
-    // Carrega publicadores salvos no dispositivo a partir do storage e usuário logado
+    // Carrega publicadores salvos no dispositivo a partir do storage
     useEffect(() => {
         if (!optionsDrop || optionsDrop.length === 0) return
 
@@ -161,63 +159,33 @@ export default function FormReport(props: IRelatorioFormProps) {
             const parsed: any[] = storage ? JSON.parse(storage) : []
             const validIds = parsed.map((p) => p?.id).filter(Boolean)
 
-            if (user?.publisher?.id && !validIds.includes(user.publisher.id)) {
-                validIds.push(user.publisher.id)
-            }
-
             const matched = optionsDrop.filter((p) => validIds.includes(p.id))
             setSavedPublishers(matched)
         } catch {
             setSavedPublishers([])
         }
-    }, [optionsDrop, user])
+    }, [optionsDrop])
 
-    // Pré-seleção inteligente do publicador
+    // Pré-seleção inteligente do publicador baseada no histórico deste dispositivo (localStorage)
     useEffect(() => {
-        if (!authResolved || optionsDrop.length === 0 || autoSelectedRef.current) return
+        if (optionsDrop.length === 0 || autoSelectedRef.current) return
 
-        let chosen: IPublisherList | undefined
+        const storage = localStorage.getItem("publisher")
+        const parsed: any[] = storage ? JSON.parse(storage) : []
+        const validIds = parsed.map((p) => p?.id).filter(Boolean)
+        const matched = optionsDrop.filter((p) => validIds.includes(p.id))
 
-        // 1. Se estiver logado na aplicação
-        if (user?.publisher?.id) {
-            const loggedInPub = optionsDrop.find((p) => p.id === user.publisher?.id)
-            if (loggedInPub) {
-                savePublisherToDevice(loggedInPub)
+        if (matched.length > 0) {
+            // Prioriza quem ainda NÃO enviou este mês neste dispositivo
+            const unsubmitted = matched.find((p) => !submittedIds.includes(p.id))
+            const lastId = localStorage.getItem("lastSelectedPublisherId")
+            const lastPub = matched.find((p) => p.id === lastId)
 
-                const isAlreadySubmitted = submittedIds.includes(loggedInPub.id)
-                if (isAlreadySubmitted && savedPublishers.length > 0) {
-                    const unsubmitted = savedPublishers.find((p) => !submittedIds.includes(p.id))
-                    chosen = unsubmitted || loggedInPub
-                } else {
-                    chosen = loggedInPub
-                }
-            }
-        }
-
-        // 2. Se não estiver logado ou o publicador logado não for desta congregação
-        if (!chosen) {
-            const storage = localStorage.getItem("publisher")
-            const parsed: any[] = storage ? JSON.parse(storage) : []
-            const validIds = parsed.map((p) => p?.id).filter(Boolean)
-            const matched = optionsDrop.filter((p) => validIds.includes(p.id))
-
-            if (matched.length > 0) {
-                const unsubmitted = matched.find((p) => !submittedIds.includes(p.id))
-                if (unsubmitted) {
-                    chosen = unsubmitted
-                } else {
-                    const lastId = localStorage.getItem("lastSelectedPublisherId")
-                    const lastPub = matched.find((p) => p.id === lastId)
-                    chosen = lastPub || matched[0]
-                }
-            }
-        }
-
-        if (chosen) {
+            const chosen = unsubmitted || lastPub || matched[0]
             setPublisherToSend(chosen)
             autoSelectedRef.current = true
         }
-    }, [authResolved, optionsDrop, user, submittedIds, savedPublishers])
+    }, [optionsDrop, submittedIds])
 
     const handleClick = (option: IPublisherList | undefined) => {
         setPublisherToSend(option)
@@ -327,13 +295,17 @@ export default function FormReport(props: IRelatorioFormProps) {
                             const nextPub = unsubmittedList[0]
                             setPublisherToSend(nextPub)
                             localStorage.setItem("lastSelectedPublisherId", nextPub.id)
-                            toast.info(
+                            toast.success(
                                 `Relatório de ${currentPub.fullName} enviado! Agora selecionamos ${nextPub.fullName} para o próximo envio.`,
                                 { autoClose: 6000 }
                             )
                         } else if (devicePublishers.length > 1) {
                             toast.success(
                                 `Relatório de ${currentPub.fullName} enviado! Todos os relatórios salvos neste dispositivo foram preenchidos para este mês. 🎉`
+                            )
+                        } else {
+                            toast.success(
+                                `Relatório de ${currentPub.fullName} enviado com sucesso!`
                             )
                         }
                     })
