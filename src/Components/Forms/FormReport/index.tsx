@@ -1,5 +1,6 @@
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
+import { useAuthContext } from "@/context/AuthContext"
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
@@ -20,10 +21,11 @@ import {
     FileText,
     MessageSquare,
     Send,
-    User
+    User,
+    Users
 } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import * as yup from "yup"
@@ -42,6 +44,7 @@ export default function FormReport(props: IRelatorioFormProps) {
         `${API_ROUTES.PUBLISHERS}/congregationNumber/${props.congregationNumber}`
     )
     const { createReport, createConsentRecord } = usePublisher()
+    const { user, authResolved } = useAuthContext()
 
     const [month, setMonth] = useState("")
     const [year, setYear] = useState("")
@@ -51,6 +54,13 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [consentAcceptedShow, setConsentAcceptedShow] = useState(false)
     const [submittedData, setSubmittedData] = useState<FormValues>()
     const [deviceId, setDeviceId] = useState<string | undefined>()
+
+    // Publicadores salvos neste dispositivo
+    const [savedPublishers, setSavedPublishers] = useState<IPublisherList[]>([])
+    // IDs dos publicadores que já enviaram relatório neste dispositivo no mês/ano selecionado
+    const [submittedIds, setSubmittedIds] = useState<string[]>([])
+
+    const autoSelectedRef = useRef(false)
 
     const dataSuccess = useAtomValue(successFormSend)
     const dataError = useAtomValue(errorFormSend)
@@ -71,8 +81,149 @@ export default function FormReport(props: IRelatorioFormProps) {
         setYear(newDate.format("YYYY"))
     }, [])
 
+    const getStorageSubmittedKey = (m: string, y: string) => {
+        return `submitted_reports_${props.congregationNumber}_${m}_${y}`
+    }
+
+    // Carrega deviceId existente do localStorage
+    useEffect(() => {
+        const storedDeviceId = localStorage.getItem("deviceId")
+        if (storedDeviceId) {
+            setDeviceId(storedDeviceId)
+        }
+    }, [])
+
+    // Carrega histórico de envios do mês atual neste dispositivo
+    useEffect(() => {
+        if (!month || !year) return
+        try {
+            const key = getStorageSubmittedKey(month, year)
+            const stored = localStorage.getItem(key)
+            if (stored) {
+                setSubmittedIds(JSON.parse(stored))
+            } else {
+                setSubmittedIds([])
+            }
+        } catch {
+            setSubmittedIds([])
+        }
+    }, [month, year, props.congregationNumber])
+
+    const savePublisherToDevice = (pub: IPublisherList) => {
+        try {
+            const storage = localStorage.getItem("publisher")
+            const parsed: any[] = storage ? JSON.parse(storage) : []
+            const existing = parsed.find((p) => p?.id === pub.id)
+            const filtered = parsed.filter((p) => p?.id && p.id !== pub.id)
+            const updated = [
+                ...filtered,
+                {
+                    ...existing,
+                    id: pub.id,
+                    fullName: pub.fullName,
+                    nickname: pub.nickname,
+                    congregation_id: pub.congregation_id,
+                    congregation_number: pub.congregation_number
+                }
+            ]
+            localStorage.setItem("publisher", JSON.stringify(updated))
+
+            setSavedPublishers((prev) => {
+                if (prev.some((p) => p.id === pub.id)) return prev
+                return [...prev, pub]
+            })
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    const markAsSubmitted = (publisherId: string) => {
+        setSubmittedIds((prev) => {
+            if (prev.includes(publisherId)) return prev
+            const updated = [...prev, publisherId]
+            if (month && year) {
+                try {
+                    localStorage.setItem(getStorageSubmittedKey(month, year), JSON.stringify(updated))
+                } catch (e) {
+                    console.error(e)
+                }
+            }
+            return updated
+        })
+    }
+
+    // Carrega publicadores salvos no dispositivo a partir do storage e usuário logado
+    useEffect(() => {
+        if (!optionsDrop || optionsDrop.length === 0) return
+
+        try {
+            const storage = localStorage.getItem("publisher")
+            const parsed: any[] = storage ? JSON.parse(storage) : []
+            const validIds = parsed.map((p) => p?.id).filter(Boolean)
+
+            if (user?.publisher?.id && !validIds.includes(user.publisher.id)) {
+                validIds.push(user.publisher.id)
+            }
+
+            const matched = optionsDrop.filter((p) => validIds.includes(p.id))
+            setSavedPublishers(matched)
+        } catch {
+            setSavedPublishers([])
+        }
+    }, [optionsDrop, user])
+
+    // Pré-seleção inteligente do publicador
+    useEffect(() => {
+        if (!authResolved || optionsDrop.length === 0 || autoSelectedRef.current) return
+
+        let chosen: IPublisherList | undefined
+
+        // 1. Se estiver logado na aplicação
+        if (user?.publisher?.id) {
+            const loggedInPub = optionsDrop.find((p) => p.id === user.publisher?.id)
+            if (loggedInPub) {
+                savePublisherToDevice(loggedInPub)
+
+                const isAlreadySubmitted = submittedIds.includes(loggedInPub.id)
+                if (isAlreadySubmitted && savedPublishers.length > 0) {
+                    const unsubmitted = savedPublishers.find((p) => !submittedIds.includes(p.id))
+                    chosen = unsubmitted || loggedInPub
+                } else {
+                    chosen = loggedInPub
+                }
+            }
+        }
+
+        // 2. Se não estiver logado ou o publicador logado não for desta congregação
+        if (!chosen) {
+            const storage = localStorage.getItem("publisher")
+            const parsed: any[] = storage ? JSON.parse(storage) : []
+            const validIds = parsed.map((p) => p?.id).filter(Boolean)
+            const matched = optionsDrop.filter((p) => validIds.includes(p.id))
+
+            if (matched.length > 0) {
+                const unsubmitted = matched.find((p) => !submittedIds.includes(p.id))
+                if (unsubmitted) {
+                    chosen = unsubmitted
+                } else {
+                    const lastId = localStorage.getItem("lastSelectedPublisherId")
+                    const lastPub = matched.find((p) => p.id === lastId)
+                    chosen = lastPub || matched[0]
+                }
+            }
+        }
+
+        if (chosen) {
+            setPublisherToSend(chosen)
+            autoSelectedRef.current = true
+        }
+    }, [authResolved, optionsDrop, user, submittedIds, savedPublishers])
+
     const handleClick = (option: IPublisherList | undefined) => {
         setPublisherToSend(option)
+        if (option?.id) {
+            localStorage.setItem("lastSelectedPublisherId", option.id)
+        }
     }
 
     const validationSchema = yup.object({
@@ -122,6 +273,8 @@ export default function FormReport(props: IRelatorioFormProps) {
 
         await createConsentRecord(publisherToSend.id, deviceIdToUse)
 
+        savePublisherToDevice(publisherToSend)
+
         if (submittedData) {
             sendSubmit(submittedData)
         }
@@ -135,8 +288,9 @@ export default function FormReport(props: IRelatorioFormProps) {
                     message: "Informe as horas ou marque a opção de participação"
                 })
             } else {
+                const currentPub = publisherToSend
                 const payload: IPayloadCreateReport = {
-                    publisher_id: publisherToSend?.id ?? "",
+                    publisher_id: currentPub.id,
                     hours: underAnHour ? 0 : hours ?? 0,
                     month,
                     observations,
@@ -153,6 +307,35 @@ export default function FormReport(props: IRelatorioFormProps) {
                         resetField("hours")
                         resetField("studies")
                         resetField("observations")
+                        setUnderAnHour(false)
+
+                        markAsSubmitted(currentPub.id)
+                        savePublisherToDevice(currentPub)
+
+                        // Procura o próximo publicador salvo no histórico deste dispositivo que ainda não enviou
+                        const storage = localStorage.getItem("publisher")
+                        const parsed: any[] = storage ? JSON.parse(storage) : []
+                        const validIds = parsed.map((p) => p?.id).filter(Boolean)
+                        const devicePublishers = optionsDrop.filter((p) => validIds.includes(p.id))
+
+                        const currentSubmitted = [...submittedIds, currentPub.id]
+                        const unsubmittedList = devicePublishers.filter(
+                            (p) => !currentSubmitted.includes(p.id)
+                        )
+
+                        if (unsubmittedList.length > 0) {
+                            const nextPub = unsubmittedList[0]
+                            setPublisherToSend(nextPub)
+                            localStorage.setItem("lastSelectedPublisherId", nextPub.id)
+                            toast.info(
+                                `Relatório de ${currentPub.fullName} enviado! Agora selecionamos ${nextPub.fullName} para o próximo envio.`,
+                                { autoClose: 6000 }
+                            )
+                        } else if (devicePublishers.length > 1) {
+                            toast.success(
+                                `Relatório de ${currentPub.fullName} enviado! Todos os relatórios salvos neste dispositivo foram preenchidos para este mês. 🎉`
+                            )
+                        }
                     })
                     .catch((err) => {
                         console.log(err)
@@ -244,11 +427,78 @@ export default function FormReport(props: IRelatorioFormProps) {
                 </div>
 
                 {/* Seleção de Publicador */}
-                <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-typography-700 flex items-center gap-1.5">
-                        <User size={14} className="text-primary-200" />
-                        <span>Publicador(a) *</span>
-                    </label>
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-typography-700 flex items-center gap-1.5">
+                            <User size={14} className="text-primary-200" />
+                            <span>Publicador(a) *</span>
+                        </label>
+                        {savedPublishers.length > 0 && (
+                            <span className="text-[11px] text-typography-400">
+                                {savedPublishers.length}{" "}
+                                {savedPublishers.length === 1
+                                    ? "salvo no dispositivo"
+                                    : "salvos no dispositivo"}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Quick-switch chips para publicadores salvos no dispositivo */}
+                    {savedPublishers.length > 0 && (
+                        <div className="flex flex-col gap-1.5 bg-surface-200/50 p-2.5 rounded-xl border border-surface-300/70">
+                            <span className="text-[11px] font-medium text-typography-500 flex items-center gap-1">
+                                <Users size={12} className="text-typography-400" />
+                                <span>Salvos neste dispositivo:</span>
+                            </span>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                                {savedPublishers.map((pub) => {
+                                    const isSelected = publisherToSend?.id === pub.id
+                                    const isSubmitted = submittedIds.includes(pub.id)
+                                    return (
+                                        <button
+                                            key={pub.id}
+                                            type="button"
+                                            onClick={() => handleClick(pub)}
+                                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer select-none ${
+                                                isSelected
+                                                    ? "bg-primary-200 text-white shadow-sm ring-2 ring-primary-200/30 font-bold"
+                                                    : "bg-surface-100 text-typography-700 hover:bg-surface-200/80 border border-surface-300 font-medium"
+                                            }`}
+                                        >
+                                            <span className="truncate max-w-[140px] sm:max-w-[180px]">
+                                                {pub.fullName}
+                                            </span>
+                                            {isSubmitted ? (
+                                                <span
+                                                    title="Relatório enviado este mês"
+                                                    className={`inline-flex items-center gap-0.5 text-[10px] px-1 py-0.5 rounded font-bold ${
+                                                        isSelected
+                                                            ? "bg-white/20 text-white"
+                                                            : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                                    }`}
+                                                >
+                                                    <Check size={11} className="stroke-[3]" />
+                                                    <span>Enviado</span>
+                                                </span>
+                                            ) : (
+                                                <span
+                                                    title="Pendente de envio"
+                                                    className={`inline-flex items-center text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                                                        isSelected
+                                                            ? "bg-white/20 text-white"
+                                                            : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                                    }`}
+                                                >
+                                                    Pendente
+                                                </span>
+                                            )}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="w-full">
                         <DropdownSearch
                             emptyMessage="Nenhum publicador encontrado"
@@ -257,6 +507,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                             title="Selecione seu nome..."
                             handleClick={handleClick}
                             options={optionsDrop}
+                            value={publisherToSend}
                         />
                     </div>
                 </div>

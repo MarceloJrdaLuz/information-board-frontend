@@ -3,7 +3,7 @@ import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { publicRoutes } from "@/utils/publicRoutes"
-import { deleteCookie, setCookie } from "cookies-next"
+import { deleteCookie, getCookie, setCookie } from "cookies-next"
 import { useSetAtom } from "jotai"
 import Router, { useRouter } from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
@@ -55,14 +55,19 @@ function AuthProvider(props: AuthContextProviderProps) {
 
 
     useEffect(() => {
-        if (isPublic) {
-            // Área pública → NÃO recuperar usuário
+        const token = getCookie('quadro-token')
+
+        if (isPublic && !token) {
+            // Área pública e sem token de usuário → NÃO recuperar usuário
             setAuthResolved(true);
             return;
         }
 
         const recoverUser = async () => {
             try {
+                if (token) {
+                    api.defaults.headers['Authorization'] = `Bearer ${String(token).replace(/"/g, '')}`
+                }
                 const res = await api.get('/recover-user-information')
                 setUser(res.data)
             } catch (err: any) {

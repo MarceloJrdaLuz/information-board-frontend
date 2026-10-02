@@ -18,6 +18,7 @@ interface IDropdownSearch {
   border?: boolean
   full?: boolean
   emptyMessage?: string
+  value?: IPublisherList | null
 }
 
 export default function DropdownSearch(props: IDropdownSearch) {
@@ -28,6 +29,16 @@ export default function DropdownSearch(props: IDropdownSearch) {
   const [publisherSelected, setPublisherSelected] = useState('')
   const [publisherRecover, setPublisherRecover] = useState<IPublisherList[]>()
   const [addPublisher, setAddPublisher] = useState(false)
+
+  useEffect(() => {
+    if (props.value) {
+      setPublisherSelected(
+        `${props.value.fullName} ${props.value.nickname ? `(${props.value.nickname})` : ''}`.trim()
+      )
+    } else if (props.value === null) {
+      setPublisherSelected('')
+    }
+  }, [props.value])
 
   useEffect(() => {
     const sortOptions = sortArrayByProperty(props.options, "fullName")
@@ -76,8 +87,8 @@ export default function DropdownSearch(props: IDropdownSearch) {
 
     let baseList: IPublisherList[] = props.options
 
-    // 🔥 se estiver no modo "só storage"
-    if (localStorage.getItem('publisher') && !addPublisher) {
+    // 🔥 se estiver no modo "só storage" e não digitou busca
+    if (!query.trim() && localStorage.getItem('publisher') && !addPublisher) {
       const publisherData = localStorage.getItem('publisher')
 
       if (publisherData) {
