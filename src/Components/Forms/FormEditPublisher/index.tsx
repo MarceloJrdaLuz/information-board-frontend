@@ -15,7 +15,7 @@ import { useFetch } from '@/hooks/useFetch'
 import { usePublisher } from '@/hooks/usePublisher'
 import { IEmergencyContact, Privileges, Situation, UserTypes } from '@/types/types'
 import { useAtom, useAtomValue } from 'jotai'
-import { ChevronDownIcon, PlusIcon } from 'lucide-react'
+import { ChevronDownIcon, PlusIcon, UserCheck, Unlink, RefreshCw, Mail, X } from 'lucide-react'
 import Router from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -39,6 +39,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
 
     const {
         data,
+        mutate: mutatePublisher,
         formMethods,
         isFormChanged,
         handlers,
@@ -55,49 +56,58 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
 
     const [selectedUser, setSelectedUser] = useState<string | null>(data?.user?.id ?? null)
+    const [isChangingUser, setIsChangingUser] = useState(false)
 
     const fetchEmergencyContactDataConfig = hasPermission && congregation_id ? `/emergencyContacts/${congregation_id}` : ""
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
 
     const fetchUsersCongregation = hasPermission && congregation_id ? `/users/${congregation_id}` : ''
-    const { data: usersData } = useFetch<UserTypes[]>(fetchUsersCongregation)
+    const { data: usersData, mutate: mutateUsers } = useFetch<UserTypes[]>(fetchUsersCongregation)
 
     useEffect(() => {
         if (data?.user?.id) {
             setSelectedUser(data.user.id)
+        } else {
+            setSelectedUser(null)
         }
     }, [data])
 
-    function handleLinkPublisherToUser(force: boolean = false) {
+    async function handleLinkPublisherToUser(force: boolean = false) {
         if (!selectedUser || !data?.id) {
-            toast.error("Selecione um usuário e certifique-se que o publicador está carregado.")
+            toast.error("Selecione um usuário para vincular.")
             return
         }
-        toast.promise(linkPublisherToUser({
-            user_id: selectedUser,
-            publisher_id: data.id,
-            force
-        }), {
-            pending: 'Vinculando publicador...'
-        }).then(() => {
-
-        }).catch(err => {
+        try {
+            await toast.promise(linkPublisherToUser({
+                user_id: selectedUser,
+                publisher_id: data.id,
+                force
+            }), {
+                pending: 'Vinculando publicador ao usuário...'
+            })
+            setIsChangingUser(false)
+            await Promise.all([mutatePublisher?.(), mutateUsers?.()])
+        } catch (err) {
             console.log(err)
-        })
+        }
     }
 
-    function handleUnLinkPublisherToUser() {
-        toast.promise(unlinkPublisherToUser({ publisher_id: data?.id ?? "" }), {
-            pending: 'Desvinculando publicador...'
-        }).then(() => {
-
-        }).catch(err => {
+    async function handleUnLinkPublisherToUser() {
+        if (!data?.id) return
+        try {
+            await toast.promise(unlinkPublisherToUser({ publisher_id: data.id }), {
+                pending: 'Desvinculando usuário...'
+            })
+            setSelectedUser(null)
+            setIsChangingUser(false)
+            await Promise.all([mutatePublisher?.(), mutateUsers?.()])
+        } catch (err) {
             console.log(err)
-        })
+        }
     }
 
     async function handleConfirmForceLink() {
-        handleLinkPublisherToUser(true)
+        await handleLinkPublisherToUser(true)
     }
 
     // ------------------- FORM -------------------
@@ -148,7 +158,7 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         )
                                     }
 
-                                    {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={values.startPioneer} />}
+                                    {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={values.startPioneer} />}
                                 </div>
                                 }
                             </>
@@ -228,48 +238,155 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             )}
                         </div>
 
-                        {hasPermission &&
-                            (<div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                                <span className='my-2 font-semibold text-typography-900 '>Vincular publicador a usuário</span>
-                                <div className='flex flex-col w-full items-start justify-start my-4 gap-4'>
-                                    <DropdownObject<UserTypes>
-                                        title={sortedUsers ? "Selecione um contato" : "Nenhum contato cadastrado"}
-                                        textVisible
-                                        items={sortedUsers ?? []}
-                                        selectedItem={sortedUsers && sortedUsers.find(c => c.id === selectedUser) || null}
-                                        handleChange={(user) => { setSelectedUser(user?.id ?? null); }}
-                                        labelKey="fullName"
-                                        searchable
-                                        emptyMessage='Nenhum usuário encontrado'
-                                        full
-                                    />
-                                    <div className="flex flex-wrap items-center gap-3">
-                                        <ConfirmLinkForceModal button={
-                                            <Button
-                                                outline
-                                                type='button'
-                                                onClick={() => { handleLinkPublisherToUser() }}
-                                                className="text-primary-200 hover:bg-primary-200/10">
-                                                <UserLinkIcon className="w-4 h-4" />
-                                                <span>Vincular</span>
-                                            </Button>
-                                        }
-                                            onDelete={() => handleConfirmForceLink()}
-                                            message='Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?'
-                                            canOpen={modalConfirmForce}
-                                        />
-                                        <Button
-                                            outline
-                                            type='button'
-                                            onClick={() => { handleUnLinkPublisherToUser() }}
-                                            className="text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20">
-                                            <UserLinkIcon className="w-4 h-4" />
-                                            <span>Desvincular</span>
-                                        </Button>
+                        {hasPermission && (
+                            <div className="border border-surface-300 dark:border-surface-600 rounded-2xl bg-surface-50/50 dark:bg-surface-800/30 p-4 sm:p-5 my-4 shadow-xs">
+                                <div className="flex items-center justify-between mb-3 pb-3 border-b border-surface-200 dark:border-surface-700/60">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className={`p-2 rounded-xl ${data?.user ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary-100/10 text-primary-200'}`}>
+                                            <UserCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-typography-900 text-sm sm:text-base">
+                                                Conta de Usuário no Sistema
+                                            </h4>
+                                            <p className="text-xs text-typography-500">
+                                                Vínculo deste publicador ao login de acesso
+                                            </p>
+                                        </div>
                                     </div>
+                                    {data?.user ? (
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            Vinculado
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                            Não vinculado
+                                        </span>
+                                    )}
                                 </div>
-                            </div>)
-                        }
+
+                                {data?.user ? (
+                                    <div className="flex flex-col gap-3 w-full">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-100/60 dark:bg-surface-700/40 border border-surface-200/80 dark:border-surface-600/60 w-full overflow-hidden">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-10 h-10 shrink-0 rounded-full bg-primary-200/15 text-primary-200 font-bold flex items-center justify-center text-sm uppercase">
+                                                    {data.user.fullName?.charAt(0) || "U"}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-typography-900 truncate">
+                                                        {data.user.fullName}
+                                                    </p>
+                                                    <p className="text-xs text-typography-500 flex items-center gap-1 truncate">
+                                                        <Mail className="w-3.5 h-3.5 shrink-0 text-typography-400" />
+                                                        <span className="truncate">{data.user.email}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col xs:flex-row items-stretch sm:items-center gap-2 pt-2 sm:pt-0 w-full sm:w-auto shrink-0">
+                                                <Button
+                                                    type="button"
+                                                    outline
+                                                    onClick={() => setIsChangingUser(!isChangingUser)}
+                                                    className="min-w-0 w-full sm:w-auto h-auto min-h-[36px] px-3.5 py-1.5 text-xs font-medium whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer"
+                                                >
+                                                    <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+                                                    <span>{isChangingUser ? "Cancelar" : "Trocar usuário"}</span>
+                                                </Button>
+
+                                                <Button
+                                                    type="button"
+                                                    outline
+                                                    onClick={() => handleUnLinkPublisherToUser()}
+                                                    className="min-w-0 w-full sm:w-auto h-auto min-h-[36px] px-3.5 py-1.5 text-xs font-medium whitespace-nowrap flex items-center justify-center gap-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-200 dark:border-red-900/50 cursor-pointer"
+                                                >
+                                                    <Unlink className="w-3.5 h-3.5 shrink-0" />
+                                                    <span>Desvincular</span>
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        {isChangingUser && (
+                                            <div className="mt-2 pt-3 border-t border-dashed border-surface-200 dark:border-surface-700 flex flex-col gap-3">
+                                                <label className="text-xs font-medium text-typography-700">
+                                                    Selecione o novo usuário para vincular:
+                                                </label>
+                                                <DropdownObject<UserTypes>
+                                                    title={sortedUsers ? "Selecione um usuário..." : "Nenhum usuário cadastrado"}
+                                                    textVisible
+                                                    items={sortedUsers ?? []}
+                                                    selectedItem={sortedUsers && sortedUsers.find(c => c.id === selectedUser) || null}
+                                                    handleChange={(user) => setSelectedUser(user?.id ?? null)}
+                                                    labelKey="fullName"
+                                                    labelKeySecondary="email"
+                                                    showSecondaryLabelOnSelected
+                                                    searchable
+                                                    emptyMessage="Nenhum usuário encontrado"
+                                                    full
+                                                />
+                                                <div className="flex items-center gap-2">
+                                                    <ConfirmLinkForceModal
+                                                        button={
+                                                            <Button
+                                                                type="button"
+                                                                disabled={!selectedUser || selectedUser === data.user.id}
+                                                                onClick={() => handleLinkPublisherToUser()}
+                                                                className="min-w-0 w-full sm:w-auto h-auto min-h-[38px] px-4 py-2 text-xs font-semibold whitespace-nowrap bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-xs flex items-center justify-center cursor-pointer"
+                                                            >
+                                                                <UserCheck className="w-4 h-4 mr-1.5 shrink-0" />
+                                                                <span>Confirmar novo vínculo</span>
+                                                            </Button>
+                                                        }
+                                                        onDelete={() => handleConfirmForceLink()}
+                                                        message="Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?"
+                                                        canOpen={modalConfirmForce}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-3">
+                                        <p className="text-xs text-typography-600">
+                                            Este publicador ainda não está vinculado a nenhuma conta de acesso. Selecione um usuário abaixo para permitir que ele envie relatórios e visualize designações:
+                                        </p>
+                                        <DropdownObject<UserTypes>
+                                            title={sortedUsers ? "Selecione um usuário da congregação..." : "Nenhum usuário cadastrado"}
+                                            textVisible
+                                            items={sortedUsers ?? []}
+                                            selectedItem={sortedUsers && sortedUsers.find(c => c.id === selectedUser) || null}
+                                            handleChange={(user) => setSelectedUser(user?.id ?? null)}
+                                            labelKey="fullName"
+                                            labelKeySecondary="email"
+                                            showSecondaryLabelOnSelected
+                                            searchable
+                                            emptyMessage="Nenhum usuário encontrado"
+                                            full
+                                        />
+                                        {selectedUser && (
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 w-full">
+                                                <ConfirmLinkForceModal
+                                                    button={
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => handleLinkPublisherToUser()}
+                                                            className="min-w-0 w-full sm:w-auto h-auto min-h-[38px] px-4 py-2 text-xs font-semibold whitespace-nowrap bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-xs flex items-center justify-center cursor-pointer"
+                                                        >
+                                                            <UserCheck className="w-4 h-4 mr-1.5 shrink-0" />
+                                                            <span>Vincular a este usuário</span>
+                                                        </Button>
+                                                    }
+                                                    onDelete={() => handleConfirmForceLink()}
+                                                    message="Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?"
+                                                    canOpen={modalConfirmForce}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex justify-center items-center w-full mt-6">
                             <Button className="w-full sm:w-auto" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar publicador</Button>

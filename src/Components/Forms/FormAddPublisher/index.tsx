@@ -16,10 +16,10 @@ import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
 import { usePublisher } from '@/hooks/usePublisher'
 import { IPayloadCreatePublisher } from '@/types/publishers'
-import { Gender, Hope, IEmergencyContact, Privileges, Situation } from '@/types/types'
+import { Gender, Hope, IEmergencyContact, Privileges, Situation, UserTypes } from '@/types/types'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtom, useAtomValue } from 'jotai'
-import { ChevronDownIcon, PlusIcon } from 'lucide-react'
+import { ChevronDownIcon, Mail, PlusIcon, UserCheck, X } from 'lucide-react'
 import Router from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -38,6 +38,10 @@ export default function FormAddPublisher() {
     const { data: existingContacts } = useFetch<IEmergencyContact[]>(fetchEmergencyContactDataConfig)
     const [selectedEmergencyContact, setSelectedEmergencyContact] = useState<string | null>(null);
     const [emergencyContactShow, setEmergencyContactShow] = useAtom(showModalEmergencyContact)
+
+    const fetchUsersCongregation = congregationUser ? `/users/${congregationUser?.id}` : ''
+    const { data: usersData } = useFetch<UserTypes[]>(fetchUsersCongregation)
+    const [selectedUser, setSelectedUser] = useState<string | null>(null)
     const [additionalsPrivilegeCheckboxSelected, setAdditionalsPrivilegeCheckboxSelected] = useState<string[]>([])
 
     const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>('')
@@ -60,7 +64,7 @@ export default function FormAddPublisher() {
 
     const optionsCheckboxPrivileges = [`${Privileges.ANCIAO}`, `${Privileges.SM}`]
 
-    const optionsCheckboxPioneer = [`${Privileges.PIONEIROAUXILIAR}`, `${Privileges.AUXILIARINDETERMINADO}`, `${Privileges.MISSIONARIOEMCAMPO}`, `${Privileges.PIONEIROESPECIAL}`, `${Privileges.PIONEIROREGULAR}`]
+    const optionsCheckboxPioneer = [`${Privileges.PIONEIROAUXILIAR}`, `${Privileges.AUXILIARTEMPOINDETERMINADO}`, `${Privileges.MISSIONARIOEMCAMPO}`, `${Privileges.PIONEIROESPECIAL}`, `${Privileges.PIONEIROREGULAR}`]
 
     const optionsCheckboxGender = useState<string[]>(Object.values(Gender))
 
@@ -140,7 +144,8 @@ export default function FormAddPublisher() {
             phone,
             pioneerMonths: auxPioneerMonthsSelected,
             privileges: allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
-            situation: situationPublisherCheckboxSelected ?? Situation.ATIVO
+            situation: situationPublisherCheckboxSelected ?? Situation.ATIVO,
+            user_id: selectedUser ?? undefined
         }
         toast.promise(createPublisher(payload), {
             pending: 'Criando novo publicador',
@@ -155,6 +160,8 @@ export default function FormAddPublisher() {
             setImmersedDate(null)
             setBirthDate(null)
             setHopeCheckboxSelected('')
+            setSelectedUser(null)
+            setSelectedEmergencyContact(null)
         }).catch((err) => {
             console.log(err)
         })
@@ -171,6 +178,8 @@ export default function FormAddPublisher() {
     }
 
     const sortedEmergencyContacts = existingContacts ? sortArrayByProperty(existingContacts, "name") : existingContacts
+    const sortedUsers = usersData ? sortArrayByProperty(usersData, "fullName") : usersData
+    const selectedUserObj = sortedUsers?.find(c => c.id === selectedUser) || null
 
     return (
         <section className="flex w-full justify-center items-start min-h-screen overflow-y-auto p-2 sm:p-4 pb-36 pt-6">
@@ -229,7 +238,7 @@ export default function FormAddPublisher() {
                             )
                         }
 
-                        {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
+                        {(pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) || pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={startPioneer} />}
                     </div>}
 
                     {situationPublisherCheckboxSelected === Situation.ATIVO &&
@@ -287,6 +296,74 @@ export default function FormAddPublisher() {
                                 </span>
                             </>
                         )}
+                    </div>
+
+                    <div className="border border-surface-300 dark:border-surface-600 rounded-2xl bg-surface-50/50 dark:bg-surface-800/30 my-3.5 p-4 sm:p-5 shadow-xs">
+                        <div className="flex items-center justify-between mb-3 pb-3 border-b border-surface-200 dark:border-surface-700/60">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 rounded-xl bg-primary-100/10 text-primary-200">
+                                    <UserCheck className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-typography-900 text-sm sm:text-base">
+                                        Vincular a Usuário do Sistema
+                                    </h4>
+                                    <p className="text-xs text-typography-500">
+                                        Vincule já este cadastro a uma conta de acesso existente
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-200/50 text-typography-600 dark:text-typography-300 border border-surface-300/50">
+                                Opcional
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                            <p className="text-xs text-typography-600">
+                                Se este publicador já possui um login de usuário criado na congregação, você pode vinculá-lo agora:
+                            </p>
+                            <DropdownObject<UserTypes>
+                                title={sortedUsers ? "Selecione um usuário (opcional)..." : "Nenhum usuário cadastrado"}
+                                textVisible
+                                items={sortedUsers ?? []}
+                                selectedItem={selectedUserObj}
+                                handleChange={(user) => setSelectedUser(user?.id ?? null)}
+                                labelKey="fullName"
+                                labelKeySecondary="email"
+                                showSecondaryLabelOnSelected
+                                searchable
+                                emptyMessage="Nenhum usuário encontrado"
+                                full
+                            />
+
+                            {selectedUserObj && (
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-primary-50/50 dark:bg-primary-950/20 border border-primary-200/30 overflow-hidden w-full">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="w-9 h-9 shrink-0 rounded-full bg-primary-200/15 text-primary-200 font-bold flex items-center justify-center text-xs uppercase">
+                                            {selectedUserObj.fullName?.charAt(0) || "U"}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-semibold text-typography-900 truncate">
+                                                {selectedUserObj.fullName}
+                                            </p>
+                                            <p className="text-[11px] text-typography-500 flex items-center gap-1 truncate">
+                                                <Mail className="w-3 h-3 shrink-0 text-typography-400" />
+                                                <span className="truncate">{selectedUserObj.email}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        outline
+                                        onClick={() => setSelectedUser(null)}
+                                        className="min-w-0 w-full sm:w-auto h-auto min-h-[34px] px-3 py-1.5 text-xs font-medium whitespace-nowrap text-typography-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 border-surface-300 justify-center flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                        <X className="w-3.5 h-3.5 shrink-0" />
+                                        <span>Remover</span>
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex justify-center items-center w-full mt-6">

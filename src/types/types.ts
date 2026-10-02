@@ -155,11 +155,22 @@ export interface IUpdateReport {
     privileges: string[]
 }
 
+export interface IPublisherPrivilege {
+    id: string
+    privilege: {
+        id: string
+        name: string
+    }
+    startDate?: string | null
+    endDate?: string | null
+}
+
 export interface IPublisher {
     id: string
     fullName: string
     nickname?: string
     privileges: string[]
+    privilegesRelation?: IPublisherPrivilege[]
     pioneerMonths?: string[]
     hope: Hope
     gender: Gender
@@ -254,6 +265,7 @@ export enum Privileges {
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
+    AUXILIARTEMPOINDETERMINADO = 'Auxiliar por Tempo Indeterminado',
     AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
     MISSIONARIOEMCAMPO = 'Missionário em Campo',
     ORADOR = "Orador",
@@ -272,6 +284,8 @@ export enum Privileges {
 export enum PrivilegesMinistry {
     PUBLICADOR = "Publicador",
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
+    AUXILIARTEMPOINDETERMINADO = 'Auxiliar por Tempo Indeterminado',
+    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
     MISSIONARIOEMCAMPO = 'Missionário em Campo'

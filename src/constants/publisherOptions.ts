@@ -28,7 +28,7 @@ export const additionalsPrivilegeOptions: Privileges[] = [
 
 export const pioneerOptions: Privileges[] = [
   Privileges.PIONEIROAUXILIAR,
-  Privileges.AUXILIARINDETERMINADO,
+  Privileges.AUXILIARTEMPOINDETERMINADO,
   Privileges.MISSIONARIOEMCAMPO,
   Privileges.PIONEIROESPECIAL,
   Privileges.PIONEIROREGULAR,

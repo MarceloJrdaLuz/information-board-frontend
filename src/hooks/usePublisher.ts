@@ -28,27 +28,31 @@ export function usePublisher() {
         pioneerMonths,
         privileges,
         situation,
-        startPioneer
+        startPioneer,
+        user_id
     }: IPayloadCreatePublisher) {
-        await api.post('/publisher', {
-            fullName,
-            nickname,
-            privileges,
-            congregation_id,
-            hope,
-            gender,
-            dateImmersed,
-            birthDate,
-            pioneerMonths,
-            situation,
-            startPioneer,
-            address,
-            phone,
-            emergencyContact_id
-        }).then(res => {
+        try {
+            const res = await api.post('/publisher', {
+                fullName,
+                nickname,
+                privileges,
+                congregation_id,
+                hope,
+                gender,
+                dateImmersed,
+                birthDate,
+                pioneerMonths,
+                situation,
+                startPioneer,
+                address,
+                phone,
+                emergencyContact_id,
+                user_id
+            })
             handleSubmitSuccess(messageSuccessSubmit.publisherCreate)
-        }).catch(err => {
-            const { response: { data: { message } } } = err
+            return res.data
+        } catch (err: any) {
+            const message = err?.response?.data?.message
             if (message === 'A nickname is required to differentiate the publisher') {
                 handleSubmitError(messageErrorsSubmit.publisherNameAlreadyExists)
             } else {
@@ -56,7 +60,7 @@ export function usePublisher() {
                 toast.error(messageErrorsSubmit.default)
             }
             throw err
-        })
+        }
     }
 
     async function updatePublisher(
@@ -213,37 +217,42 @@ export function usePublisher() {
     async function linkPublisherToUser(
         { user_id, publisher_id, force }: ILinkPublisherToUser
     ) {
-        await api.patch(`/users/${user_id}/link-publisher`, {
-            publisher_id,
-            force
-        }).then(res => {
+        try {
+            const res = await api.patch(`/users/${user_id}/link-publisher`, {
+                publisher_id,
+                force
+            })
             setModalLinkForce(false)
             handleSubmitSuccess(messageSuccessSubmit.linkPublisherToUserSuccess)
-        }).catch(err => {
+            return res.data
+        } catch (err: any) {
             if (err.response && err.response.status === 409) {
                 if (err.response.data.message === "User and Publisher are already linked.") {
                     setModalLinkForce(false)
                     toast.success("Usuário e publicador já vinculados.")
-                    return
+                    return { alreadyLinked: true }
                 } else {
                     setModalLinkForce(true)
                     toast.error("Ocorreu algum conflito, confirmar a substituição!")
-                    return
+                    throw err
                 }
             }
             console.log(err)
             toast.error(messageErrorsSubmit.default)
-            return
-        })
+            throw err
+        }
     }
 
     async function unlinkPublisherToUser({ publisher_id }: IUnlinkPublisherToUser) {
-        await api.patch(`/publisher/${publisher_id}/unlink-publisher`).then(res => {
+        try {
+            const res = await api.patch(`/publisher/${publisher_id}/unlink-publisher`)
             handleSubmitSuccess(messageSuccessSubmit.unLinkPublisherToUserSuccess)
-        }).catch(err => {
+            return res.data
+        } catch (err) {
             console.log(err)
             toast.error(messageErrorsSubmit.default)
-        })
+            throw err
+        }
     }
 
     async function transferPublishers({ publisherIds, newCongregationId }: ITransferPublishers) {

@@ -36,7 +36,7 @@ export function ConfirmLinkForceModal({
     return (
         <>
             {/* BOTÃO QUE ABRE O MODAL */}
-            <div>{button}</div>
+            <div className="w-full sm:w-auto">{button}</div>
 
             {/* MODAL */}
             <Dialog open={canOpen ?? false} onOpenChange={setModalForceLink}>

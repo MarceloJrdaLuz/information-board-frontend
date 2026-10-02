@@ -5,6 +5,7 @@ import FilterGroups from "@/Components/FilterGroups"
 import FilterPrivileges from "@/Components/FilterPrivileges"
 import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
+import { ModalAuxiliaryPioneers } from "@/Components/ModalAuxiliaryPioneers"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
 import { Button } from "@/Components/ui/button"
@@ -29,6 +30,7 @@ import { useAtom } from "jotai"
 import {
     AlertTriangle,
     ArrowLeft,
+    Award,
     BarChart3,
     CheckCheck,
     CheckCircle2,
@@ -56,17 +58,17 @@ function ReportsMonthPage() {
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
-    const { data, isLoading: loadingPublishers } = useAuthorizedFetch<IPublisher[]>(
-        `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+    const { data, isLoading: loadingPublishers, mutate: mutatePublishers } = useAuthorizedFetch<IPublisher[]>(
+        congregationId ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER", "PUBLISHERS_MANAGER"] }
     )
     const { data: getAssistance } = useAuthorizedFetch<IMeetingAssistance[]>(
-        `/assistance/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+        congregationId ? `/assistance/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
     )
     const { data: getTotals } = useAuthorizedFetch<ITotalsReports[]>(
-        `/report/totals/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+        congregationId ? `/report/totals/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
     )
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -79,6 +81,45 @@ function ReportsMonthPage() {
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
     const [missingReportsCount, setMissingReportsCount] = useState<number>(0)
+    const [modalAuxPioneersOpen, setModalAuxPioneersOpen] = useState(false)
+
+    const isPublisherContinuousAux = (p: IPublisher) => {
+        return (
+            p.privileges?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) ||
+            p.privileges?.includes(Privileges.AUXILIARINDETERMINADO) ||
+            p.privilegesRelation?.some(pp => pp.privilege?.name === "Continuous Auxiliary Pioneer")
+        )
+    }
+
+    const isPublisherRegularPioneer = (p: IPublisher) => {
+        return (
+            p.privileges?.includes(Privileges.PIONEIROREGULAR) ||
+            p.privilegesRelation?.some(pp => pp.privilege?.name === "Regular Pioneer")
+        )
+    }
+
+    const isPublisherSpecialPioneer = (p: IPublisher) => {
+        return (
+            p.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
+            p.privileges?.includes(Privileges.MISSIONARIOEMCAMPO) ||
+            p.privilegesRelation?.some(
+                (pp) =>
+                    pp.privilege?.name === "Special Pioneer" ||
+                    pp.privilege?.name === "Missionary Worldwide"
+            )
+        )
+    }
+
+    const isPublisherAuxPioneerForMonth = (p: IPublisher) => {
+        return (
+            isAuxPioneerMonth(
+                p,
+                `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
+            ) ||
+            (isPublisherContinuousAux(p) &&
+                isPioneerNow(p, dateFormat ?? new Date()))
+        )
+    }
 
     const [activeTab, setActiveTab] = useState<"reports" | "totals">("reports")
 
@@ -125,15 +166,16 @@ function ReportsMonthPage() {
     useEffect(() => {
         if (monthParam) {
             setPageActive(monthParam)
-            const dividirPalavra = monthParam.split(" ")
-            setMonthSelected(dividirPalavra[0])
-            setMonthSelected(dividirPalavra[0].toLowerCase())
-            setYearSelected(dividirPalavra[1])
+            const clean = decodeURIComponent(monthParam).trim().replace(/\s+de\s+/i, " ")
+            const dividirPalavra = clean.split(/[\s\-_]+/)
+            const mNome = (dividirPalavra[0] || "").toLowerCase()
+            const aAno = dividirPalavra[1] || `${new Date().getFullYear()}`
+            setMonthSelected(mNome)
+            setYearSelected(aAno)
+            const mesIdx = meses.findIndex(m => m.toLowerCase() === mNome)
             setDateFormat(
                 new Date(
-                    `${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${
-                        dividirPalavra[1]
-                    }`
+                    `${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${aAno}`
                 )
             )
         }
@@ -228,41 +270,32 @@ function ReportsMonthPage() {
             let totalStudiesSpecialPioneer = 0
             let totalsReportsSpecialPioneer = 0
 
-            const filterSpecialPioneer = reportsList.filter(
-                (report) =>
-                    report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ||
-                    report.publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO)
+            const filterSpecialPioneer = reportsList.filter((report) =>
+                isPublisherSpecialPioneer(report.publisher)
             )
 
             const filterPioneer = reportsList.filter(
                 (report) =>
-                    report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
-                    isPioneerNow(report.publisher, dateFormat ?? new Date())
+                    isPublisherRegularPioneer(report.publisher) &&
+                    isPioneerNow(report.publisher, dateFormat ?? new Date()) &&
+                    !isPublisherSpecialPioneer(report.publisher)
             )
 
             const filterAuxPioneer = reportsList.filter(
                 (report) =>
-                    (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                        isAuxPioneerMonth(
-                            report.publisher,
-                            `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                        )) ||
-                    (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
-                        isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                    isPublisherAuxPioneerForMonth(report.publisher) &&
+                    !(
+                        isPublisherRegularPioneer(report.publisher) &&
+                        isPioneerNow(report.publisher, dateFormat ?? new Date())
+                    ) &&
+                    !isPublisherSpecialPioneer(report.publisher)
             )
 
             const filterPublishers = reportsList.filter(
                 (report) =>
-                    report.publisher.privileges.some((privilege) => privilege === Privileges.PUBLICADOR) ||
-                    (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                        !isAuxPioneerMonth(
-                            report.publisher,
-                            `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                        )) ||
-                    (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
-                        !isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
-                    (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
-                        !isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    !filterPioneer.some((r) => r.id === report.id) &&
+                    !filterAuxPioneer.some((r) => r.id === report.id)
             )
 
             filterPublishers.forEach((report) => {
@@ -344,9 +377,13 @@ function ReportsMonthPage() {
                           const isAuxPioneerSelected = filterPrivileges.includes(
                               Privileges.PIONEIROAUXILIAR
                           )
-                          const isIndefinitePioneerSelected = filterPrivileges.includes(
-                              Privileges.AUXILIARINDETERMINADO
-                          )
+                          const isIndefinitePioneerSelected =
+                              filterPrivileges.includes(
+                                  Privileges.AUXILIARINDETERMINADO
+                              ) ||
+                              filterPrivileges.includes(
+                                  Privileges.AUXILIARTEMPOINDETERMINADO
+                              )
                           const isRegPioneerSelected = filterPrivileges.includes(
                               Privileges.PIONEIROREGULAR
                           )
@@ -362,22 +399,12 @@ function ReportsMonthPage() {
                           ) {
                               return (
                                   (isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
+                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
                                   (isIndefinitePioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.AUXILIARINDETERMINADO
-                                      ) &&
+                                      isPublisherContinuousAux(report.publisher) &&
                                       isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
                                   (isRegPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROREGULAR
-                                      ) &&
+                                      isPublisherRegularPioneer(report.publisher) &&
                                       isPioneerNow(report.publisher, dateFormat ?? new Date()))
                               )
                           } else if (
@@ -388,25 +415,15 @@ function ReportsMonthPage() {
                           ) {
                               return (
                                   ((isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
+                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
                                       (isIndefinitePioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.AUXILIARINDETERMINADO
-                                          ) &&
+                                          isPublisherContinuousAux(report.publisher) &&
                                           isPioneerNow(
                                               report.publisher,
                                               dateFormat ?? new Date()
                                           )) ||
                                       (isRegPioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.PIONEIROREGULAR
-                                          ) &&
+                                          isPublisherRegularPioneer(report.publisher) &&
                                           isPioneerNow(
                                               report.publisher,
                                               dateFormat ?? new Date()
@@ -421,25 +438,15 @@ function ReportsMonthPage() {
                           ) {
                               return (
                                   ((isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
+                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
                                       (isIndefinitePioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.AUXILIARINDETERMINADO
-                                          ) &&
+                                          isPublisherContinuousAux(report.publisher) &&
                                           isPioneerNow(
                                               report.publisher,
                                               dateFormat ?? new Date()
                                           )) ||
                                       (isRegPioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.PIONEIROREGULAR
-                                          ) &&
+                                          isPublisherRegularPioneer(report.publisher) &&
                                           isPioneerNow(
                                               report.publisher,
                                               dateFormat ?? new Date()
@@ -648,6 +655,15 @@ function ReportsMonthPage() {
                                 <span>Totais</span>
                             </button>
                         </div>
+
+                        <Button
+                            variant="outline"
+                            onClick={() => setModalAuxPioneersOpen(true)}
+                            className="border-primary-200/40 text-primary-200 hover:bg-primary-200/10 font-semibold shadow-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer"
+                        >
+                            <Award className="h-4 w-4" />
+                            <span>Pioneiros Auxiliares</span>
+                        </Button>
 
                         <Button
                             onClick={() =>
@@ -982,6 +998,19 @@ function ReportsMonthPage() {
                     </div>
                 )}
             </div>
+
+            <ModalAuxiliaryPioneers
+                isOpen={modalAuxPioneersOpen}
+                onClose={() => setModalAuxPioneersOpen(false)}
+                congregationId={congregationId as string}
+                month={monthSelected}
+                year={yearSelected}
+                publishers={publishers || []}
+                onSaved={() => {
+                    mutatePublishers?.()
+                    getRelatorios()
+                }}
+            />
         </ContentDashboard>
     )
 }

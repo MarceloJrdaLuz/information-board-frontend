@@ -67,7 +67,8 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
 
     const isAuxPioneerUndetermined = (privileges: string[]) => {
         return privileges?.some(privilege =>
-            (privilege === Privileges.AUXILIARINDETERMINADO)
+            privilege === Privileges.AUXILIARINDETERMINADO ||
+            privilege === Privileges.AUXILIARTEMPOINDETERMINADO
         )
     }
 

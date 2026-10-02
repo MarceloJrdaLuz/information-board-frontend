@@ -18,9 +18,10 @@ export default function FilterPrivileges({
   onClick,
   includeOptionAll,
 }: IFilterPrivilegesProps) {
-  const [privileges] = useState(
-    includeOptionAll ? ["Todos", ...Object.values(Privileges)] : Object.values(Privileges)
-  );
+  const [privileges] = useState(() => {
+    const list = includeOptionAll ? ["Todos", ...Object.values(Privileges)] : Object.values(Privileges)
+    return list.filter(p => p !== Privileges.AUXILIARINDETERMINADO)
+  });
 
   return (
     <Popover>
