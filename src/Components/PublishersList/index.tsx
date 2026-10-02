@@ -245,21 +245,15 @@ export default function PublisherList() {
     }
 
     async function onDelete(publisher_id: string) {
-        await toast
-            .promise(deletePublisher(publisher_id), {
-                pending: "Excluindo publicador...",
-                success: "Publicador excluído com sucesso!",
-                error: "Erro ao excluir publicador.",
-            })
-            .then(() => {
-                mutate()
-                const next = new Set(selectedPublishers)
-                next.delete(publisher_id)
-                setSelectedPublishers(next)
-            })
-            .catch((err) => {
-                console.error(err)
-            })
+        try {
+            await deletePublisher(publisher_id)
+            mutate()
+            const next = new Set(selectedPublishers)
+            next.delete(publisher_id)
+            setSelectedPublishers(next)
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     const resetFilters = () => {

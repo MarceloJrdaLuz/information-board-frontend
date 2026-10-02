@@ -85,19 +85,18 @@ export function usePublisher() {
         year
     }: IPayloadCreateReport) {
 
-        await api.post('/report', {
+        return api.post('/report', {
             month,
             year,
             publisher_id,
             hours,
             studies,
             observations
-        },).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.reportSend)
         }).catch(err => {
             console.log(err)
             const { response: { data: { message } } } = err
             handleSubmitError(messageErrorsSubmit.default)
+            throw err
         })
 
     }

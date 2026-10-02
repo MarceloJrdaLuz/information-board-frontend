@@ -59,22 +59,25 @@ export function ConfirmDeleteModal({
 
                 <div className="flex gap-3 mt-5 w-full">
                   <Button
+                    type="button"
                     onClick={() => setOpen(false)}
-                    className="flex-1 bg-surface-200 text-typography-200 hover:bg-surface-200/80"
+                    outline
+                    className="flex-1 min-w-0"
                   >
                     Cancelar
                   </Button>
                   <Button
+                    type="button"
                     onClick={handleDelete}
                     disabled={loading}
-                    className="flex-1 bg-red-500 hover:bg-red-600 text-typography-200  flex items-center justify-center gap-2"
+                    className="flex-1 min-w-0 bg-red-600 hover:bg-red-700 text-white border-transparent flex items-center justify-center gap-2 font-semibold shadow-sm"
                   >
                     {loading ? (
                       <span className="animate-pulse">Excluindo...</span>
                     ) : (
                       <>
                         <Trash2 size={16} />
-                        Confirmar
+                        <span>Confirmar</span>
                       </>
                     )}
                   </Button>
