@@ -17,6 +17,8 @@ import { useCongregationContext } from "@/context/CongregationContext";
 import { sortArrayByProperty } from "@/functions/sortObjects";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup } from "@/types/cleaning";
+import { PrivilegeCode } from "@/types/types";
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom, useSetAtom } from "jotai";
 import {
@@ -62,7 +64,11 @@ function CleaningGroupsPage() {
 
     const sortedGroups = useMemo(() => {
         if (!data) return [];
-        return sortArrayByProperty(data, "name");
+        const cleanGroups = data.map((g) => ({
+            ...g,
+            publishers: (g.publishers || []).filter((p) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+        }));
+        return sortArrayByProperty(cleanGroups, "name");
     }, [data]);
 
     const filteredGroups = useMemo(() => {
@@ -285,12 +291,16 @@ function CleaningGroupsPage() {
                 onOpenChange={(open) => !open && setDeleteGroupId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Grupo de Limpeza?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Grupo de Limpeza?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja remover este grupo de limpeza? As escalas futuras vinculadas poderão ser afetadas.
                         </DialogDescription>
                     </DialogHeader>

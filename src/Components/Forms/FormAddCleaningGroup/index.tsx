@@ -19,7 +19,8 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { IFormDataCleaningGroup } from "@/types/cleaning"
-import { IPublisher } from "@/types/types"
+import { IPublisher, PrivilegeCode } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import FormStyle from "../FormStyle"
 
 interface FormValues {
@@ -59,7 +60,8 @@ export default function FormAddCleaningGroup() {
         })
     }
 
-    const allPublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
+    const validPublishers = (data?.publishers ?? []).filter(p => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+    const allPublishers = sortArrayByProperty(validPublishers, "fullName")
 
     const availablePublishers = allPublishers
         .filter(p => !publishersInGroups.has(p.id))

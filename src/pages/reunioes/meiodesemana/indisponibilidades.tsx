@@ -9,6 +9,7 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { IPublisherMini } from "@/types/midweek";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import {
     CalendarOff,
     Search,
@@ -407,19 +408,21 @@ function MidweekUnavailabilitiesPage() {
                             <label className="text-xs font-bold text-typography-800">
                                 Publicador <span className="text-red-500">*</span>
                             </label>
-                            <select
-                                value={selectedPublisherId}
-                                onChange={(e) => setSelectedPublisherId(e.target.value)}
-                                required
-                                className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                            <Select
+                                value={selectedPublisherId || undefined}
+                                onValueChange={setSelectedPublisherId}
                             >
-                                <option value="">Selecione o publicador...</option>
-                                {publishers.map((pub) => (
-                                    <option key={pub.id} value={pub.id}>
-                                        {pub.fullName} {pub.nickname ? `(${pub.nickname})` : ""}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-10 rounded-xl border-surface-300 bg-surface-200 text-xs text-typography-900">
+                                    <SelectValue placeholder="Selecione o publicador..." />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-60 rounded-xl">
+                                    {publishers.map((pub) => (
+                                        <SelectItem key={pub.id} value={pub.id} className="text-xs">
+                                            {pub.fullName} {pub.nickname ? `(${pub.nickname})` : ""}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {/* Datas (Início e Fim) */}

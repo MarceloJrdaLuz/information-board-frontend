@@ -7,7 +7,8 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
-import { IPublisher, Situation } from "@/types/types"
+import { IPublisher, PrivilegeCode, Situation } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
@@ -58,12 +59,17 @@ function AddPublishersToGroups() {
         allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER"]
     })
 
+    // Filtrar apenas publicadores válidos (pessoas com privilégio de Publicador ativo)
+    const validPublishers = useMemo(() => {
+        if (!getPublishers) return []
+        return getPublishers.filter((p) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+    }, [getPublishers])
+
     // Publicadores do grupo atual
     const currentGroupPublishers = useMemo(() => {
-        if (!getPublishers) return []
-        const list = getPublishers.filter((p) => p.group && p.group.id === group_id)
+        const list = validPublishers.filter((p) => p.group && p.group.id === group_id)
         return sortArrayByProperty(list, "fullName")
-    }, [getPublishers, group_id])
+    }, [validPublishers, group_id])
 
     // Contagem de ativos e inativos no grupo atual
     const currentInactivesCount = useMemo(() => {
@@ -76,17 +82,15 @@ function AddPublishersToGroups() {
 
     // Publicadores sem grupo
     const publishersWithoutGroup = useMemo(() => {
-        if (!getPublishers) return []
-        const list = getPublishers.filter((p) => !p.group)
+        const list = validPublishers.filter((p) => !p.group)
         return sortArrayByProperty(list, "fullName")
-    }, [getPublishers])
+    }, [validPublishers])
 
     // Publicadores de outros grupos
     const publishersOtherGroups = useMemo(() => {
-        if (!getPublishers) return []
-        const list = getPublishers.filter((p) => p.group && p.group.id !== group_id)
+        const list = validPublishers.filter((p) => p.group && p.group.id !== group_id)
         return sortArrayByProperty(list, "fullName")
-    }, [getPublishers, group_id])
+    }, [validPublishers, group_id])
 
     // Publicadores disponíveis filtrados por busca e aba
     const filteredAvailablePublishers = useMemo(() => {

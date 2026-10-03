@@ -38,7 +38,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => 
         invalid === "invalido"
           ? "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20 mb-1"
           : "border-surface-300 focus-within:border-primary-200 focus-within:ring-2 focus-within:ring-primary-200/20"
-      } outline-0 my-2.5 w-full h-full m-auto transition-all shadow-xs ${className || ""}`}
+      } outline-0 my-2.5 w-full transition-all shadow-xs ${className || ""}`}
     >
       {mask ? (
         <InputMask

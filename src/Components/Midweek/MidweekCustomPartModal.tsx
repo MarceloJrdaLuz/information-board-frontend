@@ -1,5 +1,6 @@
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { MidweekPartType, MidweekSection } from "@/types/midweek";
 import { PlusCircle } from "lucide-react";
 import React, { useState, useEffect } from "react";
@@ -124,15 +125,19 @@ export const MidweekCustomPartModal: React.FC<MidweekCustomPartModalProps> = ({
                         <label className="text-xs font-semibold text-typography-700">
                             Seção da Reunião
                         </label>
-                        <select
+                        <Select
                             value={section}
-                            onChange={(e) => setSection(e.target.value as MidweekSection)}
-                            className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-800 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                            onValueChange={(val) => setSection(val as MidweekSection)}
                         >
-                            <option value={MidweekSection.LIVING}>Nossa Vida Cristã</option>
-                            <option value={MidweekSection.TREASURES}>Tesouros da Palavra de Deus</option>
-                            <option value={MidweekSection.MINISTRY}>Faça Seu Melhor no Ministério</option>
-                        </select>
+                            <SelectTrigger className="w-full h-9 px-3 text-xs rounded-lg border-surface-300 bg-surface-200 text-typography-800">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value={MidweekSection.LIVING} className="text-xs">Nossa Vida Cristã</SelectItem>
+                                <SelectItem value={MidweekSection.TREASURES} className="text-xs">Tesouros da Palavra de Deus</SelectItem>
+                                <SelectItem value={MidweekSection.MINISTRY} className="text-xs">Faça Seu Melhor no Ministério</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <DialogFooter className="mt-4 flex sm:justify-between items-center gap-2">

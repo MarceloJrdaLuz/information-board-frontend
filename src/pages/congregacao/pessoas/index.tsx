@@ -19,17 +19,16 @@ function PublishersPage() {
         roleContains("ADMIN_CONGREGATION") || roleContains("PUBLISHERS_MANAGER")
 
     useEffect(() => {
-        setPageActive("Publicadores")
+        setPageActive("Pessoas")
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" },
-            { label: "Início", link: "/dashboard" }
+            { label: "Pessoas", link: "/congregacao/pessoas" }
         ])
     }, [setPageActive, setCrumbs])
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive="Publicadores" />
+            <BreadCrumbs crumbs={crumbs} pageActive="Pessoas" />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
                 {/* Cabeçalho Principal */}
@@ -41,10 +40,10 @@ function PublishersPage() {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-typography-800">
-                                    Publicadores
+                                    Pessoas
                                 </h1>
                                 <p className="text-xs sm:text-sm text-typography-500">
-                                    Gerencie o rol de publicadores, privilégios, contatos e indisponibilidades.
+                                    Gerencie as pessoas da congregação, publicadores, estudantes, privilégios, contatos e indisponibilidades.
                                 </p>
                             </div>
                         </div>
@@ -54,7 +53,7 @@ function PublishersPage() {
                         {canManage && (
                             <Button
                                 type="button"
-                                onClick={() => Router.push("/congregacao/publicadores/add")}
+                                onClick={() => Router.push("/congregacao/pessoas/add")}
                                 className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-xs h-10 px-4 text-xs transition-all cursor-pointer"
                             >
                                 <UserPlus size={16} />
@@ -65,7 +64,7 @@ function PublishersPage() {
                         <Button
                             variant="outline"
                             type="button"
-                            onClick={() => Router.push("/congregacao/publicadores/indisponibilidades")}
+                            onClick={() => Router.push("/congregacao/pessoas/indisponibilidades")}
                             className="gap-2 rounded-xl border-surface-300 text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 font-semibold text-xs h-10 px-4 shadow-2xs transition-all cursor-pointer"
                         >
                             <CalendarOff size={16} className="text-amber-500" />

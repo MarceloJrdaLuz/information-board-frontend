@@ -11,19 +11,19 @@ function AddPublishersPage() {
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
     useEffect(() => {
-        setPageActive("Adicionar Publicador")
+        setPageActive("Adicionar Pessoa")
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" }
+            { label: "Pessoas", link: "/congregacao/pessoas" }
         ])
     }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Publicador"} />
-            <section className="flex justify-center">
+            <BreadCrumbs crumbs={crumbs} pageActive={"Adicionar Pessoa"} />
+            <div className="flex justify-center w-full">
                 <FormAddPublisher />
-            </section>
+            </div>
         </ContentDashboard>
     )
 }

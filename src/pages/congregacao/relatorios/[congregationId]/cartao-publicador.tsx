@@ -16,7 +16,8 @@ import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, Situation, TotalsFrom } from "@/types/types"
+import { hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, PrivilegeCode, Situation, TotalsFrom } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import {
@@ -97,7 +98,10 @@ function PublisherCardPage() {
 
     const sortedData = useMemo(() => {
         if (data) {
-            const filterActives = data.filter(publisher => publisher.situation === Situation.ATIVO)
+            const filterActives = data.filter(publisher => 
+                publisher.situation === Situation.ATIVO && 
+                hasPrivilege(publisher, PrivilegeCode.PUBLISHER)
+            )
             return sortArrayByProperty(filterActives, "fullName")
         }
         return []
@@ -125,7 +129,7 @@ function PublisherCardPage() {
                 (publisher.group && groupSelecteds.includes(publisher.group.id));
 
             const hasSelectedPrivileges = filterPrivileges.length === 0 ||
-                filterPrivileges.some(privilege => publisher.privileges.includes(privilege));
+                hasAnyPrivilege(publisher, filterPrivileges);
 
             return belongsToSelectedGroups && hasSelectedPrivileges;
         });
@@ -176,7 +180,7 @@ function PublisherCardPage() {
 
         // Atualiza os selecionados apenas com base no que o usuário marcou
         const filtered = publishers?.filter(publisher =>
-            filter.some(priv => publisher.privileges.includes(priv))
+            hasAnyPrivilege(publisher, filter)
         );
         setSelectedPublishersToS21(filtered?.map(p => p.id) || []);
     };
@@ -537,12 +541,14 @@ Quando os registros desejados estiverem selecionados, utilize a barra flutuante 
                                     reportsFiltered: !totals ? reportsFiltered : undefined,
                                     monthsServiceYears,
                                     totals,
-                                    reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined
+                                    reportsTotalsFromFilter: totals ? reportsTotalsFromFilter : undefined,
+                                    totalsFrom: totals ? totalsFrom : undefined,
+                                    serviceYear: yearServiceSelected
                                 }}
                                 className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary-200 hover:bg-primary-300 text-white font-semibold text-xs transition-all shadow-sm active:scale-95 cursor-pointer"
                             >
                                 <FileDown className="w-4 h-4" />
-                                <span>Gerar S-21</span>
+                                <span>{totals ? "Gerar Totais" : "Gerar S-21"}</span>
                             </PdfLinkComponent>
                         </div>
                     </div>
@@ -551,7 +557,7 @@ Quando os registros desejados estiverem selecionados, utilize a barra flutuante 
 
             {/* ---------- MODAL DE RELATÓRIOS ---------- */}
             <Dialog open={modalReportsOpen} onOpenChange={setModalReportsOpen}>
-                <DialogContent className="max-w-4xl w-full bg-surface-100 border border-surface-300 max-h-[90vh] overflow-y-auto p-6 sm:rounded-2xl">
+                <DialogContent className="max-w-4xl w-[calc(100%-2rem)] sm:w-full bg-surface-100 border border-surface-300 max-h-[90vh] overflow-y-auto p-4 sm:p-6 rounded-2xl">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-lg text-typography-800">
                             <FileSpreadsheet className="w-5 h-5 text-primary-200" />

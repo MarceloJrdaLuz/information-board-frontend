@@ -29,6 +29,7 @@ export function usePublisher() {
         privileges,
         situation,
         startPioneer,
+        startDatePublisher,
         user_id
     }: IPayloadCreatePublisher) {
         try {
@@ -44,6 +45,7 @@ export function usePublisher() {
                 pioneerMonths,
                 situation,
                 startPioneer,
+                startDatePublisher,
                 address,
                 phone,
                 emergencyContact_id,
@@ -68,7 +70,7 @@ export function usePublisher() {
         payload: IPayloadUpdatePublisher
     ) {
         await api.put(`/publisher/${publisher_id}`, payload).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/publicadores')
+            handleSubmitSuccess(messageSuccessSubmit.publisherUpdate, '/congregacao/pessoas')
         }).catch(err => {
             const { response: { data: { message } } } = err
             if (message === '"Unauthorized"') {
@@ -260,7 +262,7 @@ export function usePublisher() {
             publisherIds,
             newCongregationId
         }).then(res => {
-            handleSubmitSuccess(messageSuccessSubmit.transferPublisherSuccess, '/congregacao/publicadores')
+            handleSubmitSuccess(messageSuccessSubmit.transferPublisherSuccess, '/congregacao/pessoas')
         }).catch(err => {
             console.log(err)
             toast.error(messageErrorsSubmit.default)

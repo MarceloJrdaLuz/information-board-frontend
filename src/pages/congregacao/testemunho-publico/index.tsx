@@ -310,12 +310,16 @@ function ArrangementsPage() {
             onOpenChange={open => !open && setArrangementToDelete(null)}
           >
             <AlertDialogContent className="sm:max-w-[440px]">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-lg font-bold text-red-600 flex items-center gap-2">
-                  <Trash2 className="w-5 h-5" />
-                  Excluir Arranjo
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-xs text-typography-600 mt-2 leading-relaxed">
+              <AlertDialogHeader className="gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-5 h-5" />
+                  </div>
+                  <AlertDialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                    Excluir Arranjo?
+                  </AlertDialogTitle>
+                </div>
+                <AlertDialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                   Tem certeza que deseja excluir o arranjo{" "}
                   <strong className="text-typography-900">
                     &ldquo;{arrangementToDelete?.title}&rdquo;

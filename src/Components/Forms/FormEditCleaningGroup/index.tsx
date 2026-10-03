@@ -16,7 +16,8 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { IFormDataCleaningGroup } from "@/types/cleaning"
-import { IPublisher } from "@/types/types"
+import { IPublisher, PrivilegeCode } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import FormStyle from "../FormStyle"
 
 interface Props {
@@ -44,7 +45,8 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
 
     useEffect(() => {
         if (groupData?.publishers) {
-            setSelectedMembers(groupData.publishers)
+            const valid = groupData.publishers.filter((p: IPublisher) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+            setSelectedMembers(valid)
         }
     }, [groupData])
 
@@ -54,7 +56,8 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
             g.publishers?.forEach((p: IPublisher) => publishersInGroups.add(p.id))
     })
 
-    const allPublishers = sortArrayByProperty(formData?.publishers ?? [], "fullName")
+    const validPublishers = (formData?.publishers ?? []).filter(p => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+    const allPublishers = sortArrayByProperty(validPublishers, "fullName")
 
     const availablePublishers = allPublishers
         .filter(p => !publishersInGroups.has(p.id))

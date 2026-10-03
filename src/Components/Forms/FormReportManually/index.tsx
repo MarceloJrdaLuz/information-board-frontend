@@ -2,10 +2,12 @@ import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import Button from "@/Components/Button"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
-import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
+import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { meses } from "@/functions/meses"
 import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadCreateReportManually } from "@/types/reports"
-import { IPublisher, IReports, Privileges, PrivilegesMinistry } from "@/types/types"
+import { IPublisher, IReports, PrivilegeCode, Privileges, PrivilegesMinistry } from "@/types/types"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useAtomValue } from "jotai"
 import { Calendar, CheckCircle2, FileSpreadsheet, Info, Trash2 } from "lucide-react"
@@ -56,17 +58,46 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
     useEffect(() => {
         if (report?.privileges && report.privileges.length > 0) {
             setPrivilege(report.privileges[0])
+        } else if (publisher && monthParam) {
+            const clean = decodeURIComponent(monthParam).trim().replace(/\s+de\s+/i, " ")
+            const splitWord = clean.split(/[\s\-_]+/)
+            const mName = splitWord[0] || ""
+            const yName = splitWord[1] || ""
+            const mesIdx = meses.findIndex(m => m.toLowerCase() === mName.toLowerCase())
+            const tDate = new Date(`${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${yName || new Date().getFullYear()}`)
+
+            if (hasPrivilege(publisher, PrivilegeCode.SPECIAL_PIONEER, tDate)) {
+                setPrivilege(Privileges.PIONEIROESPECIAL)
+            } else if (hasPrivilege(publisher, PrivilegeCode.MISSIONARY_WORLDWIDE, tDate)) {
+                setPrivilege(Privileges.MISSIONARIOEMCAMPO)
+            } else if (hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER, tDate)) {
+                setPrivilege(Privileges.PIONEIROREGULAR)
+            } else if (hasPrivilege(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, tDate)) {
+                setPrivilege(Privileges.AUXILIARTEMPOINDETERMINADO)
+            } else if (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(mName)}-${yName}`)) {
+                setPrivilege(Privileges.PIONEIROAUXILIAR)
+            } else {
+                setPrivilege(Privileges.PUBLICADOR)
+            }
         }
-    }, [report])
+    }, [report, publisher, monthParam])
 
     useEffect(() => {
         setValue('month', capitalizeFirstLetter(monthParam))
-        setValue('hours', privilege !== "Publicador" ? report?.hours : 0)
-        if (report?.studies) {
-            setValue('studies', report?.studies.toString())
+        if (report?.hours !== undefined && report?.hours !== null) {
+            setValue('hours', report.hours)
+        }
+        if (report?.studies !== undefined && report?.studies !== null) {
+            setValue('studies', report.studies.toString())
         }
         setValue('observations', report?.observations ?? "")
-    }, [report, monthParam, setValue, privilege])
+    }, [report, monthParam, setValue])
+
+    useEffect(() => {
+        if (privilege === "Publicador") {
+            setValue('hours', 0)
+        }
+    }, [privilege, setValue])
 
     const handleCheckboxPrivilege = (selectedItems: string) => {
         setPrivilege(selectedItems)

@@ -3,6 +3,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance";
 import { Button } from "@/Components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
 import { getYearService } from "@/functions/meses";
@@ -166,19 +167,20 @@ function ListReportsPage() {
                     {/* Ações e Seletor de Ano */}
                     <div className="flex flex-wrap items-center gap-3">
                         {/* Seletor de Ano de Serviço */}
-                        <div className="flex items-center gap-2 bg-surface-100 px-3 py-2 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
+                        <div className="flex items-center gap-2 bg-surface-100 px-3 py-1 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
                             <span>Ano de Serviço:</span>
-                            <select
-                                value={yearServiceSelected}
-                                onChange={(e) => setYearServiceSelected(e.target.value)}
-                                className="bg-transparent font-bold text-primary-200 focus:outline-none cursor-pointer"
-                            >
-                                {yearOptions.map((y) => (
-                                    <option key={y} value={y} className="bg-surface-100 text-typography-800">
-                                        {y}
-                                    </option>
-                                ))}
-                            </select>
+                            <Select value={yearServiceSelected} onValueChange={setYearServiceSelected}>
+                                <SelectTrigger className="w-[85px] h-8 bg-transparent border-none text-xs font-bold text-primary-200 shadow-none focus:ring-0 p-0">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    {yearOptions.map((y) => (
+                                        <SelectItem key={y} value={y} className="text-xs font-semibold">
+                                            {y}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {(roleContains("ASSISTANCE_MANAGER") ||

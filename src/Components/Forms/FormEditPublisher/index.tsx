@@ -5,7 +5,6 @@ import CheckboxMultiple from '@/Components/CheckBoxMultiple'
 import CheckboxUnique from '@/Components/CheckBoxUnique'
 import { ConfirmLinkForceModal } from '@/Components/ConfirmLinkForceModal'
 import DropdownObject from '@/Components/DropdownObjects'
-import UserLinkIcon from '@/Components/Icons/UserLinkIcon'
 import Input from '@/Components/Input'
 import InputError from '@/Components/InputError'
 import { useAuthContext } from '@/context/AuthContext'
@@ -15,7 +14,7 @@ import { useFetch } from '@/hooks/useFetch'
 import { usePublisher } from '@/hooks/usePublisher'
 import { IEmergencyContact, Privileges, Situation, UserTypes } from '@/types/types'
 import { useAtom, useAtomValue } from 'jotai'
-import { ChevronDownIcon, PlusIcon, UserCheck, Unlink, RefreshCw, Mail, X } from 'lucide-react'
+import { BookOpen, Calendar as CalendarIcon, ChevronDownIcon, HeartHandshake, Mail, PlusIcon, RefreshCw, ShieldCheck, Unlink, User, UserCheck } from 'lucide-react'
 import Router from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -117,108 +116,290 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
     const sortedUsers = usersData ? sortArrayByProperty(usersData, "fullName") : usersData
 
     return (
-        <section className="flex w-full justify-center p-2 sm:p-4 pb-36 pt-6">
+        <section className="flex w-full justify-center px-2 sm:px-4 pb-8 sm:pb-12 pt-4 sm:pt-6">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 {!data ? (
                     <FormEditPublisherSkeleton />
                 ) : (
-                    <div className="w-full flex flex-col">
-                        <div className="form-title-modern">Atualizar publicador</div>
+                    <div className="w-full flex flex-col gap-5">
+                        {/* Header */}
+                        <div className="pb-3 border-b border-surface-300">
+                            <h2 className="text-xl sm:text-2xl font-bold text-typography-800 tracking-tight">Atualizar pessoa</h2>
+                            <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
+                                Edite as informações cadastrais e privilégios da pessoa na congregação
+                            </p>
+                        </div>
+
                         {hasPermission && (
                             <>
-                                <Input type="text" placeholder="Nome completo" registro={{ ...register('fullName') }} invalid={errors?.fullName?.message ? 'invalido' : ''} />
-                                {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
+                                {/* Seção 1: Dados Pessoais */}
+                                <div className="border border-surface-300 rounded-2xl bg-surface-50/40 p-4 sm:p-5 shadow-xs">
+                                    <div className="flex items-center gap-2 mb-3 pb-2.5 border-b border-surface-200">
+                                        <User className="w-4 h-4 text-primary-200" />
+                                        <h3 className="font-semibold text-sm sm:text-base text-typography-800">Dados Pessoais</h3>
+                                    </div>
 
-                                <Input type="text" placeholder="Apelido" registro={{ ...register('nickname') }} invalid={errors?.nickname?.message ? 'invalido' : ''} />
-                                <Input type="text" placeholder="Endereço" registro={{ ...register('address') }} invalid={errors?.address?.message ? 'invalido' : ''} />
-                                <Controller defaultValue='' name="phone" control={control} render={({ field }) => <Input type="tel" placeholder="Telefone" mask="(99) 99999-9999" {...field} />} />
-                                {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
+                                    <div className="flex flex-col gap-1">
+                                        <Input
+                                            type="text"
+                                            placeholder="Nome completo"
+                                            registro={{ ...register('fullName') }}
+                                            invalid={errors?.fullName?.message ? 'invalido' : ''}
+                                        />
+                                        {errors?.fullName?.type && <InputError type={errors.fullName.type} field='fullName' />}
 
-                                <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                                    <CheckboxUnique visibleLabel checked={values.genderCheckboxSelected} label="Gênero" options={options.genderOptions} handleCheckboxChange={handlers.handleCheckboxGender} />
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 sm:gap-y-0">
+                                            <div>
+                                                <Input
+                                                    type="text"
+                                                    placeholder="Apelido"
+                                                    registro={{ ...register('nickname') }}
+                                                    invalid={errors?.nickname?.message ? 'invalido' : ''}
+                                                />
+                                                {errors?.nickname?.type && <InputError type={errors.nickname.type} field='nickname' />}
+                                            </div>
+                                            <div>
+                                                <Controller
+                                                    defaultValue=''
+                                                    name="phone"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            type="tel"
+                                                            placeholder="Telefone"
+                                                            mask="(99) 99999-9999"
+                                                            {...field}
+                                                        />
+                                                    )}
+                                                />
+                                                {errors?.phone?.type && <InputError type={errors.phone.type} field='phone' />}
+                                            </div>
+                                        </div>
+
+                                        <Input
+                                            type="text"
+                                            placeholder="Endereço"
+                                            registro={{ ...register('address') }}
+                                            invalid={errors?.address?.message ? 'invalido' : ''}
+                                        />
+                                        {errors?.address?.type && <InputError type={errors.address.type} field='address' />}
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                            <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs">
+                                                <CheckboxUnique
+                                                    visibleLabel
+                                                    checked={values.genderCheckboxSelected}
+                                                    label="Gênero"
+                                                    options={options.genderOptions}
+                                                    handleCheckboxChange={handlers.handleCheckboxGender}
+                                                />
+                                            </div>
+                                            <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs">
+                                                <CheckboxUnique
+                                                    visibleLabel
+                                                    checked={values.hopeCheckboxSelected}
+                                                    label="Esperança"
+                                                    options={options.hopeOptions}
+                                                    handleCheckboxChange={handlers.handleCheckboxHope}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 mt-3 shadow-xs">
+                                            <CheckboxUnique
+                                                visibleLabel
+                                                checked={values.situationPublisherCheckboxSelected}
+                                                label="Situação"
+                                                options={options.situationOptions}
+                                                handleCheckboxChange={handlers.handleCheckboxSituationPublisher}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                                    <CheckboxUnique visibleLabel checked={values.hopeCheckboxSelected} label="Esperança" options={options.hopeOptions} handleCheckboxChange={handlers.handleCheckboxHope} />
+
+                                {/* Seção 2: Classificação e Serviço de Campo */}
+                                <div className="border border-surface-300 rounded-2xl bg-surface-50/40 p-4 sm:p-5 shadow-xs">
+                                    <div className="flex items-center gap-2 mb-3 pb-2.5 border-b border-surface-200">
+                                        <BookOpen className="w-4 h-4 text-primary-200" />
+                                        <h3 className="font-semibold text-sm sm:text-base text-typography-800">Classificação & Serviço de Campo</h3>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300">
+                                            <div className="pr-3">
+                                                <label className="text-sm font-semibold text-typography-800">
+                                                    É publicador aprovado?
+                                                </label>
+                                                <p className="text-xs text-typography-500 mt-0.5">
+                                                    {values.isPublisherApproved
+                                                        ? "Gera relatórios de campo mensais e cartão S-21"
+                                                        : "Cadastrado como estudante da escola (não relata serviço de campo)"}
+                                                </p>
+                                            </div>
+                                            <input
+                                                type="checkbox"
+                                                checked={values.isPublisherApproved}
+                                                onChange={(e) => handlers.handleIsPublisherApprovedChange(e.target.checked)}
+                                                className="w-5 h-5 accent-primary-200 cursor-pointer rounded shrink-0"
+                                            />
+                                        </div>
+
+                                        {values.isPublisherApproved && (
+                                            <div className="p-3.5 rounded-xl bg-surface-100 border border-surface-300">
+                                                <Calendar
+                                                    full
+                                                    key="calendarStartDatePublisher"
+                                                    label="Data em que se tornou publicador (opcional):"
+                                                    handleDateChange={handlers.handleStartDatePublisherChange}
+                                                    selectedDate={values.startDatePublisher}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {values.isPublisherApproved && values.situationPublisherCheckboxSelected === Situation.ATIVO && (
+                                            <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs flex flex-col gap-3">
+                                                <CheckboxUnique
+                                                    allowUncheck
+                                                    visibleLabel
+                                                    checked={values.pioneerCheckboxSelected}
+                                                    label="Pioneiro"
+                                                    options={options.pioneerOptions}
+                                                    handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)}
+                                                />
+
+                                                {values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) && (
+                                                    <div className="flex flex-col gap-3 pt-2 border-t border-surface-200">
+                                                        <CheckboxMultiple
+                                                            checkedOptions={values.auxPioneerMonthsSelected}
+                                                            label={`Meses Pioneiro Auxiliar - Ano de serviço ${values.yearService}`}
+                                                            visibleLabel
+                                                            options={options.optionsPioneerMonthsServiceYearActual}
+                                                            handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)}
+                                                        />
+                                                        <CheckboxMultiple
+                                                            checkedOptions={values.auxPioneerMonthsSelected}
+                                                            label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(values.yearService) - 1}`}
+                                                            visibleLabel
+                                                            options={options.optionsPioneerMonthsLastServiceYear}
+                                                            handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && (
+                                                    <div className="pt-2 border-t border-surface-200">
+                                                        <Calendar
+                                                            full
+                                                            key="calendarStartPioneerDate"
+                                                            label="Data Inicial:"
+                                                            handleDateChange={handlers.handleStartPioneerDateChange}
+                                                            selectedDate={values.startPioneer}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                                    <CheckboxUnique visibleLabel checked={values.situationPublisherCheckboxSelected} label="Situação do publicador" options={options.situationOptions} handleCheckboxChange={handlers.handleCheckboxSituationPublisher} />
-                                </div>
-                                {values.situationPublisherCheckboxSelected === Situation.ATIVO && <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-
-                                    {<CheckboxUnique allowUncheck visibleLabel checked={values.pioneerCheckboxSelected} label="Pioneiro" options={options.pioneerOptions} handleCheckboxChange={(selectedItems) => handlers.handleCheckboxPioneer(selectedItems)} />}
-
-                                    {values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROAUXILIAR) &&
-                                        (
-                                            <>
-                                                <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${values.yearService}`} visibleLabel options={options.optionsPioneerMonthsServiceYearActual} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
-
-                                                <CheckboxMultiple checkedOptions={values.auxPioneerMonthsSelected} label={`Meses Pioneiro Auxiliar - Ano de serviço ${Number(values.yearService) - 1}`} visibleLabel options={options.optionsPioneerMonthsLastServiceYear} handleCheckboxChange={(selectedItems) => handlers.handleAuxPioneerMonths(selectedItems)} />
-                                            </>
-
-                                        )
-                                    }
-
-                                    {(values.pioneerCheckboxSelected?.includes(Privileges.PIONEIROREGULAR) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) || values.pioneerCheckboxSelected?.includes(Privileges.AUXILIARINDETERMINADO)) && <Calendar key="calendarStartPioneerDate" label="Data Inicial:" handleDateChange={handlers.handleStartPioneerDateChange} selectedDate={values.startPioneer} />}
-                                </div>
-                                }
                             </>
                         )}
 
-                        {values.situationPublisherCheckboxSelected === Situation.ATIVO &&
-                            values.genderCheckboxSelected === 'Feminino' && (
-                                <div className="border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs">
-                                    <CheckboxMultiple
-                                        visibleLabel
-                                        checkedOptions={values.additionalsPrivilegeCheckboxSelected}
-                                        label="Privilégios Adicionais"
-                                        options={
-                                            options.additionalsPrivilegeOptions.filter(
-                                                p => p === Privileges.TESTEMUNHOPUBLICO
-                                            )
-                                        }
-                                        handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                        {/* Seção 3: Privilégios e Designações */}
+                        {values.isPublisherApproved &&
+                         values.situationPublisherCheckboxSelected === Situation.ATIVO &&
+                         (values.genderCheckboxSelected === 'Feminino' || values.genderCheckboxSelected === 'Masculino') && (
+                            <div className="border border-surface-300 rounded-2xl bg-surface-50/40 p-4 sm:p-5 shadow-xs">
+                                <div className="flex items-center gap-2 mb-3 pb-2.5 border-b border-surface-200">
+                                    <ShieldCheck className="w-4 h-4 text-primary-200" />
+                                    <h3 className="font-semibold text-sm sm:text-base text-typography-800">Privilégios e Designações</h3>
+                                </div>
+
+                                <div className="flex flex-col gap-3">
+                                    {values.genderCheckboxSelected === 'Feminino' && (
+                                        <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs">
+                                            <CheckboxMultiple
+                                                visibleLabel
+                                                checkedOptions={values.additionalsPrivilegeCheckboxSelected}
+                                                label="Privilégios Adicionais"
+                                                options={options.additionalsPrivilegeOptions.filter(
+                                                    p => p === Privileges.TESTEMUNHOPUBLICO
+                                                )}
+                                                handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {values.genderCheckboxSelected === 'Masculino' && (
+                                        <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs flex flex-col gap-3">
+                                            <CheckboxUnique
+                                                allowUncheck
+                                                visibleLabel
+                                                checked={values.privilegeCheckboxSelected}
+                                                label="Privilégio"
+                                                options={options.privilegeOptions}
+                                                handleCheckboxChange={handlers.handleCheckboxPrivileges}
+                                            />
+                                            <div className="pt-2 border-t border-surface-200">
+                                                <CheckboxMultiple
+                                                    visibleLabel
+                                                    checkedOptions={values.additionalsPrivilegeCheckboxSelected}
+                                                    label="Privilégios Adicionais"
+                                                    options={options.additionalsPrivilegeOptions}
+                                                    handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Seção 4: Datas Importantes */}
+                        <div className="border border-surface-300 rounded-2xl bg-surface-50/40 p-4 sm:p-5 shadow-xs">
+                            <div className="flex items-center gap-2 mb-3 pb-2.5 border-b border-surface-200">
+                                <CalendarIcon className="w-4 h-4 text-primary-200" />
+                                <h3 className="font-semibold text-sm sm:text-base text-typography-800">Datas Importantes</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs">
+                                    <Calendar
+                                        full
+                                        key="birthDate"
+                                        label="Data de nascimento:"
+                                        handleDateChange={handlers.handleBirthDateChange}
+                                        selectedDate={values.birthDate}
                                     />
                                 </div>
-                            )
-                        }
-
-                        {values.situationPublisherCheckboxSelected === Situation.ATIVO &&
-                            values.genderCheckboxSelected === 'Masculino' && (
-                                <div className="border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs">
-                                    <CheckboxUnique
-                                        allowUncheck
-                                        visibleLabel
-                                        checked={values.privilegeCheckboxSelected}
-                                        label="Privilégio"
-                                        options={options.privilegeOptions}
-                                        handleCheckboxChange={handlers.handleCheckboxPrivileges}
-                                    />
-
-                                    <CheckboxMultiple
-                                        visibleLabel
-                                        checkedOptions={values.additionalsPrivilegeCheckboxSelected}
-                                        label="Privilégios Adicionais"
-                                        options={options.additionalsPrivilegeOptions}
-                                        handleCheckboxChange={handlers.handleCheckboxAdditionalPrivileges}
+                                <div className="border border-surface-300 rounded-xl bg-surface-100 p-3.5 shadow-xs">
+                                    <Calendar
+                                        full
+                                        key="calendarImmersedDate"
+                                        label="Data do batismo:"
+                                        handleDateChange={handlers.handleImmersedDateChange}
+                                        selectedDate={values.immersedDate}
                                     />
                                 </div>
-                            )
-                        }
-
-
-                        <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                            <Calendar key="birthDate" label="Data de nascimento:" handleDateChange={handlers.handleBirthDateChange} selectedDate={values.birthDate} />
-
-                            <Calendar key="calendarImmersedDate" label="Data do batismo:" handleDateChange={handlers.handleImmersedDateChange} selectedDate={values.immersedDate} />
+                            </div>
                         </div>
 
-                        <div className='border border-surface-300 rounded-xl bg-surface-200/20 my-3.5 p-4 shadow-xs'>
-                            <div className='flex justify-between items-center'>
-                                <span className='my-2 font-semibold text-typography-900 '>Contato de emergência</span>
-                                <span className={`cursor-pointer w-6 h-6 mr-4 flex justify-center items-center transition-transform duration-300 text-typography-700 ${emergencyContactShow && 'rotate-180'}`} onClick={() => setEmergencyContactShow(!emergencyContactShow)}><ChevronDownIcon className='text-typography-700' /> </span>
+                        {/* Seção 5: Contato de Emergência */}
+                        <div className="border border-surface-300 rounded-2xl bg-surface-50/40 p-4 sm:p-5 shadow-xs">
+                            <div
+                                className="flex justify-between items-center cursor-pointer select-none"
+                                onClick={() => setEmergencyContactShow(!emergencyContactShow)}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <HeartHandshake className="w-4 h-4 text-primary-200" />
+                                    <h3 className="font-semibold text-sm sm:text-base text-typography-800">Contato de emergência</h3>
+                                </div>
+                                <span className={`w-8 h-8 rounded-lg bg-surface-200/50 flex justify-center items-center transition-transform duration-300 ${emergencyContactShow ? 'rotate-180' : ''}`}>
+                                    <ChevronDownIcon className="w-4 h-4 text-typography-600" />
+                                </span>
                             </div>
+
                             {emergencyContactShow && (
-                                <>
+                                <div className="mt-3 pt-3 border-t border-surface-200 flex flex-col gap-3">
                                     <DropdownObject<IEmergencyContact>
                                         title={sortedEmergencyContacts ? "Selecione um contato" : "Nenhum contato cadastrado"}
                                         textVisible
@@ -231,44 +412,54 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                         emptyMessage='Nenhum contato encontrado'
                                         full
                                     />
-                                    <span onClick={() => Router.push("/congregacao/contatos-emergencia/add")} className='mt-5 cursor-pointer flex justify-end'>
-                                        <Button type='button' outline size="sm" className='w-fit'><span><PlusIcon className='w-4 h-4 mr-1' /></span>Novo contato de emergência</Button>
-                                    </span>
-                                </>
+                                    <div className="flex justify-end pt-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => Router.push("/congregacao/contatos-emergencia/add")}
+                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-700 hover:text-primary-200 hover:border-primary-200 transition active:scale-95 shadow-xs cursor-pointer"
+                                        >
+                                            <PlusIcon className="w-4 h-4 shrink-0" />
+                                            <span>Novo contato de emergência</span>
+                                        </button>
+                                    </div>
+                                </div>
                             )}
                         </div>
 
+                        {/* Seção 6: Conta de Usuário no Sistema */}
                         {hasPermission && (
-                            <div className="border border-surface-300 dark:border-surface-600 rounded-2xl bg-surface-50/50 dark:bg-surface-800/30 p-4 sm:p-5 my-4 shadow-xs">
-                                <div className="flex items-center justify-between mb-3 pb-3 border-b border-surface-200 dark:border-surface-700/60">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className={`p-2 rounded-xl ${data?.user ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary-100/10 text-primary-200'}`}>
-                                            <UserCheck className="w-5 h-5" />
+                            <div className="border border-surface-300 dark:border-surface-600 rounded-2xl bg-surface-50/40 dark:bg-surface-800/30 p-4 sm:p-5 shadow-xs">
+                                <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3 pb-3 border-b border-surface-200 dark:border-surface-700/60">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <div className={`p-2 rounded-xl shrink-0 ${data?.user ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary-100/10 text-primary-200'}`}>
+                                            <UserCheck className="w-4 h-4" />
                                         </div>
-                                        <div>
-                                            <h4 className="font-semibold text-typography-900 text-sm sm:text-base">
+                                        <div className="min-w-0">
+                                            <h4 className="font-semibold text-typography-800 text-sm sm:text-base leading-snug">
                                                 Conta de Usuário no Sistema
                                             </h4>
-                                            <p className="text-xs text-typography-500">
+                                            <p className="text-xs text-typography-500 mt-0.5">
                                                 Vínculo deste publicador ao login de acesso
                                             </p>
                                         </div>
                                     </div>
-                                    {data?.user ? (
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            Vinculado
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                            Não vinculado
-                                        </span>
-                                    )}
+                                    <div className="shrink-0">
+                                        {data?.user ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                Vinculado
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 whitespace-nowrap shrink-0">
+                                                Não vinculado
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {data?.user ? (
                                     <div className="flex flex-col gap-3 w-full">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-100/60 dark:bg-surface-700/40 border border-surface-200/80 dark:border-surface-600/60 w-full overflow-hidden">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-surface-100 dark:bg-surface-700/40 border border-surface-200 dark:border-surface-600/60 w-full overflow-hidden">
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <div className="w-10 h-10 shrink-0 rounded-full bg-primary-200/15 text-primary-200 font-bold flex items-center justify-center text-sm uppercase">
                                                     {data.user.fullName?.charAt(0) || "U"}
@@ -284,26 +475,24 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col xs:flex-row items-stretch sm:items-center gap-2 pt-2 sm:pt-0 w-full sm:w-auto shrink-0">
-                                                <Button
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 sm:pt-0 w-full sm:w-auto shrink-0">
+                                                <button
                                                     type="button"
-                                                    outline
                                                     onClick={() => setIsChangingUser(!isChangingUser)}
-                                                    className="min-w-0 w-full sm:w-auto h-auto min-h-[36px] px-3.5 py-1.5 text-xs font-medium whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer"
+                                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-700 transition active:scale-95 shadow-xs cursor-pointer"
                                                 >
                                                     <RefreshCw className="w-3.5 h-3.5 shrink-0" />
                                                     <span>{isChangingUser ? "Cancelar" : "Trocar usuário"}</span>
-                                                </Button>
+                                                </button>
 
-                                                <Button
+                                                <button
                                                     type="button"
-                                                    outline
                                                     onClick={() => handleUnLinkPublisherToUser()}
-                                                    className="min-w-0 w-full sm:w-auto h-auto min-h-[36px] px-3.5 py-1.5 text-xs font-medium whitespace-nowrap flex items-center justify-center gap-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-200 dark:border-red-900/50 cursor-pointer"
+                                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium text-red-500 hover:text-white hover:bg-red-500 rounded-xl border border-red-200 dark:border-red-900/50 transition active:scale-95 shadow-xs cursor-pointer"
                                                 >
                                                     <Unlink className="w-3.5 h-3.5 shrink-0" />
                                                     <span>Desvincular</span>
-                                                </Button>
+                                                </button>
                                             </div>
                                         </div>
 
@@ -325,18 +514,18 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                                     emptyMessage="Nenhum usuário encontrado"
                                                     full
                                                 />
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-end gap-2 pt-1">
                                                     <ConfirmLinkForceModal
                                                         button={
-                                                            <Button
+                                                            <button
                                                                 type="button"
                                                                 disabled={!selectedUser || selectedUser === data.user.id}
                                                                 onClick={() => handleLinkPublisherToUser()}
-                                                                className="min-w-0 w-full sm:w-auto h-auto min-h-[38px] px-4 py-2 text-xs font-semibold whitespace-nowrap bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-xs flex items-center justify-center cursor-pointer"
+                                                                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white shadow-xs transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                                             >
-                                                                <UserCheck className="w-4 h-4 mr-1.5 shrink-0" />
+                                                                <UserCheck className="w-4 h-4 shrink-0" />
                                                                 <span>Confirmar novo vínculo</span>
-                                                            </Button>
+                                                            </button>
                                                         }
                                                         onDelete={() => handleConfirmForceLink()}
                                                         message="Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?"
@@ -365,17 +554,17 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                                             full
                                         />
                                         {selectedUser && (
-                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 w-full">
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-1 w-full">
                                                 <ConfirmLinkForceModal
                                                     button={
-                                                        <Button
+                                                        <button
                                                             type="button"
                                                             onClick={() => handleLinkPublisherToUser()}
-                                                            className="min-w-0 w-full sm:w-auto h-auto min-h-[38px] px-4 py-2 text-xs font-semibold whitespace-nowrap bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-xs flex items-center justify-center cursor-pointer"
+                                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white shadow-xs transition active:scale-95 cursor-pointer"
                                                         >
-                                                            <UserCheck className="w-4 h-4 mr-1.5 shrink-0" />
+                                                            <UserCheck className="w-4 h-4 shrink-0" />
                                                             <span>Vincular a este usuário</span>
-                                                        </Button>
+                                                        </button>
                                                     }
                                                     onDelete={() => handleConfirmForceLink()}
                                                     message="Houve um conflito na hora de vincular esse publicador. Você deseja realmente substituir o vínculo atual?"
@@ -388,8 +577,17 @@ export default function FormEditPublisher(props: IUpdatePublisher) {
                             </div>
                         )}
 
-                        <div className="flex justify-center items-center w-full mt-6">
-                            <Button className="w-full sm:w-auto" error={dataError} success={dataSuccess} disabled={disabled} type='submit'>Atualizar publicador</Button>
+                        {/* Botão de Envio */}
+                        <div className="flex justify-center items-center w-full mt-3 pt-2">
+                            <Button
+                                className="w-full sm:w-auto min-w-[200px] h-[46px] text-sm font-semibold"
+                                error={dataError}
+                                success={dataSuccess}
+                                disabled={disabled}
+                                type='submit'
+                            >
+                                Atualizar pessoa
+                            </Button>
                         </div>
                     </div>
                 )}

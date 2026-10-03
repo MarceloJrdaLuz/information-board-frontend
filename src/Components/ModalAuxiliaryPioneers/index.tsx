@@ -7,7 +7,8 @@ import {
   DialogTitle,
 } from "@/Components/ui/dialog"
 import { Button } from "@/Components/ui/button"
-import { IPublisher, Privileges, Situation } from "@/types/types"
+import { IPublisher, PrivilegeCode, Privileges, Situation } from "@/types/types"
+import { hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { api } from "@/services/api"
 import { toast } from "react-toastify"
 import { Award, Check, Loader2, Search, Sparkles, User, Users } from "lucide-react"
@@ -94,19 +95,15 @@ export function ModalAuxiliaryPioneers({
   // Filter only baptized publishers
   const isBaptized = (p: IPublisher) => {
     if (p.dateImmersed) return true
-    const privs = p.privileges || []
-    const relPrivs = (p.privilegesRelation || []).map((pr) => pr.privilege?.name)
-    const allPrivs = [...privs, ...relPrivs]
-    const baptizedPrivileges = [
-      "Ancião", "Elder",
-      "Servo Ministerial", "Ministerial Servant",
-      "Pioneiro Regular", "Regular Pioneer",
-      "Pioneiro Especial", "Special Pioneer",
-      "Missionário em Campo", "Missionário", "Missionario", "Missionary Worldwide", "Missionary",
-      "Auxiliar por Tempo Indeterminado", "Auxiliar Indeterminado", "Continuous Auxiliary Pioneer",
-      "Pioneiro Auxiliar", "Auxiliary Pioneer"
-    ]
-    return allPrivs.some((priv) => priv && baptizedPrivileges.includes(priv))
+    return hasAnyPrivilege(p, [
+      PrivilegeCode.ELDER,
+      PrivilegeCode.MINISTERIAL_SERVANT,
+      PrivilegeCode.REGULAR_PIONEER,
+      PrivilegeCode.SPECIAL_PIONEER,
+      PrivilegeCode.MISSIONARY_WORLDWIDE,
+      PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER,
+      PrivilegeCode.AUXILIARY_PIONEER,
+    ])
   }
 
   // Active and baptized publishers only
@@ -155,45 +152,19 @@ export function ModalAuxiliaryPioneers({
   }, [isOpen, congregationId, currentMonth, currentYear])
 
   const isContinuousAux = (p: IPublisher) => {
-    return (
-      p.privileges?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) ||
-      p.privileges?.includes(Privileges.AUXILIARINDETERMINADO) ||
-      p.privilegesRelation?.some(
-        (pp) => pp.privilege?.name === "Continuous Auxiliary Pioneer"
-      )
-    )
+    return hasPrivilege(p, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER)
   }
 
   const isRegularPioneer = (p: IPublisher) => {
-    return (
-      p.privileges?.includes(Privileges.PIONEIROREGULAR) ||
-      p.privileges?.includes("Pioneiro Regular") ||
-      p.privilegesRelation?.some((pp) => pp.privilege?.name === "Regular Pioneer")
-    )
+    return hasPrivilege(p, PrivilegeCode.REGULAR_PIONEER)
   }
 
   const isSpecialPioneer = (p: IPublisher) => {
-    return (
-      p.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
-      p.privileges?.includes("Pioneiro Especial") ||
-      p.privileges?.includes("Special Pioneer") ||
-      p.privilegesRelation?.some((pp) => pp.privilege?.name === "Special Pioneer")
-    )
+    return hasPrivilege(p, PrivilegeCode.SPECIAL_PIONEER)
   }
 
   const isMissionary = (p: IPublisher) => {
-    return (
-      p.privileges?.includes(Privileges.MISSIONARIOEMCAMPO) ||
-      p.privileges?.includes("Missionário em Campo") ||
-      p.privileges?.includes("Missionário") ||
-      p.privileges?.includes("Missionario") ||
-      p.privileges?.includes("Missionary Worldwide") ||
-      p.privilegesRelation?.some(
-        (pp) =>
-          pp.privilege?.name === "Missionary Worldwide" ||
-          pp.privilege?.name === "Missionary"
-      )
-    )
+    return hasPrivilege(p, PrivilegeCode.MISSIONARY_WORLDWIDE)
   }
 
   const filteredPublishers = useMemo(() => {
@@ -260,7 +231,7 @@ export function ModalAuxiliaryPioneers({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-[88vh] flex flex-col p-0 overflow-hidden bg-surface-100 rounded-2xl border border-surface-300 shadow-2xl">
+      <DialogContent className="max-w-2xl w-[calc(100%-2rem)] sm:w-full max-h-[88vh] flex flex-col p-0 overflow-hidden bg-surface-100 rounded-2xl border border-surface-300 shadow-2xl">
         <DialogHeader className="p-5 sm:p-6 pb-4 border-b border-surface-200 shrink-0">
           <div className="flex items-center gap-2.5 text-primary-200 mb-1">
             <Award className="w-5 h-5" />

@@ -15,14 +15,31 @@ export function PdfLinkComponent({
         reportsFiltered?: IReports[],
         monthsServiceYears: IMonthsWithYear[],
         totals?: boolean,
-        reportsTotalsFromFilter?: ITotalsReports[]
+        reportsTotalsFromFilter?: ITotalsReports[],
+        totalsFrom?: string,
+        serviceYear?: string | number
     },
     className?: string,
     children?: React.ReactNode
 }) {
-    const { publishers, reportsFiltered, monthsServiceYears, totals, reportsTotalsFromFilter } = pdfData;
+    const { publishers, reportsFiltered, monthsServiceYears, totals, reportsTotalsFromFilter, totalsFrom, serviceYear } = pdfData;
 
     if (!publishers && !reportsTotalsFromFilter) return null;
+
+    const getDownloadFileName = () => {
+        if (totals) {
+            const category = totalsFrom ? ` - ${totalsFrom}` : "";
+            const year = serviceYear ? ` - Ano ${serviceYear}` : "";
+            return `Totais${category}${year}.pdf`;
+        }
+
+        if (publishers && publishers.length === 1) {
+            return `${publishers[0].fullName}.pdf`;
+        }
+
+        const year = serviceYear ? ` - Ano ${serviceYear}` : "";
+        return `Registros de publicadores${year}.pdf`;
+    };
 
     return (
         <BlobProvider
@@ -40,9 +57,9 @@ export function PdfLinkComponent({
             {({ url, loading }) => (
                 <a
                     href={url ?? "#"}
-                    download={publishers && publishers.length === 1 ? `${publishers[0].fullName}.pdf` : "Registros de publicadores.pdf"}
+                    download={getDownloadFileName()}
                     className={className || "flex items-center justify-center w-8 h-8 p-2 rounded-full bg-surface-100 hover:text-red-600 transition-all duration-300 cursor-pointer text-red-800"}
-                    title="Gerar PDF"
+                    title={totals ? "Gerar PDF de Totais" : "Gerar PDF S-21"}
                 >
                     {children ? (
                         loading ? <span>Gerando PDF...</span> : children

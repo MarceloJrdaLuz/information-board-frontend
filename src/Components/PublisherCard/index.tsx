@@ -1,6 +1,7 @@
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
 import { getMonthsPast } from "@/functions/meses"
-import { IMonthsWithYear, IPublisher, IReports, Privileges } from "@/types/types"
+import { IMonthsWithYear, IPublisher, IReports, PrivilegeCode, Privileges } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import dayjs from "dayjs"
 
@@ -61,22 +62,27 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
 
     const isAuxPioneer = (privileges: string[]) => {
         return privileges?.some(privilege =>
-            (privilege === Privileges.PIONEIROAUXILIAR)
+            privilege === Privileges.PIONEIROAUXILIAR || privilege === "Pioneiro Auxiliar"
         )
     }
 
     const isAuxPioneerUndetermined = (privileges: string[]) => {
         return privileges?.some(privilege =>
             privilege === Privileges.AUXILIARINDETERMINADO ||
-            privilege === Privileges.AUXILIARTEMPOINDETERMINADO
+            privilege === Privileges.AUXILIARTEMPOINDETERMINADO ||
+            privilege === "Auxiliar por Tempo Indeterminado" ||
+            privilege === "Auxiliar Indeterminado"
         )
     }
 
     const isPioneer = (privileges: string[]) => {
         return privileges?.some(privilege =>
-            (privilege === Privileges.PIONEIROESPECIAL ||
-                privilege === Privileges.PIONEIROREGULAR) ||
-            privilege === Privileges.MISSIONARIOEMCAMPO
+            privilege === Privileges.PIONEIROESPECIAL ||
+            privilege === Privileges.PIONEIROREGULAR ||
+            privilege === Privileges.MISSIONARIOEMCAMPO ||
+            privilege === "Pioneiro Especial" ||
+            privilege === "Pioneiro Regular" ||
+            privilege === "Missionário em Campo"
         )
     }
 
@@ -124,19 +130,19 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                     <View style={{
                         flexDirection: "row", alignItems: "center", marginTop: 2, fontFamily: "Times-Bold",
                     }}>
-                        {publisher.privileges.includes(Privileges.ANCIAO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {hasPrivilege(publisher, PrivilegeCode.ELDER) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Ancião</Text>
 
-                        {publisher.privileges.includes(Privileges.SM) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {hasPrivilege(publisher, PrivilegeCode.MINISTERIAL_SERVANT) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginRight: 12, marginLeft: 2 }}>Servo ministerial</Text>
 
-                        {publisher.privileges.includes(Privileges.PIONEIROREGULAR) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro regular</Text>
 
-                        {publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {hasPrivilege(publisher, PrivilegeCode.SPECIAL_PIONEER) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Pioneiro especial</Text>
 
-                        {publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
+                        {hasPrivilege(publisher, PrivilegeCode.MISSIONARY_WORLDWIDE) ? <Text style={styles.checkboxSelected}></Text> : <Text style={styles.checkbox}></Text>}
                         <Text style={{ fontSize: 12, marginLeft: 2, marginRight: 12 }}>Missionário em campo</Text>
                     </View>
 
@@ -169,23 +175,35 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                                 {serviceYear.months.map((month) => {
                                     let splitMonthAndYear = month.split(" ")
                                     const report = reports?.find(r => r.month === capitalizeFirstLetter(splitMonthAndYear[0]) && r.year === splitMonthAndYear[1])
-                                    if (report && !isPublisher(report.privileges) && (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(splitMonthAndYear[0])}-${splitMonthAndYear[1]}`) || isAuxPioneerUndetermined(report.privileges) || isPioneer(report.privileges))) serviceYear.totalHours += report.hours
+                                    const isAuxThisMonth = Boolean(
+                                        report && (
+                                            isAuxPioneer(report.privileges) ||
+                                            isAuxPioneerUndetermined(report.privileges) ||
+                                            isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(splitMonthAndYear[0])}-${splitMonthAndYear[1]}`)
+                                        )
+                                    )
+                                    const isPioneerThisMonth = Boolean(
+                                        report && isPioneer(report.privileges)
+                                    )
+                                    if (report && (isAuxThisMonth || isPioneerThisMonth)) {
+                                        serviceYear.totalHours += report.hours
+                                    }
                                     return (
                                         <View style={{ flexDirection: "row", height: 20, fontSize: 12, border: 0 }} key={`${serviceYear.year}-${month}`}>
                                             <View id="Mes" style={{ width: 112, borderLeft: 0, borderLeftWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderRight: 1, borderRightWidth: 1, borderColor: '#000', justifyContent: "center" }}>
                                                 <Text style={{ paddingLeft: 2 }}>{capitalizeFirstLetter(splitMonthAndYear[0])}</Text>
                                             </View>
                                             <View id="Parcipou na pregação" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                                <Text style={(report && !isPioneer(report.privileges) && !isAuxPioneerUndetermined(report.privileges) && !isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(splitMonthAndYear[0])}-${splitMonthAndYear[1]}`)) ? styles.checkboxSelected : styles.checkbox}></Text>
+                                                <Text style={(report && !isPioneerThisMonth && !isAuxThisMonth) ? styles.checkboxSelected : styles.checkbox}></Text>
                                             </View>
                                             <View id="Estudos bíblicos" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
                                                 <Text style={{ textAlign: "center" }}>{report ? report.studies : ""}</Text>
                                             </View>
                                             <View id="Pioneiro auxiliar" style={{ width: 80, justifyContent: "center", alignItems: "center", borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000' }}>
-                                                <Text style={(report && (isAuxPioneer(report.privileges) && isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(splitMonthAndYear[0])}-${splitMonthAndYear[1]}`) || isAuxPioneerUndetermined(report.privileges))) ? styles.checkboxSelected : styles.checkbox}></Text>
+                                                <Text style={isAuxThisMonth ? styles.checkboxSelected : styles.checkbox}></Text>
                                             </View>
                                             <View id="Horas" style={{ width: 80, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
-                                                <Text style={{ textAlign: "center" }}>{(report && !isPublisher(report.privileges) && (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(splitMonthAndYear[0])}-${splitMonthAndYear[1]}`) || isAuxPioneerUndetermined(report.privileges) || isPioneer(report.privileges))) ? report.hours : ""}</Text>
+                                                <Text style={{ textAlign: "center" }}>{(report && (isAuxThisMonth || isPioneerThisMonth)) ? report.hours : ""}</Text>
                                             </View>
                                             <View id="Observações" style={{ width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', justifyContent: "center", alignItems: "center" }}>
                                                 <Text style={{ textAlign: "center", fontSize: report && report.observations && report.observations.length > 30 ? 8 : 11 }}>{report ? report.observations : ""}</Text>
@@ -204,7 +222,7 @@ export default function S21({ publisher, reports, monthsWithYear }: S21Props) {
                                         <Text>{serviceYear.totalHours > 0 && serviceYear.totalHours}</Text>
                                     </View>
                                     <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center", width: 160, borderRight: 1, borderRightWidth: 1, borderTop: 0, borderTopWidth: 0, borderBottom: 1, borderBottomWidth: 1, borderColor: '#000', fontSize: 8 }}>
-                                        {publisher.privileges.some(privilege => privilege === Privileges.PIONEIROREGULAR) && <Text>{`Requisito de horas: ${serviceYear.totalHours} / ${monthlyTarget * getMonthsPast(serviceYear.year).length}`}</Text>}
+                                        {hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER) && <Text>{`Requisito de horas: ${serviceYear.totalHours} / ${monthlyTarget * getMonthsPast(serviceYear.year).length}`}</Text>}
                                     </View>
                                 </View>
                             </View>

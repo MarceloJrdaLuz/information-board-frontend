@@ -21,6 +21,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import * as Popover from "@radix-ui/react-popover";
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
@@ -368,26 +369,26 @@ function FieldServiceSchedulePage() {
                             Saída:
                         </span>
                         <div className="min-w-[280px]">
-                            <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                                value={selectedTemplate?.id || ""}
-                                onChange={(e) => {
+                            <Select
+                                value={selectedTemplate?.id || undefined}
+                                onValueChange={(val) => {
                                     const t = rotationTemplates.find(
-                                        (temp) => temp.id === e.target.value
+                                        (temp) => temp.id === val
                                     );
                                     if (t) setSelectedTemplate(t);
                                 }}
                             >
-                                {rotationTemplates.length === 0 ? (
-                                    <option value="">Nenhuma saída de rodízio cadastrada</option>
-                                ) : (
-                                    rotationTemplates.map((t) => (
-                                        <option key={t.id} value={t.id}>
+                                <SelectTrigger className="w-full h-11 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800">
+                                    <SelectValue placeholder={rotationTemplates.length === 0 ? "Nenhuma saída cadastrada" : "Selecione a saída..."} />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl max-h-64">
+                                    {rotationTemplates.map((t) => (
+                                        <SelectItem key={t.id} value={t.id} className="text-sm">
                                             {WEEKDAY_LABEL[t.weekday as Weekday]} · {formatHour(t.time)} · {t.location}
-                                        </option>
-                                    ))
-                                )}
-                            </select>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </div>
@@ -714,18 +715,21 @@ function FieldServiceSchedulePage() {
                             <label className="text-xs font-semibold text-typography-700">
                                 Dirigente:
                             </label>
-                            <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                                value={newLeaderId}
-                                onChange={(e) => setNewLeaderId(e.target.value)}
+                            <Select
+                                value={newLeaderId || undefined}
+                                onValueChange={setNewLeaderId}
                             >
-                                <option value="">Selecione um dirigente...</option>
-                                {selectedTemplate?.rotation_members?.map((m) => (
-                                    <option key={m.publisher.id} value={m.publisher.id}>
-                                        {m.publisher.nickname || m.publisher.fullName}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-11 bg-surface-100 border border-surface-300 rounded-xl text-sm text-typography-800">
+                                    <SelectValue placeholder="Selecione um dirigente..." />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl max-h-60">
+                                    {selectedTemplate?.rotation_members?.map((m) => (
+                                        <SelectItem key={m.publisher.id} value={m.publisher.id} className="text-sm">
+                                            {m.publisher.nickname || m.publisher.fullName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
@@ -801,12 +805,16 @@ function FieldServiceSchedulePage() {
                 onOpenChange={(open) => !open && setDeleteScheduleId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Saída de Campo?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Saída de Campo?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir a saída de campo desta data? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

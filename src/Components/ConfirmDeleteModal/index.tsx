@@ -35,7 +35,7 @@ export function ConfirmDeleteModal({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -45,7 +45,7 @@ export function ConfirmDeleteModal({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="bg-surface-100 border border-surface-200 rounded-2xl shadow-2xl p-6 w-[90%] max-w-sm"
+              className="bg-surface-100 border border-surface-200 rounded-2xl shadow-2xl p-6 w-full max-w-sm"
             >
               <div className="flex flex-col items-center text-center gap-3">
                 <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500">

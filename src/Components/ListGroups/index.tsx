@@ -1,6 +1,7 @@
 import { ConfirmDeleteModal } from "../ConfirmDeleteModal"
 import { IListItemsProps } from "./types"
-import { Situation } from "@/types/types"
+import { PrivilegeCode, Situation } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { AlertCircle, Edit3, Trash2, UserCheck, Users, Users2 } from "lucide-react"
 import Router from "next/router"
 import React from "react"
@@ -9,11 +10,12 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
   return (
     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6 pb-28 w-full">
       {items?.map((item) => {
-        const totalPublishers = item.publishers?.length ?? 0
+        const validPublishers = (item.publishers || []).filter(p => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+        const totalPublishers = validPublishers.length
         const inactivesCount =
-          item.publishers?.filter(
+          validPublishers.filter(
             (p) => p.situation === Situation.INATIVO
-          ).length ?? 0
+          ).length
         const activesCount = totalPublishers - inactivesCount
         const overseerName = item.groupOverseers?.fullName
 

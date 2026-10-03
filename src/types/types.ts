@@ -160,6 +160,7 @@ export interface IPublisherPrivilege {
     privilege: {
         id: string
         name: string
+        code?: PrivilegeCode | string
     }
     startDate?: string | null
     endDate?: string | null
@@ -176,6 +177,7 @@ export interface IPublisher {
     gender: Gender
     dateImmersed?: string | null
     startPioneer?: string | null
+    startDatePublisher?: string | null
     birthDate?: string | null
     congregation: ICongregation
     group: IGroup
@@ -280,6 +282,29 @@ export enum Privileges {
     SOMEMIDIAS = "Som e Mídias",
     PEDESTAL = "Pedestal"
 }
+
+export enum PrivilegeCode {
+    PUBLISHER = "PUBLISHER",
+    ELDER = "ELDER",
+    MINISTERIAL_SERVANT = "MINISTERIAL_SERVANT",
+    REGULAR_PIONEER = "REGULAR_PIONEER",
+    SPECIAL_PIONEER = "SPECIAL_PIONEER",
+    MISSIONARY_WORLDWIDE = "MISSIONARY_WORLDWIDE",
+    CONTINUOUS_AUXILIARY_PIONEER = "CONTINUOUS_AUXILIARY_PIONEER",
+    AUXILIARY_PIONEER = "AUXILIARY_PIONEER",
+    SPEAKER = "SPEAKER",
+    READER = "READER",
+    CHAIRMAN = "CHAIRMAN",
+    ATTENDANT = "ATTENDANT",
+    MICROPHONE_ATTENDANT = "MICROPHONE_ATTENDANT",
+    FIELD_CONDUCTOR = "FIELD_CONDUCTOR",
+    PUBLIC_WITNESS = "PUBLIC_WITNESS",
+    SOUND = "SOUND",
+    MEDIA = "MEDIA",
+    SOUND_AND_MEDIA = "SOUND_AND_MEDIA",
+    STAGE_ATTENDANT = "STAGE_ATTENDANT"
+}
+
 
 export enum PrivilegesMinistry {
     PUBLICADOR = "Publicador",

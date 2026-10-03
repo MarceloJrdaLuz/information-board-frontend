@@ -5,7 +5,9 @@ import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { IPublisher, Privileges, Situation } from "@/types/types"
+import { meses } from "@/functions/meses"
+import { getActivePrivilegeLabels, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { IPublisher, PrivilegeCode, Privileges, Situation } from "@/types/types"
 import { useAtom, useAtomValue } from "jotai"
 import {
     Calendar,
@@ -96,16 +98,28 @@ export default function PublisherListReports() {
         }
     }, [dataSuccess, fetchReports])
 
+    const targetDate = useMemo(() => {
+        if (!monthSelected || !yearSelected) return new Date()
+        const mesIdx = meses.findIndex(m => m.toLowerCase() === monthSelected.toLowerCase())
+        return new Date(`${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${yearSelected}`)
+    }, [monthSelected, yearSelected])
+
     useEffect(() => {
         if (data) {
-            const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
-            const filterOthers = data?.filter(publisher => (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO))
+            const filterActives = data?.filter(publisher => 
+                publisher.situation === Situation.ATIVO && 
+                hasPrivilege(publisher, PrivilegeCode.PUBLISHER, targetDate)
+            )
+            const filterOthers = data?.filter(publisher => 
+                (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO) &&
+                hasPrivilege(publisher, PrivilegeCode.PUBLISHER, targetDate)
+            )
             const sortActives = sortArrayByProperty(filterActives, "fullName")
             const sortOthersSituation = sortArrayByProperty(filterOthers, "fullName")
             setPublishers(sortActives)
             setPublishersOthers(sortOthersSituation)
         }
-    }, [data])
+    }, [data, targetDate])
 
     useEffect(() => {
         mutate()
@@ -125,19 +139,19 @@ export default function PublisherListReports() {
                 return (publisher.situation === Situation.ATIVO &&
                     filterPrivileges.every(privilege => {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher)
+                            return hasPrivilege(publisher, PrivilegeCode.AUXILIARY_PIONEER, targetDate) && isAuxPioneerMonthNow(publisher)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date())
-                        } else if (privilege === Privileges.AUXILIARINDETERMINADO) {
-                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date())
+                            return hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER, targetDate)
+                        } else if (privilege === Privileges.AUXILIARINDETERMINADO || privilege === Privileges.AUXILIARTEMPOINDETERMINADO) {
+                            return hasPrivilege(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, targetDate)
                         } else {
-                            return publisher.privileges.includes(privilege)
+                            return hasPrivilege(publisher, privilege, targetDate)
                         }
                     })
                 )
             }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO)
         setFilterPublishers(filterPublishersToPrivileges)
-    }, [filterPrivileges, publishers, inactivesShow, publishersOthers])
+    }, [filterPrivileges, publishers, inactivesShow, publishersOthers, targetDate])
 
     // Busca e filtragem por texto
     const displayedPublishers = useMemo(() => {
@@ -331,7 +345,7 @@ export default function PublisherListReports() {
                                                                 {publisher.group.name}
                                                             </span>
                                                         )}
-                                                        {publisher.privileges?.map((priv) => (
+                                                        {getActivePrivilegeLabels(publisher, targetDate).map((priv) => (
                                                             <span
                                                                 key={priv}
                                                                 className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-200/10 text-primary-200 border border-primary-200/20"

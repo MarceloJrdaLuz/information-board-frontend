@@ -20,7 +20,8 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { InactiveCandidate } from "@/types/publishers"
-import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
+import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, PrivilegeCode, Privileges, Situation } from "@/types/types"
+import { hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
@@ -28,13 +29,16 @@ import "dayjs/locale/pt-br"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { useAtom } from "jotai"
 import {
+    AlertCircle,
     AlertTriangle,
     ArrowLeft,
     Award,
     BarChart3,
     CheckCheck,
     CheckCircle2,
+    ChevronDown,
     Clock,
+    ExternalLink,
     FileSpreadsheet,
     FileText,
     InfoIcon,
@@ -84,30 +88,15 @@ function ReportsMonthPage() {
     const [modalAuxPioneersOpen, setModalAuxPioneersOpen] = useState(false)
 
     const isPublisherContinuousAux = (p: IPublisher) => {
-        return (
-            p.privileges?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) ||
-            p.privileges?.includes(Privileges.AUXILIARINDETERMINADO) ||
-            p.privilegesRelation?.some(pp => pp.privilege?.name === "Continuous Auxiliary Pioneer")
-        )
+        return hasPrivilege(p, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, dateFormat ?? new Date())
     }
 
     const isPublisherRegularPioneer = (p: IPublisher) => {
-        return (
-            p.privileges?.includes(Privileges.PIONEIROREGULAR) ||
-            p.privilegesRelation?.some(pp => pp.privilege?.name === "Regular Pioneer")
-        )
+        return hasPrivilege(p, PrivilegeCode.REGULAR_PIONEER, dateFormat ?? new Date())
     }
 
     const isPublisherSpecialPioneer = (p: IPublisher) => {
-        return (
-            p.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
-            p.privileges?.includes(Privileges.MISSIONARIOEMCAMPO) ||
-            p.privilegesRelation?.some(
-                (pp) =>
-                    pp.privilege?.name === "Special Pioneer" ||
-                    pp.privilege?.name === "Missionary Worldwide"
-            )
-        )
+        return hasAnyPrivilege(p, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], dateFormat ?? new Date())
     }
 
     const isPublisherAuxPioneerForMonth = (p: IPublisher) => {
@@ -120,6 +109,38 @@ function ReportsMonthPage() {
                 isPioneerNow(p, dateFormat ?? new Date()))
         )
     }
+
+    const isReportAuxPioneer = (r: IReports) =>
+        Boolean(
+            r.privileges?.includes(Privileges.PIONEIROAUXILIAR) ||
+            r.privileges?.includes("Pioneiro Auxiliar") ||
+            isPublisherAuxPioneerForMonth(r.publisher)
+        )
+
+    const isReportContinuousAux = (r: IReports) =>
+        Boolean(
+            r.privileges?.includes(Privileges.AUXILIARINDETERMINADO) ||
+            r.privileges?.includes(Privileges.AUXILIARTEMPOINDETERMINADO) ||
+            r.privileges?.includes("Auxiliar por Tempo Indeterminado") ||
+            r.privileges?.includes("Auxiliar Indeterminado") ||
+            (isPublisherContinuousAux(r.publisher) && isPioneerNow(r.publisher, dateFormat ?? new Date()))
+        )
+
+    const isReportRegularPioneer = (r: IReports) =>
+        Boolean(
+            r.privileges?.includes(Privileges.PIONEIROREGULAR) ||
+            r.privileges?.includes("Pioneiro Regular") ||
+            (isPublisherRegularPioneer(r.publisher) && isPioneerNow(r.publisher, dateFormat ?? new Date()))
+        )
+
+    const isReportSpecialPioneer = (r: IReports) =>
+        Boolean(
+            r.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
+            r.privileges?.includes(Privileges.MISSIONARIOEMCAMPO) ||
+            r.privileges?.includes("Pioneiro Especial") ||
+            r.privileges?.includes("Missionário em Campo") ||
+            isPublisherSpecialPioneer(r.publisher)
+        )
 
     const [activeTab, setActiveTab] = useState<"reports" | "totals">("reports")
 
@@ -143,13 +164,18 @@ function ReportsMonthPage() {
     const [monthSelected, setMonthSelected] = useState("")
     const [dateFormat, setDateFormat] = useState<Date>()
     const [inactiveCandidates, setInactiveCandidates] = useState<InactiveCandidate[]>([])
+    const [isInactiveOpen, setIsInactiveOpen] = useState(true)
 
     const monthParam = (month as string) || ""
 
     useEffect(() => {
-        const filterActives = data?.filter((publisher) => publisher.situation === Situation.ATIVO)
+        if (!dateFormat) return
+        const filterActives = data?.filter((publisher) => 
+            publisher.situation === Situation.ATIVO && 
+            hasPrivilege(publisher, PrivilegeCode.PUBLISHER, dateFormat)
+        )
         setPublishers(filterActives)
-    }, [data])
+    }, [data, dateFormat])
 
     useEffect(() => {
         if (getTotals) {
@@ -271,24 +297,20 @@ function ReportsMonthPage() {
             let totalsReportsSpecialPioneer = 0
 
             const filterSpecialPioneer = reportsList.filter((report) =>
-                isPublisherSpecialPioneer(report.publisher)
+                isReportSpecialPioneer(report)
             )
 
             const filterPioneer = reportsList.filter(
                 (report) =>
-                    isPublisherRegularPioneer(report.publisher) &&
-                    isPioneerNow(report.publisher, dateFormat ?? new Date()) &&
-                    !isPublisherSpecialPioneer(report.publisher)
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    isReportRegularPioneer(report)
             )
 
             const filterAuxPioneer = reportsList.filter(
                 (report) =>
-                    isPublisherAuxPioneerForMonth(report.publisher) &&
-                    !(
-                        isPublisherRegularPioneer(report.publisher) &&
-                        isPioneerNow(report.publisher, dateFormat ?? new Date())
-                    ) &&
-                    !isPublisherSpecialPioneer(report.publisher)
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    !filterPioneer.some((r) => r.id === report.id) &&
+                    (isReportAuxPioneer(report) || isReportContinuousAux(report))
             )
 
             const filterPublishers = reportsList.filter(
@@ -398,14 +420,9 @@ function ReportsMonthPage() {
                               !isServantSelected
                           ) {
                               return (
-                                  (isAuxPioneerSelected &&
-                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
-                                  (isIndefinitePioneerSelected &&
-                                      isPublisherContinuousAux(report.publisher) &&
-                                      isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
-                                  (isRegPioneerSelected &&
-                                      isPublisherRegularPioneer(report.publisher) &&
-                                      isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                                  (isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                  (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                  (isRegPioneerSelected && isReportRegularPioneer(report))
                               )
                           } else if (
                               (isAuxPioneerSelected ||
@@ -414,21 +431,10 @@ function ReportsMonthPage() {
                               isElderSelected
                           ) {
                               return (
-                                  ((isAuxPioneerSelected &&
-                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
-                                      (isIndefinitePioneerSelected &&
-                                          isPublisherContinuousAux(report.publisher) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          )) ||
-                                      (isRegPioneerSelected &&
-                                          isPublisherRegularPioneer(report.publisher) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          ))) &&
-                                  report.publisher.privileges.includes(Privileges.ANCIAO)
+                                  ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                      (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                      (isRegPioneerSelected && isReportRegularPioneer(report))) &&
+                                  hasPrivilege(report.publisher, PrivilegeCode.ELDER, dateFormat ?? new Date())
                               )
                           } else if (
                               (isAuxPioneerSelected ||
@@ -437,25 +443,14 @@ function ReportsMonthPage() {
                               isServantSelected
                           ) {
                               return (
-                                  ((isAuxPioneerSelected &&
-                                      isPublisherAuxPioneerForMonth(report.publisher)) ||
-                                      (isIndefinitePioneerSelected &&
-                                          isPublisherContinuousAux(report.publisher) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          )) ||
-                                      (isRegPioneerSelected &&
-                                          isPublisherRegularPioneer(report.publisher) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          ))) &&
-                                  report.publisher.privileges.includes(Privileges.SM)
+                                  ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                      (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                      (isRegPioneerSelected && isReportRegularPioneer(report))) &&
+                                  hasPrivilege(report.publisher, PrivilegeCode.MINISTERIAL_SERVANT, dateFormat ?? new Date())
                               )
                           } else {
                               return filterPrivileges.every((privilege) =>
-                                  report.publisher.privileges.includes(privilege)
+                                  hasPrivilege(report.publisher, privilege, dateFormat ?? new Date())
                               )
                           }
                       })
@@ -741,51 +736,96 @@ function ReportsMonthPage() {
                     </div>
                 </div>
 
-                {/* Inactive Candidates Alert */}
+                {/* Inactive Candidates Section */}
                 {inactiveCandidates.length > 0 && (
-                    <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5 shadow-sm">
-                        <div className="flex items-start gap-3.5">
-                            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
-                                <AlertTriangle className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-1">
-                                    <h4 className="font-bold text-sm sm:text-base text-amber-900 dark:text-amber-300">
-                                        Possíveis Publicadores Inativos ({inactiveCandidates.length})
+                    <div className="rounded-2xl border border-amber-500/30 bg-surface-100 shadow-sm overflow-hidden transition-all">
+                        {/* Header bar */}
+                        <div
+                            onClick={() => setIsInactiveOpen(!isInactiveOpen)}
+                            className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent cursor-pointer select-none hover:bg-amber-500/10 transition-colors"
+                        >
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                    <AlertTriangle className="w-5 h-5" />
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h4 className="font-bold text-sm sm:text-base text-typography-900">
+                                        Possíveis Publicadores Inativos
                                     </h4>
-                                    <span className="text-xs text-amber-700 dark:text-amber-400 font-medium hidden sm:inline">
-                                        6 meses ou mais sem relatar
+                                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                        {inactiveCandidates.length}
+                                    </span>
+                                    <span className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md font-medium hidden sm:inline">
+                                        6+ meses consecutivos sem relatar
                                     </span>
                                 </div>
-                                <p className="text-xs text-amber-800 dark:text-amber-400 mb-3">
-                                    Os publicadores listados abaixo estão há pelo menos 6 meses consecutivos sem enviar relatório:
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs text-typography-500 font-medium hidden md:inline">
+                                    {isInactiveOpen ? "Ocultar" : "Expandir"}
+                                </span>
+                                <div className="w-7 h-7 rounded-lg hover:bg-surface-200/80 flex items-center justify-center text-typography-500 transition-transform">
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isInactiveOpen ? "rotate-180" : ""}`} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Collapsible Content */}
+                        {isInactiveOpen && (
+                            <div className="p-4 sm:p-5 pt-3 border-t border-amber-500/15">
+                                <p className="text-xs text-typography-600 mb-3.5 leading-relaxed">
+                                    Estes publicadores estão há 6 meses ou mais sem enviar relatório. Verifique se há relatórios atrasados antes de consolidar os totais para Betel:
                                 </p>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                                     {inactiveCandidates.map((item) => (
                                         <div
                                             key={item.publisher.id}
-                                            className="flex items-center justify-between bg-surface-100 border border-amber-500/20 rounded-xl px-3 py-2 shadow-2xs"
+                                            className="group flex items-center justify-between p-3 rounded-xl bg-surface-200/50 hover:bg-surface-200 border border-surface-300 hover:border-amber-500/40 transition-all duration-200 shadow-2xs"
                                         >
-                                            <div className="min-w-0 flex-1 pr-2">
-                                                <p className="text-xs font-semibold text-typography-900 truncate">
-                                                    {item.publisher.nickname || item.publisher.fullName}
-                                                </p>
-                                                <p className="text-[11px] text-typography-500 truncate">
-                                                    Último: {item.lastReport ? `${item.lastReport.month}/${item.lastReport.year}` : "Nunca"}
-                                                </p>
+                                            <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                                                <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold text-xs flex items-center justify-center shrink-0 uppercase">
+                                                    {(item.publisher.nickname || item.publisher.fullName)?.charAt(0) || "P"}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-xs font-semibold text-typography-900 truncate" title={item.publisher.fullName}>
+                                                        {item.publisher.nickname || item.publisher.fullName}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        {item.lastReport ? (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 dark:text-amber-400 font-medium">
+                                                                <Clock className="w-3 h-3 shrink-0" />
+                                                                <span>Último: {item.lastReport.month}/{item.lastReport.year}</span>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] text-rose-500 font-medium">
+                                                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                                                <span>Nunca relatou</span>
+                                                            </span>
+                                                        )}
+                                                        {item.publisher.group && (
+                                                            <span className="text-[10px] text-typography-400 truncate">
+                                                                • {item.publisher.group.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
+
                                             <Link
-                                                href={`/congregacao/publicadores/edit/${item.publisher.id}`}
-                                                className="text-xs font-semibold text-primary-200 hover:text-primary-150 shrink-0"
+                                                href={`/congregacao/pessoas/edit/${item.publisher.id}`}
+                                                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-primary-200 hover:text-primary-150 hover:bg-primary-200/10 transition-colors shrink-0"
+                                                title="Ver cadastro do publicador"
                                             >
-                                                Ver
+                                                <span>Ver</span>
+                                                <ExternalLink className="w-3 h-3" />
                                             </Link>
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
 
@@ -926,6 +966,7 @@ function ReportsMonthPage() {
                             <div className="flex justify-end pt-2 border-t border-surface-300">
                                 <ConfirmRegisterReports
                                     onRegister={() => onSubmit()}
+                                    isUpdate={monthAlreadyRegister}
                                     button={
                                         <Button className="bg-primary-200 hover:bg-primary-150 text-typography-100 font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs flex items-center gap-2">
                                             <CheckCheck className="w-4 h-4" />

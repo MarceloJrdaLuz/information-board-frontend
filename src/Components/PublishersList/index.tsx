@@ -6,7 +6,8 @@ import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
-import { IPublisher, Privileges, Situation } from "@/types/types"
+import { IPublisher, PrivilegeCode, Privileges, Situation } from "@/types/types"
+import { getActivePrivilegeLabels, getPastPrivileges, getPrivilegeDisplayName, hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { BlobProvider, Document } from "@react-pdf/renderer"
 import {
     ArrowRightLeft,
@@ -16,6 +17,8 @@ import {
     ChevronDown,
     Droplets,
     FileDown,
+    GraduationCap,
+    History,
     Loader2,
     MapPin,
     Pencil,
@@ -42,7 +45,7 @@ import FilterPrivileges from "../FilterPrivileges"
 import PublishersListPdf from "../PublisherListPdf"
 import SkeletonPublishersWithAvatarList from "./skeletonPublisherWithAvatarList"
 
-type QuickFilterTab = "ACTIVES" | "PIONEERS" | "ELDERS" | "MINISTERIAL_SERVANTS" | "INACTIVES" | "ALL"
+type QuickFilterTab = "ALL" | "PUBLISHERS" | "PIONEERS" | "ELDERS" | "MINISTERIAL_SERVANTS" | "INACTIVES"
 
 interface PdfLinkComponentProps {
     publishers: IPublisher[]
@@ -107,8 +110,9 @@ export default function PublisherList() {
     const { data, mutate, isLoading } = useFetch<IPublisher[]>(fetchConfig)
 
     const [selectedPublishers, setSelectedPublishers] = useState<Set<string>>(new Set())
+    const [expandedHistoryPublishers, setExpandedHistoryPublishers] = useState<Set<string>>(new Set())
     const [searchTerm, setSearchTerm] = useState("")
-    const [activeTab, setActiveTab] = useState<QuickFilterTab>("ACTIVES")
+    const [activeTab, setActiveTab] = useState<QuickFilterTab>("ALL")
     const [filterPrivileges, setFilterPrivileges] = useState<string[]>([])
 
     const canManage =
@@ -121,7 +125,7 @@ export default function PublisherList() {
         if (!data) {
             return {
                 total: 0,
-                actives: 0,
+                publishers: 0,
                 pioneers: 0,
                 elders: 0,
                 servants: 0,
@@ -129,28 +133,30 @@ export default function PublisherList() {
             }
         }
 
+        const isPublisherPioneer = (p: IPublisher) =>
+            hasAnyPrivilege(p, [
+                PrivilegeCode.SPECIAL_PIONEER,
+                PrivilegeCode.MISSIONARY_WORLDWIDE,
+                PrivilegeCode.REGULAR_PIONEER,
+                PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER
+            ])
+
         const total = data.length
-        const actives = data.filter((p) => p.situation === Situation.ATIVO).length
+        const publishers = data.filter(
+            (p) => p.situation === Situation.ATIVO && hasPrivilege(p, PrivilegeCode.PUBLISHER)
+        ).length
         const pioneers = data.filter(
-            (p) =>
-                p.situation === Situation.ATIVO &&
-                (p.privileges.includes(Privileges.PIONEIROESPECIAL) ||
-                    p.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ||
-                    ((p.privileges.includes(Privileges.PIONEIROREGULAR) ||
-                        p.privileges.includes(Privileges.AUXILIARINDETERMINADO)) &&
-                        isPioneerNow(p, new Date())))
+            (p) => p.situation === Situation.ATIVO && isPublisherPioneer(p)
         ).length
         const elders = data.filter(
-            (p) => p.situation === Situation.ATIVO && p.privileges.includes(Privileges.ANCIAO)
+            (p) => p.situation === Situation.ATIVO && hasPrivilege(p, PrivilegeCode.ELDER)
         ).length
         const servants = data.filter(
-            (p) =>
-                p.situation === Situation.ATIVO &&
-                p.privileges.includes(Privileges.SM)
+            (p) => p.situation === Situation.ATIVO && hasPrivilege(p, PrivilegeCode.MINISTERIAL_SERVANT)
         ).length
         const inactives = data.filter((p) => p.situation !== Situation.ATIVO).length
 
-        return { total, actives, pioneers, elders, servants, inactives }
+        return { total, publishers, pioneers, elders, servants, inactives }
     }, [data])
 
     // Filtragem avançada e busca em tempo real
@@ -160,27 +166,31 @@ export default function PublisherList() {
         let result = [...data]
 
         // 1. Filtro por Abas Rápidas
-        if (activeTab === "ACTIVES") {
-            result = result.filter((p) => p.situation === Situation.ATIVO)
+        const isPublisherPioneer = (p: IPublisher) =>
+            hasAnyPrivilege(p, [
+                PrivilegeCode.SPECIAL_PIONEER,
+                PrivilegeCode.MISSIONARY_WORLDWIDE,
+                PrivilegeCode.REGULAR_PIONEER,
+                PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER
+            ])
+
+        if (activeTab === "PUBLISHERS") {
+            result = result.filter(
+                (p) => p.situation === Situation.ATIVO && hasPrivilege(p, PrivilegeCode.PUBLISHER)
+            )
         } else if (activeTab === "PIONEERS") {
             result = result.filter(
-                (p) =>
-                    p.situation === Situation.ATIVO &&
-                    (p.privileges.includes(Privileges.PIONEIROESPECIAL) ||
-                        p.privileges.includes(Privileges.MISSIONARIOEMCAMPO) ||
-                        ((p.privileges.includes(Privileges.PIONEIROREGULAR) ||
-                            p.privileges.includes(Privileges.AUXILIARINDETERMINADO)) &&
-                            isPioneerNow(p, new Date())))
+                (p) => p.situation === Situation.ATIVO && isPublisherPioneer(p)
             )
         } else if (activeTab === "ELDERS") {
             result = result.filter(
-                (p) => p.situation === Situation.ATIVO && p.privileges.includes(Privileges.ANCIAO)
+                (p) => p.situation === Situation.ATIVO && hasPrivilege(p, PrivilegeCode.ELDER)
             )
         } else if (activeTab === "MINISTERIAL_SERVANTS") {
             result = result.filter(
                 (p) =>
                     p.situation === Situation.ATIVO &&
-                    p.privileges.includes(Privileges.SM)
+                    hasPrivilege(p, PrivilegeCode.MINISTERIAL_SERVANT)
             )
         } else if (activeTab === "INACTIVES") {
             result = result.filter((p) => p.situation !== Situation.ATIVO)
@@ -192,19 +202,17 @@ export default function PublisherList() {
                 filterPrivileges.every((privilege) => {
                     if (privilege === Privileges.PIONEIROAUXILIAR) {
                         return (
-                            p.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
+                            hasPrivilege(p, PrivilegeCode.AUXILIARY_PIONEER) &&
                             isAuxPioneerMonthNow(p)
                         )
                     } else if (
                         privilege === Privileges.PIONEIROREGULAR ||
-                        privilege === Privileges.AUXILIARINDETERMINADO
+                        privilege === Privileges.AUXILIARINDETERMINADO ||
+                        privilege === Privileges.AUXILIARTEMPOINDETERMINADO
                     ) {
-                        return (
-                            p.privileges.includes(privilege) &&
-                            isPioneerNow(p, new Date())
-                        )
+                        return hasPrivilege(p, privilege)
                     } else {
-                        return p.privileges.includes(privilege)
+                        return hasPrivilege(p, privilege)
                     }
                 })
             )
@@ -244,6 +252,18 @@ export default function PublisherList() {
         setSelectedPublishers(next)
     }
 
+    const toggleHistory = (id: string) => {
+        setExpandedHistoryPublishers((prev) => {
+            const next = new Set(prev)
+            if (next.has(id)) {
+                next.delete(id)
+            } else {
+                next.add(id)
+            }
+            return next
+        })
+    }
+
     async function onDelete(publisher_id: string) {
         try {
             await deletePublisher(publisher_id)
@@ -258,7 +278,7 @@ export default function PublisherList() {
 
     const resetFilters = () => {
         setSearchTerm("")
-        setActiveTab("ACTIVES")
+        setActiveTab("ALL")
         setFilterPrivileges([])
     }
 
@@ -287,32 +307,32 @@ export default function PublisherList() {
                     <div className="text-2xl font-extrabold text-typography-800">
                         {stats.total}
                     </div>
-                    <span className="text-[11px] text-typography-400">no cadastro</span>
+                    <span className="text-[11px] text-typography-400">pessoas</span>
                 </button>
 
-                {/* Ativos */}
+                {/* Publicadores */}
                 <button
                     type="button"
-                    onClick={() => setActiveTab("ACTIVES")}
+                    onClick={() => setActiveTab("PUBLISHERS")}
                     className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-                        activeTab === "ACTIVES"
+                        activeTab === "PUBLISHERS"
                             ? "bg-emerald-500/10 border-emerald-500 shadow-xs ring-1 ring-emerald-500"
                             : "bg-surface-100 border-surface-300 hover:border-emerald-500/40"
                     }`}
                 >
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-typography-500">
-                            Ativos
+                            Publicadores
                         </span>
                         <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                             <UserCheck size={16} />
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.actives}
+                        {stats.publishers}
                     </div>
                     <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                        regulares
+                        aprovados
                     </span>
                 </button>
 
@@ -467,14 +487,26 @@ export default function PublisherList() {
                     <div className="flex flex-wrap items-center gap-1.5">
                         <button
                             type="button"
-                            onClick={() => setActiveTab("ACTIVES")}
+                            onClick={() => setActiveTab("ALL")}
                             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                                activeTab === "ACTIVES"
+                                activeTab === "ALL"
                                     ? "bg-primary-200 text-white border-primary-200 shadow-2xs"
                                     : "bg-surface-200/60 text-typography-600 border-surface-300 hover:bg-surface-200"
                             }`}
                         >
-                            Ativos ({stats.actives})
+                            Todos ({stats.total})
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab("PUBLISHERS")}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                                activeTab === "PUBLISHERS"
+                                    ? "bg-primary-200 text-white border-primary-200 shadow-2xs"
+                                    : "bg-surface-200/60 text-typography-600 border-surface-300 hover:bg-surface-200"
+                            }`}
+                        >
+                            Publicadores ({stats.publishers})
                         </button>
 
                         <button
@@ -524,23 +556,11 @@ export default function PublisherList() {
                         >
                             Inativos ({stats.inactives})
                         </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab("ALL")}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                                activeTab === "ALL"
-                                    ? "bg-primary-200 text-white border-primary-200 shadow-2xs"
-                                    : "bg-surface-200/60 text-typography-600 border-surface-300 hover:bg-surface-200"
-                            }`}
-                        >
-                            Todos ({stats.total})
-                        </button>
                     </div>
 
                     <div className="text-xs font-semibold text-typography-500 self-end sm:self-auto">
                         Exibindo <span className="text-primary-200 font-bold">{filteredPublishers.length}</span>{" "}
-                        {filteredPublishers.length === 1 ? "publicador" : "publicadores"}
+                        {filteredPublishers.length === 1 ? "pessoa" : "pessoas"}
                     </div>
                 </div>
             </div>
@@ -558,6 +578,8 @@ export default function PublisherList() {
                 <ul className="grid grid-cols-1 gap-3 w-full">
                     {filteredPublishers.map((publisher) => {
                         const isSelected = selectedPublishers.has(publisher.id)
+                        const pastPrivileges = getPastPrivileges(publisher)
+                        const isHistoryOpen = expandedHistoryPublishers.has(publisher.id)
 
                         return (
                             <li
@@ -611,7 +633,7 @@ export default function PublisherList() {
                                                 )}
 
                                                 {/* Privilégios */}
-                                                {publisher.privileges.map((privilege) => {
+                                                {getActivePrivilegeLabels(publisher).map((privilege) => {
                                                     if (privilege === Privileges.ANCIAO) {
                                                         return (
                                                             <span
@@ -689,6 +711,16 @@ export default function PublisherList() {
                                                     }
                                                     return null
                                                 })}
+
+                                                {/* Estudante (quando ainda não é publicador aprovado) */}
+                                                {!hasPrivilege(publisher, PrivilegeCode.PUBLISHER) &&
+                                                    !hasPrivilege(publisher, PrivilegeCode.ELDER) &&
+                                                    !hasPrivilege(publisher, PrivilegeCode.MINISTERIAL_SERVANT) && (
+                                                        <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-amber-500/20">
+                                                            <GraduationCap size={11} />
+                                                            Estudante
+                                                        </span>
+                                                    )}
 
                                                 {/* Situação se não for Ativo */}
                                                 {publisher.situation !== Situation.ATIVO && (
@@ -865,6 +897,62 @@ export default function PublisherList() {
                                             )}
                                         </div>
 
+                                        {/* Histórico de Privilégios Anteriores */}
+                                        {pastPrivileges.length > 0 && (
+                                            <div className="p-3.5 sm:p-4 bg-surface-100 rounded-xl border border-surface-300/80 shadow-2xs space-y-2.5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleHistory(publisher.id)}
+                                                    className="w-full flex items-center justify-between text-left group cursor-pointer focus:outline-none"
+                                                >
+                                                    <div className="flex items-center gap-2 text-typography-800">
+                                                        <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-500">
+                                                            <History size={15} />
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs font-bold uppercase tracking-wider text-typography-700">
+                                                                Histórico de Privilégios
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                                                {pastPrivileges.length}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className={`p-1 rounded-md text-typography-400 group-hover:text-typography-600 transition-transform duration-200 ${
+                                                            isHistoryOpen ? "rotate-180" : ""
+                                                        }`}
+                                                    >
+                                                        <ChevronDown size={16} />
+                                                    </div>
+                                                </button>
+
+                                                {isHistoryOpen && (
+                                                    <div className="pt-2 border-t border-surface-200 flex flex-col gap-2">
+                                                        {pastPrivileges.map((pp) => (
+                                                            <div
+                                                                key={pp.id}
+                                                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/60 text-xs"
+                                                            >
+                                                                <span className="font-semibold text-typography-800">
+                                                                    {getPrivilegeDisplayName(pp)}
+                                                                </span>
+                                                                <span className="text-typography-500 text-[11px]">
+                                                                    {pp.startDate
+                                                                        ? dayjs(pp.startDate).format("DD/MM/YYYY")
+                                                                        : "Início não registrado"}{" "}
+                                                                    até{" "}
+                                                                    {pp.endDate
+                                                                        ? dayjs(pp.endDate).format("DD/MM/YYYY")
+                                                                        : "Presente"}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
                                         {/* Barra de Ações & Data de Atualização */}
                                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-surface-200">
                                             <div className="flex flex-wrap items-center gap-2">
@@ -874,7 +962,7 @@ export default function PublisherList() {
                                                         size="sm"
                                                         type="button"
                                                         onClick={() =>
-                                                            Router.push(`/congregacao/publicadores/edit/${publisher.id}`)
+                                                            Router.push(`/congregacao/pessoas/edit/${publisher.id}`)
                                                         }
                                                         className="rounded-xl gap-1.5 text-xs font-semibold border-surface-300 hover:text-primary-200 hover:bg-surface-200 h-9 px-3.5 cursor-pointer shadow-2xs"
                                                     >
@@ -890,7 +978,7 @@ export default function PublisherList() {
                                                         type="button"
                                                         onClick={() =>
                                                             Router.push(
-                                                                `/congregacao/publicadores/indisponibilidades?publisherId=${publisher.id}`
+                                                                `/congregacao/pessoas/indisponibilidades?publisherId=${publisher.id}`
                                                             )
                                                         }
                                                         className="rounded-xl gap-1.5 text-xs font-semibold border-surface-300 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 h-9 px-3.5 cursor-pointer shadow-2xs"
@@ -906,7 +994,7 @@ export default function PublisherList() {
                                                         size="sm"
                                                         type="button"
                                                         onClick={() =>
-                                                            Router.push(`/congregacao/publicadores/transferir/${publisher.id}`)
+                                                            Router.push(`/congregacao/pessoas/transferir/${publisher.id}`)
                                                         }
                                                         className="rounded-xl gap-1.5 text-xs font-semibold border-surface-300 hover:text-primary-200 hover:bg-surface-200 h-9 px-3.5 cursor-pointer shadow-2xs"
                                                     >

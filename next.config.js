@@ -17,6 +17,20 @@ const nextConfig = {
     });
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: '/congregacao/publicadores',
+        destination: '/congregacao/pessoas',
+        permanent: true,
+      },
+      {
+        source: '/congregacao/publicadores/:path*',
+        destination: '/congregacao/pessoas/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

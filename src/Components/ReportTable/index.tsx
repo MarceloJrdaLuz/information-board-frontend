@@ -1,5 +1,6 @@
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
-import { IReports } from "@/types/types"
+import { IReports, PrivilegeCode } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import {
     BookOpen,
     Calendar,
@@ -24,12 +25,13 @@ export default function ReportTable({ reports }: ReportTableProps) {
 
   const isPioneiroRegular = reportsList.some((r) =>
     r.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular")) ||
-    r.publisher?.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+    hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER)
   )
 
   const isPioneiroAuxiliar = reportsList.some((r) =>
     r.privileges?.some((p) => p.toLowerCase().includes("pioneiro auxiliar")) ||
-    r.publisher?.privileges?.some((p) => p.toLowerCase().includes("pioneiro auxiliar"))
+    hasPrivilege(r.publisher, PrivilegeCode.AUXILIARY_PIONEER) ||
+    hasPrivilege(r.publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER)
   )
 
   const expectedPerMonth = isPioneiroRegular ? 50 : isPioneiroAuxiliar ? 30 : 0

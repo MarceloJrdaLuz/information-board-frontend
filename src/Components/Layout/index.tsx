@@ -86,7 +86,7 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-        <main className="flex w-screen h-[100dvh]">
+        <main className="flex w-full h-[100dvh] fixed inset-0 min-h-0 overflow-hidden">
             <NavBar.Root>
                 {!showMenu && <NavBar.Skeleton items={5} />}
                 <div className={`transition-opacity duration-150 ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -139,13 +139,13 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('TALK_MANAGER')) &&
                                     <NavBar.Options
                                         isSubItem
-                                        title="Publicadores"
+                                        title="Pessoas"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
-                                            Router.push('/congregacao/publicadores')
+                                            Router.push('/congregacao/pessoas')
                                         }}
                                         icon={() => <PublisherIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/congregacao/publicadores')}
+                                        active={pageActive.startsWith('/congregacao/pessoas')}
                                     />
                                 }
                                 {(isAdminCongregation ||
