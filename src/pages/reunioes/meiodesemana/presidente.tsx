@@ -376,7 +376,6 @@ function MidweekChairmanPage() {
     );
 }
 
-MidweekChairmanPage.getLayout = withProtectedLayout();
 MidweekChairmanPage.getLayout = withProtectedLayout([
     "ADMIN",
     "ADMIN_CONGREGATION",
