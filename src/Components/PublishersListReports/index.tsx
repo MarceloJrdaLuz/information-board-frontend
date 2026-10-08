@@ -1,6 +1,6 @@
 import { reportsAtom, successFormSend } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
-import { capitalizeFirstLetter, isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
+import { capitalizeFirstLetter, isAuxPioneerMonth, isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
@@ -139,7 +139,7 @@ export default function PublisherListReports() {
                 return (publisher.situation === Situation.ATIVO &&
                     filterPrivileges.every(privilege => {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
-                            return hasPrivilege(publisher, PrivilegeCode.AUXILIARY_PIONEER, targetDate) && isAuxPioneerMonthNow(publisher)
+                            return isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
                             return hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER, targetDate)
                         } else if (privilege === Privileges.AUXILIARINDETERMINADO || privilege === Privileges.AUXILIARTEMPOINDETERMINADO) {

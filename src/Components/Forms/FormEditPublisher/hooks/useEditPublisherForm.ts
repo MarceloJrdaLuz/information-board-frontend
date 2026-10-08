@@ -81,9 +81,9 @@ export function useEditPublisherForm(id: string) {
         normalizedPrivileges = getActivePrivilegeLabels(data)
       }
 
-      let pioneerMonthsList = data.pioneerMonths || []
-      if ((!pioneerMonthsList || pioneerMonthsList.length === 0) && data.privilegesRelation) {
-        const auxRelMonths = data.privilegesRelation
+      let pioneerMonthsList: string[] = []
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation)) {
+        pioneerMonthsList = data.privilegesRelation
           .filter(pp => 
             (pp.privilege?.code === PrivilegeCode.AUXILIARY_PIONEER || pp.privilege?.name === "Auxiliary Pioneer") && 
             pp.startDate
@@ -94,9 +94,8 @@ export function useEditPublisherForm(id: string) {
             const y = d.format("YYYY")
             return `${capitalizeFirstLetter(m)}-${y}`
           })
-        if (auxRelMonths.length > 0) {
-          pioneerMonthsList = auxRelMonths
-        }
+      } else if (data.pioneerMonths && Array.isArray(data.pioneerMonths)) {
+        pioneerMonthsList = data.pioneerMonths
       }
 
       const isPrivilege = normalizedPrivileges.filter(p => privilegeOptions.includes(p as Privileges))

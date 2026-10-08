@@ -201,10 +201,7 @@ export default function PublisherList() {
             result = result.filter((p) =>
                 filterPrivileges.every((privilege) => {
                     if (privilege === Privileges.PIONEIROAUXILIAR) {
-                        return (
-                            hasPrivilege(p, PrivilegeCode.AUXILIARY_PIONEER) &&
-                            isAuxPioneerMonthNow(p)
-                        )
+                        return isAuxPioneerMonthNow(p)
                     } else if (
                         privilege === Privileges.PIONEIROREGULAR ||
                         privilege === Privileges.AUXILIARINDETERMINADO ||

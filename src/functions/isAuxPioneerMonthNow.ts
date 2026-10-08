@@ -66,20 +66,12 @@ export const isAuxPioneerMonth = (publisher: IPublisher, monthAndYear: string) =
 
     const targetNormalized = `${monthNamesNormalized[mIdx]}-${yNum}`
 
-    // 1. Verifica pioneerMonths (case-insensitive, sem acentos e hifens flexíveis)
-    if (Array.isArray(publisher.pioneerMonths) && publisher.pioneerMonths.length > 0) {
-        const found = publisher.pioneerMonths.some(
-            (m) => m && normalizeMonthStr(m) === targetNormalized
-        )
-        if (found) return true
-    }
-
-    // 2. Verifica privilegesRelation se existir (apenas registros de Pioneiro Auxiliar com período válido para este mês)
+    // 1. Fonte da verdade primária: Verifica privilegesRelation da tabela relacional
     if (Array.isArray(publisher.privilegesRelation) && publisher.privilegesRelation.length > 0) {
         const targetStart = dayjs(new Date(yNum, mIdx, 1)).startOf("month")
         const targetEnd = dayjs(new Date(yNum, mIdx, 1)).endOf("month")
 
-        const hasRel = publisher.privilegesRelation.some((pr) => {
+        return publisher.privilegesRelation.some((pr) => {
             const pName = pr.privilege?.name
             const pCode = pr.privilege?.code
             const isAux =
@@ -104,8 +96,13 @@ export const isAuxPioneerMonth = (publisher: IPublisher, monthAndYear: string) =
                 return start.year() === yNum && start.month() === mIdx
             }
         })
+    }
 
-        if (hasRel) return true
+    // 2. Fallback temporário apenas se privilegesRelation não estiver carregado
+    if (Array.isArray(publisher.pioneerMonths) && publisher.pioneerMonths.length > 0) {
+        return publisher.pioneerMonths.some(
+            (m) => m && normalizeMonthStr(m) === targetNormalized
+        )
     }
 
     return false
