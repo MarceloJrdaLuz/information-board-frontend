@@ -84,7 +84,6 @@ export default function Document() {
                     'theme-dark': '#6F4EA1',
                     'theme-blue': '#3E6BA3',
                     'theme-purple': '#7B63AD',
-                    'theme-pink': '#B6587D'
                     'theme-pink': '#B6587D',
                     'theme-dark-teal': '#178582',
                     'theme-dark-blue': '#3E6BA3',
