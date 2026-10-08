@@ -742,7 +742,7 @@ Quando os registros desejados estiverem selecionados, utilize a barra flutuante 
                                         )}
                                     </div>
 
-                                    <ReportTable reports={reportsFilter} />
+                                    <ReportTable reports={reportsFilter} publisher={publisher} />
                                 </div>
                             )
                         })}

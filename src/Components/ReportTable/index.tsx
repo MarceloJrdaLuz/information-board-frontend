@@ -1,5 +1,5 @@
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
-import { IReports, PrivilegeCode } from "@/types/types"
+import { IPublisher, IReports, PrivilegeCode } from "@/types/types"
 import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import {
     BookOpen,
@@ -14,27 +14,32 @@ import {
 
 interface ReportTableProps {
   reports: IReports[] | undefined
+  publisher?: IPublisher
 }
 
-export default function ReportTable({ reports }: ReportTableProps) {
+export default function ReportTable({ reports, publisher }: ReportTableProps) {
   const reportsList = reports || []
   const reportedMonthsCount = reportsList.length
 
   const totalHours = reportsList.reduce((acc, report) => acc + (report.hours ?? 0), 0)
   const totalStudies = reportsList.reduce((acc, report) => acc + (report.studies ?? 0), 0)
 
-  const isPioneiroRegular = reportsList.some((r) =>
-    r.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular")) ||
-    hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER)
+  // Requisito anual de horas (50h/mês) se aplica apenas a Pioneiros Regulares
+  const isPioneiroRegular = Boolean(
+    (publisher && (
+      hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER) ||
+      publisher.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+    )) ||
+    reportsList.some((r) =>
+      r.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular")) ||
+      (r.publisher && (
+        hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER) ||
+        r.publisher.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+      ))
+    )
   )
 
-  const isPioneiroAuxiliar = reportsList.some((r) =>
-    r.privileges?.some((p) => p.toLowerCase().includes("pioneiro auxiliar")) ||
-    hasPrivilege(r.publisher, PrivilegeCode.AUXILIARY_PIONEER) ||
-    hasPrivilege(r.publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER)
-  )
-
-  const expectedPerMonth = isPioneiroRegular ? 50 : isPioneiroAuxiliar ? 30 : 0
+  const expectedPerMonth = isPioneiroRegular ? 50 : 0
   const totalExpected = expectedPerMonth * reportedMonthsCount
   const diffHours = totalHours - totalExpected
 
