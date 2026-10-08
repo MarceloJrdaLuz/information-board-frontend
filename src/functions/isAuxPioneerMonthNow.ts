@@ -1,8 +1,12 @@
 import { IPublisher } from "@/types/types"
 import dayjs from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
 import "dayjs/locale/pt-br"
 
 dayjs.locale("pt-br")
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 
 export function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1)

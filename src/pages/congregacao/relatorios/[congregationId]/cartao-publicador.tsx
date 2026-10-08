@@ -22,6 +22,11 @@ import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, PrivilegeCode, P
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import dayjs from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 import {
     Calendar,
     Check,
