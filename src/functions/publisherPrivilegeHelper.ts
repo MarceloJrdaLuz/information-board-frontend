@@ -11,6 +11,22 @@ export function isPrivilegeActiveAt(
     const target = new Date(targetDate)
     target.setHours(0, 0, 0, 0)
 
+    const isAux =
+        pp.privilege?.code === PrivilegeCode.AUXILIARY_PIONEER ||
+        pp.privilege?.name === "Auxiliary Pioneer" ||
+        pp.privilege?.name === "Pioneiro Auxiliar"
+
+    if (isAux && !pp.endDate) {
+        if (!pp.startDate) return false
+        const start = new Date(pp.startDate)
+        if (
+            target.getFullYear() !== start.getFullYear() ||
+            target.getMonth() !== start.getMonth()
+        ) {
+            return false
+        }
+    }
+
     if (pp.startDate) {
         const start = new Date(pp.startDate)
         start.setHours(0, 0, 0, 0)
