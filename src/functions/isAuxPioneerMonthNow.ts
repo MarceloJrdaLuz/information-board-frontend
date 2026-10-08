@@ -72,9 +72,11 @@ export const isAuxPioneerMonth = (publisher: IPublisher, monthAndYear: string) =
 
                 const hasRel = publisher.privilegesRelation.some((pr) => {
                     const pName = pr.privilege?.name
+                    const pCode = pr.privilege?.code
                     const isAux =
                         pName === "Pioneiro Auxiliar" ||
-                        pName === "Auxiliary Pioneer"
+                        pName === "Auxiliary Pioneer" ||
+                        pCode === "AUXILIARY_PIONEER"
                     if (!isAux) return false
 
                     const start = pr.startDate ? dayjs(pr.startDate) : null
