@@ -17,9 +17,11 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
-import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, PrivilegeCode, Situation, TotalsFrom } from "@/types/types"
+import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
+import { IMonthsWithYear, IPublisher, IReports, ITotalsReports, PrivilegeCode, Privileges, Situation, TotalsFrom } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
+import dayjs from "dayjs"
 import {
     Calendar,
     Check,
@@ -121,23 +123,140 @@ function PublisherCardPage() {
         }
     }, [getTotals])
 
+    const isPublisherAuxInServiceYear = useCallback((pub: IPublisher, yearStr: string, allReports?: IReports[]) => {
+        // 1. Auxiliar por Tempo Indeterminado
+        if (hasPrivilege(pub, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER)) {
+            return true
+        }
+
+        // 2. Auxiliar no mês corrente / recente
+        if (isAuxPioneerMonthNow(pub)) {
+            return true
+        }
+
+        // 3. Auxiliar em qualquer mês do ano de serviço selecionado
+        const yNum = parseInt(yearStr, 10)
+        if (!isNaN(yNum)) {
+            const serviceStart = dayjs(`${yNum - 1}-09-01`)
+            const serviceEnd = dayjs(`${yNum}-08-31`).endOf("day")
+
+            // Checagem em privilegesRelation
+            if (pub.privilegesRelation && Array.isArray(pub.privilegesRelation)) {
+                const hasAuxPriv = pub.privilegesRelation.some(pp => {
+                    const isAux =
+                        pp.privilege?.code === PrivilegeCode.AUXILIARY_PIONEER ||
+                        pp.privilege?.name === "Auxiliary Pioneer" ||
+                        pp.privilege?.name === "Pioneiro Auxiliar"
+                    if (!isAux) return false
+
+                    const start = pp.startDate ? dayjs(pp.startDate) : null
+                    const end = pp.endDate ? dayjs(pp.endDate) : null
+
+                    if (start && start.isValid()) {
+                        if (end && end.isValid()) {
+                            return start.isSameOrBefore(serviceEnd, "day") && end.isSameOrAfter(serviceStart, "day")
+                        } else {
+                            return start.isSameOrAfter(serviceStart, "day") && start.isSameOrBefore(serviceEnd, "day")
+                        }
+                    }
+                    return false
+                })
+                if (hasAuxPriv) return true
+            }
+
+            // Checagem em relatórios entregues no ano de serviço
+            if (allReports && Array.isArray(allReports)) {
+                const hasAuxReport = allReports.some(r => {
+                    if (r.publisher?.id !== pub.id) return false
+                    const isAuxInReport = r.privileges?.some(
+                        p => p === "Pioneiro Auxiliar" || p === "Auxiliary Pioneer" || p === Privileges.PIONEIROAUXILIAR
+                    )
+                    if (!isAuxInReport) return false
+
+                    const rYear = parseInt(r.year, 10)
+                    if (isNaN(rYear)) return false
+                    const lateMonths = ["setembro", "outubro", "novembro", "dezembro"]
+                    const mLower = r.month?.toLowerCase() || ""
+                    if (lateMonths.includes(mLower) && rYear === yNum - 1) return true
+                    if (!lateMonths.includes(mLower) && rYear === yNum) return true
+                    return false
+                })
+                if (hasAuxReport) return true
+            }
+        }
+
+        return false
+    }, [])
+
+    const checkPublisherPrivilege = useCallback((
+        pub: IPublisher,
+        selectedPrivileges: string[]
+    ): boolean => {
+        if (!selectedPrivileges || selectedPrivileges.length === 0) return true
+        if (selectedPrivileges.includes("Todos")) return true
+
+        return selectedPrivileges.some((priv) => {
+            if (
+                priv === Privileges.PIONEIROAUXILIAR ||
+                priv === "Pioneiro Auxiliar"
+            ) {
+                return isPublisherAuxInServiceYear(pub, yearServiceSelected, reports)
+            }
+            if (
+                priv === Privileges.AUXILIARINDETERMINADO ||
+                priv === Privileges.AUXILIARTEMPOINDETERMINADO ||
+                priv === "Auxiliar por Tempo Indeterminado" ||
+                priv === "Auxiliar Indeterminado"
+            ) {
+                return hasPrivilege(pub, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER)
+            }
+            if (
+                priv === Privileges.PIONEIROREGULAR ||
+                priv === "Pioneiro Regular"
+            ) {
+                return hasPrivilege(pub, PrivilegeCode.REGULAR_PIONEER)
+            }
+            if (
+                priv === Privileges.PIONEIROESPECIAL ||
+                priv === "Pioneiro Especial"
+            ) {
+                return hasPrivilege(pub, PrivilegeCode.SPECIAL_PIONEER)
+            }
+            if (
+                priv === Privileges.MISSIONARIOEMCAMPO ||
+                priv === "Missionário em Campo"
+            ) {
+                return hasPrivilege(pub, PrivilegeCode.MISSIONARY_WORLDWIDE)
+            }
+            return hasPrivilege(pub, priv)
+        })
+    }, [yearServiceSelected, reports, isPublisherAuxInServiceYear])
+
+    const checkPublisherGroup = useCallback((
+        pub: IPublisher,
+        selectedGroups: string[]
+    ): boolean => {
+        if (!selectedGroups || selectedGroups.length === 0) return true
+        return Boolean(pub.group && selectedGroups.includes(pub.group.id))
+    }, [])
+
     useEffect(() => {
-        if (!publishers) return;
+        if (isInitialRender) {
+            setIsInitialRender(false)
+            return
+        }
+        if (!publishers) return
 
-        const filteredPublishers = publishers.filter(publisher => {
-            const belongsToSelectedGroups = groupSelecteds.length === 0 ||
-                (publisher.group && groupSelecteds.includes(publisher.group.id));
+        if (filterPrivileges.length === 0 && groupSelecteds.length === 0) {
+            return
+        }
 
-            const hasSelectedPrivileges = filterPrivileges.length === 0 ||
-                hasAnyPrivilege(publisher, filterPrivileges);
-
-            return belongsToSelectedGroups && hasSelectedPrivileges;
-        });
-
-        // Depois da primeira renderização, desativa a flag
-        if (isInitialRender) setIsInitialRender(false);
-
-    }, [filterPrivileges, groupSelecteds, publishers, setSelectedPublishersToS21, isInitialRender]);
+        const filtered = publishers.filter(p =>
+            checkPublisherGroup(p, groupSelecteds) &&
+            checkPublisherPrivilege(p, filterPrivileges)
+        )
+        setSelectedPublishersToS21(filtered.map(p => p.id))
+    }, [filterPrivileges, groupSelecteds, yearServiceSelected, checkPublisherGroup, checkPublisherPrivilege, publishers, setSelectedPublishersToS21, isInitialRender])
 
     useEffect(() => {
         if (publishers && selectedPublishersToS21) {
@@ -176,24 +295,33 @@ function PublisherCardPage() {
 
     // Filtrar por privilégios
     const handleCheckboxChange = (filter: string[]) => {
-        setFilterPrivileges(filter);
-
-        // Atualiza os selecionados apenas com base no que o usuário marcou
-        const filtered = publishers?.filter(publisher =>
-            hasAnyPrivilege(publisher, filter)
-        );
-        setSelectedPublishersToS21(filtered?.map(p => p.id) || []);
-    };
+        setFilterPrivileges(filter)
+        if (!publishers) return
+        if (filter.length === 0 && groupSelecteds.length === 0) {
+            setSelectedPublishersToS21([])
+            return
+        }
+        const filtered = publishers.filter(publisher =>
+            checkPublisherGroup(publisher, groupSelecteds) &&
+            checkPublisherPrivilege(publisher, filter)
+        )
+        setSelectedPublishersToS21(filtered.map(p => p.id))
+    }
 
     // Filtrar por grupos
     const handleCheckboxGroupsChange = (groups: string[]) => {
-        setGroupSelecteds(groups);
-
-        const filtered = publishers?.filter(publisher =>
-            groups.includes(publisher.group?.id || '')
-        );
-        setSelectedPublishersToS21(filtered?.map(p => p.id) || []);
-    };
+        setGroupSelecteds(groups)
+        if (!publishers) return
+        if (groups.length === 0 && filterPrivileges.length === 0) {
+            setSelectedPublishersToS21([])
+            return
+        }
+        const filtered = publishers.filter(publisher =>
+            checkPublisherGroup(publisher, groups) &&
+            checkPublisherPrivilege(publisher, filterPrivileges)
+        )
+        setSelectedPublishersToS21(filtered.map(p => p.id))
+    }
 
     const handleCheckboxTotalsChange = (check: boolean) => {
         setPdfGenerating(false)
@@ -227,15 +355,22 @@ function PublisherCardPage() {
 
     const displayedPublishers = useMemo(() => {
         if (!publishers) return []
-        if (!searchTerm.trim()) return publishers
-        const term = searchTerm.toLowerCase().trim()
-        return publishers.filter(p =>
-            p.fullName.toLowerCase().includes(term) ||
-            p.nickname?.toLowerCase().includes(term) ||
-            p.group?.name?.toLowerCase().includes(term) ||
-            p.group?.number?.toString().includes(term)
-        )
-    }, [publishers, searchTerm])
+        return publishers.filter(p => {
+            const matchesGroup = checkPublisherGroup(p, groupSelecteds)
+            const matchesPrivilege = checkPublisherPrivilege(p, filterPrivileges)
+
+            if (!matchesGroup || !matchesPrivilege) return false
+
+            if (!searchTerm.trim()) return true
+            const term = searchTerm.toLowerCase().trim()
+            return (
+                p.fullName.toLowerCase().includes(term) ||
+                p.nickname?.toLowerCase().includes(term) ||
+                p.group?.name?.toLowerCase().includes(term) ||
+                p.group?.number?.toString().includes(term)
+            )
+        })
+    }, [publishers, groupSelecteds, filterPrivileges, searchTerm, checkPublisherGroup, checkPublisherPrivilege])
 
     const handleSelectAll = () => {
         setPdfGenerating(false)
