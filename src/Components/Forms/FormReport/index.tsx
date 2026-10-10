@@ -301,7 +301,7 @@ export default function FormReport(props: IRelatorioFormProps) {
                             )
                         } else if (devicePublishers.length > 1) {
                             toast.success(
-                                `Relatório de ${currentPub.fullName} enviado! Todos os relatórios salvos neste dispositivo foram preenchidos para este mês. 🎉`
+                                `Relatório de ${currentPub.fullName} enviado! Todos os relatórios salvos neste dispositivo foram preenchidos para este mês.`
                             )
                         } else {
                             toast.success(

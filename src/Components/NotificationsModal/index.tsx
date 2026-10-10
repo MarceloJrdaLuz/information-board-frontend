@@ -9,6 +9,7 @@ import {
     BellRing,
     BookOpen,
     CheckCheck,
+    FileText,
     Heart,
     MapPin,
     Mic,
@@ -59,6 +60,8 @@ export function NotificationsModal({ isOpen, onClose }: Props) {
                 return <Users className="w-4 h-4 text-sky-500" />
             case NotificationType.HOSPITALITY:
                 return <Heart className="w-4 h-4 text-rose-500" />
+            case NotificationType.REPORT:
+                return <FileText className="w-4 h-4 text-emerald-500" />
             case NotificationType.REMINDER:
             default:
                 return <Bell className="w-4 h-4 text-primary-200" />
