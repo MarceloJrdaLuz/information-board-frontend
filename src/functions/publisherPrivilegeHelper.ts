@@ -208,5 +208,13 @@ export function getPublisherStartDate(publisher: Partial<IPublisher> | null | un
          pp.privilege?.name === "Publicador") &&
         !pp.endDate
     )
-    return pubPriv?.startDate ? dayjs(pubPriv.startDate).format("YYYY-MM-DD") : null
+    if (pubPriv?.startDate) return dayjs(pubPriv.startDate).format("YYYY-MM-DD")
+
+    // Fallback: busca qualquer registro de Publisher (mesmo se endDate tiver sido preenchido por engano)
+    const anyPubPriv = publisher.privilegesRelation.find(pp =>
+        (pp.privilege?.code === PrivilegeCode.PUBLISHER ||
+         pp.privilege?.name === "Publisher" ||
+         pp.privilege?.name === "Publicador")
+    )
+    return anyPubPriv?.startDate ? dayjs(anyPubPriv.startDate).format("YYYY-MM-DD") : null
 }

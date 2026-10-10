@@ -159,7 +159,7 @@ export default function FormAddPublisher() {
             phone,
             pioneerMonths: isPublisherApproved ? auxPioneerMonthsSelected : [],
             privileges: isPublisherApproved
-                ? (allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR])
+                ? Array.from(new Set([Privileges.PUBLICADOR, ...allPrivileges]))
                 : [],
             situation: situationPublisherCheckboxSelected ?? Situation.ATIVO,
             startPioneer: isPublisherApproved ? (startPioneer ?? undefined) : undefined,

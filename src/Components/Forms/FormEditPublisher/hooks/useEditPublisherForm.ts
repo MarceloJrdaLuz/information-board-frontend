@@ -13,7 +13,7 @@ import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadUpdatePublisher } from "@/types/publishers"
 import { IPublisher, PrivilegeCode, Privileges } from "@/types/types"
-import { getActivePrivilegeLabels, getPublisherStartDate, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { getActivePrivilegeLabels, getPublisherStartDate, hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { yupResolver } from "@hookform/resolvers/yup"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
@@ -115,8 +115,24 @@ export function useEditPublisherForm(id: string) {
       setImmersedDate(data.dateImmersed ? data.dateImmersed : null)
       const pubStartDate = getPublisherStartDate(data) || data.startDatePublisher || null
       setStartDatePublisher(pubStartDate)
-      const isApproved = hasPrivilege(data, PrivilegeCode.PUBLISHER)
-      setIsPublisherApproved(isApproved)
+      const isApproved =
+        hasPrivilege(data, PrivilegeCode.PUBLISHER) ||
+        hasAnyPrivilege(data, [
+          PrivilegeCode.REGULAR_PIONEER,
+          PrivilegeCode.SPECIAL_PIONEER,
+          PrivilegeCode.MISSIONARY_WORLDWIDE,
+          PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER,
+          PrivilegeCode.AUXILIARY_PIONEER,
+          PrivilegeCode.ELDER,
+          PrivilegeCode.MINISTERIAL_SERVANT,
+        ]) ||
+        (data.privileges && data.privileges.includes(Privileges.PUBLICADOR)) ||
+        (data.privilegesRelation && data.privilegesRelation.some(pp =>
+          (pp.privilege?.code === PrivilegeCode.PUBLISHER ||
+           pp.privilege?.name === "Publisher" ||
+           pp.privilege?.name === "Publicador")
+        ))
+      setIsPublisherApproved(!!isApproved)
       setStartPioneer(data.startPioneer ? data.startPioneer : null)
       setSelectedEmergencyContact(data.emergencyContact?.id || null)
       data.emergencyContact?.id && setModalEmergencyContactShowAtom(true)
@@ -187,7 +203,7 @@ export function useEditPublisherForm(id: string) {
       phone,
       pioneerMonths: isPublisherApproved ? auxPioneerMonthsSelected : [],
       privileges: isPublisherApproved
-        ? (allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR])
+        ? Array.from(new Set([Privileges.PUBLICADOR, ...allPrivileges]))
         : [],
       situation: situationPublisherCheckboxSelected,
       startPioneer: isPublisherApproved ? (startPioneer ?? undefined) : null
