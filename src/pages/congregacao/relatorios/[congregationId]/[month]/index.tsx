@@ -21,7 +21,7 @@ import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { InactiveCandidate } from "@/types/publishers"
 import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, PrivilegeCode, Privileges, Situation } from "@/types/types"
-import { getActivePrivilegeLabels, hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { getActivePrivilegeLabelsInMonth, hasAnyPrivilegeInMonth, hasPrivilegeInMonth } from "@/functions/publisherPrivilegeHelper"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
@@ -108,22 +108,19 @@ function ReportsMonthPage() {
     const isPublisherContinuousAux = useCallback((p: IPublisher) => {
         const effectivePub = getEffectivePublisher(p)
         if (!effectivePub) return false
-        const targetDate = dateFormat ? dayjs(dateFormat).date(15).toDate() : new Date()
-        return hasPrivilege(effectivePub, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, targetDate)
+        return hasPrivilegeInMonth(effectivePub, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, dateFormat || new Date())
     }, [getEffectivePublisher, dateFormat])
 
     const isPublisherRegularPioneer = useCallback((p: IPublisher) => {
         const effectivePub = getEffectivePublisher(p)
         if (!effectivePub) return false
-        const targetDate = dateFormat ? dayjs(dateFormat).date(15).toDate() : new Date()
-        return hasPrivilege(effectivePub, PrivilegeCode.REGULAR_PIONEER, targetDate)
+        return hasPrivilegeInMonth(effectivePub, PrivilegeCode.REGULAR_PIONEER, dateFormat || new Date())
     }, [getEffectivePublisher, dateFormat])
 
     const isPublisherSpecialPioneer = useCallback((p: IPublisher) => {
         const effectivePub = getEffectivePublisher(p)
         if (!effectivePub) return false
-        const targetDate = dateFormat ? dayjs(dateFormat).date(15).toDate() : new Date()
-        return hasAnyPrivilege(effectivePub, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], targetDate)
+        return hasAnyPrivilegeInMonth(effectivePub, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], dateFormat || new Date())
     }, [getEffectivePublisher, dateFormat])
 
     const isPublisherAuxPioneerForMonth = useCallback((p: IPublisher) => {
@@ -181,7 +178,7 @@ function ReportsMonthPage() {
         if (!dateFormat) return
         const filterActives = data?.filter((publisher) => 
             publisher.situation === Situation.ATIVO && 
-            hasPrivilege(publisher, PrivilegeCode.PUBLISHER, dateFormat)
+            hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, dateFormat)
         )
         setPublishers(filterActives)
     }, [data, dateFormat])
@@ -395,10 +392,10 @@ function ReportsMonthPage() {
                     report.month.toLowerCase() === monthSelected && report.year === yearSelected
             )
 
-            const checkTargetDate = dateFormat ? dayjs(dateFormat).date(15).toDate() : new Date()
+            const checkTargetDate = dateFormat || new Date()
             const updatePrivilegesArray = reportsFilteredByDate.map((report) => {
                 const effectivePub = getEffectivePublisher(report.publisher) || report.publisher
-                const activeLabels = getActivePrivilegeLabels(effectivePub, checkTargetDate)
+                const activeLabels = getActivePrivilegeLabelsInMonth(effectivePub, checkTargetDate)
                 if (isReportAuxPioneer(report) && !activeLabels.includes("Pioneiro Auxiliar")) {
                     activeLabels.push("Pioneiro Auxiliar")
                 }
@@ -430,7 +427,7 @@ function ReportsMonthPage() {
                           const isServantSelected = filterPrivileges.includes(Privileges.SM)
                           const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO)
 
-                          const targetDate = dateFormat ? dayjs(dateFormat).date(15).toDate() : new Date()
+                          const targetDate = dateFormat || new Date()
                           const effectivePub = getEffectivePublisher(report.publisher) || report.publisher
 
                           if (
@@ -455,7 +452,7 @@ function ReportsMonthPage() {
                                   ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
                                       (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
                                       (isRegPioneerSelected && isReportRegularPioneer(report))) &&
-                                  hasPrivilege(effectivePub, PrivilegeCode.ELDER, targetDate)
+                                  hasPrivilegeInMonth(effectivePub, PrivilegeCode.ELDER, targetDate)
                               )
                           } else if (
                               (isAuxPioneerSelected ||
@@ -467,7 +464,7 @@ function ReportsMonthPage() {
                                   ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
                                       (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
                                       (isRegPioneerSelected && isReportRegularPioneer(report))) &&
-                                  hasPrivilege(effectivePub, PrivilegeCode.MINISTERIAL_SERVANT, targetDate)
+                                  hasPrivilegeInMonth(effectivePub, PrivilegeCode.MINISTERIAL_SERVANT, targetDate)
                               )
                           } else {
                               return filterPrivileges.every((privilege) => {
@@ -483,7 +480,7 @@ function ReportsMonthPage() {
                                   if (privilege === Privileges.PIONEIROREGULAR) {
                                       return isReportRegularPioneer(report)
                                   }
-                                  return hasPrivilege(effectivePub, privilege, targetDate)
+                                  return hasPrivilegeInMonth(effectivePub, privilege, targetDate)
                               })
                           }
                       })

@@ -143,6 +143,127 @@ export function getActivePrivileges(
 }
 
 /**
+ * Checks if an IPublisherPrivilege record was active at any point during the month of targetDate.
+ * Active during month means:
+ * - Started on or before the end of the month (startDate <= monthEnd)
+ * - Has not ended before the start of the month (endDate == null || endDate >= monthStart)
+ */
+export function isPrivilegeActiveInMonth(
+    pp: IPublisherPrivilege,
+    targetDate: Date = new Date()
+): boolean {
+    const target = dayjs(targetDate)
+    const monthStart = target.startOf("month").toDate()
+    const monthEnd = target.endOf("month").toDate()
+
+    const isAux =
+        pp.privilege?.code === PrivilegeCode.AUXILIARY_PIONEER ||
+        pp.privilege?.name === "Auxiliary Pioneer" ||
+        pp.privilege?.name === "Pioneiro Auxiliar"
+
+    if (isAux) {
+        if (!pp.startDate) return false
+        const start = new Date(pp.startDate)
+        return (
+            target.year() === start.getFullYear() &&
+            target.month() === start.getMonth()
+        )
+    }
+
+    if (pp.startDate) {
+        const start = new Date(pp.startDate)
+        start.setHours(0, 0, 0, 0)
+        if (start > monthEnd) return false
+    }
+
+    if (pp.endDate) {
+        const end = new Date(pp.endDate)
+        end.setHours(23, 59, 59, 999)
+        if (end < monthStart) return false
+    }
+
+    return true
+}
+
+/**
+ * Checks if publisher has a privilege active at any point during the month of targetDate.
+ */
+export function hasPrivilegeInMonth(
+    publisher: Partial<IPublisher> | null | undefined,
+    privilege: PrivilegeCode | Privileges | string,
+    targetDate: Date = new Date()
+): boolean {
+    if (!publisher) return false
+
+    const code: PrivilegeCode | undefined =
+        Object.values(PrivilegeCode).includes(privilege as PrivilegeCode)
+            ? (privilege as PrivilegeCode)
+            : legacyToCodeMap[privilege as Privileges]
+
+    if (publisher.privilegesRelation && Array.isArray(publisher.privilegesRelation)) {
+        return publisher.privilegesRelation.some(pp => {
+            if (!pp.privilege) return false
+            const matchCode = code && pp.privilege.code === code
+            const names = code && codeToLegacyMap[code]
+            const matchName = names && (pp.privilege.name === names.en || pp.privilege.name === names.pt)
+            const matchRaw = pp.privilege.name === privilege || pp.privilege.code === privilege
+            return (matchCode || matchName || matchRaw) && isPrivilegeActiveInMonth(pp, targetDate)
+        })
+    }
+
+    return false
+}
+
+/**
+ * Checks if publisher has ANY of the specified privileges during the month of targetDate.
+ */
+export function hasAnyPrivilegeInMonth(
+    publisher: Partial<IPublisher> | null | undefined,
+    privileges: (PrivilegeCode | Privileges | string)[],
+    targetDate: Date = new Date()
+): boolean {
+    return privileges.some(p => hasPrivilegeInMonth(publisher, p, targetDate))
+}
+
+/**
+ * Returns active IPublisherPrivilege list during the month of targetDate.
+ */
+export function getActivePrivilegesInMonth(
+    publisher: Partial<IPublisher> | null | undefined,
+    targetDate: Date = new Date()
+): IPublisherPrivilege[] {
+    if (!publisher?.privilegesRelation || !Array.isArray(publisher.privilegesRelation)) {
+        return []
+    }
+    return publisher.privilegesRelation.filter(pp => isPrivilegeActiveInMonth(pp, targetDate))
+}
+
+/**
+ * Returns active display labels (in Portuguese) during the month of targetDate.
+ */
+export function getActivePrivilegeLabelsInMonth(
+    publisher: Partial<IPublisher> | null | undefined,
+    targetDate: Date = new Date()
+): string[] {
+    const active = getActivePrivilegesInMonth(publisher, targetDate)
+    const labels: string[] = []
+
+    for (const pp of active) {
+        if (pp.privilege) {
+            const code = pp.privilege.code as PrivilegeCode
+            const mapped = code && codeToLegacyMap[code]
+            if (mapped) {
+                labels.push(mapped.pt)
+            } else if (pp.privilege.name) {
+                labels.push(pp.privilege.name)
+            }
+        }
+    }
+
+    return Array.from(new Set(labels))
+}
+
+/**
  * Returns active display labels (in Portuguese) to render in badges/chips.
  */
 export function getActivePrivilegeLabels(

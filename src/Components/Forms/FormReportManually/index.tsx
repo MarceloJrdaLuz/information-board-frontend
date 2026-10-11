@@ -3,7 +3,7 @@ import Button from "@/Components/Button"
 import CheckboxUnique from "@/Components/CheckBoxUnique"
 import { ConfirmDeleteModal } from "@/Components/ConfirmDeleteModal"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
-import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { hasPrivilege, hasPrivilegeInMonth } from "@/functions/publisherPrivilegeHelper"
 import { meses } from "@/functions/meses"
 import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadCreateReportManually } from "@/types/reports"
@@ -66,13 +66,13 @@ export default function FormReportManually({ report, publisher }: IRelatorioForm
             const mesIdx = meses.findIndex(m => m.toLowerCase() === mName.toLowerCase())
             const tDate = new Date(`${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${yName || new Date().getFullYear()}`)
 
-            if (hasPrivilege(publisher, PrivilegeCode.SPECIAL_PIONEER, tDate)) {
+            if (hasPrivilegeInMonth(publisher, PrivilegeCode.SPECIAL_PIONEER, tDate)) {
                 setPrivilege(Privileges.PIONEIROESPECIAL)
-            } else if (hasPrivilege(publisher, PrivilegeCode.MISSIONARY_WORLDWIDE, tDate)) {
+            } else if (hasPrivilegeInMonth(publisher, PrivilegeCode.MISSIONARY_WORLDWIDE, tDate)) {
                 setPrivilege(Privileges.MISSIONARIOEMCAMPO)
-            } else if (hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER, tDate)) {
+            } else if (hasPrivilegeInMonth(publisher, PrivilegeCode.REGULAR_PIONEER, tDate)) {
                 setPrivilege(Privileges.PIONEIROREGULAR)
-            } else if (hasPrivilege(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, tDate)) {
+            } else if (hasPrivilegeInMonth(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, tDate)) {
                 setPrivilege(Privileges.AUXILIARTEMPOINDETERMINADO)
             } else if (isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(mName)}-${yName}`)) {
                 setPrivilege(Privileges.PIONEIROAUXILIAR)

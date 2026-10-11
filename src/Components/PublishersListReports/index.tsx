@@ -6,7 +6,7 @@ import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
 import { meses } from "@/functions/meses"
-import { getActivePrivilegeLabels, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
+import { getActivePrivilegeLabels, hasPrivilege, hasPrivilegeInMonth } from "@/functions/publisherPrivilegeHelper"
 import { IPublisher, PrivilegeCode, Privileges, Situation } from "@/types/types"
 import { useAtom, useAtomValue } from "jotai"
 import {
@@ -108,11 +108,11 @@ export default function PublisherListReports() {
         if (data) {
             const filterActives = data?.filter(publisher => 
                 publisher.situation === Situation.ATIVO && 
-                hasPrivilege(publisher, PrivilegeCode.PUBLISHER, targetDate)
+                hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, targetDate)
             )
             const filterOthers = data?.filter(publisher => 
                 (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO) &&
-                hasPrivilege(publisher, PrivilegeCode.PUBLISHER, targetDate)
+                hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, targetDate)
             )
             const sortActives = sortArrayByProperty(filterActives, "fullName")
             const sortOthersSituation = sortArrayByProperty(filterOthers, "fullName")
@@ -141,11 +141,11 @@ export default function PublisherListReports() {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
                             return isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
-                            return hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER, targetDate)
+                            return hasPrivilegeInMonth(publisher, PrivilegeCode.REGULAR_PIONEER, targetDate)
                         } else if (privilege === Privileges.AUXILIARINDETERMINADO || privilege === Privileges.AUXILIARTEMPOINDETERMINADO) {
-                            return hasPrivilege(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, targetDate)
+                            return hasPrivilegeInMonth(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, targetDate)
                         } else {
-                            return hasPrivilege(publisher, privilege, targetDate)
+                            return hasPrivilegeInMonth(publisher, privilege, targetDate)
                         }
                     })
                 )
