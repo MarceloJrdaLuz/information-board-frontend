@@ -193,10 +193,10 @@ export function useEditPublisherForm(id: string) {
     const payload: IPayloadUpdatePublisher = {
       fullName,
       address,
-      birthDate: birthDate ?? undefined,
-      dateImmersed: immersedDate ?? undefined,
-      startDatePublisher: isPublisherApproved ? (startDatePublisher ?? undefined) : null,
-      emergencyContact_id: selectedEmergencyContact ?? undefined,
+      birthDate: birthDate ? birthDate : null,
+      dateImmersed: immersedDate ? immersedDate : null,
+      startDatePublisher: isPublisherApproved ? (startDatePublisher ? startDatePublisher : null) : null,
+      emergencyContact_id: selectedEmergencyContact ? selectedEmergencyContact : null,
       gender: genderCheckboxSelected,
       hope: hopeCheckboxSelected,
       nickname,
@@ -206,7 +206,7 @@ export function useEditPublisherForm(id: string) {
         ? Array.from(new Set([Privileges.PUBLICADOR, ...allPrivileges]))
         : [],
       situation: situationPublisherCheckboxSelected,
-      startPioneer: isPublisherApproved ? (startPioneer ?? undefined) : null
+      startPioneer: isPublisherApproved ? (startPioneer ? startPioneer : null) : null
     }
     toast.promise(
       updatePublisher(publisherToUpdate?.id ?? "", payload),
