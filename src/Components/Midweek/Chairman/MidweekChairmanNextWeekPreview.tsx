@@ -288,18 +288,19 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                 ) : (
                     <div className="grid grid-cols-1 gap-2.5">
                         {mainMinistryParts.map((part, idx) => {
-                            const lessonInfo = getLessonDetails(
+                            const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY || part.title?.toLowerCase().includes("o que você diria");
+                            const lessonInfo = !isWWYS ? getLessonDetails(
                                 part.brochure,
                                 part.lessonNumber,
                                 part.studyPoint,
                                 part.studyPointDescription
-                            );
+                            ) : null;
 
                             // Sala Auxiliar correspondente
-                            const auxPart = allMinistryParts.find(
+                            const auxPart = !isWWYS ? allMinistryParts.find(
                                 p => p.room === MidweekRoom.AUXILIARY_1 &&
                                      (p.orderIndex === part.orderIndex || (p.workbook_part_id && p.workbook_part_id === part.workbook_part_id))
-                            );
+                            ) : null;
 
                             return (
                                 <div
@@ -334,9 +335,9 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                                 Salão Principal
                                             </span>
                                             <div className="font-semibold text-typography-900">
-                                                Titular: {getDisplayName(part.assignedPublisher, part.custom_speaker_name, "A designar")}
+                                                {isWWYS ? "Designado: " : "Titular: "}{getDisplayName(part.assignedPublisher, part.custom_speaker_name, "A designar")}
                                             </div>
-                                            {((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) && (
+                                            {!isWWYS && ((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) && (
                                                 <div className="text-typography-600">
                                                     Ajudante: {getDisplayName((part as any).assistantPublisher)}
                                                 </div>
@@ -344,7 +345,11 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                         </div>
 
                                         {/* Sala Auxiliar */}
-                                        {auxPart ? (
+                                        {isWWYS ? (
+                                            <div className="flex items-center text-[11px] text-typography-400 italic">
+                                                Consideração com a congregação (Salão Principal)
+                                            </div>
+                                        ) : auxPart ? (
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-[10px] font-semibold text-typography-500 uppercase">
                                                     Sala Auxiliar (Sala B)
