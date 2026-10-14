@@ -4,6 +4,7 @@ import { formatHour } from "@/utils/formatTime";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import isBetween from "dayjs/plugin/isBetween";
+import isoWeek from "dayjs/plugin/isoWeek";
 import {
     BookOpen,
     Calendar,
@@ -24,6 +25,7 @@ import LifeAndMinistryIcon from "../Icons/LifeAndMinistryIcon";
 import { LocationLink } from "../LocationLink";
 
 dayjs.extend(isBetween);
+dayjs.extend(isoWeek);
 dayjs.locale("pt-br");
 
 type TabType = "ALL" | "MEETINGS" | "MECHANICAL" | "MINISTRY" | "OTHERS";
@@ -95,14 +97,14 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
         });
     }, [sortedAssignments, activeTab]);
 
-    const today = dayjs().startOf("day");
-    const endOfWeek = dayjs().add(7, "days").endOf("day");
+    const startOfWeek = dayjs().startOf("isoWeek");
+    const endOfWeek = dayjs().endOf("isoWeek");
 
     const thisWeekCount = useMemo(() => {
         return filteredByCategory.filter(a =>
-            dayjs(a.date).isBetween(today, endOfWeek, undefined, "[]")
+            dayjs(a.date).isBetween(startOfWeek, endOfWeek, undefined, "[]")
         ).length;
-    }, [filteredByCategory, today, endOfWeek]);
+    }, [filteredByCategory, startOfWeek, endOfWeek]);
 
     const availableMonths = useMemo(() => {
         const map = new Map<string, { key: string; label: string; count: number }>();
@@ -124,7 +126,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
     const displayedAssignments = useMemo(() => {
         if (selectedMonth === "THIS_WEEK") {
             return filteredByCategory.filter(a =>
-                dayjs(a.date).isBetween(today, endOfWeek, undefined, "[]")
+                dayjs(a.date).isBetween(startOfWeek, endOfWeek, undefined, "[]")
             );
         }
         if (selectedMonth !== "ALL") {
@@ -134,7 +136,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
             }
         }
         return filteredByCategory;
-    }, [filteredByCategory, selectedMonth, availableMonths, today, endOfWeek]);
+    }, [filteredByCategory, selectedMonth, availableMonths, startOfWeek, endOfWeek]);
 
     const groupedByMonth = useMemo(() => {
         const groups: {
@@ -273,7 +275,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
     };
 
     const renderAssignment = (assignment: IAssignment, i: number) => {
-        const isThisWeek = dayjs(assignment.date).isBetween(today, endOfWeek, undefined, "[]");
+        const isThisWeek = dayjs(assignment.date).isBetween(startOfWeek, endOfWeek, undefined, "[]");
 
         return (
             <li
@@ -724,7 +726,7 @@ export function UpcomingAssignmentsCard({ assignments }: UpcomingAssignmentsCard
                     </p>
                     <p className="text-xs text-typography-400 max-w-xs mt-0.5">
                         {selectedMonth === "THIS_WEEK"
-                            ? "Você não possui nenhuma designação agendada para os próximos 7 dias."
+                            ? "Você não possui nenhuma designação agendada para esta semana."
                             : selectedMonth !== "ALL"
                             ? "Nenhuma designação encontrada para o mês selecionado neste filtro."
                             : activeTab === "MEETINGS"
