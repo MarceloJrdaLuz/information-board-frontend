@@ -2,7 +2,6 @@ import { Button } from "@/Components/ui/button"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { useAuthContext } from "@/context/AuthContext"
 import { isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
@@ -676,9 +675,8 @@ export default function PublisherList() {
                                                         )
                                                     }
                                                     if (
-                                                        (privilege === Privileges.PIONEIROREGULAR ||
-                                                            privilege === Privileges.AUXILIARINDETERMINADO) &&
-                                                        isPioneerNow(publisher, new Date())
+                                                        privilege === Privileges.PIONEIROREGULAR ||
+                                                        privilege === Privileges.AUXILIARINDETERMINADO
                                                     ) {
                                                         return (
                                                             <span

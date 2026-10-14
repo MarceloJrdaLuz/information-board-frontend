@@ -1,6 +1,5 @@
 import { useAuthContext } from "@/context/AuthContext"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IPublisher, IReports, PrivilegeCode, Privileges, Situation } from "@/types/types"
