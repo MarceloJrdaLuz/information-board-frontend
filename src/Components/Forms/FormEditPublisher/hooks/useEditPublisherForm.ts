@@ -73,12 +73,13 @@ export function useEditPublisherForm(id: string) {
   // ---------------- Effects ----------------
   useEffect(() => {
     if (data) {
-      let normalizedPrivileges = (data.privileges || []).map(p =>
-        p === Privileges.AUXILIARINDETERMINADO ? Privileges.AUXILIARTEMPOINDETERMINADO : p
-      )
-
-      if (normalizedPrivileges.length === 0 && data.privilegesRelation) {
+      let normalizedPrivileges: string[] = []
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation) && data.privilegesRelation.length > 0) {
         normalizedPrivileges = getActivePrivilegeLabels(data)
+      } else {
+        normalizedPrivileges = (data.privileges || []).map(p =>
+          p === Privileges.AUXILIARINDETERMINADO ? Privileges.AUXILIARTEMPOINDETERMINADO : p
+        )
       }
 
       let pioneerMonthsList: string[] = []
@@ -133,7 +134,25 @@ export function useEditPublisherForm(id: string) {
            pp.privilege?.name === "Publicador")
         ))
       setIsPublisherApproved(!!isApproved)
-      setStartPioneer(data.startPioneer ? data.startPioneer : null)
+      let pioneerStartDate: string | null = null
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation)) {
+        const activePioneerPriv = data.privilegesRelation.find(pp =>
+          !pp.endDate &&
+          (pp.privilege?.code === PrivilegeCode.REGULAR_PIONEER ||
+           pp.privilege?.code === PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER ||
+           pp.privilege?.code === PrivilegeCode.SPECIAL_PIONEER ||
+           pp.privilege?.name === "Regular Pioneer" ||
+           pp.privilege?.name === "Continuous Auxiliary Pioneer" ||
+           pp.privilege?.name === "Special Pioneer")
+        )
+        if (activePioneerPriv?.startDate) {
+          pioneerStartDate = dayjs(activePioneerPriv.startDate).format("YYYY-MM-DD")
+        }
+      }
+      if (!pioneerStartDate && data.startPioneer) {
+        pioneerStartDate = data.startPioneer
+      }
+      setStartPioneer(pioneerStartDate)
       setSelectedEmergencyContact(data.emergencyContact?.id || null)
       data.emergencyContact?.id && setModalEmergencyContactShowAtom(true)
 

@@ -1,7 +1,6 @@
 import { reportsAtom, successFormSend } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { capitalizeFirstLetter, isAuxPioneerMonth, isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
