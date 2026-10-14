@@ -210,7 +210,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         const auxAssistantName = auxPart ? getPublisherName((auxPart as any).assistantPublisher || (auxPart as any).assignedAssistant) : null;
 
         const isTalk = part.partType === MidweekPartType.TALK || part.partType === MidweekPartType.STUDENT_TALK;
-        const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
+        const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY || part.title?.toLowerCase().includes("o que você diria");
 
         const currentPartNumber = partCounter++;
 
@@ -224,27 +224,31 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             durationMinutes: part.timeMinutes || 4,
             assignedRoleLabel: isWWYS ? "Orador (Consideração)" : isTalk ? "Orador" : "Titular",
             assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
-            assistantName: getPublisherName((part as any).assistantPublisher || (part as any).assignedAssistant),
-            auxAssignedName,
-            auxAssistantName,
+            assistantName: isWWYS ? null : getPublisherName((part as any).assistantPublisher || (part as any).assignedAssistant),
+            auxAssignedName: isWWYS ? null : auxAssignedName,
+            auxAssistantName: isWWYS ? null : auxAssistantName,
             sourceMaterial: part.sourceMaterial || null,
-            lessonInfo: lessonInfo?.fullDisplay || lessonInfo?.shortBadge || null,
-            isStudentPart: true,
+            lessonInfo: isWWYS ? null : (lessonInfo?.fullDisplay || lessonInfo?.shortBadge || null),
+            isStudentPart: !isWWYS,
             partType: part.partType
         });
 
-        // O presidente faz conselhos/comentários de 1 minuto após CADA parte de estudante
-        pushItem({
-            id: `chairman_comment_ministry_${part.id}`,
-            title: `Comentários do Presidente (Parte ${currentPartNumber})`,
-            section: 'MINISTRY',
-            sectionTitle: "Faça Seu Melhor no Ministério",
-            sectionColor: '#D49000',
-            durationMinutes: 1,
-            assignedRoleLabel: "Presidente",
-            assignedName: chairmanName,
-            isChairmanComment: true
-        });
+        // O presidente faz conselhos/comentários de 1 minuto após partes de estudante.
+        // A parte "O que você diria?" é uma consideração com a congregação dirigida por ancião ou servo,
+        // logo NÃO tem comentários/conselhos do presidente depois.
+        if (!isWWYS) {
+            pushItem({
+                id: `chairman_comment_ministry_${part.id}`,
+                title: `Comentários do Presidente (Parte ${currentPartNumber})`,
+                section: 'MINISTRY',
+                sectionTitle: "Faça Seu Melhor no Ministério",
+                sectionColor: '#D49000',
+                durationMinutes: 1,
+                assignedRoleLabel: "Presidente",
+                assignedName: chairmanName,
+                isChairmanComment: true
+            });
+        }
     });
 
     // =========================================================================
