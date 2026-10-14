@@ -14,7 +14,9 @@ export interface IPayloadCreatePublisher {
     startPioneer?: string,
     address?: string,
     phone?: string,
-    emergencyContact_id?: string | undefined
+    emergencyContact_id?: string | undefined,
+    user_id?: string | null,
+    startDatePublisher?: string | null
 }
 
 export interface IPayloadUpdatePublisher {
@@ -23,14 +25,16 @@ export interface IPayloadUpdatePublisher {
     hope?: string,
     privileges?: string[],
     nickname?: string,
-    dateImmersed?: string,
-    birthDate?: string,
+    dateImmersed?: string | null,
+    birthDate?: string | null,
     pioneerMonths?: string[],
     situation?: string,
-    startPioneer?: string,
+    startPioneer?: string | null,
     address?: string,
     phone?: string,
-    emergencyContact_id?: string | undefined
+    emergencyContact_id?: string | null,
+    user_id?: string | null,
+    startDatePublisher?: string | null
 }
 
 export type InactiveCandidate = {

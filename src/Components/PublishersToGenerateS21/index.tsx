@@ -3,6 +3,7 @@ import { selectedPublishersToS21Atom } from '@/atoms/atom'
 import AvatarFemale from '@/Components/AvatarFemale'
 import avatarMale from '../../../public/images/avatar-male.png'
 import { IPublisher } from '@/types/types'
+import { getActivePrivilegeLabels } from '@/functions/publisherPrivilegeHelper'
 import { useAtom } from 'jotai'
 import { Check, Users } from 'lucide-react'
 import Image from 'next/image'
@@ -90,7 +91,7 @@ export default function PublishersToGenerateS21({ publisher, onClick, children }
                             </span>
                         )}
 
-                        {publisher.privileges && publisher.privileges.length > 0 && publisher.privileges.map((priv, idx) => (
+                        {getActivePrivilegeLabels(publisher).map((priv, idx) => (
                             <span
                                 key={idx}
                                 className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-primary-200/10 text-primary-200 border border-primary-200/20"

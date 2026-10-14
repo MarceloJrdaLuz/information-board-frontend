@@ -1,5 +1,3 @@
-'use client'
-
 import { domainUrl } from '@/atoms/atom'
 import { themeAtom } from '@/atoms/themeAtoms'
 import Footer from '@/Components/Footer'
@@ -20,6 +18,7 @@ import { useFetch } from '@/hooks/useFetch'
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { Categories, ICongregation, IDocument } from '@/types/types'
 import { IPublicSchedule } from '@/types/weekendSchedule'
+import { buildPublicPageServerProps, PublicPageServerProps } from '@/utils/ogMetadata'
 import { motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import {
@@ -29,14 +28,15 @@ import {
     FileText,
     Users
 } from 'lucide-react'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-function Designacoes() {
+function Designacoes({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
 
     const { setCongregationNumber, documents, filterDocuments } = usePublicDocumentsContext()
@@ -50,10 +50,13 @@ function Designacoes() {
     const [documentsLifeAndMinistryFilterMonths, setDocumentsLifeAndMinistryFilterMonths] = useState<IDocument[]>()
     const [documentsPublicFilter, setDocumentsPublicFilter] = useState<IDocument[]>()
     const [documentsOthersFilter, setDocumentsOthersFilter] = useState<IDocument[]>()
-    const [congregationData, setCongregationData] = useState<ICongregation>()
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    )
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     const fetchConfigWeekendSchedulesData =
         number && congregation?.id
@@ -180,8 +183,15 @@ function Designacoes() {
             </Head>
 
             <HeadComponent
-                title={`Reuniões - Congregação ${congregationData?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/designacoes.png`}
+                title={
+                    congregationData?.name
+                        ? `Reuniões e Designações - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Reuniões e Designações"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/designacoes.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Top Bar de Navegação */}
@@ -571,3 +581,8 @@ Designacoes.getLayout = (page: React.ReactElement) => {
 }
 
 export default Designacoes
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'designacoes')
+}
+

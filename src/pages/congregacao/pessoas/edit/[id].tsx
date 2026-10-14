@@ -6,31 +6,27 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
-import { FormProvider, useForm } from 'react-hook-form'
 
 function EditPublishersPage() {
     const router = useRouter()
     const { id } = router.query
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    const methods = useForm()
 
     useEffect(() => {
-        setPageActive("Editar Publicador")
+        setPageActive("Editar Pessoa")
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" }
+            { label: "Pessoas", link: "/congregacao/pessoas" }
         ])
     }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Publicador"} />
-            <FormProvider {...methods}>
-                <section className="flex justify-center">
-                    <FormEditPublisher id={`${id}`} />
-                </section>
-            </FormProvider>
+            <BreadCrumbs crumbs={crumbs} pageActive={"Editar Pessoa"} />
+            <div className="flex justify-center w-full">
+                <FormEditPublisher id={`${id}`} />
+            </div>
         </ContentDashboard>
     )
 }

@@ -4,7 +4,7 @@ import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
 import { api } from "@/services/api";
-import { IPublisherMidweekQualification, IPublisherMini } from "@/types/midweek";
+import { IPublisherMidweekQualification } from "@/types/midweek";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom } from "jotai";
 import {
@@ -21,9 +21,10 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-interface IPublisherWithPrivileges extends IPublisherMini {
-    privileges?: string[];
-}
+import { getActivePrivilegeLabels } from "@/functions/publisherPrivilegeHelper";
+import { IPublisher } from "@/types/types";
+
+type IPublisherWithPrivileges = IPublisher;
 
 function MidweekQualificationsPage() {
     const router = useRouter();
@@ -232,7 +233,10 @@ function MidweekQualificationsPage() {
                                                 {selectedPublisher.fullName}
                                             </h3>
                                             <span className="text-xs text-typography-500">
-                                                Gênero: {selectedPublisher.gender} {selectedPublisher.privileges && selectedPublisher.privileges.length > 0 ? `• ${selectedPublisher.privileges.join(", ")}` : ""}
+                                                Gênero: {selectedPublisher.gender}
+                                                {getActivePrivilegeLabels(selectedPublisher).length > 0
+                                                    ? ` • ${getActivePrivilegeLabels(selectedPublisher).join(", ")}`
+                                                    : ""}
                                             </span>
                                         </div>
 

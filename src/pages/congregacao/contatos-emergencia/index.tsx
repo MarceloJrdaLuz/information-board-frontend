@@ -295,12 +295,16 @@ function EmergencyContactsPage() {
                 onOpenChange={(open) => !open && setDeleteContactId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Contato de Emergência?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Contato de Emergência?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este contato de emergência? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

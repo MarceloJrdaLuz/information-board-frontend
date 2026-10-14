@@ -9,6 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useAuthContext } from "@/context/AuthContext";
@@ -725,26 +726,28 @@ function EditHistoryTerritoryPage() {
                                     className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
                                 />
                             ) : (
-                                <select
-                                    value={formCaretaker}
-                                    onChange={(e) => setFormCaretaker(e.target.value)}
-                                    required
-                                    className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                                <Select
+                                    value={formCaretaker || undefined}
+                                    onValueChange={setFormCaretaker}
                                 >
-                                    <option value="">Selecione um dirigente...</option>
-                                    {conductorsList.map((conductor) => {
-                                        const name =
-                                            conductor.nickname?.trim() || conductor.fullName;
-                                        return (
-                                            <option key={conductor.id} value={name}>
-                                                {conductor.fullName}{" "}
-                                                {conductor.nickname
-                                                    ? `(${conductor.nickname})`
-                                                    : ""}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
+                                    <SelectTrigger className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 shadow-xs">
+                                        <SelectValue placeholder="Selecione um dirigente..." />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl max-h-60">
+                                        {conductorsList.map((conductor) => {
+                                            const name =
+                                                conductor.nickname?.trim() || conductor.fullName;
+                                            return (
+                                                <SelectItem key={conductor.id} value={name} className="text-xs">
+                                                    {conductor.fullName}{" "}
+                                                    {conductor.nickname
+                                                        ? `(${conductor.nickname})`
+                                                        : ""}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectContent>
+                                </Select>
                             )}
                         </div>
 
@@ -787,17 +790,21 @@ function EditHistoryTerritoryPage() {
                             <label className="text-xs font-semibold text-typography-700">
                                 Tipo de Cobertura
                             </label>
-                            <select
+                            <Select
                                 value={formWorkType}
-                                onChange={(e) => setFormWorkType(e.target.value)}
-                                className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                                onValueChange={setFormWorkType}
                             >
-                                {Object.values(WORKTYPESTERRITORY).map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 shadow-xs">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    {Object.values(WORKTYPESTERRITORY).map((type) => (
+                                        <SelectItem key={type} value={type} className="text-xs">
+                                            {type}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
                             {formWorkType === "Outra" && (
                                 <input
@@ -896,12 +903,16 @@ function EditHistoryTerritoryPage() {
                 onOpenChange={(open) => !open && setDeleteModalId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Registro de Histórico?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Registro de Histórico?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este registro de designação? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

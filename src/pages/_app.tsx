@@ -13,6 +13,16 @@ import { ReactElement, ReactNode, useEffect } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { saveThemeToIndexedDB } from '@/utils/themeStorage'
+import dayjs from 'dayjs'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isBetween from 'dayjs/plugin/isBetween'
+import isoWeek from 'dayjs/plugin/isoWeek'
+
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
+dayjs.extend(isBetween)
+dayjs.extend(isoWeek)
 
 type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode

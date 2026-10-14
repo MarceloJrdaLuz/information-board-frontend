@@ -25,10 +25,10 @@ export const ConsentCongregationWrapper = ({ children }: ConsentWrapperProps) =>
         shouldFetchConsent ? `/terms/active/congregation` : ''
     );
 
-    // 2️⃣ só busca o consentimento se houver termo ativo
+    // 2️⃣ só busca o consentimento se houver termo ativo e congregation.id carregado
     const { data: consentRecordData, isLoading: isLoadingConsent   } = useFetch<ICheckConsentCongregation>(
-        termActive && shouldFetchConsent
-            ? `/consent/check?congregation_id=${congregation?.id}&type=congregation`
+        termActive && shouldFetchConsent && congregation?.id
+            ? `/consent/check?congregation_id=${congregation.id}&type=congregation`
             : ''
     );
 

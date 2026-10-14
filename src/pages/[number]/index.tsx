@@ -30,9 +30,7 @@ import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import quadroDefault from "../../../public/images/miniatura-gray.png"
 
-interface HomeProps {
-    serverNumber?: string
-}
+import { buildPublicPageServerProps, PublicPageServerProps } from "@/utils/ogMetadata"
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,7 +56,7 @@ const cardVariants = {
     }
 }
 
-function Home({ serverNumber }: HomeProps) {
+function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
     const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
@@ -67,8 +65,9 @@ function Home({ serverNumber }: HomeProps) {
     const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0)
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     const fetchConfigNoticesData = congregation?.id
         ? `/notices/${congregation.id}`
@@ -180,9 +179,12 @@ function Home({ serverNumber }: HomeProps) {
                 title={
                     congregation?.name
                         ? `Quadro de Anúncios - Congregação ${congregation.name}`
-                        : "Quadro de Anúncios"
+                        : ogMeta?.title || "Quadro de Anúncios"
                 }
-                urlMiniatura={`${domain}/images/miniatura.png`}
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/miniatura.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Banner Superior de Avisos */}
@@ -430,10 +432,6 @@ Home.getLayout = (page: React.ReactElement) => {
 export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.params as { number: string }
-    return {
-        props: {
-            serverNumber: number
-        }
-    }
+    return buildPublicPageServerProps(context, 'quadro')
 }
+

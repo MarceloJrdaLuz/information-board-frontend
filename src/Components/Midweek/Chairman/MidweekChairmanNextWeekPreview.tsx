@@ -3,8 +3,8 @@ import { IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection } from "
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
-import { AlertCircle, BookOpen, Calendar, ChevronRight, Sparkles, Users } from "lucide-react";
-import React from "react";
+import { AlertCircle, BookOpen, Calendar, CheckCircle2, ChevronRight, FileText, Sparkles, Users } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 dayjs.locale('pt-br');
 
@@ -19,6 +19,31 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
     hasNextWeek,
     onNextWeek
 }) => {
+    const [notes, setNotes] = useState<string>("");
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && nextSchedule?.id) {
+            const saved = localStorage.getItem(`midweek_chairman_notes_${nextSchedule.id}`);
+            setNotes(saved || "");
+        } else {
+            setNotes("");
+        }
+    }, [nextSchedule?.id]);
+
+    const handleNotesChange = (val: string) => {
+        setNotes(val);
+        if (typeof window !== "undefined" && nextSchedule?.id) {
+            localStorage.setItem(`midweek_chairman_notes_${nextSchedule.id}`, val);
+        }
+    };
+
+    const getDisplayName = (
+        publisher?: { nickname?: string | null; fullName?: string | null } | null,
+        custom?: string | null,
+        fallback = "A designar"
+    ) => {
+        return publisher?.nickname || publisher?.fullName || custom || fallback;
+    };
     if (!nextSchedule) {
         return (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-100 border border-surface-300 rounded-xl">
@@ -114,6 +139,33 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                 </div>
             )}
 
+            {/* Notas ou Anúncios para a Reunião */}
+            <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-surface-200/50 border border-surface-300">
+                <div className="flex items-center justify-between">
+                    <label
+                        htmlFor="chairman-meeting-notes"
+                        className="flex items-center gap-1.5 text-xs font-bold text-typography-700 uppercase tracking-wider"
+                    >
+                        <FileText className="w-3.5 h-3.5 text-primary-200" />
+                        <span>Notas / Anúncios para a Reunião</span>
+                    </label>
+                    {notes.trim().length > 0 && (
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Salvo automaticamente
+                        </span>
+                    )}
+                </div>
+                <textarea
+                    id="chairman-meeting-notes"
+                    value={notes}
+                    onChange={(e) => handleNotesChange(e.target.value)}
+                    rows={3}
+                    placeholder="Adicione aqui notas, anúncios locais, boas-vindas, lembretes de limpeza ou recados para a reunião..."
+                    className="w-full text-xs sm:text-sm p-2.5 rounded-lg bg-surface-100 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/50 resize-y min-h-[70px]"
+                />
+            </div>
+
             {/* Bloco 1: Leitura da Bíblia */}
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#2F7682] uppercase tracking-wide">
@@ -133,9 +185,7 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                             )}
                         </div>
                         <div className="text-sm font-bold text-typography-900">
-                            {bibleReadingMain?.assignedPublisher?.fullName ||
-                             bibleReadingMain?.custom_speaker_name ||
-                             "Leitor a designar"}
+                            {getDisplayName(bibleReadingMain?.assignedPublisher, bibleReadingMain?.custom_speaker_name, "Leitor a designar")}
                         </div>
                         {bibleReadingMain?.sourceMaterial && (
                             <span className="text-xs font-semibold text-[#2F7682] dark:text-teal-400">
@@ -161,9 +211,7 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                 )}
                             </div>
                             <div className="text-sm font-bold text-typography-900">
-                                {bibleReadingAux?.assignedPublisher?.fullName ||
-                                 bibleReadingAux?.custom_speaker_name ||
-                                 "Leitor a designar"}
+                                {getDisplayName(bibleReadingAux?.assignedPublisher, bibleReadingAux?.custom_speaker_name, "Leitor a designar")}
                             </div>
                             {bibleReadingAux?.sourceMaterial && (
                                 <span className="text-xs font-semibold text-[#2F7682] dark:text-teal-400">
@@ -244,11 +292,11 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                                 Salão Principal
                                             </span>
                                             <div className="font-semibold text-typography-900">
-                                                Titular: {part.assignedPublisher?.fullName || part.custom_speaker_name || "A designar"}
+                                                Titular: {getDisplayName(part.assignedPublisher, part.custom_speaker_name, "A designar")}
                                             </div>
-                                            {(part as any).assistantPublisher?.fullName && (
+                                            {((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) && (
                                                 <div className="text-typography-600">
-                                                    Ajudante: {(part as any).assistantPublisher.fullName}
+                                                    Ajudante: {getDisplayName((part as any).assistantPublisher)}
                                                 </div>
                                             )}
                                         </div>
@@ -260,11 +308,11 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                                     Sala Auxiliar (Sala B)
                                                 </span>
                                                 <div className="font-semibold text-typography-900">
-                                                    Titular: {auxPart.assignedPublisher?.fullName || auxPart.custom_speaker_name || "A designar"}
+                                                    Titular: {getDisplayName(auxPart.assignedPublisher, auxPart.custom_speaker_name, "A designar")}
                                                 </div>
-                                                {(auxPart as any).assistantPublisher?.fullName && (
+                                                {((auxPart as any).assistantPublisher?.nickname || (auxPart as any).assistantPublisher?.fullName) && (
                                                     <div className="text-typography-600">
-                                                        Ajudante: {(auxPart as any).assistantPublisher.fullName}
+                                                        Ajudante: {getDisplayName((auxPart as any).assistantPublisher)}
                                                     </div>
                                                 )}
                                             </div>

@@ -26,16 +26,16 @@ function TransferPublishersPage() {
     const filteredPublisherSelected = publishers?.find(p => p.id === id)
 
     useEffect(() => {
-        setPageActive("Transferir Publicador")
+        setPageActive("Transferir Pessoa")
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" }
+            { label: "Pessoas", link: "/congregacao/pessoas" }
         ])
     }, [setCrumbs, setPageActive])
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive={"Transferir Publicador"} />
+            <BreadCrumbs crumbs={crumbs} pageActive={"Transferir Pessoa"} />
             <section className="flex justify-center">
                 {publishers && filteredPublisherSelected && <FormTransferPublisher allPublishers={publishers} initialPublisher={filteredPublisherSelected} />}
             </section>

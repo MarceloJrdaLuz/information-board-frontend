@@ -21,6 +21,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import * as Popover from "@radix-ui/react-popover";
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
@@ -368,26 +369,26 @@ function FieldServiceSchedulePage() {
                             Saída:
                         </span>
                         <div className="min-w-[280px]">
-                            <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                                value={selectedTemplate?.id || ""}
-                                onChange={(e) => {
+                            <Select
+                                value={selectedTemplate?.id || undefined}
+                                onValueChange={(val) => {
                                     const t = rotationTemplates.find(
-                                        (temp) => temp.id === e.target.value
+                                        (temp) => temp.id === val
                                     );
                                     if (t) setSelectedTemplate(t);
                                 }}
                             >
-                                {rotationTemplates.length === 0 ? (
-                                    <option value="">Nenhuma saída de rodízio cadastrada</option>
-                                ) : (
-                                    rotationTemplates.map((t) => (
-                                        <option key={t.id} value={t.id}>
+                                <SelectTrigger className="w-full h-11 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800">
+                                    <SelectValue placeholder={rotationTemplates.length === 0 ? "Nenhuma saída cadastrada" : "Selecione a saída..."} />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl max-h-64">
+                                    {rotationTemplates.map((t) => (
+                                        <SelectItem key={t.id} value={t.id} className="text-sm">
                                             {WEEKDAY_LABEL[t.weekday as Weekday]} · {formatHour(t.time)} · {t.location}
-                                        </option>
-                                    ))
-                                )}
-                            </select>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </div>
@@ -426,46 +427,48 @@ function FieldServiceSchedulePage() {
                  * ========================================================= */}
                 <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
                     {/* Navegador de Mês */}
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={handlePrevMonth}
-                            className="h-10 w-10 rounded-xl"
-                            title="Mês anterior"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </Button>
+                    <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full lg:w-auto">
+                        <div className="flex items-center gap-1.5 flex-1 sm:flex-none">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={handlePrevMonth}
+                                className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200"
+                                title="Mês anterior"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </Button>
 
-                        <div className="px-4 py-2 min-w-[200px] text-center font-bold text-lg text-typography-800 bg-surface-100/60 rounded-xl border border-surface-300">
-                            {currentMonth.format("MMMM [de] YYYY").replace(/^\w/, (c) => c.toUpperCase())}
+                            <div className="flex-1 sm:flex-none px-3 sm:px-4 py-2 min-w-0 sm:min-w-[200px] text-center font-bold text-base sm:text-lg text-typography-800 bg-surface-200/50 rounded-xl border border-surface-300 truncate">
+                                {currentMonth.format("MMMM [de] YYYY").replace(/^\w/, (c) => c.toUpperCase())}
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={handleNextMonth}
+                                className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200"
+                                title="Próximo mês"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </Button>
                         </div>
-
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={handleNextMonth}
-                            className="h-10 w-10 rounded-xl"
-                            title="Próximo mês"
-                        >
-                            <ChevronRight className="w-5 h-5" />
-                        </Button>
 
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleCurrentMonth}
-                            className="text-xs text-primary-200 hover:text-primary-300 font-medium"
+                            className="text-xs text-primary-200 hover:text-primary-300 font-semibold px-2.5 h-9 rounded-lg shrink-0"
                         >
                             Mês Atual
                         </Button>
                     </div>
 
                     {/* Estatísticas Rápidas */}
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-100 text-xs text-typography-600 font-medium">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-200/60 border border-surface-300/60 text-xs text-typography-600 font-medium">
                             <CalendarCheck2 className="w-4 h-4 text-primary-200" />
-                            <span>{stats.total} saídas programadas</span>
+                            <span>{stats.total} {stats.total === 1 ? "saída programada" : "saídas programadas"}</span>
                         </div>
 
                         {stats.conflictCount > 0 && (
@@ -477,10 +480,10 @@ function FieldServiceSchedulePage() {
                     </div>
 
                     {/* Botões de Ação */}
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto">
                         <Button
                             onClick={() => setIsGenerateModalOpen(true)}
-                            className="gap-2 bg-primary-200 hover:bg-primary-300 text-white shadow-sm"
+                            className="col-span-2 sm:col-auto gap-2 bg-primary-200 hover:bg-primary-300 text-white shadow-sm h-10 rounded-xl font-semibold"
                             disabled={!selectedTemplate}
                         >
                             <Wand2 className="w-4 h-4" />
@@ -490,7 +493,7 @@ function FieldServiceSchedulePage() {
                         <Button
                             variant="outline"
                             onClick={() => setIsAddModalOpen(true)}
-                            className="gap-2"
+                            className="gap-2 h-10 rounded-xl border-surface-300 font-medium"
                             disabled={!selectedTemplate}
                         >
                             <Plus className="w-4 h-4" />
@@ -500,7 +503,7 @@ function FieldServiceSchedulePage() {
                         <Button
                             variant="outline"
                             onClick={() => setIsExceptionsModalOpen(true)}
-                            className="gap-2"
+                            className="gap-2 h-10 rounded-xl border-surface-300 font-medium"
                         >
                             <CalendarOff className="w-4 h-4 text-rose-500" />
                             <span>Exceções</span>
@@ -510,7 +513,7 @@ function FieldServiceSchedulePage() {
                             <Button
                                 variant="outline"
                                 onClick={() => setIsPdfModalOpen(true)}
-                                className="gap-2"
+                                className="col-span-2 sm:col-auto gap-2 h-10 rounded-xl border-surface-300 font-medium"
                             >
                                 <FileDown className="w-4 h-4 text-emerald-600" />
                                 <span>Exportar PDF</span>
@@ -523,15 +526,17 @@ function FieldServiceSchedulePage() {
                  * GRID / LISTA DE CARDS DE SAÍDAS DO MÊS
                  * ========================================================= */}
                 {loadingSchedules || loadingTemplates ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-surface-300">
+                    <div className="flex flex-col items-center justify-center p-12 sm:p-16 bg-surface-100 rounded-2xl border border-surface-300">
                         <Loader2 className="w-8 h-8 text-primary-200 animate-spin mb-3" />
                         <p className="text-sm text-typography-500">
                             Carregando saídas de campo...
                         </p>
                     </div>
                 ) : !selectedTemplate ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-surface-300 text-center">
-                        <CalendarMicIcon className="w-12 h-12 text-typography-400 mb-3" />
+                    <div className="flex flex-col items-center justify-center p-12 sm:p-16 bg-surface-100 rounded-2xl border border-surface-300 text-center">
+                        <div className="p-3.5 rounded-2xl bg-surface-200/60 text-typography-400 mb-3">
+                            <CalendarMicIcon className="w-8 h-8" />
+                        </div>
                         <h3 className="text-base font-semibold text-typography-700">
                             Nenhuma saída selecionada
                         </h3>
@@ -540,19 +545,20 @@ function FieldServiceSchedulePage() {
                         </p>
                     </div>
                 ) : currentMonthSchedules.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center p-16 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center">
-                        <CalendarOff className="w-12 h-12 text-typography-400 mb-3" />
-                        <CalendarMicIcon className="w-12 h-12 text-typography-400 mb-3" />
-                        <h3 className="text-base font-semibold text-typography-700">
+                    <div className="flex flex-col items-center justify-center p-8 sm:p-14 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center">
+                        <div className="p-3.5 rounded-2xl bg-surface-200/60 text-typography-400 mb-3">
+                            <CalendarOff className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold text-typography-800">
                             Nenhuma saída agendada para {currentMonth.format("MMMM [de] YYYY")}
                         </h3>
-                        <p className="text-sm text-typography-500 mt-1 max-w-md">
+                        <p className="text-xs sm:text-sm text-typography-500 mt-1.5 max-w-md leading-relaxed">
                             Gere a programação automaticamente pelo botão acima ou adicione uma data avulsa.
                         </p>
-                        <div className="flex items-center gap-3 mt-6">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-6 w-full max-w-xs sm:max-w-md">
                             <Button
                                 onClick={() => setIsGenerateModalOpen(true)}
-                                className="gap-2 bg-primary-200 hover:bg-primary-300 text-white"
+                                className="gap-2 bg-primary-200 hover:bg-primary-300 text-white h-10 px-5 rounded-xl font-semibold shadow-xs w-full sm:w-auto"
                             >
                                 <Wand2 className="w-4 h-4" />
                                 <span>Gerar Programação</span>
@@ -560,7 +566,7 @@ function FieldServiceSchedulePage() {
                             <Button
                                 variant="outline"
                                 onClick={() => setIsAddModalOpen(true)}
-                                className="gap-2"
+                                className="gap-2 h-10 px-5 rounded-xl border-surface-300 font-medium w-full sm:w-auto"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Adicionar Saída</span>
@@ -714,18 +720,21 @@ function FieldServiceSchedulePage() {
                             <label className="text-xs font-semibold text-typography-700">
                                 Dirigente:
                             </label>
-                            <select
-                                className="w-full h-11 px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                                value={newLeaderId}
-                                onChange={(e) => setNewLeaderId(e.target.value)}
+                            <Select
+                                value={newLeaderId || undefined}
+                                onValueChange={setNewLeaderId}
                             >
-                                <option value="">Selecione um dirigente...</option>
-                                {selectedTemplate?.rotation_members?.map((m) => (
-                                    <option key={m.publisher.id} value={m.publisher.id}>
-                                        {m.publisher.nickname || m.publisher.fullName}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-11 bg-surface-100 border border-surface-300 rounded-xl text-sm text-typography-800">
+                                    <SelectValue placeholder="Selecione um dirigente..." />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl max-h-60">
+                                    {selectedTemplate?.rotation_members?.map((m) => (
+                                        <SelectItem key={m.publisher.id} value={m.publisher.id} className="text-sm">
+                                            {m.publisher.nickname || m.publisher.fullName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
@@ -801,12 +810,16 @@ function FieldServiceSchedulePage() {
                 onOpenChange={(open) => !open && setDeleteScheduleId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Saída de Campo?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Saída de Campo?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir a saída de campo desta data? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

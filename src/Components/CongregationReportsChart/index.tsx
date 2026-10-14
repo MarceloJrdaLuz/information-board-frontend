@@ -3,7 +3,8 @@ import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPione
 import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
-import { IPublisher, IReports, Privileges, Situation } from "@/types/types"
+import { IPublisher, IReports, PrivilegeCode, Privileges, Situation } from "@/types/types"
+import { hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import * as Popover from "@radix-ui/react-popover"
 import dayjs from "dayjs"
 import "dayjs/locale/pt-br"
@@ -85,7 +86,11 @@ export function CongregationReportsChart() {
     // Publicadores com relatório em falta
     const missingPublishers = useMemo(() => {
         if (!showMissingReports || !publishers || !reports) return []
-        const active = publishers.filter((p) => p.situation === Situation.ATIVO)
+        const targetDate = previousMonthDate.toDate()
+        const active = publishers.filter((p) => 
+            p.situation === Situation.ATIVO && 
+            hasPrivilege(p, PrivilegeCode.PUBLISHER, targetDate)
+        )
         return active.filter((pub) => {
             const hasSubmitted = reports.some(
                 (r) =>
@@ -95,7 +100,7 @@ export function CongregationReportsChart() {
             )
             return !hasSubmitted
         })
-    }, [showMissingReports, publishers, reports, missingTargetMonth, missingTargetYear])
+    }, [showMissingReports, publishers, reports, missingTargetMonth, missingTargetYear, previousMonthDate])
 
     const handleCopyMissing = () => {
         if (missingPublishers.length === 0) return
@@ -104,6 +109,9 @@ export function CongregationReportsChart() {
         setCopied(true)
         setTimeout(() => setCopied(false), 3000)
     }
+
+    const targetMIndex = monthToNumber[missingTargetMonth] ?? previousMonthDate.month()
+    const targetKey = `${missingTargetYear}-${String(targetMIndex).padStart(2, "0")}`
 
     // Processamento e Agrupamento dos Relatórios
     const { chartData, lastMonthSummary, sixMonthsStudiesSummary } = useMemo(() => {
@@ -150,9 +158,11 @@ export function CongregationReportsChart() {
             grouped[key].reportsList.push(report)
         })
 
-        // Lista ordenada cronologicamente
+        // Lista ordenada cronologicamente (limitada até o mês fechado para não exibir mês incompleto em andamento)
         const sortedMonthKeys = Object.keys(grouped).sort()
-        const allMonthsData = sortedMonthKeys.map((key) => {
+        const closedMonthKeys = sortedMonthKeys.filter((key) => key <= targetKey)
+        const chartKeys = closedMonthKeys.length > 0 ? closedMonthKeys : sortedMonthKeys
+        const chartMonthsData = chartKeys.map((key) => {
             const data = grouped[key]
             return {
                 sortKey: key,
@@ -166,107 +176,102 @@ export function CongregationReportsChart() {
             }
         })
 
-        const last6Months = allMonthsData.slice(-6)
+        const last6Months = chartMonthsData.slice(-6)
 
         // Resumo dos estudos dos últimos 6 meses
         const totalStudies6M = last6Months.reduce((acc, curr) => acc + curr.Estudos, 0)
         const avgStudies6M =
             last6Months.length > 0 ? Number((totalStudies6M / last6Months.length).toFixed(1)) : 0
 
-        // Resumo do último mês relatado
-        const lastMonthData = allMonthsData[allMonthsData.length - 1]
-        let lastMonthStats = null
+        // Resumo do mês fechado (mês anterior)
+        const closedMonthData = grouped[targetKey] || {
+            month: missingTargetMonth,
+            year: missingTargetYear,
+            hours: 0,
+            studies: 0,
+            publishers: new Set<string>(),
+            reportsList: []
+        }
 
-        if (lastMonthData) {
-            const mIndex = meses.indexOf(capitalizeFirstLetter(lastMonthData.month))
-            const refDate = new Date(
-                Number(lastMonthData.year),
-                mIndex !== -1 ? mIndex : 0,
-                1
-            )
-            const mReports = lastMonthData.reportsList
+        const refDate = new Date(
+            Number(missingTargetYear),
+            targetMIndex,
+            1
+        )
+        const mReports = closedMonthData.reportsList
 
-            // Pioneiros Regulares
-            const prReports = mReports.filter(
-                (r) =>
-                    r.publisher?.privileges?.includes(Privileges.PIONEIROREGULAR) &&
-                    isPioneerNow(r.publisher, refDate)
-            )
-            const prCount = prReports.length
-            const prHoursTotal = prReports.reduce((acc, r) => acc + (r.hours || 0), 0)
-            const prHoursAvg =
-                prCount > 0 ? Number((prHoursTotal / prCount).toFixed(1)) : 0
+        // Pioneiros Regulares
+        const prReports = mReports.filter(
+            (r) =>
+                hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER, refDate)
+        )
+        const prCount = prReports.length
+        const prHoursTotal = prReports.reduce((acc, r) => acc + (r.hours || 0), 0)
+        const prHoursAvg =
+            prCount > 0 ? Number((prHoursTotal / prCount).toFixed(1)) : 0
 
-            // Pioneiros Auxiliares no mês
-            const auxMonthReports = mReports.filter(
-                (r) =>
-                    r.publisher?.privileges?.includes(Privileges.PIONEIROAUXILIAR) &&
+        // Pioneiros Auxiliares no mês
+        const auxMonthReports = mReports.filter(
+            (r) =>
+                hasPrivilege(r.publisher, PrivilegeCode.AUXILIARY_PIONEER, refDate) &&
+                isAuxPioneerMonth(
+                    r.publisher,
+                    `${missingTargetMonth}-${missingTargetYear}`
+                )
+        )
+        // Pioneiros Auxiliares por tempo indeterminado
+        const auxIndefiniteReports = mReports.filter(
+            (r) =>
+                hasPrivilege(r.publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, refDate)
+        )
+        const auxMonthCount = auxMonthReports.length
+        const auxIndefiniteCount = auxIndefiniteReports.length
+        const auxTotalCount = auxMonthCount + auxIndefiniteCount
+
+        // Pioneiros Especiais / Missionários
+        const specialReports = mReports.filter(
+            (r) =>
+                hasAnyPrivilege(r.publisher, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], refDate)
+        )
+        const specialCount = specialReports.length
+
+        // Publicadores comuns (que não estão em nenhuma das categorias pioneiras acima)
+        const pubReports = mReports.filter((r) => {
+            const isPR = hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER, refDate)
+            const isAux =
+                (hasPrivilege(r.publisher, PrivilegeCode.AUXILIARY_PIONEER, refDate) &&
                     isAuxPioneerMonth(
                         r.publisher,
-                        `${capitalizeFirstLetter(lastMonthData.month)}-${lastMonthData.year}`
-                    )
-            )
-            // Pioneiros Auxiliares por tempo indeterminado
-            const auxIndefiniteReports = mReports.filter(
-                (r) =>
-                    r.publisher?.privileges?.includes(Privileges.AUXILIARINDETERMINADO) &&
-                    isPioneerNow(r.publisher, refDate)
-            )
-            const auxMonthCount = auxMonthReports.length
-            const auxIndefiniteCount = auxIndefiniteReports.length
-            const auxTotalCount = auxMonthCount + auxIndefiniteCount
+                        `${missingTargetMonth}-${missingTargetYear}`
+                    )) ||
+                hasPrivilege(r.publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, refDate)
+            const isSpecial = hasAnyPrivilege(r.publisher, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], refDate)
 
-            // Pioneiros Especiais / Missionários
-            const specialReports = mReports.filter(
-                (r) =>
-                    r.publisher?.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
-                    r.publisher?.privileges?.includes(Privileges.MISSIONARIOEMCAMPO)
-            )
-            const specialCount = specialReports.length
+            return !isPR && !isAux && !isSpecial
+        })
+        const pubCount = pubReports.length
 
-            // Publicadores comuns (que não estão em nenhuma das categorias pioneiras acima)
-            const pubReports = mReports.filter((r) => {
-                const isPR =
-                    r.publisher?.privileges?.includes(Privileges.PIONEIROREGULAR) &&
-                    isPioneerNow(r.publisher, refDate)
-                const isAux =
-                    (r.publisher?.privileges?.includes(Privileges.PIONEIROAUXILIAR) &&
-                        isAuxPioneerMonth(
-                            r.publisher,
-                            `${capitalizeFirstLetter(lastMonthData.month)}-${lastMonthData.year}`
-                        )) ||
-                    (r.publisher?.privileges?.includes(Privileges.AUXILIARINDETERMINADO) &&
-                        isPioneerNow(r.publisher, refDate))
-                const isSpecial =
-                    r.publisher?.privileges?.includes(Privileges.PIONEIROESPECIAL) ||
-                    r.publisher?.privileges?.includes(Privileges.MISSIONARIOEMCAMPO)
+        // Estudos do mês fechado
+        const monthStudiesTotal = closedMonthData.studies
+        const monthStudiesAvg =
+            closedMonthData.publishers.size > 0
+                ? Number((monthStudiesTotal / closedMonthData.publishers.size).toFixed(2))
+                : 0
 
-                return !isPR && !isAux && !isSpecial
-            })
-            const pubCount = pubReports.length
-
-            // Estudos do último mês
-            const monthStudiesTotal = lastMonthData.Estudos
-            const monthStudiesAvg =
-                lastMonthData.Publicadores > 0
-                    ? Number((monthStudiesTotal / lastMonthData.Publicadores).toFixed(2))
-                    : 0
-
-            lastMonthStats = {
-                month: lastMonthData.month,
-                year: lastMonthData.year,
-                totalPublishers: lastMonthData.Publicadores,
-                pubCount,
-                prCount,
-                prHoursTotal,
-                prHoursAvg,
-                auxMonthCount,
-                auxIndefiniteCount,
-                auxTotalCount,
-                specialCount,
-                monthStudiesTotal,
-                monthStudiesAvg
-            }
+        const lastMonthStats = {
+            month: missingTargetMonth,
+            year: missingTargetYear,
+            totalPublishers: closedMonthData.publishers.size,
+            pubCount,
+            prCount,
+            prHoursTotal,
+            prHoursAvg,
+            auxMonthCount,
+            auxIndefiniteCount,
+            auxTotalCount,
+            specialCount,
+            monthStudiesTotal,
+            monthStudiesAvg
         }
 
         return {
@@ -277,16 +282,14 @@ export function CongregationReportsChart() {
                 avgStudies: avgStudies6M
             }
         }
-    }, [reports])
+    }, [reports, targetKey, missingTargetMonth, missingTargetYear, targetMIndex])
 
     if (!hasPermission) return null
 
     const isLoading = isLoadingReports || isLoadingPublishers
 
-    const targetMonth = lastMonthSummary?.month
-        ? capitalizeFirstLetter(lastMonthSummary.month)
-        : missingTargetMonth
-    const targetYear = lastMonthSummary?.year || missingTargetYear
+    const targetMonth = missingTargetMonth
+    const targetYear = missingTargetYear
 
     return (
         <div className="bg-surface-100 rounded-xl shadow-sm p-5 w-full flex flex-col gap-5 border border-surface-300">
