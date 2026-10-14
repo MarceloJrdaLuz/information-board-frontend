@@ -3,8 +3,8 @@ import { IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection } from "
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
-import { AlertCircle, BookOpen, Calendar, CheckCircle2, ChevronRight, FileText, Sparkles, Users } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { AlertCircle, BookOpen, Calendar, CheckCircle2, ChevronRight, FileText, Maximize2, Minimize2, Sparkles, Users } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 dayjs.locale('pt-br');
 
@@ -20,6 +20,17 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
     onNextWeek
 }) => {
     const [notes, setNotes] = useState<string>("");
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const adjustHeight = () => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.style.height = "auto";
+        const minHeight = isExpanded ? 240 : 84;
+        const targetHeight = Math.max(el.scrollHeight, minHeight);
+        el.style.height = `${targetHeight}px`;
+    };
 
     useEffect(() => {
         if (typeof window !== "undefined" && nextSchedule?.id) {
@@ -29,6 +40,16 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
             setNotes("");
         }
     }, [nextSchedule?.id]);
+
+    useEffect(() => {
+        adjustHeight();
+    }, [notes, isExpanded]);
+
+    useEffect(() => {
+        const handleResize = () => adjustHeight();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [notes, isExpanded]);
 
     const handleNotesChange = (val: string) => {
         setNotes(val);
@@ -140,29 +161,50 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
             )}
 
             {/* Notas ou Anúncios para a Reunião */}
-            <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-surface-200/50 border border-surface-300">
-                <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-surface-200/50 border border-surface-300">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                     <label
                         htmlFor="chairman-meeting-notes"
-                        className="flex items-center gap-1.5 text-xs font-bold text-typography-700 uppercase tracking-wider"
+                        className="flex items-center gap-1.5 text-xs font-bold text-typography-700 uppercase tracking-wider cursor-pointer"
                     >
                         <FileText className="w-3.5 h-3.5 text-primary-200" />
                         <span>Notas / Anúncios para a Reunião</span>
                     </label>
-                    {notes.trim().length > 0 && (
-                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Salvo automaticamente
-                        </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {notes.trim().length > 0 && (
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Salvo automaticamente
+                            </span>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setIsExpanded((prev) => !prev)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-typography-600 hover:text-typography-900 bg-surface-100 hover:bg-surface-300 border border-surface-300 rounded-md transition-colors shadow-xs"
+                            title={isExpanded ? "Reduzir altura padrão" : "Expandir área de notas"}
+                        >
+                            {isExpanded ? (
+                                <>
+                                    <Minimize2 className="w-3 h-3 text-typography-500" />
+                                    <span>Compactar</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Maximize2 className="w-3 h-3 text-typography-500" />
+                                    <span>Expandir</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
                 <textarea
+                    ref={textareaRef}
                     id="chairman-meeting-notes"
                     value={notes}
                     onChange={(e) => handleNotesChange(e.target.value)}
-                    rows={3}
+                    rows={isExpanded ? 8 : 3}
                     placeholder="Adicione aqui notas, anúncios locais, boas-vindas, lembretes de limpeza ou recados para a reunião..."
-                    className="w-full text-xs sm:text-sm p-2.5 rounded-lg bg-surface-100 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/50 resize-y min-h-[70px]"
+                    className="w-full text-sm p-3 rounded-lg bg-surface-100 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/50 resize-y min-h-[84px] leading-relaxed overflow-hidden transition-[border-color,box-shadow]"
                 />
             </div>
 
