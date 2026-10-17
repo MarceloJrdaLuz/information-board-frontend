@@ -8,11 +8,16 @@ import { useSetAtom } from "jotai"
 import Router, { useRouter } from 'next/router'
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react"
 import { ResponseAuth, UserTypes } from "../types/types"
+import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 
 type AuthContextTypes = {
     authenticated: boolean
     user: UserTypes | null
     login: (email: string, password: string) => Promise<any>
+    loginWithPasskey: (email?: string) => Promise<any>
+    registerPasskey: (nickname?: string) => Promise<any>
+    listPasskeys: () => Promise<any[]>
+    deletePasskey: (id: string) => Promise<any>
     roleContains: (role: string) => boolean | undefined
     logout: () => void
     signUp: (email: string, password: string, fullName: string) => Promise<any>,
@@ -128,6 +133,64 @@ function AuthProvider(props: AuthContextProviderProps) {
         })
     }
 
+    async function loginWithPasskey(email?: string) {
+        setLoading(true)
+        try {
+            const resOptions = await api.get('/passkey/authentication/options', {
+                params: email ? { email } : {}
+            })
+
+            const authResponse = await startAuthentication({ optionsJSON: resOptions.data })
+
+            const res = await api.post<ResponseAuth>('/passkey/authentication/verify', {
+                response: authResponse
+            })
+
+            const loggedUser = {
+                id: res.data.user.id,
+                email: res.data.user.email,
+                fullName: res.data.user.fullName,
+                code: res.data.user.code,
+                congregation: res.data.user.congregation,
+                roles: res.data.user.roles,
+                profile: res.data.user.profile,
+                publisher: res.data.user.publisher
+            }
+
+            const token = res.data.token
+            setCookie('quadro-token', token, {
+                maxAge: 60 * 60 * 24 * 30,
+            })
+
+            api.defaults.headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`
+            setUser(loggedUser)
+            return res.data
+        } catch (err: any) {
+            setLoading(false)
+            throw err
+        }
+    }
+
+    async function registerPasskey(nickname?: string) {
+        const resOptions = await api.get('/passkey/registration/options')
+        const regResponse = await startRegistration({ optionsJSON: resOptions.data })
+        const res = await api.post('/passkey/registration/verify', {
+            response: regResponse,
+            nickname
+        })
+        return res.data
+    }
+
+    async function listPasskeys() {
+        const res = await api.get('/passkey/list')
+        return res.data
+    }
+
+    async function deletePasskey(id: string) {
+        const res = await api.delete(`/passkey/${id}`)
+        return res.data
+    }
+
     async function logout() {
         deleteCookie('quadro-token', {
             path: "/"
@@ -224,7 +287,7 @@ function AuthProvider(props: AuthContextProviderProps) {
 
     return (
         <AuthContext.Provider value={{
-            authenticated: !!user, user, loading, login, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading, authResolved
+            authenticated: !!user, user, loading, login, loginWithPasskey, registerPasskey, listPasskeys, deletePasskey, logout, signUp, erroCadastro, setErroCadastro, resetPassword, forgotMyPassword, btnDisabled, setBtnDisabled, roleContains, setLoading, authResolved
         }}>
             {props.children}
         </AuthContext.Provider>
