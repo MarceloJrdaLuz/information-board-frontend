@@ -251,7 +251,7 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
                 </div>
 
                 {/* Hero Banner com a Foto e Gradiente de Fusão */}
-                <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden flex items-center justify-center bg-typography-900">
+                <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden flex items-center justify-center bg-surface-200">
                     {congregation?.image_url ? (
                         <Image
                             src={congregation.image_url}
@@ -273,15 +273,15 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
                     {/* Gradiente de fusão inferior suave que dissolve completamente a foto no fundo */}
                     <div
                         aria-hidden
-                        className="absolute -bottom-1 left-0 right-0 h-36 sm:h-44 pointer-events-none"
+                        className="absolute -bottom-1 left-0 right-0 h-44 sm:h-52 pointer-events-none"
                         style={{
-                            background: `linear-gradient(to bottom, transparent 0%, rgb(var(--color-surface-200) / 0.4) 40%, rgb(var(--color-surface-200) / 0.85) 75%, rgb(var(--color-surface-200)) 90%, rgb(var(--color-surface-200)) 100%)`
+                            background: `linear-gradient(to bottom, transparent 0%, rgb(var(--color-surface-200) / 0.25) 25%, rgb(var(--color-surface-200) / 0.7) 50%, rgb(var(--color-surface-200) / 0.95) 70%, rgb(var(--color-surface-200)) 80%, rgb(var(--color-surface-200)) 100%)`
                         }}
                     />
 
                     {/* Conteúdo Central do Header */}
                     <div className="relative z-20 text-center px-4 max-w-3xl flex flex-col items-center mt-3">
-                        <span className="text-2xl sm:text-3xl md:text-4xl titulo text-typography-100 font-bold tracking-wide drop-shadow-md">
+                        <span className="text-2xl sm:text-3xl md:text-4xl text-typography-100 font-bold tracking-wide drop-shadow-md">
                             Quadro de Anúncios
                         </span>
 
@@ -299,7 +299,7 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
             </div>
 
             {/* Conteúdo Principal / Grid dos Botões do Quadro */}
-            <main className="flex-1 bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
+            <main className="flex-1 -mt-px bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
                 {isFetching ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {[
