@@ -51,20 +51,26 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       'theme-dark-purple',
       'theme-dark-pink',
     ]
+    const savedTheme = localStorage.getItem('theme')
     const urlParams = new URLSearchParams(window.location.search)
     const urlTheme = urlParams.get('theme')
 
-    if (urlTheme !== null) {
-      localStorage.setItem('pwa_installed_theme', urlTheme)
-      if (validThemes.includes(urlTheme)) {
-        changeTheme(urlTheme as ThemeType)
-        return
-      }
+    // 1. Se o usuário já escolheu e salvou um tema no app, respeita sempre a escolha dele!
+    if (savedTheme !== null && validThemes.includes(savedTheme)) {
+      changeTheme(savedTheme as ThemeType)
+      return
     }
 
-    const savedTheme = (localStorage.getItem('theme') || '') as ThemeType
-    if (validThemes.includes(savedTheme)) {
-      changeTheme(savedTheme)
+    // 2. Se for a primeira inicialização sem preferência salva, usa o tema da URL do PWA
+    if (urlTheme !== null && validThemes.includes(urlTheme)) {
+      localStorage.setItem('pwa_installed_theme', urlTheme)
+      changeTheme(urlTheme as ThemeType)
+      return
+    }
+
+    // 3. Fallback para tema padrão caso nada esteja definido
+    if (savedTheme && validThemes.includes(savedTheme)) {
+      changeTheme(savedTheme as ThemeType)
     }
   }, [changeTheme])
 

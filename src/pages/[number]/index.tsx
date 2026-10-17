@@ -270,12 +270,12 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
                         />
                     )}
 
-                    {/* Gradiente de fusão inferior suave com a cor de fundo do tema */}
+                    {/* Gradiente de fusão inferior suave que dissolve completamente a foto no fundo */}
                     <div
                         aria-hidden
-                        className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+                        className="absolute -bottom-1 left-0 right-0 h-36 sm:h-44 pointer-events-none"
                         style={{
-                            background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgb(var(--color-surface-200)) 100%)`
+                            background: `linear-gradient(to bottom, transparent 0%, rgb(var(--color-surface-200) / 0.4) 40%, rgb(var(--color-surface-200) / 0.85) 75%, rgb(var(--color-surface-200)) 90%, rgb(var(--color-surface-200)) 100%)`
                         }}
                     />
 
