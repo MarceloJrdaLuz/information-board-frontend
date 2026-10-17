@@ -16,9 +16,9 @@ import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmi
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { BlobProvider, Document } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
-import { FileDown, Plus, Users } from "lucide-react"
+import { FileDown, Layers, Plus, UserCheck, Users } from "lucide-react"
 import Router from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
 
 interface IGroupPdfLinkComponentProps {
@@ -71,7 +71,7 @@ function GroupsPage() {
     const [showInactives, setShowInactives] = useState(false)
 
     const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
-    const { data: getGroups, mutate } = useAuthorizedFetch<IGroup[]>(fetchConfig, {
+    const { data: getGroups, mutate, isLoading } = useAuthorizedFetch<IGroup[]>(fetchConfig, {
         allowedRoles: ["ADMIN_CONGREGATION", "GROUPS_MANAGER", "GROUPS_VIEWER"]
     })
 
@@ -132,59 +132,113 @@ function GroupsPage() {
         )
     }
 
-    const totalPublishers = groups?.reduce((acc, g) => acc + (g.publishers?.length ?? 0), 0) ?? 0
+    const stats = useMemo(() => {
+        const total = groups?.length ?? 0
+        const totalPublishers = groups?.reduce((acc, g) => acc + (g.publishers?.length ?? 0), 0) ?? 0
+        const withOverseer = groups?.filter((g) => !!g.groupOverseers).length ?? 0
+        return { total, totalPublishers, withOverseer }
+    }, [groups])
 
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
-            <section className="flex flex-col w-full h-full p-4 sm:p-6 md:p-8">
-                {/* Header Principal da Página */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-surface-300">
-                    <div>
-                        <div className="flex items-center gap-2.5">
-                            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-typography-800 tracking-tight">
+            <section className="flex flex-col w-full h-full p-4 sm:p-6 md:p-8 gap-6">
+                {/* Header Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-primary-200 font-semibold text-xs uppercase tracking-wider">
+                                <Users className="h-4 w-4" />
+                                <span>Congregação • Grupos de Campo</span>
+                            </div>
+                            <h1 className="text-xl sm:text-2xl font-bold text-typography-800 tracking-tight">
                                 Grupos de Campo
                             </h1>
-                            {groups && (
-                                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary-200/10 text-primary-200">
-                                    {groups.length} {groups.length === 1 ? "grupo" : "grupos"}
-                                </span>
-                            )}
+                            <p className="text-xs sm:text-sm text-typography-500">
+                                Organize os publicadores por grupo de serviço de campo e acompanhe seus dirigentes.
+                            </p>
                         </div>
-                        <p className="text-xs sm:text-sm text-typography-500 mt-1">
-                            Organize os publicadores por grupo de serviço de campo
-                            {totalPublishers > 0 && ` (${totalPublishers} publicadores distribuídos)`}
-                        </p>
+
+                        {/* Barra de Ações: Criar Grupo & Exportar PDF */}
+                        <div className="flex flex-wrap items-center gap-2.5">
+                            {/* Toggle de Inativos no PDF */}
+                            <div className="flex items-center bg-surface-200/60 px-3 py-2 rounded-xl border border-surface-300 text-xs">
+                                <CheckboxBoolean
+                                    handleCheckboxChange={setShowInactives}
+                                    checked={showInactives}
+                                    label="Incluir inativos no PDF"
+                                />
+                            </div>
+
+                            {/* Botão Exportar PDF */}
+                            {groups && groups.length > 0 && (
+                                <PdfLinkComponent
+                                    showInactives={showInactives}
+                                    groups={groups}
+                                    congregation={congregation?.name ?? ""}
+                                />
+                            )}
+
+                            {/* Botão Criar Grupo */}
+                            <button
+                                onClick={() => Router.push("/congregacao/grupos-campo/add")}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-200 hover:bg-primary-300 text-white font-semibold text-xs sm:text-sm transition active:scale-95 shadow-sm"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>Criar Grupo</span>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Barra de Ações: Criar Grupo & Exportar PDF */}
-                    <div className="flex flex-wrap items-center gap-2.5">
-                        {/* Toggle de Inativos no PDF */}
-                        <div className="flex items-center bg-surface-100 px-3 py-2 rounded-xl border border-surface-300 text-xs">
-                            <CheckboxBoolean
-                                handleCheckboxChange={setShowInactives}
-                                checked={showInactives}
-                                label="Incluir inativos no PDF"
-                            />
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Layers className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Total de Grupos</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getGroups ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Botão Exportar PDF */}
-                        {groups && groups.length > 0 && (
-                            <PdfLinkComponent
-                                showInactives={showInactives}
-                                groups={groups}
-                                congregation={congregation?.name ?? ""}
-                            />
-                        )}
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <Users className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Publicadores Vinculados</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getGroups ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.totalPublishers
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                        {/* Botão Criar Grupo */}
-                        <button
-                            onClick={() => Router.push("/congregacao/grupos-campo/add")}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs sm:text-sm transition active:scale-95 shadow-md"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>Criar Grupo</span>
-                        </button>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 shrink-0">
+                                <UserCheck className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Com Dirigente</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getGroups ? (
+                                        <span className="inline-block h-4 w-12 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        `${stats.withOverseer} de ${stats.total}`
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
