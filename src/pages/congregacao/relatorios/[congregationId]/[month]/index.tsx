@@ -170,6 +170,7 @@ function ReportsMonthPage() {
     const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
     const [inactiveCandidates, setInactiveCandidates] = useState<InactiveCandidate[]>([])
     const [isInactiveOpen, setIsInactiveOpen] = useState(true)
+    const [loadingReports, setLoadingReports] = useState(true)
 
     const monthParam = (month as string) || ""
 
@@ -225,7 +226,7 @@ function ReportsMonthPage() {
     }, [getAssistance, monthSelected, yearSelected])
 
     useEffect(() => {
-        if (!publishers || !reports || !monthSelected || !yearSelected) return
+        if (loadingPublishers || loadingReports || !publishers || !reports || !monthSelected || !yearSelected) return
 
         const currentDate = dayjs(
             `${monthSelected.toLowerCase()} ${yearSelected}`,
@@ -283,7 +284,7 @@ function ReportsMonthPage() {
             .filter(Boolean) as InactiveCandidate[]
 
         setInactiveCandidates(publishersInactive)
-    }, [publishers, reports, monthSelected, yearSelected])
+    }, [publishers, reports, monthSelected, yearSelected, loadingPublishers, loadingReports])
 
     useEffect(() => {
         const someTotals = (reportsList: IReports[]) => {
@@ -518,7 +519,7 @@ function ReportsMonthPage() {
     }, [totalsAuxPioneers, totalsPioneers, totalsPublishers, totalsSpecialsPioneer])
 
     useEffect(() => {
-        if (publishers && reports) {
+        if (!loadingPublishers && !loadingReports && publishers && reports) {
             const missing = publishers.filter((publisher) => {
                 const hasSubmittedReport = reports.some(
                     (report) =>
@@ -536,19 +537,23 @@ function ReportsMonthPage() {
             setMissingReports(missing)
             setMissingReportsCount(missing.length)
         }
-    }, [monthSelected, yearSelected, publishers, reports, groupSelecteds])
+    }, [monthSelected, yearSelected, publishers, reports, groupSelecteds, loadingPublishers, loadingReports])
 
     const getRelatorios = useCallback(async () => {
         if (!congregationId) return
+        setLoadingReports(true)
         try {
             const res = await api.get(`/reports/${congregationId}`)
             setReports([...res.data])
         } catch (err) {
             console.error(err)
+        } finally {
+            setLoadingReports(false)
         }
     }, [congregationId, setReports])
 
     useEffect(() => {
+        setInactiveCandidates([])
         getRelatorios()
     }, [getRelatorios])
 
@@ -766,7 +771,7 @@ function ReportsMonthPage() {
                 </div>
 
                 {/* Inactive Candidates Section */}
-                {inactiveCandidates.length > 0 && (
+                {!loadingReports && !loadingPublishers && inactiveCandidates.length > 0 && (
                     <div className="rounded-2xl border border-amber-500/30 bg-surface-100 shadow-sm overflow-hidden transition-all">
                         {/* Header bar */}
                         <div
@@ -905,7 +910,7 @@ function ReportsMonthPage() {
                         </div>
 
                         {/* Reports List */}
-                        {loadingPublishers ? (
+                        {loadingPublishers || loadingReports ? (
                             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {Array.from({ length: 8 }).map((_, i) => (
                                     <SkeletonModalReport key={i} />

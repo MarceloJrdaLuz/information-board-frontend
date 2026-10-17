@@ -1,6 +1,6 @@
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Bell, BellRing, Loader2, Sparkles, X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function PushNotificationBanner() {
     const { isSubscribed, isStatusChecked, loading, subscribe, supported, permission } = usePushNotifications();
@@ -60,11 +60,11 @@ export function PushNotificationBanner() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+                <div className="flex items-center justify-end gap-2.5 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
                     <button
                         type="button"
                         onClick={handleDismiss}
-                        className="w-1/2 sm:w-auto px-3.5 py-2 text-xs font-semibold text-typography-600 hover:text-typography-900 hover:bg-surface-300/50 rounded-xl transition-colors"
+                        className="px-3.5 py-2 text-xs font-medium text-typography-600 hover:text-typography-900 hover:bg-surface-300/50 rounded-xl transition-colors whitespace-nowrap cursor-pointer"
                     >
                         Agora não
                     </button>
@@ -72,16 +72,16 @@ export function PushNotificationBanner() {
                         type="button"
                         onClick={() => subscribe()}
                         disabled={loading}
-                        className="w-1/2 sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white transition-all shadow-md shadow-primary-200/25 active:scale-98 disabled:opacity-50 cursor-pointer"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white transition-all shadow-md shadow-primary-200/25 active:scale-98 disabled:opacity-50 cursor-pointer whitespace-nowrap"
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
                                 <span>Ativando...</span>
                             </>
                         ) : (
                             <>
-                                <Bell className="w-3.5 h-3.5" />
+                                <Bell className="w-3.5 h-3.5 shrink-0" />
                                 <span>Ativar Notificações</span>
                             </>
                         )}

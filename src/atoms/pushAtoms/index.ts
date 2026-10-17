@@ -1,5 +1,5 @@
-import { atom } from "jotai"
 import { INotification } from "@/types/notification"
+import { atom } from "jotai"
 
 export const isPushSubscribedAtom = atom<boolean>(false)
 export const isPushStatusCheckedAtom = atom<boolean>(false)
