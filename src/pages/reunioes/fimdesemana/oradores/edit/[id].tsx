@@ -6,7 +6,11 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
 import { useEffect } from "react"
 
+import { useRouter } from "next/router"
+
 function EditSpeakerPage() {
+    const router = useRouter()
+    const speakerId = router.query.id as string
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
 
@@ -22,7 +26,7 @@ function EditSpeakerPage() {
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Editar Orador"} />
             <section className="flex justify-center">
-                <FormEditSpeaker />
+                <FormEditSpeaker speakerId={speakerId} />
             </section>
         </ContentDashboard>
     )

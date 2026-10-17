@@ -36,35 +36,45 @@ export default function FormAddSpeaker() {
     const dataError = useAtomValue(errorFormSend)
     const disabled = useAtomValue(buttonDisabled)
 
-    const { register, reset, handleSubmit, formState: { errors }, control } = useForm({
+    const validationSchema = yup.object({
+        fullName: yup.string().when('$isPublisher', {
+            is: false,
+            then: (schema) => schema.required('Campo obrigatório'),
+            otherwise: (schema) => schema.notRequired()
+        }),
+        phone: yup
+            .string()
+            .nullable()
+            .notRequired()
+            .test('is-valid-phone', 'Telefone inválido', (value) => {
+                if (!value || value.trim() === '') return true
+                const digits = value.replace(/\D/g, '')
+                return digits.length >= 10 && digits.length <= 11
+            }),
+        address: yup.string().nullable().notRequired()
+    })
+
+    const { register, reset, handleSubmit, formState: { errors }, control } = useForm<FormValues>({
         defaultValues: {
             fullName: '',
             address: '',
             phone: ''
         },
-        resolver: yupResolver(speakerIsPublisher
-            ? yup.object({}) // nada required se for publisher
-            : yup.object({
-                fullName: yup.string().required('Campo obrigatório'),
-                phone: yup
-                    .string()
-                    .nullable()
-                    .notRequired()
-                    .test('is-valid-phone', 'Telefone inválido', value => {
-                        if (!value) return true; // aceita vazio
-                        return /^\(\d{2}\) \d{5}-\d{4}$/.test(value); // valida formato se preenchido
-                    }),
-                address: yup.string().notRequired()
-            }))
+        resolver: yupResolver(validationSchema),
+        context: { isPublisher: speakerIsPublisher }
     })
 
     function onSubmit(data: FormValues) {
         const congregationId = !speakerIsPublisher
             ? selectedSpeakerCongregation?.id
-            : selectedPublisher?.congregation.id
+            : (selectedPublisher?.congregation?.id || selectedSpeakerCongregation?.id)
 
         if (!congregationId) {
             toast.error("Selecione uma congregação.")
+            return
+        }
+        if (speakerIsPublisher && !selectedPublisher?.id) {
+            toast.error("Selecione um publicador local.")
             return
         }
         const publisherId = speakerIsPublisher ? selectedPublisher?.id : undefined
@@ -167,6 +177,7 @@ export default function FormAddSpeaker() {
                         </div>
                         <DropdownMulti<ITalk>
                             title="Selecione os discursos"
+                            itemKey="id"
                             items={speakerFormData?.talks ?? []}
                             selectedItems={selectedTalks ?? []}
                             handleChange={setSelectedTalks}
