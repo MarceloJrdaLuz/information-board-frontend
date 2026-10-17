@@ -3,7 +3,7 @@ import { Bell, BellRing, Loader2, Sparkles, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 export function PushNotificationBanner() {
-    const { isSubscribed, loading, subscribe, supported, permission } = usePushNotifications();
+    const { isSubscribed, isStatusChecked, loading, subscribe, supported, permission } = usePushNotifications();
     const [isDismissed, setIsDismissed] = useState(false);
 
     useEffect(() => {
@@ -22,8 +22,8 @@ export function PushNotificationBanner() {
         }
     };
 
-    // Só exibe se for suportado, NÃO estiver inscrito, não tiver sido negado permanentemente e não foi dispensado
-    if (!supported || isSubscribed || permission === "denied" || isDismissed) {
+    // Só exibe se a verificação inicial de status tiver concluído, for suportado, NÃO estiver inscrito, não tiver sido negado e não foi dispensado
+    if (!isStatusChecked || !supported || isSubscribed || permission === "denied" || isDismissed) {
         return null;
     }
 

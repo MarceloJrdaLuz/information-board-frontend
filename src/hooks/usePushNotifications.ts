@@ -1,5 +1,6 @@
 import {
     isNotificationsModalOpenAtom,
+    isPushStatusCheckedAtom,
     isPushSubscribedAtom,
     notificationsListAtom,
     pushLoadingAtom,
@@ -17,6 +18,7 @@ import { toast } from "react-toastify"
 export function usePushNotifications() {
     const currentTheme = useAtomValue(themeAtom)
     const [isSubscribed, setIsSubscribed] = useAtom(isPushSubscribedAtom)
+    const [isStatusChecked, setIsStatusChecked] = useAtom(isPushStatusCheckedAtom)
     const [permission, setPermission] = useAtom(pushPermissionAtom)
     const [loading, setLoading] = useAtom(pushLoadingAtom)
     const [notifications, setNotifications] = useAtom(notificationsListAtom)
@@ -27,7 +29,10 @@ export function usePushNotifications() {
 
     // Verifica status da inscrição local e remota
     const checkStatus = useCallback(async () => {
-        if (!isPushNotificationSupported()) return
+        if (!isPushNotificationSupported()) {
+            setIsStatusChecked(true)
+            return
+        }
 
         setPermission(Notification.permission)
 
@@ -43,8 +48,10 @@ export function usePushNotifications() {
             }
         } catch (error) {
             console.error("Erro ao verificar status push:", error)
+        } finally {
+            setIsStatusChecked(true)
         }
-    }, [setIsSubscribed, setPermission])
+    }, [setIsSubscribed, setPermission, setIsStatusChecked])
 
     // Busca notificações recentes e contagem de não lidas
     const fetchNotifications = useCallback(async () => {
@@ -267,12 +274,15 @@ export function usePushNotifications() {
         if (supported) {
             checkStatus()
             fetchNotifications()
+        } else {
+            setIsStatusChecked(true)
         }
-    }, [checkStatus, fetchNotifications, supported])
+    }, [checkStatus, fetchNotifications, supported, setIsStatusChecked])
 
     return {
         supported,
         isSubscribed,
+        isStatusChecked,
         permission,
         loading,
         notifications,

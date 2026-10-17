@@ -2,6 +2,7 @@ import { atom } from "jotai"
 import { INotification } from "@/types/notification"
 
 export const isPushSubscribedAtom = atom<boolean>(false)
+export const isPushStatusCheckedAtom = atom<boolean>(false)
 export const pushPermissionAtom = atom<NotificationPermission>("default")
 export const pushLoadingAtom = atom<boolean>(false)
 
