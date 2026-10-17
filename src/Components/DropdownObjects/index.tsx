@@ -33,6 +33,18 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredItems, setFilteredItems] = useState(items)
 
+  const getLabel = (item: T): string => {
+    if ((item as any).id === "" && (item as any).title === "Nenhum") return "Nenhum"
+    if (props.labelKey && item[props.labelKey]) return String(item[props.labelKey])
+    return String(item)
+  }
+
+  const getLabelSecondary = (item: T): string => {
+    if ((item as any).id === "" && (item as any).title === "Nenhum") return ""
+    if (props.labelKeySecondary && item[props.labelKeySecondary]) return String(item[props.labelKeySecondary])
+    return ""
+  }
+
   useEffect(() => {
     if (!searchQuery) {
       setFilteredItems(items)
@@ -46,20 +58,9 @@ export default function DropdownObject<T>(props: IDropdown<T>) {
           secondary.includes(term)
         )
       })
+      setFilteredItems(filtered)
     }
   }, [searchQuery, items])
-
-  const getLabel = (item: T): string => {
-    if ((item as any).id === "" && (item as any).title === "Nenhum") return "Nenhum"
-    if (props.labelKey && item[props.labelKey]) return String(item[props.labelKey])
-    return String(item)
-  }
-
-  const getLabelSecondary = (item: T): string => {
-    if ((item as any).id === "" && (item as any).title === "Nenhum") return ""
-    if (props.labelKeySecondary && item[props.labelKeySecondary]) return String(item[props.labelKeySecondary])
-    return ""
-  }
 
   const getDisplayLabel = (item: T) => {
     const label = getLabel(item)
