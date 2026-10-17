@@ -73,12 +73,19 @@ export default function Document() {
             __html: `
               (function() {
                 try {
+                  var localTheme = localStorage.getItem('theme');
                   var params = new URLSearchParams(window.location.search);
                   var urlTheme = params.get('theme');
-                  var saved = (urlTheme !== null && urlTheme !== undefined) ? urlTheme : (localStorage.getItem('theme') || '');
-                  if (urlTheme !== null && urlTheme !== undefined) {
+
+                  // Se o usuário já escolheu um tema no app, respeita sempre a escolha dele!
+                  // Só usa o tema da URL do PWA se ainda não houver nenhum tema salvo no dispositivo.
+                  var saved = (localTheme !== null && localTheme !== undefined) ? localTheme : (urlTheme || '');
+
+                  // Apenas grava o tema da URL se for o primeiro acesso sem preferência salva
+                  if (localTheme === null && urlTheme) {
                     try { localStorage.setItem('theme', urlTheme); } catch(e) {}
                   }
+
                   var colors = {
                     '': '#178582',
                     'theme-dark': '#6F4EA1',
@@ -93,14 +100,11 @@ export default function Document() {
                   var color = colors[saved] || '#178582';
                   if (saved) {
                     document.documentElement.className = saved;
+                  } else {
+                    document.documentElement.className = '';
                   }
-                  var meta = document.createElement('meta');
-                  meta.name = 'theme-color';
-                  meta.id = 'theme-color-meta';
-                  meta.content = color;
-                  document.head.appendChild(meta);
-                  // Update existing theme-color meta tag if it exists, otherwise create it
-                  var meta = document.getElementById('theme-color-meta');
+
+                  // Atualiza ou cria a meta tag theme-color
                   var meta = document.querySelector('meta[name="theme-color"]:not([media])');
                   if (!meta) {
                     meta = document.createElement('meta');
@@ -109,6 +113,7 @@ export default function Document() {
                     document.head.appendChild(meta);
                   }
                   meta.setAttribute('content', color);
+
                   var nav = document.querySelector('meta[name="msapplication-navbutton-color"]');
                   if (nav) {
                     nav.setAttribute('content', color);
