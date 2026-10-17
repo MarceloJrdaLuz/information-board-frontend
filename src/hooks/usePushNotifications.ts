@@ -40,14 +40,10 @@ export function usePushNotifications() {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
 
-            if (subscription) {
-                setIsSubscribed(true)
-            } else {
-                const response = await api.get(`${API_ROUTES.PUSH}/status`)
-                setIsSubscribed(!!response.data?.isSubscribed)
-            }
+            setIsSubscribed(!!subscription)
         } catch (error) {
             console.error("Erro ao verificar status push:", error)
+            setIsSubscribed(false)
         } finally {
             setIsStatusChecked(true)
         }
@@ -178,10 +174,11 @@ export function usePushNotifications() {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
 
+            await api.post(`${API_ROUTES.PUSH}/unsubscribe`, {
+                endpoint: subscription?.endpoint,
+            })
+
             if (subscription) {
-                await api.post(`${API_ROUTES.PUSH}/unsubscribe`, {
-                    endpoint: subscription.endpoint,
-                })
                 await subscription.unsubscribe()
             }
 
