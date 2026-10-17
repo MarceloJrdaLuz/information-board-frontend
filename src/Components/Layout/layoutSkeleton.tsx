@@ -13,8 +13,8 @@ export default function LayoutSkeleton() {
                 </div>
 
                 {/* Skeleton Items */}
-                <div>
-                    <NavBar.Skeleton items={5} />
+                <div className="px-3 py-3">
+                    <NavBar.Skeleton items={6} />
                 </div>
             </aside>
 

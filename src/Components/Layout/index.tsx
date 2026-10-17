@@ -36,14 +36,7 @@ export default function Layout(props: LayoutProps) {
     const [openSubMenu, setOpenSubMenu] = useAtom(openSubMenuAtom)
     const isDesktop = useAtomValue(isDesktopAtom)
     const [pageActive, setPageActive] = useAtom(pageActiveAtom)
-    const [showMenu, setShowMenu] = useState(false);
-
-    useEffect(() => {
-        if (authResolved) {
-            const timeout = setTimeout(() => setShowMenu(true), 700); // 50ms ou 100ms
-            return () => clearTimeout(timeout);
-        }
-    }, [authResolved]);
+    const isAuthLoading = !authResolved || !user
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -88,19 +81,19 @@ export default function Layout(props: LayoutProps) {
     return (
         <main className="flex w-full h-[100dvh] fixed inset-0 min-h-0 overflow-hidden">
             <NavBar.Root>
-                {!showMenu && <NavBar.Skeleton items={5} />}
-                <div className={`transition-opacity duration-150 ${showMenu ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                    {/* <NavBar.Logo /> */}
-                    <NavBar.Options
-                        title="Início"
-                        onClick={() => {
-                            { !isDesktop && setIsMenuOpen(false) }
-                            Router.push('/dashboard')
-                        }}
-                        icon={() => <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                        active={pageActive.startsWith('/dashboard')}
-                    />
+                <NavBar.Options
+                    title="Início"
+                    onClick={() => {
+                        { !isDesktop && setIsMenuOpen(false) }
+                        Router.push('/dashboard')
+                    }}
+                    icon={() => <HomeIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    active={pageActive.startsWith('/dashboard')}
+                />
 
+                {isAuthLoading ? (
+                    <NavBar.Skeleton items={6} />
+                ) : (
                     <ConsentCongregationWrapper>
                         {isPublisher && <NavBar.Options
                             title="Meus relatórios"
@@ -710,7 +703,7 @@ export default function Layout(props: LayoutProps) {
                             </NavBar.ListOptions>
                         }
                     </ConsentCongregationWrapper>
-                </div>
+                )}
             </NavBar.Root>
             {props.children}
         </main >

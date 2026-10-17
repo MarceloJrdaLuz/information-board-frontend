@@ -1,8 +1,9 @@
 'use client'
 
 import { useAuthContext } from "@/context/AuthContext"
+import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { getInitials } from "@/functions/getInitials"
-import { ChevronDown, Fingerprint, LogOut, Shield, User } from "lucide-react"
+import { Bell, ChevronDown, Fingerprint, LogOut, Shield, User } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import avatarFemale from "../../../public/images/avatar-female.png"
@@ -13,6 +14,7 @@ import { IAvatar } from "./types"
 
 export default function Avatar(props: IAvatar) {
   const { logout, user } = useAuthContext()
+  const { isSubscribed, setIsModalOpen } = usePushNotifications()
   const [open, setOpen] = useState(false)
   const [isPasskeysModalOpen, setIsPasskeysModalOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -114,6 +116,23 @@ export default function Avatar(props: IAvatar) {
 
           {/* Ações */}
           <div className="py-1.5 flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                setIsModalOpen(true)
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-typography-700 hover:bg-surface-200 transition text-left cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Bell size={16} className="shrink-0 text-primary-200" />
+                <span>Notificações no Dispositivo</span>
+              </div>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isSubscribed ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-surface-300 text-typography-500'}`}>
+                {isSubscribed ? 'Ativo' : 'Inativo'}
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={() => {
