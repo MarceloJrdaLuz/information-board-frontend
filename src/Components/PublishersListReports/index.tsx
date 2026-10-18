@@ -37,7 +37,7 @@ export default function PublisherListReports() {
     const monthParam = month as string
 
     const fetchConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ""
-    const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
+    const { data, mutate, isLoading } = useFetch<IPublisher[]>(fetchConfig)
 
     const [reports, setReports] = useAtom(reportsAtom)
     const dataSuccess = useAtomValue(successFormSend)
@@ -232,15 +232,33 @@ export default function PublisherListReports() {
                 <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mt-5 pt-4 border-t border-surface-300">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-surface-200/50 border border-surface-300">
                         <span className="text-xs font-medium text-typography-600">Total</span>
-                        <span className="text-base sm:text-lg font-bold text-typography-800">{stats.total}</span>
+                        <span className="text-base sm:text-lg font-bold text-typography-800">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.total
+                            )}
+                        </span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                         <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Lançados</span>
-                        <span className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400">{stats.reported}</span>
+                        <span className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.reported
+                            )}
+                        </span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
                         <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">Pendentes</span>
-                        <span className="text-base sm:text-lg font-bold text-amber-700 dark:text-amber-400">{stats.pending}</span>
+                        <span className="text-base sm:text-lg font-bold text-amber-700 dark:text-amber-400">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.pending
+                            )}
+                        </span>
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ import { generateCleaningScheduleAtom } from "@/atoms/cleaningScheduleAtoms";
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import Calendar from "@/Components/Calendar";
 import { CleaningExceptionsCard } from "@/Components/CleaningExceptionCard";
+import { CleaningGroupUnavailabilitiesCard } from "@/Components/CleaningGroupUnavailabilitiesCard";
 import CleaningScheduleConfigCard from "@/Components/CleaningScheduleConfigCard";
 import CleaningSchedulePdf from "@/Components/CleaningSchedulePdf";
 import CleaningScheduleTable from "@/Components/CleaningScheduleTable";
@@ -20,6 +21,7 @@ import {
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
+import { api } from "@/services/api";
 import { ICleaningScheduleResponse } from "@/types/cleaning";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { BlobProvider, Document } from "@react-pdf/renderer";
@@ -32,6 +34,7 @@ import {
     Loader2,
     Settings2,
     Sparkles,
+    UserX,
     Wand2
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -56,6 +59,7 @@ function CleaningSchedulePage() {
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
     const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
     const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
+    const [isUnavailabilitiesModalOpen, setIsUnavailabilitiesModalOpen] = useState(false);
 
     const urlSchedulesConfig = congregation
         ? `${API_ROUTES.CLEANING_SCHEDULES}/congregation/${congregation.id}`
@@ -105,14 +109,23 @@ function CleaningSchedulePage() {
                 start: startDate,
                 end: endDate,
             });
-            toast.success("Programação de limpeza gerada com sucesso!");
             setIsGenerateModalOpen(false);
             await mutate();
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao gerar programação de limpeza.");
         } finally {
             setGenerating(false);
+        }
+    };
+
+    const handleDeleteSchedule = async (id: string) => {
+        try {
+            await api.delete(`${API_ROUTES.CLEANING_SCHEDULES}/${id}`);
+            toast.success("Data de limpeza excluída!");
+            await mutate();
+        } catch (err) {
+            console.error(err);
+            toast.error("Erro ao excluir data da limpeza.");
         }
     };
 
@@ -123,89 +136,111 @@ function CleaningSchedulePage() {
             <BreadCrumbs crumbs={crumbs} pageActive={"Programação de Limpeza"} />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Cabeçalho Principal */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                                <CleanIcon className="w-6 h-6" />
+                {/* Cabeçalho Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200">
+                                    <CleanIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
+                                        Programação de Limpeza
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500">
+                                        Escala e rodízio dos grupos de limpeza do Salão do Reino.
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-typography-800">
-                                    Programação de Limpeza
-                                </h1>
-                                <p className="text-sm text-typography-500">
-                                    Escala e rodízio semanal dos grupos de limpeza do Salão do Reino.
-                                </p>
-                            </div>
+                        </div>
+
+                        {/* Botões de Ação */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                                onClick={() => setIsGenerateModalOpen(true)}
+                                className="gap-2 bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-sm text-xs font-semibold"
+                            >
+                                <Wand2 className="w-4 h-4" />
+                                <span>Gerar Programação</span>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsUnavailabilitiesModalOpen(true)}
+                                className="gap-1.5 rounded-xl text-xs font-medium"
+                            >
+                                <UserX className="w-4 h-4 text-amber-500" />
+                                <span>Indisponibilidades</span>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsConfigModalOpen(true)}
+                                className="gap-1.5 rounded-xl text-xs font-medium"
+                            >
+                                <Settings2 className="w-4 h-4" />
+                                <span>Configurações</span>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsExceptionsModalOpen(true)}
+                                className="gap-1.5 rounded-xl text-xs font-medium"
+                            >
+                                <CalendarOff className="w-4 h-4 text-rose-500" />
+                                <span>Exceções</span>
+                            </Button>
+
+                            {schedule && schedule?.schedules && schedule.schedules.length > 0 && (
+                                <BlobProvider
+                                    document={
+                                        <Document>
+                                            <CleaningSchedulePdf
+                                                schedule={schedule}
+                                                congregationName={congregation?.name}
+                                            />
+                                        </Document>
+                                    }
+                                >
+                                    {({ blob, url, loading, error }) => (
+                                        <a
+                                            href={url || "#"}
+                                            download={url ? `Programacao_da_Limpeza_${congregation?.name || ""}.pdf` : undefined}
+                                            className={loading || !!error || !blob ? "pointer-events-none opacity-50" : ""}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                className="gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-xl text-xs font-medium"
+                                                disabled={loading || !!error || !blob}
+                                            >
+                                                <FileDown className="w-4 h-4" />
+                                                <span>{loading ? "Gerando..." : "Exportar PDF"}</span>
+                                            </Button>
+                                        </a>
+                                    )}
+                                </BlobProvider>
+                            )}
                         </div>
                     </div>
 
-                    {/* Botões de Ação */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <Button
-                            onClick={() => setIsGenerateModalOpen(true)}
-                            className="gap-2 bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-sm"
-                        >
-                            <Wand2 className="w-4 h-4" />
-                            <span>Gerar Programação</span>
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsConfigModalOpen(true)}
-                            className="gap-2 rounded-xl"
-                        >
-                            <Settings2 className="w-4 h-4" />
-                            <span>Configurações</span>
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsExceptionsModalOpen(true)}
-                            className="gap-2 rounded-xl"
-                        >
-                            <CalendarOff className="w-4 h-4 text-rose-500" />
-                            <span>Exceções</span>
-                        </Button>
-
-                        {schedule && schedule?.schedules && schedule.schedules.length > 0 && (
-                            <BlobProvider
-                                document={
-                                    <Document>
-                                        <CleaningSchedulePdf
-                                            schedule={schedule}
-                                            congregationName={congregation?.name}
-                                        />
-                                    </Document>
-                                }
-                            >
-                                {({ blob, url, loading, error }) => (
-                                    <a
-                                        href={url || "#"}
-                                        download={url ? `Programacao_da_Limpeza_${congregation?.name || ""}.pdf` : undefined}
-                                        className={loading || !!error || !blob ? "pointer-events-none opacity-50" : ""}
-                                    >
-                                        <Button
-                                            variant="outline"
-                                            className="gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-xl"
-                                            disabled={loading || !!error || !blob}
-                                        >
-                                            <FileDown className="w-4 h-4" />
-                                            <span>{loading ? "Gerando..." : "Exportar PDF"}</span>
-                                        </Button>
-                                    </a>
-                                )}
-                            </BlobProvider>
-                        )}
-                    </div>
-                </div>
-
-                {/* Métricas Rápidas */}
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                        <Layers className="w-4 h-4 text-primary-200" />
-                        <span>{totalWeeks} semanas geradas</span>
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Layers className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Datas Programadas</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        totalWeeks
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -235,7 +270,11 @@ function CleaningSchedulePage() {
                         </Button>
                     </div>
                 ) : (
-                    <CleaningScheduleTable schedule={schedule} />
+                    <CleaningScheduleTable
+                        schedule={schedule}
+                        onDelete={handleDeleteSchedule}
+                        onScheduleUpdated={() => { mutate(); }}
+                    />
                 )}
             </div>
 
@@ -321,6 +360,13 @@ function CleaningSchedulePage() {
                     <div className="py-2">
                         <CleaningExceptionsCard />
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal: Indisponibilidades de Grupos */}
+            <Dialog open={isUnavailabilitiesModalOpen} onOpenChange={setIsUnavailabilitiesModalOpen}>
+                <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+                    <CleaningGroupUnavailabilitiesCard />
                 </DialogContent>
             </Dialog>
         </ContentDashboard>

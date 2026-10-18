@@ -39,7 +39,7 @@ function SpeakersPage() {
     const [searchTalkNumber, setSearchTalkNumber] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
 
-    const { data: getSpeakers, mutate } = useAuthorizedFetch<ISpeaker[]>("/speakers", {
+    const { data: getSpeakers, mutate, isLoading } = useAuthorizedFetch<ISpeaker[]>("/speakers", {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
     })
 
@@ -196,7 +196,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Total de Oradores</div>
-                                <div className="text-base font-bold text-typography-900">{stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -206,7 +212,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Locais</div>
-                                <div className="text-base font-bold text-typography-900">{stats.local}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.local
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -216,7 +228,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Visitantes</div>
-                                <div className="text-base font-bold text-typography-900">{stats.external}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.external
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

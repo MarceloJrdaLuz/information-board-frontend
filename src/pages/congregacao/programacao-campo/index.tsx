@@ -468,7 +468,14 @@ function FieldServiceSchedulePage() {
                     <div className="flex flex-wrap items-center gap-3">
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-200/60 border border-surface-300/60 text-xs text-typography-600 font-medium">
                             <CalendarCheck2 className="w-4 h-4 text-primary-200" />
-                            <span>{stats.total} {stats.total === 1 ? "saída programada" : "saídas programadas"}</span>
+                            <span>
+                                {loadingSchedules || !allSchedules ? (
+                                    <span className="inline-block h-3.5 w-6 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                ) : (
+                                    stats.total
+                                )}{" "}
+                                {stats.total === 1 ? "saída programada" : "saídas programadas"}
+                            </span>
                         </div>
 
                         {stats.conflictCount > 0 && (

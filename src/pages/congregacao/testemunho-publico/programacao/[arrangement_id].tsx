@@ -49,7 +49,7 @@ function ArrangementMonthSchedulePage() {
   const createSchedule = useSetAtom(createSchedulePublicWitnessAtom)
   const [dirty, setDirty] = useAtom(dirtyMonthScheduleAtom)
 
-  const { data: arrangement, mutate: mutateArrangement } = useArrangement(arrangement_id || "")
+  const { data: arrangement, mutate: mutateArrangement, isLoading } = useArrangement(arrangement_id || "")
   const { data: publishers } = usePublishers()
 
   const [monthOffset, setMonthOffset] = useState(0)
@@ -332,7 +332,11 @@ function ArrangementMonthSchedulePage() {
                 <CalendarDays className="w-4 h-4 text-primary-200" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {stats.totalDays}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.totalDays
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 dias programados para este carrinho
@@ -347,7 +351,11 @@ function ArrangementMonthSchedulePage() {
                 <Clock className="w-4 h-4 text-blue-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {stats.totalCapacity}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.totalCapacity
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.totalSlots} horários (2 por horário)
@@ -362,7 +370,11 @@ function ArrangementMonthSchedulePage() {
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-green-700">
-                {stats.filledSpots}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.filledSpots
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.totalCapacity > 0
@@ -387,7 +399,11 @@ function ArrangementMonthSchedulePage() {
                   stats.pendingSpots > 0 ? "text-amber-600" : "text-green-700"
                 }`}
               >
-                {stats.pendingSpots}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.pendingSpots
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.pendingSpots === 0 ? "Escala completa!" : "vagas restantes para preencher"}

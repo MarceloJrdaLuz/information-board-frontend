@@ -8,6 +8,7 @@ import * as yup from "yup"
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
 import { updateCleaningGroupAtom } from "@/atoms/cleaningGroupsAtoms"
 import Button from "@/Components/Button"
+import Dropdown from "@/Components/Dropdown"
 import DropdownMulti from "@/Components/DropdownMulti"
 import Input from "@/Components/Input"
 import InputError from "@/Components/InputError"
@@ -42,11 +43,21 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
     const { data: groupData } = useFetch(`${API_ROUTES.CLEANING_GROUPS}/${group_id}`)
 
     const [selectedMembers, setSelectedMembers] = useState<IPublisher[]>([])
+    const [selectedDayPreference, setSelectedDayPreference] = useState<string>("ALL")
+
+    const DAY_PREFERENCE_OPTIONS = [
+        { value: "ALL", label: "Qualquer reunião (Ambos - padrão)" },
+        { value: "MIDWEEK", label: "Apenas Meio de Semana" },
+        { value: "WEEKEND", label: "Apenas Fim de Semana" },
+    ]
 
     useEffect(() => {
         if (groupData?.publishers) {
             const valid = groupData.publishers.filter((p: IPublisher) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
             setSelectedMembers(valid)
+        }
+        if (groupData?.dayPreference) {
+            setSelectedDayPreference(groupData.dayPreference)
         }
     }, [groupData])
 
@@ -82,6 +93,7 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
     function onSubmit(data: FormValues) {
         const payload = {
             name: data.name,
+            dayPreference: selectedDayPreference,
             publisherIds: selectedMembers.map(m => m.id)
         }
 
@@ -126,6 +138,21 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
                         textVisible
                         searchable
                         emptyMessage="Nenhum publicador encontrado"
+                    />
+                </div>
+
+                <div className="mt-4">
+                    <Dropdown
+                        title="Disponibilidade nas Reuniões"
+                        options={DAY_PREFERENCE_OPTIONS.map(o => o.label)}
+                        selectedItem={DAY_PREFERENCE_OPTIONS.find(o => o.value === selectedDayPreference)?.label}
+                        handleClick={label => {
+                            const found = DAY_PREFERENCE_OPTIONS.find(o => o.label === label)
+                            if (found) setSelectedDayPreference(found.value)
+                        }}
+                        full
+                        border
+                        textVisible
                     />
                 </div>
 

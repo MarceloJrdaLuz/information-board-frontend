@@ -159,3 +159,63 @@ export const deleteCleaningExceptionAtom = atom(
     }
   }
 )
+
+export const updateCleaningScheduleGroupAtom = atom(
+  null,
+  async (_get, _set, schedule_id: string, group_id: string) => {
+    try {
+      const res = await api.patch(`${API_ROUTES.CLEANING_SCHEDULES}/${schedule_id}`, { group_id })
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Grupo alterado com sucesso!",
+      })
+      return res.data
+    } catch (err: any) {
+      console.error(err)
+      _set(handleSubmitErrorAtom, {
+        messageError: "Erro ao alterar o grupo da limpeza."
+      })
+      throw err
+    }
+  }
+)
+
+export const createCleaningGroupUnavailabilityAtom = atom(
+  null,
+  async (_get, _set, congregation_id: string, payload: { group_id: string; startDate: string; endDate: string; reason?: string }) => {
+    try {
+      const res = await api.post(
+        `${API_ROUTES.CLEANING_GROUP_UNAVAILABILITIES}/congregation/${congregation_id}`,
+        payload
+      )
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Indisponibilidade cadastrada com sucesso!",
+      })
+      return res.data
+    } catch (err: any) {
+      const message = err?.response?.data?.message
+      _set(handleSubmitErrorAtom, {
+        messageError: message || "Erro ao cadastrar indisponibilidade do grupo."
+      })
+      throw err
+    }
+  }
+)
+
+export const deleteCleaningGroupUnavailabilityAtom = atom(
+  null,
+  async (_get, _set, id: string) => {
+    try {
+      await api.delete(`${API_ROUTES.CLEANING_GROUP_UNAVAILABILITIES}/${id}`)
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Indisponibilidade removida com sucesso!",
+      })
+      return true
+    } catch (err: any) {
+      console.error(err)
+      _set(handleSubmitErrorAtom, {
+        messageError: "Erro ao remover indisponibilidade."
+      })
+      throw err
+    }
+  }
+)

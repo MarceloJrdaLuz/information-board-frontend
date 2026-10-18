@@ -160,7 +160,13 @@ function NoticesPage() {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 shadow-sm flex flex-col gap-1">
                         <span className="text-xs font-semibold text-typography-500">Total de Anúncios</span>
-                        <span className="text-2xl font-black text-typography-800">{metrics.total}</span>
+                        <span className="text-2xl font-black text-typography-800">
+                            {isLoading || !notices ? (
+                                <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                metrics.total
+                            )}
+                        </span>
                         <span className="text-[11px] text-typography-400">Cadastrados no sistema</span>
                     </div>
 
@@ -169,19 +175,37 @@ function NoticesPage() {
                             <span className="text-xs font-semibold text-typography-500">Ativos Hoje</span>
                             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                         </div>
-                        <span className="text-2xl font-black text-emerald-600">{metrics.active}</span>
+                        <span className="text-2xl font-black text-emerald-600">
+                            {isLoading || !notices ? (
+                                <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                metrics.active
+                            )}
+                        </span>
                         <span className="text-[11px] text-typography-400">Visíveis no quadro</span>
                     </div>
 
                     <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 shadow-sm flex flex-col gap-1">
                         <span className="text-xs font-semibold text-typography-500">Recorrentes</span>
-                        <span className="text-2xl font-black text-primary-200">{metrics.recurrent}</span>
+                        <span className="text-2xl font-black text-primary-200">
+                            {isLoading || !notices ? (
+                                <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                metrics.recurrent
+                            )}
+                        </span>
                         <span className="text-[11px] text-typography-400">Exibição mensal periódica</span>
                     </div>
 
                     <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 shadow-sm flex flex-col gap-1">
                         <span className="text-xs font-semibold text-typography-500">Expirados</span>
-                        <span className="text-2xl font-black text-typography-400">{metrics.expired}</span>
+                        <span className="text-2xl font-black text-typography-400">
+                            {isLoading || !notices ? (
+                                <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                metrics.expired
+                            )}
+                        </span>
                         <span className="text-[11px] text-typography-400">Ocultados da congregação</span>
                     </div>
                 </div>

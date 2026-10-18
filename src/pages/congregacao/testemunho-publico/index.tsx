@@ -166,7 +166,11 @@ function ArrangementsPage() {
                 <MapPin className="w-4 h-4 text-primary-200" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {arrangements?.length ?? 0}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  arrangements?.length ?? 0
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 pontos de testemunho cadastrados
@@ -181,7 +185,11 @@ function ArrangementsPage() {
                 <CalendarDays className="w-4 h-4 text-blue-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {fixedArrangements.length}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  fixedArrangements.length
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 dias fixos toda semana
@@ -196,7 +204,11 @@ function ArrangementsPage() {
                 <CalendarRange className="w-4 h-4 text-purple-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {specialArrangements.length}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  specialArrangements.length
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 datas específicas
@@ -211,7 +223,11 @@ function ArrangementsPage() {
                 <Clock className="w-4 h-4 text-amber-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {totalSlotsCount}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  totalSlotsCount
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 slots configurados no sistema

@@ -31,36 +31,52 @@ export function DatePickerHeader({
     }
 
     return (
-        <div className="dp-header">
-            <div className="flex justify-between items-center">
-                <button className="text-primary-200" type="button" onClick={decreaseMonth}>
-                    <ChevronLeft />
+        <div className="dp-header p-2">
+            <div className="flex items-center justify-between gap-1.5">
+                <button
+                    className="p-1.5 rounded-lg text-primary-200 hover:bg-surface-100/80 dark:hover:bg-surface-300/40 transition-colors"
+                    type="button"
+                    onClick={decreaseMonth}
+                    title="Mês anterior"
+                >
+                    <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-typography-700 font-semibold">{months[date.getMonth()]} {date.getFullYear()}</span>
-                <button className="text-primary-200" type="button" onClick={increaseMonth}>
-                    <ChevronRight />
+
+                <div className="flex items-center gap-1.5 justify-center flex-1">
+                    <Dropdown
+                        textVisible
+                        title={months[date.getMonth()]}
+                        selectedItem={months[date.getMonth()]}
+                        position="left"
+                        options={months}
+                        handleClick={handleMonthChange}
+                        maxHeight="max-h-48"
+                        width="w-36"
+                        buttonClassName="inline-flex items-center justify-between gap-1 rounded-lg bg-surface-100/70 hover:bg-surface-100 px-2.5 py-1 text-xs font-semibold text-typography-800 border border-surface-300/80 transition-all focus:outline-none"
+                    />
+
+                    <Dropdown
+                        textVisible
+                        title={date.getFullYear().toString()}
+                        selectedItem={date.getFullYear().toString()}
+                        options={years.map(y => y.toString())}
+                        position="right"
+                        handleClick={handleYearChange}
+                        maxHeight="max-h-48"
+                        width="w-24"
+                        buttonClassName="inline-flex items-center justify-between gap-1 rounded-lg bg-surface-100/70 hover:bg-surface-100 px-2.5 py-1 text-xs font-semibold text-typography-800 border border-surface-300/80 transition-all focus:outline-none"
+                    />
+                </div>
+
+                <button
+                    className="p-1.5 rounded-lg text-primary-200 hover:bg-surface-100/80 dark:hover:bg-surface-300/40 transition-colors"
+                    type="button"
+                    onClick={increaseMonth}
+                    title="Próximo mês"
+                >
+                    <ChevronRight className="w-4 h-4" />
                 </button>
             </div>
-
-            <Dropdown
-                textVisible
-                title={months[date.getMonth()]}
-                selectedItem={months[date.getMonth()]}
-                position="left"
-                options={months}
-                handleClick={handleMonthChange}
-            />
-
-
-            <Dropdown
-                textVisible
-                title={date.getFullYear().toString()}
-                selectedItem={date.getFullYear().toString()}
-                options={years.map(y => y.toString())}
-                position="right"
-                handleClick={handleYearChange}
-            />
-
         </div>
     );
 }

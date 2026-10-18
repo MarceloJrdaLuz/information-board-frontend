@@ -26,11 +26,9 @@ export function CleaningExceptionsCard() {
     const handleDelete = async (id: string) => {
         try {
             await deleteCleaningException(id);
-            toast.success("Exceção removida!");
             await mutate();
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao remover exceção.");
         }
     };
 

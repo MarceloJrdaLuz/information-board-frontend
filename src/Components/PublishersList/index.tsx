@@ -301,7 +301,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.total}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.total
+                        )}
                     </div>
                     <span className="text-[11px] text-typography-400">pessoas</span>
                 </button>
@@ -325,7 +329,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.publishers}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.publishers
+                        )}
                     </div>
                     <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                         aprovados
@@ -351,7 +359,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.pioneers}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.pioneers
+                        )}
                     </div>
                     <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
                         regulares
@@ -377,7 +389,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.elders}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.elders
+                        )}
                     </div>
                     <span className="text-[11px] text-blue-600 dark:text-blue-400 font-medium">
                         designados
@@ -403,7 +419,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.servants}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.servants
+                        )}
                     </div>
                     <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium">
                         ministeriais
@@ -429,7 +449,11 @@ export default function PublisherList() {
                         </div>
                     </div>
                     <div className="text-2xl font-extrabold text-typography-800">
-                        {stats.inactives}
+                        {isLoading || !data ? (
+                            <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.inactives
+                        )}
                     </div>
                     <span className="text-[11px] text-zinc-500 font-medium">
                         ou outros

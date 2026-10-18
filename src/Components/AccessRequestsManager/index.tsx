@@ -213,7 +213,11 @@ export default function AccessRequestsManager({
                         <Clock className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.pending}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.pending
+                        )}
                     </span>
                 </button>
 
@@ -231,7 +235,11 @@ export default function AccessRequestsManager({
                         <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.approved}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.approved
+                        )}
                     </span>
                 </button>
 
@@ -249,7 +257,11 @@ export default function AccessRequestsManager({
                         <XCircle className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.rejected}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.rejected
+                        )}
                     </span>
                 </button>
 
@@ -267,7 +279,11 @@ export default function AccessRequestsManager({
                         <User className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.total}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.total
+                        )}
                     </span>
                 </button>
             </div>
