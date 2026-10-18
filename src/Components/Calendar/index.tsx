@@ -90,6 +90,7 @@ export default function Calendar({
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                popperPlacement="bottom-start"
                 className="px-3.5 py-2.5 w-full text-sm text-typography-800 appearance-none placeholder-transparent focus:outline-none rounded-xl bg-surface-100 font-sans font-medium text-left border border-surface-300 focus:border-primary-200 focus:ring-2 focus:ring-primary-200/20 shadow-xs transition-all"
                 renderCustomHeader={(props) => (
                     <DatePickerHeader

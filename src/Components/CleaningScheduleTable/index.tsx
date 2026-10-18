@@ -1,16 +1,55 @@
-import { ICleaningScheduleResponse } from "@/types/cleaning";
+import { updateCleaningScheduleGroupAtom } from "@/atoms/cleaningScheduleAtoms";
+import { Button } from "@/Components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
+import { API_ROUTES } from "@/constants/apiRoutes";
+import { useCongregationContext } from "@/context/CongregationContext";
+import { useAuthorizedFetch } from "@/hooks/useFetch";
+import { ICleaningGroup, ICleaningSchedule, ICleaningScheduleResponse } from "@/types/cleaning";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Sparkles, Trash2, Users } from "lucide-react";
+import { useSetAtom } from "jotai";
+import { Loader2, Pencil, Sparkles, Trash2, Users } from "lucide-react";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 dayjs.locale("pt-br");
 
 interface Props {
     schedule: ICleaningScheduleResponse;
     onDelete?: (id: string) => Promise<void>;
+    onScheduleUpdated?: () => any;
 }
 
-export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
+export default function CleaningScheduleTable({ schedule, onDelete, onScheduleUpdated }: Props) {
+    const { congregation } = useCongregationContext();
+    const updateGroupAtom = useSetAtom(updateCleaningScheduleGroupAtom);
+
+    const groupsUrl = congregation
+        ? `${API_ROUTES.CLEANING_GROUPS}/congregation/${congregation.id}`
+        : "";
+
+    const { data: groups } = useAuthorizedFetch<ICleaningGroup[]>(groupsUrl, {
+        allowedRoles: ["ADMIN_CONGREGATION", "CLEANING_MANAGER"],
+    });
+
+    const [editingSchedule, setEditingSchedule] = useState<ICleaningSchedule | null>(null);
+    const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+    const [isUpdating, setIsUpdating] = useState(false);
+
     if (!schedule.schedules || schedule.schedules.length === 0) {
         return null;
     }
@@ -18,6 +57,22 @@ export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
     const sortedSchedules = [...schedule.schedules].sort(
         (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf()
     );
+
+    const handleSaveGroupChange = async () => {
+        if (!editingSchedule || !selectedGroupId) return;
+        setIsUpdating(true);
+        try {
+            await updateGroupAtom(editingSchedule.id, selectedGroupId);
+            setEditingSchedule(null);
+            if (onScheduleUpdated) {
+                await onScheduleUpdated();
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
 
     return (
         <div className="w-full space-y-4">
@@ -49,7 +104,7 @@ export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
                                 {/* Header da Data */}
                                 <div className="flex items-center justify-between pb-3 border-b border-surface-300">
                                     <div className="flex items-center gap-3">
-                                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200  rounded-xl font-bold border border-primary-200/20 shrink-0">
+                                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200 rounded-xl font-bold border border-primary-200/20 shrink-0">
                                             <span className="text-base leading-none">{dayFormatted}</span>
                                             <span className="text-[10px] tracking-wider uppercase">{monthFormatted}</span>
                                         </div>
@@ -62,16 +117,33 @@ export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
                                             </h4>
                                         </div>
                                     </div>
-                                    {onDelete && item.id && (
+
+                                    <div className="flex items-center gap-1">
+                                        {/* Botão de Trocar Grupo */}
                                         <button
                                             type="button"
-                                            onClick={() => onDelete(item.id)}
-                                            className="p-1.5 text-typography-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
-                                            title="Excluir esta data da limpeza"
+                                            onClick={() => {
+                                                setEditingSchedule(item);
+                                                setSelectedGroupId(item.group_id || item.group?.id || "");
+                                            }}
+                                            className="p-1.5 text-typography-400 hover:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-950/40 rounded-lg transition-colors"
+                                            title="Trocar grupo desta data"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Pencil className="w-4 h-4" />
                                         </button>
-                                    )}
+
+                                        {/* Botão de Excluir */}
+                                        {onDelete && item.id && (
+                                            <button
+                                                type="button"
+                                                onClick={() => onDelete(item.id)}
+                                                className="p-1.5 text-typography-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                                                title="Excluir esta data da limpeza"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Grupo Designado */}
@@ -114,6 +186,70 @@ export default function CleaningScheduleTable({ schedule, onDelete }: Props) {
                     );
                 })}
             </div>
+
+            {/* Modal: Trocar Grupo Manualmente */}
+            <Dialog open={!!editingSchedule} onOpenChange={(open) => !open && setEditingSchedule(null)}>
+                <DialogContent className="sm:max-w-[420px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-lg">
+                            <Pencil className="w-5 h-5 text-primary-200" />
+                            <span>Trocar Grupo da Limpeza</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-xs">
+                            {editingSchedule && (
+                                <>
+                                    Designação de{" "}
+                                    <strong>
+                                        {dayjs(editingSchedule.date).format("dddd, DD [de] MMMM [de] YYYY")}
+                                    </strong>
+                                </>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-3 py-2">
+                        <label className="text-xs font-semibold text-typography-700">
+                            Selecione o novo grupo responsável:
+                        </label>
+                        <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+                            <SelectTrigger className="w-full h-10 rounded-xl bg-surface-100 border border-surface-300 text-xs">
+                                <SelectValue placeholder="Escolha um grupo..." />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                {groups?.map((g) => {
+                                    const count = g.publishers?.length || 0;
+                                    return (
+                                        <SelectItem key={g.id} value={g.id} className="text-xs font-medium">
+                                            {g.name} ({count} {count === 1 ? "membro" : "membros"})
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-0 pt-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setEditingSchedule(null)}
+                            disabled={isUpdating}
+                            className="rounded-xl text-xs"
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleSaveGroupChange}
+                            disabled={isUpdating || !selectedGroupId}
+                            className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 text-xs font-semibold"
+                        >
+                            {isUpdating && <Loader2 className="w-4 h-4 animate-spin" />}
+                            <span>Salvar Alteração</span>
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

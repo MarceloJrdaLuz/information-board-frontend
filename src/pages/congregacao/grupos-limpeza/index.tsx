@@ -96,12 +96,10 @@ function CleaningGroupsPage() {
         setIsDeleting(true);
         try {
             await deleteCleaningGroup(groupId);
-            toast.success("Grupo de limpeza excluído com sucesso!");
             setDeleteGroupId(null);
             await mutate();
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao excluir grupo de limpeza.");
         } finally {
             setIsDeleting(false);
         }
@@ -245,9 +243,21 @@ function CleaningGroupsPage() {
                                                 </h3>
                                             </div>
 
-                                            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-100 text-typography-600 border border-surface-300">
-                                                {memberCount} {memberCount === 1 ? "membro" : "membros"}
-                                            </span>
+                                            <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                                                {group.dayPreference === "MIDWEEK" && (
+                                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                        Meio de Semana
+                                                    </span>
+                                                )}
+                                                {group.dayPreference === "WEEKEND" && (
+                                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                        Fim de Semana
+                                                    </span>
+                                                )}
+                                                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-100 text-typography-600 border border-surface-300">
+                                                    {memberCount} {memberCount === 1 ? "membro" : "membros"}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {/* Lista de Membros */}

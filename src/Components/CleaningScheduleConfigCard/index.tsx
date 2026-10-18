@@ -51,14 +51,11 @@ export default function CleaningScheduleConfigCard() {
             if (config) {
                 await updateCleaningScheduleConfig(config.id, selectedMode);
                 setConfig({ ...config, mode: selectedMode });
-                toast.success("Configuração atualizada com sucesso!");
             } else if (congregation) {
                 await createCleaningScheduleConfig(congregation.id, selectedMode);
-                toast.success("Configuração salva com sucesso!");
             }
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao salvar configuração.");
         } finally {
             setLoading(false);
         }
