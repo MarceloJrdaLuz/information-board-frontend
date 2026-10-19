@@ -6,6 +6,7 @@ import { toast } from "react-toastify"
 import * as yup from "yup"
 
 import Button from "@/Components/Button"
+import Calendar from "@/Components/Calendar"
 import Dropdown from "@/Components/Dropdown"
 import DropdownMulti from "@/Components/DropdownMulti"
 import Input from "@/Components/Input"
@@ -22,6 +23,8 @@ import {
     IPublicWitnessArrangement,
     IPublicWitnessPublisher
 } from "@/types/publicWitness"
+import dayjs from "dayjs"
+import { Clock, Plus, RefreshCw, Trash2 } from "lucide-react"
 import CheckboxBoolean from "../../CheckboxBoolean"
 
 
@@ -171,7 +174,15 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
           title="Tipo de arranjo"
           options={["Fixo", "Data específica"]}
           selectedItem={isFixed ? "Fixo" : "Data específica"}
-          handleClick={opt => setIsFixed(opt === "Fixo")}
+          handleClick={opt => {
+            const fixed = opt === "Fixo"
+            setIsFixed(fixed)
+            if (fixed) {
+              setValue("date", undefined)
+            } else {
+              setWeekday(null)
+            }
+          }}
           full
           border
           textVisible
@@ -194,105 +205,211 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
             textVisible
           />
         ) : (
-          <Input type="date" registro={{ ...register("date") }} />
+          <div className="flex flex-col gap-1.5 my-1">
+            <Calendar
+              label="Data específica do arranjo:"
+              selectedDate={watch("date") || null}
+              handleDateChange={date =>
+                setValue("date", date ?? undefined, { shouldDirty: true, shouldValidate: true })
+              }
+              minDate={dayjs().format("YYYY-MM-DD")}
+              full
+            />
+            {errors.date && (
+              <span className="text-xs text-red-500 font-medium">
+                {errors.date.message}
+              </span>
+            )}
+          </div>
         )}
 
-        {/* 🔹 Slots */}
-        {fields.map((field, index) => (
-          <div key={field.id} className="border border-surface-300 rounded-xl bg-surface-200/20 p-4 shadow-xs flex flex-col gap-3">
-            <div className="flex gap-2 flex-wrap items-center">
-              <Input
-                placeholder="Início"
-                type="time"
-                registro={{ ...register(`timeSlots.${index}.start_time`) }}
-              />
-              <Input
-                placeholder="Fim"
-                type="time"
-                registro={{ ...register(`timeSlots.${index}.end_time`) }}
-              />
-
-            </div>
-            <CheckboxBoolean
-              checked={watch(`timeSlots.${index}.is_rotative`) ?? false}
-              handleCheckboxChange={(checked) =>
-                setValue(`timeSlots.${index}.is_rotative`, checked, { shouldDirty: true })
-              }
-              label="Rodízio?"
-            />
-
-            {!watch(`timeSlots.${index}.is_rotative`) && (
-              <DropdownMulti<IPublicWitnessPublisher>
-                title="Publicadores fixos"
-                items={publishers ?? []}
-                selectedItems={slotPublishers[index] ?? []}
-                handleChange={items => {
-                  setSlotPublishers(prev => {
-                    const copy = [...prev]
-                    copy[index] = items
-                    return copy
-                  })
-                }}
-                labelKey="fullName"
-                searchable
-                full
-                border
-                textVisible
-              />
-            )}
-
-            {watch(`timeSlots.${index}.is_rotative`) && (
-              <div className="flex flex-col gap-1">
-                <DropdownMulti<IPublicWitnessPublisher>
-                  title="Preferência de publicadores para este horário (opcional)"
-                  items={publishers ?? []}
-                  selectedItems={slotPreferences[index] ?? []}
-                  handleChange={items => {
-                    setSlotPreferences(prev => {
-                      const copy = [...prev]
-                      copy[index] = items
-                      return copy
-                    })
-                  }}
-                  labelKey="fullName"
-                  searchable
-                  full
-                  border
-                  textVisible
-                />
-                <span className="text-xs text-typography-500 italic px-1">
-                  Publicadores com preferência definida apenas neste horário nunca serão colocados em outro pelo gerador automático.
+        {/* Seção de Horários */}
+        <div className="flex flex-col gap-4 mt-2">
+          <div className="flex items-center justify-between pt-2 pb-1 border-b border-surface-300">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-primary-100/40 text-primary-200">
+                <Clock className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-typography-800 block">
+                  Turnos e Horários
+                </span>
+                <span className="text-[11px] text-typography-500">
+                  Configure os períodos e a equipe de publicadores
                 </span>
               </div>
-            )}
-
-            <Button
-              outline
-              type="button"
-              className="text-red-500"
-              onClick={() => {
-                remove(index)
-                setSlotPublishers(prev => prev.filter((_, i) => i !== index))
-                setSlotPreferences(prev => prev.filter((_, i) => i !== index))
-              }}
-            >
-              Remover horário
-            </Button>
-
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-200 text-typography-700">
+              {fields.length} {fields.length === 1 ? "turno" : "turnos"}
+            </span>
           </div>
-        ))}
 
-        <Button
-          type="button"
-          outline
-          onClick={() => {
-            append({ start_time: "", end_time: "", is_rotative: false })
-            setSlotPublishers(prev => [...prev, []])
-            setSlotPreferences(prev => [...prev, []])
-          }}
-        >
-          + Adicionar horário
-        </Button>
+          {fields.map((field, index) => {
+            const isRotative = watch(`timeSlots.${index}.is_rotative`) ?? false
+            const startTime = watch(`timeSlots.${index}.start_time`)
+            const endTime = watch(`timeSlots.${index}.end_time`)
+
+            return (
+              <div
+                key={field.id}
+                className="relative rounded-2xl border border-surface-300 bg-surface-100/60 dark:bg-surface-800/30 p-4 sm:p-5 shadow-xs transition hover:border-surface-400 flex flex-col gap-4"
+              >
+                {/* Header do card do turno */}
+                <div className="flex items-center justify-between gap-2 pb-2 border-b border-surface-200 dark:border-surface-700/60">
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary-200/15 text-primary-200 text-xs font-bold">
+                      {index + 1}
+                    </span>
+                    <span className="text-xs font-semibold text-typography-800">
+                      Turno {index + 1}
+                      {startTime && endTime && (
+                        <span className="ml-2 font-mono text-[11px] text-typography-500 bg-surface-200 dark:bg-surface-700/60 px-2 py-0.5 rounded-md font-normal">
+                          {startTime} às {endTime}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+
+                  {fields.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        remove(index)
+                        setSlotPublishers(prev => prev.filter((_, i) => i !== index))
+                        setSlotPreferences(prev => prev.filter((_, i) => i !== index))
+                      }}
+                      className="text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition"
+                      title="Remover este horário"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Grid de Horários */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider block mb-1">
+                      Início
+                    </span>
+                    <Input
+                      placeholder="08:00"
+                      type="time"
+                      registro={{ ...register(`timeSlots.${index}.start_time`) }}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider block mb-1">
+                      Fim
+                    </span>
+                    <Input
+                      placeholder="10:00"
+                      type="time"
+                      registro={{ ...register(`timeSlots.${index}.end_time`) }}
+                    />
+                  </div>
+                </div>
+
+                {/* Alternância Rodízio / Fixo */}
+                <div className="rounded-xl border border-surface-200 dark:border-surface-700/50 bg-surface-200/40 p-3 flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <RefreshCw
+                        className={`w-4 h-4 ${
+                          isRotative ? "text-primary-200" : "text-typography-400"
+                        }`}
+                      />
+                      <span className="text-xs font-semibold text-typography-800">
+                        Modo Rodízio Automático
+                      </span>
+                    </div>
+                    <CheckboxBoolean
+                      id={`rotative-edit-${index}`}
+                      checked={isRotative}
+                      handleCheckboxChange={checked =>
+                        setValue(`timeSlots.${index}.is_rotative`, checked, {
+                          shouldDirty: true
+                        })
+                      }
+                    />
+                  </div>
+                  <p className="text-[11px] text-typography-500">
+                    {isRotative
+                      ? "O sistema distribui publicadores rotativamente a cada escala mensal."
+                      : "Publicadores específicos fixos designados diretamente para este horário."}
+                  </p>
+                </div>
+
+                {/* Seletores de Publicadores */}
+                {!isRotative ? (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
+                      Publicadores Fixos do Horário
+                    </span>
+                    <DropdownMulti<IPublicWitnessPublisher>
+                      title="Publicadores fixos"
+                      items={publishers ?? []}
+                      selectedItems={slotPublishers[index] ?? []}
+                      handleChange={items => {
+                        setSlotPublishers(prev => {
+                          const copy = [...prev]
+                          copy[index] = items
+                          return copy
+                        })
+                      }}
+                      labelKey="fullName"
+                      searchable
+                      full
+                      border
+                      textVisible
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
+                      Preferência de Publicadores (Opcional)
+                    </span>
+                    <DropdownMulti<IPublicWitnessPublisher>
+                      title="Preferência de publicadores para este horário"
+                      items={publishers ?? []}
+                      selectedItems={slotPreferences[index] ?? []}
+                      handleChange={items => {
+                        setSlotPreferences(prev => {
+                          const copy = [...prev]
+                          copy[index] = items
+                          return copy
+                        })
+                      }}
+                      labelKey="fullName"
+                      searchable
+                      full
+                      border
+                      textVisible
+                    />
+                    <span className="text-[11px] text-typography-500 italic px-0.5">
+                      Publicadores com preferência definida apenas neste horário nunca serão colocados em outro pelo gerador automático.
+                    </span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          <button
+            type="button"
+            onClick={() => {
+              append({ start_time: "", end_time: "", is_rotative: false })
+              setSlotPublishers(prev => [...prev, []])
+              setSlotPreferences(prev => [...prev, []])
+            }}
+            className="w-full py-3 px-4 rounded-xl border-2 border-dashed border-primary-200/50 hover:border-primary-200 hover:bg-primary-50/50 dark:hover:bg-primary-950/20 text-primary-200 dark:text-primary-300 font-semibold text-xs flex items-center justify-center gap-2 transition group shadow-2xs"
+          >
+            <div className="w-5 h-5 rounded-full bg-primary-200/15 group-hover:bg-primary-200/25 flex items-center justify-center transition">
+              <Plus className="w-3.5 h-3.5" />
+            </div>
+            <span>Adicionar outro horário</span>
+          </button>
+        </div>
 
         <Button
           type="submit"
