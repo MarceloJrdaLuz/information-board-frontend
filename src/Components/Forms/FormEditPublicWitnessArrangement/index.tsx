@@ -224,24 +224,26 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
         )}
 
         {/* Seção de Horários */}
-        <div className="flex flex-col gap-4 mt-2">
-          <div className="flex items-center justify-between pt-2 pb-1 border-b border-surface-300">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-primary-100/40 text-primary-200">
+        <div className="flex flex-col gap-3 sm:gap-4 mt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 pb-2 border-b border-surface-300">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="p-1.5 rounded-lg bg-primary-100/40 text-primary-200 shrink-0">
                 <Clock className="w-4 h-4" />
               </div>
-              <div>
-                <span className="text-sm font-bold text-typography-800 block">
-                  Turnos e Horários
-                </span>
-                <span className="text-[11px] text-typography-500">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-typography-800">
+                    Turnos e Horários
+                  </span>
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-surface-200 text-typography-700 whitespace-nowrap">
+                    {fields.length} {fields.length === 1 ? "turno" : "turnos"}
+                  </span>
+                </div>
+                <span className="text-[11px] text-typography-500 block leading-tight mt-0.5">
                   Configure os períodos e a equipe de publicadores
                 </span>
               </div>
             </div>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-200 text-typography-700">
-              {fields.length} {fields.length === 1 ? "turno" : "turnos"}
-            </span>
           </div>
 
           {fields.map((field, index) => {
@@ -252,22 +254,22 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
             return (
               <div
                 key={field.id}
-                className="relative rounded-2xl border border-surface-300 bg-surface-100/60 dark:bg-surface-800/30 p-4 sm:p-5 shadow-xs transition hover:border-surface-400 flex flex-col gap-4"
+                className="relative rounded-2xl border border-surface-300 bg-surface-100/60 dark:bg-surface-800/30 p-3.5 sm:p-5 shadow-xs transition hover:border-surface-400 flex flex-col gap-3.5 sm:gap-4"
               >
                 {/* Header do card do turno */}
                 <div className="flex items-center justify-between gap-2 pb-2 border-b border-surface-200 dark:border-surface-700/60">
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary-200/15 text-primary-200 text-xs font-bold">
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary-200/15 text-primary-200 text-xs font-bold shrink-0">
                       {index + 1}
                     </span>
-                    <span className="text-xs font-semibold text-typography-800">
+                    <span className="text-xs font-semibold text-typography-800 shrink-0">
                       Turno {index + 1}
-                      {startTime && endTime && (
-                        <span className="ml-2 font-mono text-[11px] text-typography-500 bg-surface-200 dark:bg-surface-700/60 px-2 py-0.5 rounded-md font-normal">
-                          {startTime} às {endTime}
-                        </span>
-                      )}
                     </span>
+                    {startTime && endTime && (
+                      <span className="font-mono text-[11px] text-typography-600 bg-surface-200/80 dark:bg-surface-700/60 px-2 py-0.5 rounded-md whitespace-nowrap">
+                        {startTime.slice(0, 5)} – {endTime.slice(0, 5)}
+                      </span>
+                    )}
                   </div>
 
                   {fields.length > 1 && (
@@ -278,7 +280,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
                         setSlotPublishers(prev => prev.filter((_, i) => i !== index))
                         setSlotPreferences(prev => prev.filter((_, i) => i !== index))
                       }}
-                      className="text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition"
+                      className="text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 p-1.5 rounded-lg transition shrink-0 ml-auto"
                       title="Remover este horário"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -287,27 +289,17 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
                 </div>
 
                 {/* Grid de Horários */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider block mb-1">
-                      Início
-                    </span>
-                    <Input
-                      placeholder="08:00"
-                      type="time"
-                      registro={{ ...register(`timeSlots.${index}.start_time`) }}
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider block mb-1">
-                      Fim
-                    </span>
-                    <Input
-                      placeholder="10:00"
-                      type="time"
-                      registro={{ ...register(`timeSlots.${index}.end_time`) }}
-                    />
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                  <Input
+                    placeholder="Horário de Início"
+                    type="time"
+                    registro={{ ...register(`timeSlots.${index}.start_time`) }}
+                  />
+                  <Input
+                    placeholder="Horário de Término"
+                    type="time"
+                    registro={{ ...register(`timeSlots.${index}.end_time`) }}
+                  />
                 </div>
 
                 {/* Alternância Rodízio / Fixo */}
