@@ -275,41 +275,99 @@ export default function FormAddPublicWitnessArrangement() {
                                     />
                                 </div>
 
-                                {/* Alternância Rodízio / Fixo */}
-                                <div className="rounded-xl border border-surface-200 dark:border-surface-700/50 bg-surface-200/40 p-3 flex flex-col gap-1.5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <RefreshCw
-                                                className={`w-4 h-4 ${
-                                                    isRotative ? "text-primary-200" : "text-typography-400"
-                                                }`}
-                                            />
-                                            <span className="text-xs font-semibold text-typography-800">
-                                                Modo Rodízio Automático
-                                            </span>
+                                {isFixed ? (
+                                    <>
+                                        {/* Alternância Rodízio / Fixo */}
+                                        <div className="rounded-xl border border-surface-200 dark:border-surface-700/50 bg-surface-200/40 p-3 flex flex-col gap-1.5">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <RefreshCw
+                                                        className={`w-4 h-4 ${
+                                                            isRotative ? "text-primary-200" : "text-typography-400"
+                                                        }`}
+                                                    />
+                                                    <span className="text-xs font-semibold text-typography-800">
+                                                        Modo Rodízio Automático
+                                                    </span>
+                                                </div>
+                                                <CheckboxBoolean
+                                                    id={`rotative-add-${index}`}
+                                                    checked={isRotative}
+                                                    handleCheckboxChange={checked =>
+                                                        setValue(`timeSlots.${index}.is_rotative`, checked, {
+                                                            shouldDirty: true
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                            <p className="text-[11px] text-typography-500">
+                                                {isRotative
+                                                    ? "O sistema distribui publicadores rotativamente a cada escala mensal."
+                                                    : "Publicadores específicos fixos designados diretamente para este horário."}
+                                            </p>
                                         </div>
-                                        <CheckboxBoolean
-                                            id={`rotative-add-${index}`}
-                                            checked={isRotative}
-                                            handleCheckboxChange={checked =>
-                                                setValue(`timeSlots.${index}.is_rotative`, checked, {
-                                                    shouldDirty: true
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                    <p className="text-[11px] text-typography-500">
-                                        {isRotative
-                                            ? "O sistema distribui publicadores rotativamente a cada escala mensal."
-                                            : "Publicadores específicos fixos designados diretamente para este horário."}
-                                    </p>
-                                </div>
 
-                                {/* Seletores de Publicadores */}
-                                {!isRotative ? (
+                                        {/* Seletores de Publicadores */}
+                                        {!isRotative ? (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
+                                                    Publicadores Fixos do Horário
+                                                </span>
+                                                <DropdownMulti<IPublisher>
+                                                    title="Selecione os publicadores (opcional)"
+                                                    items={publishers}
+                                                    selectedItems={watch(`timeSlots.${index}.defaultPublishers`) ?? []}
+                                                    handleChange={selected => {
+                                                        setValue(
+                                                            `timeSlots.${index}.defaultPublishers`,
+                                                            selected,
+                                                            { shouldDirty: true }
+                                                        )
+                                                    }}
+                                                    border
+                                                    full
+                                                    position="left"
+                                                    labelKey="fullName"
+                                                    textVisible
+                                                    searchable
+                                                    emptyMessage="Nenhum publicador encontrado"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
+                                                    Preferência de Publicadores (Opcional)
+                                                </span>
+                                                <DropdownMulti<IPublisher>
+                                                    title="Publicadores que preferem este horário"
+                                                    items={publishers}
+                                                    selectedItems={watch(`timeSlots.${index}.preferences`) ?? []}
+                                                    handleChange={selected => {
+                                                        setValue(
+                                                            `timeSlots.${index}.preferences`,
+                                                            selected,
+                                                            { shouldDirty: true }
+                                                        )
+                                                    }}
+                                                    border
+                                                    full
+                                                    position="left"
+                                                    labelKey="fullName"
+                                                    textVisible
+                                                    searchable
+                                                    emptyMessage="Nenhum publicador encontrado"
+                                                />
+                                                <span className="text-[11px] text-typography-500 italic px-0.5">
+                                                    Publicadores com preferência definida neste turno não serão alocados em outros pelo gerador automático.
+                                                </span>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    /* Para data específica: 100% manual e direto */
                                     <div className="flex flex-col gap-1">
                                         <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
-                                            Publicadores Fixos do Horário
+                                            Publicadores do Horário
                                         </span>
                                         <DropdownMulti<IPublisher>
                                             title="Selecione os publicadores (opcional)"
@@ -330,34 +388,6 @@ export default function FormAddPublicWitnessArrangement() {
                                             searchable
                                             emptyMessage="Nenhum publicador encontrado"
                                         />
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
-                                            Preferência de Publicadores (Opcional)
-                                        </span>
-                                        <DropdownMulti<IPublisher>
-                                            title="Publicadores que preferem este horário"
-                                            items={publishers}
-                                            selectedItems={watch(`timeSlots.${index}.preferences`) ?? []}
-                                            handleChange={selected => {
-                                                setValue(
-                                                    `timeSlots.${index}.preferences`,
-                                                    selected,
-                                                    { shouldDirty: true }
-                                                )
-                                            }}
-                                            border
-                                            full
-                                            position="left"
-                                            labelKey="fullName"
-                                            textVisible
-                                            searchable
-                                            emptyMessage="Nenhum publicador encontrado"
-                                        />
-                                        <span className="text-[11px] text-typography-500 italic px-0.5">
-                                            Publicadores com preferência definida neste turno não serão alocados em outros pelo gerador automático.
-                                        </span>
                                     </div>
                                 )}
                             </div>

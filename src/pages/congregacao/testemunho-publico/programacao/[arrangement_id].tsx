@@ -237,70 +237,85 @@ function ArrangementMonthSchedulePage() {
             </div>
           </div>
 
-          {/* Barra Superior de Controles e Ações (Idêntica ao Meio de Semana) */}
+          {/* Barra Superior de Controles e Ações */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-100 p-4 rounded-xl border border-surface-300 shadow-sm sticky top-0 z-20 backdrop-blur-md">
-            {/* Seletor de Mês e Ano */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setMonthOffset(m => m - 1)}
-                className="h-9 w-9 border-surface-300 hover:bg-surface-200"
-                title="Mês anterior"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            {/* Seletor de Mês e Ano (Arranjos Fixos) ou Exibição da Data (Data Específica) */}
+            {arrangement.is_fixed ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMonthOffset(m => m - 1)}
+                  className="h-9 w-9 border-surface-300 hover:bg-surface-200"
+                  title="Mês anterior"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
 
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-200 rounded-lg">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-200 rounded-lg">
+                  <CalendarIcon className="h-4 w-4 text-primary-200" />
+                  <span className="font-bold text-sm text-typography-900 min-w-[150px] text-center">
+                    {capitalizedMonthName}
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMonthOffset(m => m + 1)}
+                  className="h-9 w-9 border-surface-300 hover:bg-surface-200"
+                  title="Próximo mês"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+
+                {monthOffset !== 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setMonthOffset(0)}
+                    className="text-xs text-primary-200 hover:bg-surface-200 h-9 px-2"
+                  >
+                    Mês atual
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-3.5 py-1.5 bg-surface-200 rounded-lg">
                 <CalendarIcon className="h-4 w-4 text-primary-200" />
-                <span className="font-bold text-sm text-typography-900 min-w-[150px] text-center">
-                  {capitalizedMonthName}
+                <span className="font-bold text-sm text-typography-900">
+                  {arrangement.date
+                    ? dayjs(arrangement.date).format("DD [de] MMMM [de] YYYY")
+                    : "Data específica"}
                 </span>
               </div>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setMonthOffset(m => m + 1)}
-                className="h-9 w-9 border-surface-300 hover:bg-surface-200"
-                title="Próximo mês"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-
-              {monthOffset !== 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMonthOffset(0)}
-                  className="text-xs text-primary-200 hover:bg-surface-200 h-9 px-2"
-                >
-                  Mês atual
-                </Button>
-              )}
-            </div>
+            )}
 
             {/* Botões de Ação */}
             <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsPreferencesModalOpen(true)}
-                className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-              >
-                <SlidersHorizontal className="h-4 w-4 text-amber-600" />
-                <span>Preferências de Horário</span>
-              </Button>
+              {arrangement.is_fixed && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsPreferencesModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                  >
+                    <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+                    <span>Preferências de Horário</span>
+                  </Button>
 
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsGenerateModalOpen(true)}
-                className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-              >
-                <Wand2 className="h-4 w-4 text-primary-200" />
-                <span>Auto-Preencher / Gerar...</span>
-              </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsGenerateModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                  >
+                    <Wand2 className="h-4 w-4 text-primary-200" />
+                    <span>Auto-Preencher / Gerar...</span>
+                  </Button>
+                </>
+              )}
 
               <Button
                 size="sm"
@@ -327,7 +342,7 @@ function ArrangementMonthSchedulePage() {
             <div className="bg-surface-100 border border-surface-300 rounded-xl p-3.5 flex flex-col gap-1 shadow-xs">
               <div className="flex items-center justify-between text-typography-500">
                 <span className="text-xs font-semibold uppercase tracking-wider">
-                  Dias no Mês
+                  {arrangement.is_fixed ? "Dias no Mês" : "Data do Arranjo"}
                 </span>
                 <CalendarDays className="w-4 h-4 text-primary-200" />
               </div>
@@ -339,7 +354,7 @@ function ArrangementMonthSchedulePage() {
                 )}
               </span>
               <span className="text-[11px] text-typography-500">
-                dias programados para este carrinho
+                {arrangement.is_fixed ? "dias programados para este carrinho" : "data programada pontual"}
               </span>
             </div>
 
