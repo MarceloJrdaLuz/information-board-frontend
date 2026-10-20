@@ -70,7 +70,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         });
     };
 
-    const chairmanName = getPublisherName(schedule.chairman) || "Presidente";
+    const chairmanName = getPublisherName(schedule.chairman, schedule.custom_chairman_name || (schedule as any).customChairmanName) || "Presidente";
 
     // =========================================================================
     // 1. INÍCIO: CÂNTICO INICIAL E ORAÇÃO (5 min sempre)
@@ -84,7 +84,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         durationMinutes: 5,
         songNumber: schedule.songOpen,
         assignedRoleLabel: "Oração Inicial",
-        assignedName: getPublisherName(schedule.openingPrayer) || "A designar",
+        assignedName: getPublisherName(schedule.openingPrayer, schedule.custom_opening_prayer_name || (schedule as any).customOpeningPrayerName) || "A designar",
         isSong: true
     });
 
@@ -207,7 +207,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         );
 
         const auxAssignedName = auxPart ? getPublisherName(auxPart.assignedPublisher, auxPart.custom_speaker_name || (auxPart as any).customSpeakerName) : null;
-        const auxAssistantName = auxPart ? getPublisherName((auxPart as any).assistantPublisher || (auxPart as any).assignedAssistant) : null;
+        const auxAssistantName = auxPart ? getPublisherName((auxPart as any).assistantPublisher || (auxPart as any).assignedAssistant, auxPart.custom_assistant_name || (auxPart as any).customAssistantName) : null;
 
         const isTalk = part.partType === MidweekPartType.TALK || part.partType === MidweekPartType.STUDENT_TALK;
         const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY || part.title?.toLowerCase().includes("o que você diria");
@@ -224,7 +224,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             durationMinutes: part.timeMinutes || 4,
             assignedRoleLabel: isWWYS ? "Orador (Consideração)" : isTalk ? "Orador" : "Titular",
             assignedName: getPublisherName(part.assignedPublisher, part.custom_speaker_name || (part as any).customSpeakerName) || "A designar",
-            assistantName: isWWYS ? null : getPublisherName((part as any).assistantPublisher || (part as any).assignedAssistant),
+            assistantName: isWWYS ? null : getPublisherName((part as any).assistantPublisher || (part as any).assignedAssistant, part.custom_assistant_name || (part as any).customAssistantName),
             auxAssignedName: isWWYS ? null : auxAssignedName,
             auxAssistantName: isWWYS ? null : auxAssistantName,
             sourceMaterial: part.sourceMaterial || null,
@@ -332,8 +332,8 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
             sectionColor: '#973934',
             durationMinutes: cbsPart?.timeMinutes || 30,
             assignedRoleLabel: "Dirigente",
-            assignedName: getPublisherName(schedule.cbsConductor) || "Dirigente a designar",
-            readerName: getPublisherName(schedule.cbsReader) || "Leitor a designar",
+            assignedName: getPublisherName(schedule.cbsConductor, schedule.custom_cbs_conductor_name || (schedule as any).customCbsConductorName) || "Dirigente a designar",
+            readerName: getPublisherName(schedule.cbsReader, schedule.custom_cbs_reader_name || (schedule as any).customCbsReaderName) || "Leitor a designar",
             sourceMaterial: cbsPart?.sourceMaterial || null
         });
     }
@@ -365,7 +365,7 @@ export function buildMidweekTimeline(schedule: IMidweekSchedule, meetingStartTim
         durationMinutes: 5,
         songNumber: schedule.songEnd,
         assignedRoleLabel: "Oração Final",
-        assignedName: getPublisherName(schedule.closingPrayer) || "A designar",
+        assignedName: getPublisherName(schedule.closingPrayer, schedule.custom_closing_prayer_name || (schedule as any).customClosingPrayerName) || "A designar",
         isSong: true
     });
 

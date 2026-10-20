@@ -51,7 +51,8 @@ const MONTH_NAMES = [
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-const getDisplayName = (pub?: IPublisherMini | null): string => {
+const getDisplayName = (pub?: IPublisherMini | null, customName?: string | null): string => {
+    if (customName && customName.trim()) return customName.trim();
     if (!pub) return "—";
     const nick = pub.nickname?.trim();
     if (nick) return nick;
@@ -611,7 +612,7 @@ const MidweekModel1Document: React.FC<{
                                 </View>
                                 <View style={styles1.weekChairmanBox}>
                                     <Text style={styles1.weekHeaderLabel}>Presidente:</Text>
-                                    <Text style={styles1.weekHeaderName}>{getDisplayName(schedule.chairman)}</Text>
+                                    <Text style={styles1.weekHeaderName}>{getDisplayName(schedule.chairman, schedule.custom_chairman_name)}</Text>
                                 </View>
                             </View>
 
@@ -625,7 +626,7 @@ const MidweekModel1Document: React.FC<{
                                 <View style={styles1.colAssigneeContainer}>
                                     <View style={styles1.assigneeGridRowSingle}>
                                         <Text style={styles1.assigneeLabelCellSingle}>Oração:</Text>
-                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.openingPrayer)}</Text>
+                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.openingPrayer, schedule.custom_opening_prayer_name)}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -671,17 +672,17 @@ const MidweekModel1Document: React.FC<{
                                                 hasAuxRoom ? (
                                                     <View style={styles1.assigneeGridRowDual}>
                                                         <Text style={styles1.assigneeLabelCellDual}>Estudante:</Text>
-                                                        <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assignedPublisher)}</Text>
-                                                        <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxBibleReadingPart?.assignedPublisher)}</Text>
+                                                        <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
+                                                        <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxBibleReadingPart?.assignedPublisher, auxBibleReadingPart?.custom_speaker_name)}</Text>
                                                     </View>
                                                 ) : (
                                                     <View style={styles1.assigneeGridRowSingle}>
                                                         <Text style={styles1.assigneeLabelCellSingle}>Estudante:</Text>
-                                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assignedPublisher)}</Text>
+                                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
                                                     </View>
                                                 )
                                             ) : (
-                                                <Text style={styles1.assigneeSingleName}>{getDisplayName(part.assignedPublisher)}</Text>
+                                                <Text style={styles1.assigneeSingleName}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
                                             )}
                                         </View>
                                     </View>
@@ -716,19 +717,19 @@ const MidweekModel1Document: React.FC<{
 
                                         <View style={styles1.colAssigneeContainer}>
                                             {part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY ? (
-                                                <Text style={styles1.assigneeSingleName}>{getDisplayName(part.assignedPublisher)}</Text>
+                                                <Text style={styles1.assigneeSingleName}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
                                             ) : hasAuxRoom ? (
                                                 <>
                                                     <View style={styles1.assigneeGridRowDual}>
                                                         <Text style={styles1.assigneeLabelCellDual}>Estudante:</Text>
-                                                        <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assignedPublisher)}</Text>
-                                                        <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxPart?.assignedPublisher)}</Text>
+                                                        <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
+                                                        <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxPart?.assignedPublisher, auxPart?.custom_speaker_name)}</Text>
                                                     </View>
                                                     {part.requiresAssistant && (
                                                         <View style={[styles1.assigneeGridRowDual, { marginTop: 2 }]}>
-                                                            <Text style={styles1.assigneeLabelCellDual}>Ajudante:</Text>
-                                                            <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assistantPublisher)}</Text>
-                                                            <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxPart?.assistantPublisher)}</Text>
+                                                             <Text style={styles1.assigneeLabelCellDual}>Ajudante:</Text>
+                                                             <Text style={styles1.assigneeMainCellDual}>{getDisplayName(part.assistantPublisher, part.custom_assistant_name)}</Text>
+                                                             <Text style={styles1.assigneeAuxCellDual}>{getDisplayName(auxPart?.assistantPublisher, auxPart?.custom_assistant_name)}</Text>
                                                         </View>
                                                     )}
                                                 </>
@@ -736,12 +737,12 @@ const MidweekModel1Document: React.FC<{
                                                 <>
                                                     <View style={styles1.assigneeGridRowSingle}>
                                                         <Text style={styles1.assigneeLabelCellSingle}>Estudante:</Text>
-                                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assignedPublisher)}</Text>
+                                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assignedPublisher, part.custom_speaker_name)}</Text>
                                                     </View>
                                                     {part.requiresAssistant && (
                                                         <View style={[styles1.assigneeGridRowSingle, { marginTop: 2 }]}>
                                                             <Text style={styles1.assigneeLabelCellSingle}>Ajudante:</Text>
-                                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assistantPublisher)}</Text>
+                                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(part.assistantPublisher, part.custom_assistant_name)}</Text>
                                                         </View>
                                                     )}
                                                 </>
@@ -815,11 +816,11 @@ const MidweekModel1Document: React.FC<{
                                     <View style={styles1.colAssigneeContainer}>
                                         <View style={styles1.assigneeGridRowSingle}>
                                             <Text style={styles1.assigneeLabelCellSingle}>Dirigente:</Text>
-                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.cbsConductor)}</Text>
+                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.cbsConductor, schedule.custom_cbs_conductor_name)}</Text>
                                         </View>
                                         <View style={[styles1.assigneeGridRowSingle, { marginTop: 2 }]}>
                                             <Text style={styles1.assigneeLabelCellSingle}>Leitor:</Text>
-                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.cbsReader)}</Text>
+                                            <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.cbsReader, schedule.custom_cbs_reader_name)}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -842,7 +843,7 @@ const MidweekModel1Document: React.FC<{
                                 <View style={styles1.colAssigneeContainer}>
                                     <View style={styles1.assigneeGridRowSingle}>
                                         <Text style={styles1.assigneeLabelCellSingle}>Oração:</Text>
-                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.closingPrayer)}</Text>
+                                        <Text style={styles1.assigneeNameCellSingle}>{getDisplayName(schedule.closingPrayer, schedule.custom_closing_prayer_name)}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -967,12 +968,12 @@ const MidweekModel2Document: React.FC<{
                                 <View style={styles2.weekRolesColumn}>
                                     <View style={styles2.roleRow}>
                                         <Text style={styles2.roleLabel}>Presidente:</Text>
-                                        <Text style={styles2.roleValue}>{getDisplayName(schedule.chairman)}</Text>
+                                        <Text style={styles2.roleValue}>{getDisplayName(schedule.chairman, schedule.custom_chairman_name)}</Text>
                                     </View>
                                     {hasAuxRoom && (
                                         <View style={styles2.roleRow}>
                                             <Text style={styles2.roleLabel}>Conselheiro da sala B:</Text>
-                                            <Text style={styles2.roleValue}>{getDisplayName(schedule.auxCounselor1)}</Text>
+                                            <Text style={styles2.roleValue}>{getDisplayName(schedule.auxCounselor1, schedule.custom_aux_counselor_1_name)}</Text>
                                         </View>
                                     )}
                                 </View>
@@ -983,7 +984,7 @@ const MidweekModel2Document: React.FC<{
                                 <Text style={styles2.colTime}></Text>
                                 <Text style={styles2.colContent}>• Cântico {schedule.songOpen || "—"}</Text>
                                 <Text style={styles2.colLabelTag}>Oração:</Text>
-                                <Text style={styles2.colSingleName}>{getDisplayName(schedule.openingPrayer)}</Text>
+                                <Text style={styles2.colSingleName}>{getDisplayName(schedule.openingPrayer, schedule.custom_opening_prayer_name)}</Text>
                             </View>
                             <View style={styles2.cleanRow}>
                                 <Text style={styles2.colTime}></Text>
@@ -1016,11 +1017,11 @@ const MidweekModel2Document: React.FC<{
                                             <>
                                                 <Text style={styles2.colLabelTag}>Estudante:</Text>
                                                 <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
-                                                    {getDisplayName(part.assignedPublisher)}
+                                                    {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                                 </Text>
                                                 {hasAuxRoom && (
                                                     <Text style={styles2.colMainRoom}>
-                                                        {getDisplayName(auxBibleReadingPart?.assignedPublisher)}
+                                                        {getDisplayName(auxBibleReadingPart?.assignedPublisher, auxBibleReadingPart?.custom_speaker_name)}
                                                     </Text>
                                                 )}
                                             </>
@@ -1028,7 +1029,7 @@ const MidweekModel2Document: React.FC<{
                                             <>
                                                 <Text style={styles2.colLabelTag} />
                                                 <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
-                                                    {getDisplayName(part.assignedPublisher)}
+                                                    {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                                 </Text>
                                                 {hasAuxRoom && <Text style={styles2.colMainRoom} />}
                                             </>
@@ -1054,12 +1055,12 @@ const MidweekModel2Document: React.FC<{
                                 const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY;
                                 const auxPart = ministryAuxParts[index];
 
-                                const mainStudent = getDisplayName(part.assignedPublisher);
-                                const mainAssistant = part.requiresAssistant ? getDisplayName(part.assistantPublisher) : null;
+                                const mainStudent = getDisplayName(part.assignedPublisher, part.custom_speaker_name);
+                                const mainAssistant = part.requiresAssistant ? getDisplayName(part.assistantPublisher, part.custom_assistant_name) : null;
                                 const mainText = mainAssistant ? `${mainStudent} / ${mainAssistant}` : mainStudent;
 
-                                const auxStudent = auxPart ? getDisplayName(auxPart.assignedPublisher) : "—";
-                                const auxAssistant = auxPart && auxPart.requiresAssistant ? getDisplayName(auxPart.assistantPublisher) : null;
+                                const auxStudent = auxPart ? getDisplayName(auxPart.assignedPublisher, auxPart.custom_speaker_name) : "—";
+                                const auxAssistant = auxPart && auxPart.requiresAssistant ? getDisplayName(auxPart.assistantPublisher, auxPart.custom_assistant_name) : null;
                                 const auxText = auxAssistant ? `${auxStudent} / ${auxAssistant}` : auxStudent;
 
                                 return (
@@ -1129,7 +1130,7 @@ const MidweekModel2Document: React.FC<{
                                     </Text>
                                     <Text style={styles2.colLabelTag}>Dirigente/leitor:</Text>
                                     <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
-                                        {getDisplayName(schedule.cbsConductor)} / {getDisplayName(schedule.cbsReader)}
+                                        {getDisplayName(schedule.cbsConductor, schedule.custom_cbs_conductor_name)} / {getDisplayName(schedule.cbsReader, schedule.custom_cbs_reader_name)}
                                     </Text>
                                     {hasAuxRoom && <Text style={styles2.colMainRoom} />}
                                 </View>
@@ -1145,7 +1146,7 @@ const MidweekModel2Document: React.FC<{
                                 <Text style={styles2.colContent}>• Cântico {schedule.songEnd || "—"}</Text>
                                 <Text style={styles2.colLabelTag}>Oração:</Text>
                                 <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
-                                    {getDisplayName(schedule.closingPrayer)}
+                                    {getDisplayName(schedule.closingPrayer, schedule.custom_closing_prayer_name)}
                                 </Text>
                                 {hasAuxRoom && <Text style={styles2.colMainRoom} />}
                             </View>
