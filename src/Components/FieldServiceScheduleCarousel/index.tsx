@@ -147,19 +147,27 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
         <div className="w-full flex flex-col gap-5 mt-4">
             {/* ABAS SUPERIORES: SAÍDAS SEMANAIS VS ESCALA DE DIRIGENTES */}
             {hasWeekly && hasRotation && (
-                <div className="flex items-center p-1 bg-surface-200 rounded-xl border border-surface-300 w-full sm:w-auto self-start gap-1">
+                <div className="w-full sm:w-auto inline-flex items-center p-1 bg-surface-200/80 rounded-2xl border border-surface-300 shadow-2xs gap-1">
                     <button
                         type="button"
                         onClick={() => setActiveMainTab("weekly")}
-                        className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                             activeMainTab === "weekly"
-                                ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/60"
+                                ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/80"
                                 : "text-typography-600 hover:text-typography-900 hover:bg-surface-100/50"
                         }`}
                     >
-                        <Clock className="w-4 h-4 text-primary-200" />
-                        <span>Programação Semanal</span>
-                        <span className="text-[11px] px-1.5 py-0.2 rounded-full bg-primary-200/10 text-primary-200 font-semibold">
+                        <Clock className={`w-4 h-4 ${activeMainTab === "weekly" ? "text-primary-200" : "text-typography-400"}`} />
+                        <span>
+                            <span className="hidden sm:inline">Programação </span>Semanal
+                        </span>
+                        <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                                activeMainTab === "weekly"
+                                    ? "bg-primary-200 text-white shadow-2xs"
+                                    : "bg-surface-300/80 text-typography-600"
+                            }`}
+                        >
                             {weeklySchedules.length}
                         </span>
                     </button>
@@ -167,16 +175,24 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                     <button
                         type="button"
                         onClick={() => setActiveMainTab("rotation")}
-                        className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                             activeMainTab === "rotation"
-                                ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/60"
+                                ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/80"
                                 : "text-typography-600 hover:text-typography-900 hover:bg-surface-100/50"
                         }`}
                     >
-                        <Users className="w-4 h-4 text-primary-200" />
-                        <span>Escala de Dirigentes</span>
+                        <Users className={`w-4 h-4 ${activeMainTab === "rotation" ? "text-primary-200" : "text-typography-400"}`} />
+                        <span>
+                            <span className="hidden sm:inline">Escala de </span>Dirigentes
+                        </span>
                         {currentMonthSchedules.length > 0 && (
-                            <span className="text-[11px] px-1.5 py-0.2 rounded-full bg-surface-300 text-typography-700 font-semibold">
+                            <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                                    activeMainTab === "rotation"
+                                        ? "bg-primary-200 text-white shadow-2xs"
+                                        : "bg-surface-300/80 text-typography-600"
+                                }`}
+                            >
                                 {currentMonthSchedules.length}
                             </span>
                         )}
@@ -240,10 +256,10 @@ export default function FieldServiceCarousel({ fixedSchedules, rotationBlocks }:
                         {displayedDayGroups.map(group => (
                             <div
                                 key={group.weekdayIndex}
-                                className={`flex flex-col rounded-2xl bg-surface-100 border transition-all duration-200 shadow-xs overflow-hidden ${
+                                className={`flex flex-col rounded-2xl bg-surface-100 border transition-all duration-200 shadow-sm hover:shadow-md overflow-hidden ${
                                     group.isToday
                                         ? "border-primary-200 ring-1 ring-primary-200/30"
-                                        : "border-surface-300 hover:border-surface-400"
+                                        : "border-surface-300 hover:border-primary-200"
                                 }`}
                             >
                                 {/* Cabeçalho do Bloco do Dia */}
