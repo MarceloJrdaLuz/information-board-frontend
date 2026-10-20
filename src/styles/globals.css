@@ -17,6 +17,29 @@ body {
   background-color: rgb(var(--color-secondary-100));
 }
 
+/* Barra de rolagem personalizada padrão da página (idêntica à página restrita) */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-primary-200)) rgb(117 117 117);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background-color: rgb(117 117 117);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-primary-200));
+}
+
 
 #__next {
   min-height: 100%;
@@ -240,8 +263,14 @@ textarea:-webkit-autofill:active {
   box-sizing: border-box;
 }
 
-/* Classe para ocultar a barra de rolagem vertical */
+/* Classe para ocultar a barra de rolagem vertical e horizontal */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .hide-scrollbar::-webkit-scrollbar {
+  display: none;
   width: 0;
   height: 0;
 }
@@ -254,8 +283,14 @@ textarea:-webkit-autofill:active {
   background-color: transparent;
 }
 
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-primary-200)) rgb(117 117 117);
+}
+
 .thin-scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 .thin-scrollbar::-webkit-scrollbar-track {
