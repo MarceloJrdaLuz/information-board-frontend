@@ -465,8 +465,17 @@ function ArrangementCardItem({
           }
           className="w-full text-xs flex items-center justify-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white font-semibold py-2"
         >
-          <Calendar className="w-3.5 h-3.5" />
-          <span>Ver Programação Mensal</span>
+          {arrangement.is_fixed ? (
+            <>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Ver Programação Mensal</span>
+            </>
+          ) : (
+            <>
+              <CalendarRange className="w-3.5 h-3.5" />
+              <span>Ver Designações da Data</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

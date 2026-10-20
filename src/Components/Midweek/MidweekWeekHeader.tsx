@@ -18,20 +18,26 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
 }) => {
     const [presidentPrays, setPresidentPrays] = useState<boolean>(true);
 
-    const handleChairmanChange = (chairmanId: string | null) => {
+    const handleChairmanChange = (chairmanId: string | null, customName?: string | null) => {
+        const updateData: Partial<IMidweekSchedule> = {
+            chairman_id: chairmanId,
+            custom_chairman_name: customName ?? null
+        };
+
         if (presidentPrays) {
-            onUpdateSchedule({
-                chairman_id: chairmanId,
-                opening_prayer_id: chairmanId
-            });
-        } else {
-            onUpdateSchedule({ chairman_id: chairmanId });
+            updateData.opening_prayer_id = chairmanId;
+            updateData.custom_opening_prayer_name = customName ?? null;
         }
+
+        onUpdateSchedule(updateData);
     };
 
     const handleSyncPresidentPrayer = () => {
-        if (schedule.chairman_id) {
-            onUpdateSchedule({ opening_prayer_id: schedule.chairman_id });
+        if (schedule.chairman_id || schedule.custom_chairman_name) {
+            onUpdateSchedule({
+                opening_prayer_id: schedule.chairman_id,
+                custom_opening_prayer_name: schedule.custom_chairman_name || null
+            });
         }
     };
 
@@ -135,6 +141,7 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
                         scheduleId={schedule.id}
                         role="CHAIRMAN"
                         value={schedule.chairman_id}
+                        customName={schedule.custom_chairman_name}
                         publisher={schedule.chairman}
                         onChange={handleChairmanChange}
                         placeholder="Escolha o presidente..."
@@ -145,7 +152,8 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
                 <div className="flex flex-col gap-1.5 p-3 bg-surface-200 rounded-lg border border-surface-300">
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-typography-800">Oração Inicial</span>
-                        {schedule.chairman_id && schedule.opening_prayer_id !== schedule.chairman_id && (
+                        {(schedule.chairman_id || schedule.custom_chairman_name) &&
+                         (schedule.opening_prayer_id !== schedule.chairman_id || schedule.custom_opening_prayer_name !== schedule.custom_chairman_name) && (
                             <button
                                 type="button"
                                 onClick={handleSyncPresidentPrayer}
@@ -162,8 +170,12 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
                         scheduleId={schedule.id}
                         role="OPENING_PRAYER"
                         value={schedule.opening_prayer_id}
+                        customName={schedule.custom_opening_prayer_name}
                         publisher={schedule.openingPrayer}
-                        onChange={(pubId) => onUpdateSchedule({ opening_prayer_id: pubId })}
+                        onChange={(pubId, customName) => onUpdateSchedule({
+                            opening_prayer_id: pubId,
+                            custom_opening_prayer_name: customName ?? null
+                        })}
                         placeholder="Selecione o irmão..."
                     />
                 </div>
@@ -178,8 +190,12 @@ export const MidweekWeekHeader: React.FC<MidweekWeekHeaderProps> = ({
                         scheduleId={schedule.id}
                         role="CLOSING_PRAYER"
                         value={schedule.closing_prayer_id}
+                        customName={schedule.custom_closing_prayer_name}
                         publisher={schedule.closingPrayer}
-                        onChange={(pubId) => onUpdateSchedule({ closing_prayer_id: pubId })}
+                        onChange={(pubId, customName) => onUpdateSchedule({
+                            closing_prayer_id: pubId,
+                            custom_closing_prayer_name: customName ?? null
+                        })}
                         placeholder="Selecione o irmão..."
                     />
                 </div>

@@ -14,7 +14,8 @@ const MONTH_NAMES = [
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-const getDisplayName = (pub?: IPublisherMini | null): string => {
+const getDisplayName = (pub?: IPublisherMini | null, customName?: string | null): string => {
+    if (customName && customName.trim()) return customName.trim();
     if (!pub) return "";
     const nick = pub.nickname?.trim();
     if (nick) return nick;
@@ -385,7 +386,7 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
                                         <Text style={styles.fieldLabel}>Nome:</Text>
                                         <View style={styles.dottedLine}>
                                             <Text style={styles.fieldValueText}>
-                                                {getDisplayName(part.assignedPublisher)}
+                                                {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                             </Text>
                                         </View>
                                     </View>
@@ -395,7 +396,7 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
                                         <Text style={styles.fieldLabel}>Ajudante:</Text>
                                         <View style={styles.dottedLine}>
                                             <Text style={styles.fieldValueText}>
-                                                {part.requiresAssistant ? getDisplayName(part.assistantPublisher) : ""}
+                                                {part.requiresAssistant ? getDisplayName(part.assistantPublisher, part.custom_assistant_name) : ""}
                                             </Text>
                                         </View>
                                     </View>

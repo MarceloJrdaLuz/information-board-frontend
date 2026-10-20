@@ -231,8 +231,12 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                     <MidweekPublisherSelect
                                         partId={part.id}
                                         value={part.assigned_publisher_id}
+                                        customName={part.custom_speaker_name}
                                         publisher={part.assignedPublisher}
-                                        onChange={(pubId) => onUpdatePart(part.id, { assigned_publisher_id: pubId })}
+                                        onChange={(pubId, customName) => onUpdatePart(part.id, {
+                                            assigned_publisher_id: pubId,
+                                            custom_speaker_name: customName ?? null
+                                        })}
                                         placeholder="Selecione o estudante..."
                                     />
                                 </div>
@@ -247,10 +251,14 @@ export const MidweekSectionMinistry: React.FC<MidweekSectionMinistryProps> = ({
                                             partId={part.id}
                                             isAssistant={true}
                                             value={part.assistant_publisher_id}
+                                            customName={part.custom_assistant_name}
                                             publisher={part.assistantPublisher}
-                                            onChange={(pubId) => onUpdatePart(part.id, { assistant_publisher_id: pubId })}
+                                            onChange={(pubId, customName) => onUpdatePart(part.id, {
+                                                assistant_publisher_id: pubId,
+                                                custom_assistant_name: customName ?? null
+                                            })}
                                             placeholder="Selecione o ajudante..."
-                                            disabled={!part.assigned_publisher_id}
+                                            disabled={!part.assigned_publisher_id && !part.custom_speaker_name}
                                         />
                                     </div>
                                 )}

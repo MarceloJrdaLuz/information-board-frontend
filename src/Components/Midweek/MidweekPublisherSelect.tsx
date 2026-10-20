@@ -4,13 +4,14 @@ import { useAuthContext } from "@/context/AuthContext";
 import { api } from "@/services/api";
 import { IPublisherMini, IPublisherSuggestion } from "@/types/midweek";
 import dayjs from "dayjs";
-import { AlertTriangle, Calendar, Check, ChevronsUpDown, RefreshCw, Sparkles, User, Users2, UserX, X } from "lucide-react";
+import { AlertTriangle, Calendar, Check, ChevronsUpDown, RefreshCw, Sparkles, User, UserPlus, Users2, UserX, X } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
 interface MidweekPublisherSelectProps {
     value?: string | null;
+    customName?: string | null;
     publisher?: IPublisherMini | null;
-    onChange: (publisherId: string | null) => void;
+    onChange: (publisherId: string | null, customName?: string | null) => void;
     partId?: string;
     scheduleId?: string;
     role?: "CHAIRMAN" | "OPENING_PRAYER" | "CLOSING_PRAYER" | "AUX_COUNSELOR" | "CBS_CONDUCTOR" | "CBS_READER";
@@ -21,6 +22,7 @@ interface MidweekPublisherSelectProps {
 
 export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
     value,
+    customName,
     publisher,
     onChange,
     partId,
@@ -96,7 +98,9 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
         );
     }, [suggestions, searchTerm, value, genderFilter, publisher]);
 
+    const isCustom = Boolean(customName && customName.trim());
     const selectedName =
+        customName?.trim() ||
         publisher?.nickname?.trim() ||
         publisher?.fullName ||
         suggestions.find(s => s.id === value)?.nickname?.trim() ||
@@ -116,7 +120,14 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
                         <div className="flex items-center gap-2 truncate">
                             <User className="h-4 w-4 text-typography-400 shrink-0" />
                             {selectedName ? (
-                                <span className="font-medium text-typography-900 truncate">{selectedName}</span>
+                                <div className="flex items-center gap-1.5 truncate">
+                                    <span className="font-medium text-typography-900 truncate">{selectedName}</span>
+                                    {isCustom && (
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold shrink-0">
+                                            Visitante
+                                        </span>
+                                    )}
+                                </div>
                             ) : (
                                 <span className="text-typography-500 text-xs">{placeholder}</span>
                             )}
@@ -125,13 +136,13 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
                     </Button>
                 </PopoverTrigger>
 
-                {value && (
+                {(value || isCustom) && (
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onChange(null);
+                            onChange(null, null);
                         }}
                         className="h-8 w-8 text-typography-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 shrink-0"
                         title="Remover designação"
@@ -156,12 +167,35 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
 
                     <input
                         type="text"
-                        placeholder="Buscar publicador..."
+                        placeholder="Buscar ou digitar nome de visitante..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full px-2.5 py-1.5 text-xs rounded-md border border-surface-300 bg-surface-200 text-typography-900 placeholder:text-typography-500 focus:outline-none focus:ring-1 focus:ring-primary-200"
                         autoFocus
                     />
+
+                    {searchTerm.trim().length > 0 && (
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs">
+                            <div className="flex items-center gap-2 truncate">
+                                <UserPlus className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                                <span className="text-typography-800 dark:text-typography-200 truncate">
+                                    Designar manual: <strong className="font-semibold text-typography-900 dark:text-typography-100">"{searchTerm.trim()}"</strong>
+                                </span>
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => {
+                                    onChange(null, searchTerm.trim());
+                                    setOpen(false);
+                                    setSearchTerm("");
+                                }}
+                                className="h-7 text-xs px-2.5 bg-amber-600 hover:bg-amber-700 text-white shrink-0 ml-2"
+                            >
+                                Usar este nome
+                            </Button>
+                        </div>
+                    )}
                     <div className="flex gap-2 w-full">
 
                         <div className="flex items-center bg-surface-200 border border-surface-300 rounded-md p-0.5 shrink-0">
@@ -219,7 +253,7 @@ export const MidweekPublisherSelect: React.FC<MidweekPublisherSelectProps> = ({
                                         key={pub.id}
                                         type="button"
                                         onClick={() => {
-                                            onChange(pub.id);
+                                            onChange(pub.id, null);
                                             setOpen(false);
                                         }}
                                         className={`flex flex-col w-full text-left p-2.5 rounded-lg transition-colors ${

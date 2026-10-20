@@ -63,7 +63,8 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
         custom?: string | null,
         fallback = "A designar"
     ) => {
-        return publisher?.nickname || publisher?.fullName || custom || fallback;
+        if (custom && custom.trim()) return custom.trim();
+        return publisher?.nickname?.trim() || publisher?.fullName?.trim() || fallback;
     };
     if (!nextSchedule) {
         return (
@@ -337,9 +338,9 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                             <div className="font-semibold text-typography-900">
                                                 {isWWYS ? "Designado: " : "Titular: "}{getDisplayName(part.assignedPublisher, part.custom_speaker_name, "A designar")}
                                             </div>
-                                            {!isWWYS && ((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) && (
+                                            {!isWWYS && (((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) || part.custom_assistant_name) && (
                                                 <div className="text-typography-600">
-                                                    Ajudante: {getDisplayName((part as any).assistantPublisher)}
+                                                    Ajudante: {getDisplayName((part as any).assistantPublisher, part.custom_assistant_name)}
                                                 </div>
                                             )}
                                         </div>
@@ -357,9 +358,9 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                                 <div className="font-semibold text-typography-900">
                                                     Titular: {getDisplayName(auxPart.assignedPublisher, auxPart.custom_speaker_name, "A designar")}
                                                 </div>
-                                                {((auxPart as any).assistantPublisher?.nickname || (auxPart as any).assistantPublisher?.fullName) && (
+                                                {(((auxPart as any).assistantPublisher?.nickname || (auxPart as any).assistantPublisher?.fullName) || auxPart.custom_assistant_name) && (
                                                     <div className="text-typography-600">
-                                                        Ajudante: {getDisplayName((auxPart as any).assistantPublisher)}
+                                                        Ajudante: {getDisplayName((auxPart as any).assistantPublisher, auxPart.custom_assistant_name)}
                                                     </div>
                                                 )}
                                             </div>
