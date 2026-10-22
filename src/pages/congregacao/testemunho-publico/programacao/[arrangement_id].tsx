@@ -13,6 +13,9 @@ import SlotPreferencesModal from "@/Components/PublicWitnessSchedule/SlotPrefere
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
 import { Button } from "@/Components/ui/button"
 import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
+import { useCongregationContext } from "@/context/CongregationContext"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { ISpecialEvent } from "@/types/specialEvent"
 import { WEEKDAY_LABEL, Weekday } from "@/types/fieldService"
 import { getDatesForMonth } from "@/utils/publicWitnessDates"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
@@ -51,6 +54,11 @@ function ArrangementMonthSchedulePage() {
 
   const { data: arrangement, mutate: mutateArrangement, isLoading } = useArrangement(arrangement_id || "")
   const { data: publishers } = usePublishers()
+  const { congregation } = useCongregationContext()
+  const specialEventsUrl = congregation ? `/congregation/${congregation.id}/special-events` : ""
+  const { data: specialEvents } = useAuthorizedFetch<ISpecialEvent[]>(specialEventsUrl, {
+    allowedRoles: ["ADMIN_CONGREGATION", "FIELD_SERVICE_MANAGER", "PUBLIC_WITNESS_MANAGER"]
+  })
 
   const [monthOffset, setMonthOffset] = useState(0)
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
@@ -437,6 +445,7 @@ function ArrangementMonthSchedulePage() {
                   publishers={publishers}
                   assignmentsBySlot={assignmentsByDate[date]}
                   exceptions={scheduleResponse?.exceptions}
+                  specialEvents={specialEvents}
                 />
               ))
             ) : (

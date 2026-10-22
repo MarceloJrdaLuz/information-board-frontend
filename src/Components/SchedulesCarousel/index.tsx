@@ -352,7 +352,7 @@ export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { 
                       <HospitalityCard item={item} />
                     )}
 
-                    {/* Tarefas do Salão (Mecânicas) */}
+                    {/* Designações Mecânicas */}
                     {(() => {
                       // Deriva o weekStartDate (segunda-feira) a partir da data da reunião
                       const itemDay = dayjs(item.date)
@@ -379,7 +379,7 @@ export default function SchedulesCarousel({ schedules, mechanicalSchedules }: { 
                           <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#3B5278] text-white shadow-2xs">
                             <Landmark className="h-5 w-5" />
                             <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
-                              Tarefas do Salão
+                              Designações mecânicas
                             </h4>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

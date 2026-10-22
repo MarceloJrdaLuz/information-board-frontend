@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter
 } from "@/Components/ui/dialog"
+import Calendar from "@/Components/Calendar"
 import { Button } from "@/Components/ui/button"
 import { useSetAtom } from "jotai"
 import { generatePublicWitnessScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
@@ -96,29 +97,19 @@ export default function GenerateScheduleModal({
         <div className="flex flex-col gap-4 py-2">
           {/* Período */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-typography-700">
-                Data Inicial
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={e => setStartDate(e.target.value)}
-                className="p-2 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-typography-700">
-                Data Final
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={e => setEndDate(e.target.value)}
-                className="p-2 text-sm border rounded-lg bg-surface-100 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200 text-typography-800"
-              />
-            </div>
+            <Calendar
+              label="Data Inicial"
+              selectedDate={startDate || null}
+              handleDateChange={(d) => setStartDate(d || "")}
+              full
+            />
+            <Calendar
+              label="Data Final"
+              selectedDate={endDate || null}
+              minDate={startDate || null}
+              handleDateChange={(d) => setEndDate(d || "")}
+              full
+            />
           </div>
 
           {/* Vagas por horário */}

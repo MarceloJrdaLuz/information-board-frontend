@@ -7,7 +7,7 @@ import {
     Calendar,
     CalendarPlus,
     CheckCircle2,
-    Heart,
+    Wine,
     Loader2,
     Mic,
     Radio,
@@ -97,7 +97,7 @@ const EVENT_OPTIONS: EventOption[] = [
         type: MidweekSpecialType.MEMORIAL,
         title: "Celebração da Morte de Cristo",
         description: "Não haverá reunião de meio de semana regular devido à Celebração.",
-        icon: Heart,
+        icon: Wine,
         colorClasses: {
             bg: "bg-rose-500/10",
             text: "text-rose-600 dark:text-rose-400",

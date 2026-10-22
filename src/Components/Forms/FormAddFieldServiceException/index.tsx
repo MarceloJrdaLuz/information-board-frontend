@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import Input from "@/Components/Input"
 import Dropdown from "@/Components/Dropdown"
 import Button from "@/Components/Button"
@@ -21,7 +22,12 @@ export default function FormAddFieldServiceException({ templates }: any) {
 
   return (
     <div className="space-y-4">
-      <Input type="date" onChange={(e) => setDate(e.target.value)} />
+      <Calendar
+        label="Data da Exceção"
+        selectedDate={date || null}
+        handleDateChange={(d) => setDate(d || "")}
+        full
+      />
 
       <Dropdown
         title="Template (opcional)"

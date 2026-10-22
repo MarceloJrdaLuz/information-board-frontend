@@ -1,5 +1,6 @@
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
+import Calendar from "@/Components/Calendar"
 import Input from "@/Components/Input"
 import { VercelUsageChart } from "@/Components/VercelUsageChart"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
@@ -84,21 +85,20 @@ function ControlledUse() {
             <section className="flex flex-wrap w-full h-full p-5">
                 <div className="w-full h-full">
                     {/* Filtros */}
-                    <div className="flex justify-between bg-surface-100 p-5 gap-4 rounded-2xl shadow-md">
-                        <Input
-                            className="cursor-pointer"
-                            type="date"
-                            placeholder="Data Inicial"
-                            value={initialDate}
-                            onChange={e => setInitialDate(e.target.value)}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 bg-surface-100 p-5 gap-4 rounded-2xl shadow-md">
+                        <Calendar
+                            label="Data Inicial"
+                            selectedDate={initialDate || null}
+                            handleDateChange={d => setInitialDate(d || "")}
+                            full
                         />
 
-                        <Input
-                            className="cursor-pointer"
-                            type="date"
-                            placeholder="Data Final"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
+                        <Calendar
+                            label="Data Final"
+                            selectedDate={endDate || null}
+                            minDate={initialDate || null}
+                            handleDateChange={d => setEndDate(d || "")}
+                            full
                         />
                     </div>
 

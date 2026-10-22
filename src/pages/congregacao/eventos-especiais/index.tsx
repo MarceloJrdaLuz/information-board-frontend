@@ -20,7 +20,7 @@ import {
     Clock,
     Edit2,
     Globe,
-    Heart,
+    Wine,
     Loader2,
     MapPin,
     Mic,
@@ -53,7 +53,7 @@ function getEventBadge(type: SpecialEventType) {
         case SpecialEventType.MEMORIAL:
             return {
                 label: "Celebração",
-                icon: Heart,
+                icon: Wine,
                 bg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30"
             };
         case SpecialEventType.CIRCUIT_OVERSEER_VISIT:

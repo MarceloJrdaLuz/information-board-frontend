@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import Button from "@/Components/Button"
 import Input from "@/Components/Input"
 import Dropdown from "@/Components/Dropdown"
@@ -36,8 +37,19 @@ export default function FormGenerateFieldService({ templates }: any) {
         }
       />
 
-      <Input type="date" onChange={(e) => setStartDate(e.target.value)} />
-      <Input type="date" onChange={(e) => setEndDate(e.target.value)} />
+      <Calendar
+        label="Data Inicial"
+        selectedDate={startDate || null}
+        handleDateChange={(d) => setStartDate(d || "")}
+        full
+      />
+      <Calendar
+        label="Data Final"
+        selectedDate={endDate || null}
+        minDate={startDate || null}
+        handleDateChange={(d) => setEndDate(d || "")}
+        full
+      />
 
       <Dropdown
         title="Modo"
