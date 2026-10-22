@@ -19,7 +19,7 @@ import {
     CalendarPlus,
     CheckCircle2,
     Globe,
-    Heart,
+    Wine,
     Loader2,
     MapPin,
     Mic,
@@ -115,7 +115,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
         type: SpecialEventType.MEMORIAL,
         title: "Celebração da Morte de Cristo",
         description: "Data pontual solene. Cancela a reunião regular de meio de semana.",
-        icon: Heart,
+        icon: Wine,
         colorClasses: {
             bg: "bg-rose-500/10",
             text: "text-rose-600 dark:text-rose-400",

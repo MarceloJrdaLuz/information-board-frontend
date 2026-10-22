@@ -784,7 +784,19 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                     </div>
                                 )}
 
-                                {/* Tarefas do Salão (Mecânicas) */}
+                                {/* Cântico Final & Oração Final */}
+                                <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm pt-4">
+                                    <span className="font-bold text-typography-800">
+                                        Cântico {week.songEnd || "—"}
+                                    </span>
+                                    {week.closingPrayer && (
+                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70 text-right">
+                                            <strong className="text-typography-800 font-semibold">Oração Final:</strong> {week.closingPrayer}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Designações Mecânicas */}
                                 {(() => {
                                     const mechSched = (mechanicalSchedules || []).find(
                                         s => s.weekStartDate === week.weekDate && s.meetingType === "MIDWEEK" && !s.hasNoMeeting
@@ -806,7 +818,7 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                             <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#3B5278] text-white shadow-2xs">
                                                 <Landmark className="h-5 w-5" />
                                                 <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">
-                                                    Tarefas do Salão
+                                                    Designações mecânicas
                                                 </h4>
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -834,18 +846,6 @@ export default function MidweekPublicCarousel({ schedules, mechanicalSchedules }
                                         </div>
                                     );
                                 })()}
-
-                                {/* Cântico Final & Oração Final */}
-                                <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm pt-4">
-                                    <span className="font-bold text-typography-800">
-                                        Cântico {week.songEnd || "—"}
-                                    </span>
-                                    {week.closingPrayer && (
-                                        <span className="text-typography-600 font-medium bg-surface-200/50 px-2.5 py-1 rounded-lg border border-surface-300/70 text-right">
-                                            <strong className="text-typography-800 font-semibold">Oração Final:</strong> {week.closingPrayer}
-                                        </span>
-                                    )}
-                                </div>
                             </div>
                         )}
                     </div>

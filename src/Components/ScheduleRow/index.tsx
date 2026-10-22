@@ -67,7 +67,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
   const autoWatchtowerTheme = matchingWorkbookWeek?.watchtowerStudyTheme || null
 
   useEffect(() => {
-    if (!current.watchTowerStudyTitle && autoWatchtowerTheme && !current.isSpecial) {
+    if (!current.watchTowerStudyTitle && autoWatchtowerTheme) {
       setSchedules(prev => {
         const cur = prev[dateStr] || ({ date: dateStr } as IRecordWeekendSchedule)
         if (!cur.watchTowerStudyTitle) {
@@ -82,7 +82,7 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
         return prev
       })
     }
-  }, [dateStr, autoWatchtowerTheme, current.watchTowerStudyTitle, current.isSpecial, setSchedules])
+  }, [dateStr, autoWatchtowerTheme, current.watchTowerStudyTitle, setSchedules])
 
   const optionsSpecial = ["Presidente", "Orador", "Tema", "Leitor", "Orador manual", "Tema manual"]
 
@@ -251,7 +251,6 @@ export default function ScheduleRow({ date, externalTalks = [] }: ScheduleRowPro
           chairman_id: undefined,
           reader_id: undefined,
           visitingCongregation_id: undefined,
-          watchTowerStudyTitle: undefined,
           manualSpeaker: "",
           manualTalk: "",
           specialName: "",
