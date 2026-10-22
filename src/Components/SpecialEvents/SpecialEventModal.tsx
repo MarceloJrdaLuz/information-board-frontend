@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import { Button } from "@/Components/ui/button";
 import {
     Dialog,
@@ -485,31 +486,20 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 />
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-semibold text-typography-800">
-                                    Data de Início *
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    value={startDate}
-                                    onChange={(e) => handleStartDateChange(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data de Início *"
+                                selectedDate={startDate || null}
+                                handleDateChange={(d) => handleStartDateChange(d || "")}
+                                full
+                            />
 
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-semibold text-typography-800">
-                                    Data de Término *
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data de Término *"
+                                selectedDate={endDate || null}
+                                minDate={startDate || null}
+                                handleDateChange={(d) => setEndDate(d || "")}
+                                full
+                            />
 
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-semibold text-typography-800 flex items-center gap-1.5">

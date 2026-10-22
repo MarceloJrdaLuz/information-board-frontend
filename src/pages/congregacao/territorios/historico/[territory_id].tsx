@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import { Button } from "@/Components/ui/button";
@@ -29,7 +30,7 @@ import "dayjs/locale/pt-br";
 import { useAtom } from "jotai";
 import {
     ArrowLeft,
-    Calendar,
+    Calendar as CalendarIcon,
     Check,
     CheckCircle2,
     Clock,
@@ -499,7 +500,7 @@ function EditHistoryTerritoryPage() {
                         {/* Detalhes da designação ativa */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-surface-300 text-xs text-typography-600">
                             <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-typography-400 shrink-0" />
+                                <CalendarIcon className="w-4 h-4 text-typography-400 shrink-0" />
                                 <span>
                                     Designado em:{" "}
                                     <strong className="text-typography-800">
@@ -606,7 +607,7 @@ function EditHistoryTerritoryPage() {
 
                                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-typography-600 pt-1">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Calendar className="w-3.5 h-3.5 text-typography-400" />
+                                                    <CalendarIcon className="w-3.5 h-3.5 text-typography-400" />
                                                     <span>
                                                         Designado:{" "}
                                                         <strong>
@@ -753,36 +754,20 @@ function EditHistoryTerritoryPage() {
 
                         {/* Linha com Datas */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-typography-700">
-                                    Data da Designação *
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formAssignmentDate}
-                                    onChange={(e) => setFormAssignmentDate(e.target.value)}
-                                    required
-                                    className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data da Designação *"
+                                selectedDate={formAssignmentDate || null}
+                                handleDateChange={(d) => setFormAssignmentDate(d || "")}
+                                full
+                            />
 
-                            <div className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-xs font-semibold text-typography-700">
-                                        Data da Conclusão
-                                    </label>
-                                    <span className="text-[10px] text-typography-400">
-                                        (Opcional)
-                                    </span>
-                                </div>
-                                <input
-                                    type="date"
-                                    value={formCompletionDate}
-                                    min={formAssignmentDate || undefined}
-                                    onChange={(e) => setFormCompletionDate(e.target.value)}
-                                    className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data da Conclusão (Opcional)"
+                                selectedDate={formCompletionDate || null}
+                                minDate={formAssignmentDate || null}
+                                handleDateChange={(d) => setFormCompletionDate(d || "")}
+                                full
+                            />
                         </div>
 
                         {/* Tipo de Trabalho / Cobertura */}
@@ -858,20 +843,16 @@ function EditHistoryTerritoryPage() {
                     </DialogHeader>
 
                     <div className="space-y-3 py-2">
-                        <label className="text-xs font-semibold text-typography-700 block">
-                            Data de Conclusão *
-                        </label>
-                        <input
-                            type="date"
-                            value={completeDate}
-                            min={
+                        <Calendar
+                            label="Data de Conclusão *"
+                            selectedDate={completeDate || null}
+                            minDate={
                                 activeHistory?.assignment_date
                                     ? dayjs(activeHistory.assignment_date).format("YYYY-MM-DD")
-                                    : undefined
+                                    : null
                             }
-                            onChange={(e) => setCompleteDate(e.target.value)}
-                            required
-                            className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                            handleDateChange={(d) => setCompleteDate(d || "")}
+                            full
                         />
                     </div>
 

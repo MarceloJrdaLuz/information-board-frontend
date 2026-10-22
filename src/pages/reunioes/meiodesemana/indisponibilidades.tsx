@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import React, { useEffect, useState, useMemo } from "react";
 import ContentDashboard from "@/Components/ContentDashboard";
 import BreadCrumbs from "@/Components/BreadCrumbs";
@@ -16,7 +17,7 @@ import {
     Plus,
     Trash2,
     ArrowLeft,
-    Calendar,
+    Calendar as CalendarIcon,
     User,
     Loader2,
     CheckCircle2,
@@ -363,7 +364,7 @@ function MidweekUnavailabilitiesPage() {
                                         {/* Período */}
                                         <div className="bg-surface-200/60 p-2 rounded-lg border border-surface-300/60 flex items-center justify-between text-xs">
                                             <div className="flex items-center gap-1.5 text-typography-800 font-medium">
-                                                <Calendar className="h-3.5 w-3.5 text-primary-200" />
+                                                <CalendarIcon className="h-3.5 w-3.5 text-primary-200" />
                                                 <span>
                                                     {dayjs(item.startDate).format("DD/MM/YYYY")} até {dayjs(item.endDate).format("DD/MM/YYYY")}
                                                 </span>
@@ -427,31 +428,19 @@ function MidweekUnavailabilitiesPage() {
 
                         {/* Datas (Início e Fim) */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-typography-800">
-                                    Data Inicial <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    required
-                                    className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
-
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-typography-800">
-                                    Data Final <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    required
-                                    className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data Inicial *"
+                                selectedDate={startDate || null}
+                                handleDateChange={(d) => setStartDate(d || "")}
+                                full
+                            />
+                            <Calendar
+                                label="Data Final *"
+                                selectedDate={endDate || null}
+                                minDate={startDate || null}
+                                handleDateChange={(d) => setEndDate(d || "")}
+                                full
+                            />
                         </div>
 
                         {/* Motivo */}
