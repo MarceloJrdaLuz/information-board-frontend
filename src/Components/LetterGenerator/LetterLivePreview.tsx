@@ -1,9 +1,28 @@
 import React, { useMemo } from "react";
 import { ILetterData } from "@/types/letterGenerator";
-import { formatLongDate, parseLetterBody, paginateLetterSections } from "@/utils/letterParser";
+import { formatLongDate, parseLetterBody, paginateLetterSections, parseInlineFormatting } from "@/utils/letterParser";
 
 interface Props {
     data: ILetterData;
+}
+
+function renderFormattedSpans(text: string) {
+    const tokens = parseInlineFormatting(text);
+    return tokens.map((token, idx) => {
+        const classes = [
+            token.bold ? "font-bold text-zinc-900" : "",
+            token.italic ? "italic" : "",
+        ].filter(Boolean).join(" ");
+
+        if (!classes) {
+            return <React.Fragment key={idx}>{token.text}</React.Fragment>;
+        }
+        return (
+            <span key={idx} className={classes}>
+                {token.text}
+            </span>
+        );
+    });
 }
 
 export default function LetterLivePreview({ data }: Props) {
@@ -120,7 +139,7 @@ export default function LetterLivePreview({ data }: Props) {
                                 </div>
                             )}
 
-                            {/* --- CORPO DA CARTA (Seções desta folha) --- */}
+                            {/* --- CORPO DA CARTA (Seções desta folha com suporte a negrito e itálico inline) --- */}
                             <div className="space-y-3.5 text-justify text-[13px] leading-relaxed text-zinc-800">
                                 {page.sections.length === 0 && page.isFirstPage ? (
                                     <div className="py-12 border-2 border-dashed border-zinc-200 rounded-xl text-center text-zinc-400 text-xs">
@@ -132,15 +151,15 @@ export default function LetterLivePreview({ data }: Props) {
                                             return (
                                                 <h3
                                                     key={sec.id}
-                                                    className="font-bold text-[13.5px] text-zinc-900 pt-2 pb-0.5"
+                                                    className="font-bold text-[13.5px] text-zinc-900 pt-2 pb-0.5 tracking-tight"
                                                 >
-                                                    {sec.text}
+                                                    {renderFormattedSpans(sec.text)}
                                                 </h3>
                                             );
                                         }
                                         return (
                                             <p key={sec.id} className="text-justify leading-relaxed">
-                                                {sec.text}
+                                                {renderFormattedSpans(sec.text)}
                                             </p>
                                         );
                                     })
@@ -152,7 +171,7 @@ export default function LetterLivePreview({ data }: Props) {
                                 <>
                                     {data.signOffPhrase && (
                                         <p className="mt-4 text-justify text-[13px] leading-relaxed text-zinc-800">
-                                            {data.signOffPhrase}
+                                            {renderFormattedSpans(data.signOffPhrase)}
                                         </p>
                                     )}
 
@@ -162,15 +181,16 @@ export default function LetterLivePreview({ data }: Props) {
                                         </p>
                                     )}
 
+                                    {/* BLOCO DE ASSINATURAS: Nome ACIMA da linha, Privilégio ABAIXO da linha */}
                                     {validSignatures.length > 0 && (
                                         <div className="mt-8">
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 items-end">
                                                 {validSignatures.map((sig, idx) => (
                                                     <div key={idx} className="flex flex-col items-center text-center">
-                                                        <div className="w-full border-t border-zinc-900 mb-1.5" />
-                                                        <span className="font-bold text-[11px] text-zinc-900">
-                                                            {sig.name || "Nome do irmão"}
+                                                        <span className="font-bold text-[11px] text-zinc-900 mb-1.5 min-h-[16px]">
+                                                            {sig.name || "\u00A0"}
                                                         </span>
+                                                        <div className="w-full border-t border-zinc-900 mb-1.5" />
                                                         {sig.role && (
                                                             <span className="text-[10px] text-zinc-600">
                                                                 {sig.role}

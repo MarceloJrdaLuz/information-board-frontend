@@ -1,4 +1,4 @@
-import { ILetterContentSection } from "@/types/letterGenerator";
+import { IInlineToken, ILetterContentSection } from "@/types/letterGenerator";
 
 export interface IPaginatedLetterPage {
     pageNumber: number;
@@ -31,7 +31,56 @@ export function formatLongDate(dateString: string): string {
 }
 
 /**
+ * Analisa a formatação inline dentro de um texto:
+ * - ***texto*** => Negrito + Itálico
+ * - **texto** => Negrito
+ * - *texto* ou _texto_ => Itálico
+ */
+export function parseInlineFormatting(text: string): IInlineToken[] {
+    if (!text) return [];
+
+    // Captura tags markdown ***bold-italic***, **bold**, *italic*, _italic_
+    const regex = /(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_)/g;
+    const parts = text.split(regex);
+    const tokens: IInlineToken[] = [];
+
+    for (const part of parts) {
+        if (!part) continue;
+
+        if (part.startsWith("***") && part.endsWith("***") && part.length > 6) {
+            tokens.push({
+                text: part.slice(3, -3),
+                bold: true,
+                italic: true,
+            });
+        } else if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+            tokens.push({
+                text: part.slice(2, -2),
+                bold: true,
+            });
+        } else if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+            tokens.push({
+                text: part.slice(1, -1),
+                italic: true,
+            });
+        } else if (part.startsWith("_") && part.endsWith("_") && part.length > 2) {
+            tokens.push({
+                text: part.slice(1, -1),
+                italic: true,
+            });
+        } else {
+            tokens.push({
+                text: part,
+            });
+        }
+    }
+
+    return tokens;
+}
+
+/**
  * Analisa o texto bruto (colado ou digitado) e separa em parágrafos e títulos de seção.
+ * Permite controle total do usuário sobre o que é subtítulo (usando ### ou **título**) e o que é texto regular.
  */
 export function parseLetterBody(rawText: string): ILetterContentSection[] {
     if (!rawText || !rawText.trim()) return [];
@@ -44,8 +93,7 @@ export function parseLetterBody(rawText: string): ILetterContentSection[] {
         const clean = block.trim();
         if (!clean) return;
 
-        // Verifica se é marcado explicitamente como heading:
-        // Ex: "### Título", "## Título", "# Título", "**Título**"
+        // Subtítulo explícito com #, ## ou ###
         if (/^#{1,3}\s+(.+)$/.test(clean)) {
             const match = clean.match(/^#{1,3}\s+(.+)$/);
             sections.push({
@@ -56,7 +104,8 @@ export function parseLetterBody(rawText: string): ILetterContentSection[] {
             return;
         }
 
-        if (/^\*\*(.+)\*\*$/.test(clean)) {
+        // Subtítulo onde todo o bloco está entre **...**
+        if (/^\*\*(.+)\*\*$/.test(clean) && !clean.slice(2, -2).includes("**")) {
             const match = clean.match(/^\*\*(.+)\*\*$/);
             sections.push({
                 id: `heading-${index}`,
@@ -66,21 +115,7 @@ export function parseLetterBody(rawText: string): ILetterContentSection[] {
             return;
         }
 
-        // Detecção heurística de subtítulo curto (ex: "Histórico e aspectos que merecem atenção")
-        const isShortLine = clean.length <= 75 && !clean.includes("\n");
-        const noEndingPunctuation = !clean.endsWith(".") && !clean.endsWith(",") && !clean.endsWith(";");
-        const isKnownHeading = /^(histórico|avaliação|aspectos|recomendação|resumo|observações|conclusão)/i.test(clean);
-
-        if (isShortLine && (noEndingPunctuation || isKnownHeading)) {
-            sections.push({
-                id: `heading-${index}`,
-                type: "heading",
-                text: clean,
-            });
-            return;
-        }
-
-        // Parágrafo regular
+        // Parágrafo regular (suporta formatação inline interna)
         sections.push({
             id: `p-${index}`,
             type: "paragraph",
@@ -93,7 +128,9 @@ export function parseLetterBody(rawText: string): ILetterContentSection[] {
 
 function getSectionWeight(section: ILetterContentSection): number {
     if (section.type === "heading") return 45;
-    const lines = Math.ceil((section.text || "").length / 90);
+    // Remove tags markdown para cálculo de peso mais realista
+    const cleanLength = (section.text || "").replace(/[*_#]/g, "").length;
+    const lines = Math.ceil(cleanLength / 90);
     return lines * 19 + 14;
 }
 
@@ -144,8 +181,6 @@ export function paginateLetterSections(
     }
 
     if (currentSections.length > 0) {
-        // Se as assinaturas precisam caber na última folha e o peso for muito alto,
-        // movemos os parágrafos finais para evitar bloco de assinaturas órfão
         const maxWeightForSignatures = pages.length === 0 ? 400 : 640;
         if (hasSignatures && currentWeight > maxWeightForSignatures && currentSections.length > 2) {
             const overflow = currentSections.slice(-2);

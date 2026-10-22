@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import { useAtom } from "jotai";
 import {
     AlertCircle,
+    Bold,
     Building2,
     Check,
     Copy,
@@ -22,8 +23,10 @@ import {
     FileEdit,
     FileSignature,
     FileText,
+    Heading,
     HelpCircle,
     Info,
+    Italic,
     Layers,
     Loader2,
     Lock,
@@ -33,7 +36,7 @@ import {
     Trash2,
     Users
 } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 const SAMPLE_PRESENTATION_TEXT = `Estamos enviando, em anexo, os cartões de publicador do irmão Fulano e Sobrenome e da irmã Fulana e Sobrenome, que estão se mudando para a sua congregação. Aproveitamos a oportunidade para compartilhar algumas informações sobre o casal, a fim de contribuir para a continuidade da assistência espiritual que lhes será oferecida.
@@ -85,6 +88,8 @@ function LetterGeneratorPage() {
 
     const [activeTabMobile, setActiveTabMobile] = useState<"form" | "preview">("form");
     const [previewMode, setPreviewMode] = useState<"sheets" | "pdf">("sheets");
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // Estado da carta (100% mantido em memória - sem persistência em banco)
     const [letterData, setLetterData] = useState<ILetterData>(() => ({
@@ -192,12 +197,81 @@ function LetterGeneratorPage() {
         toast.info("Campos limpos com sucesso.");
     };
 
-    const handleInsertHeadingShortcut = () => {
-        const headingPrompt = "### Título da Seção\n\n";
-        setLetterData(prev => ({
-            ...prev,
-            bodyRaw: prev.bodyRaw ? `${prev.bodyRaw}\n\n${headingPrompt}` : headingPrompt
-        }));
+    // Aplica formatação inline (Negrito ** ou Itálico *) na seleção atual do textarea
+    const applyWrapSelection = (prefix: string, suffix: string) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+        const selected = value.substring(start, end);
+
+        let newText = "";
+        let newStart = start;
+        let newEnd = end;
+
+        // Se já estiver envolvido pelo prefixo e sufixo exato, remove (desfaz formatação)
+        const isAlreadyWrapped =
+            start >= prefix.length &&
+            end + suffix.length <= value.length &&
+            value.substring(start - prefix.length, start) === prefix &&
+            value.substring(end, end + suffix.length) === suffix;
+
+        if (isAlreadyWrapped) {
+            newText =
+                value.substring(0, start - prefix.length) +
+                selected +
+                value.substring(end + suffix.length);
+            newStart = start - prefix.length;
+            newEnd = end - prefix.length;
+        } else {
+            const placeholder = selected || "texto destacado";
+            newText =
+                value.substring(0, start) +
+                prefix +
+                placeholder +
+                suffix +
+                value.substring(end);
+            newStart = start + prefix.length;
+            newEnd = start + prefix.length + placeholder.length;
+        }
+
+        handleFieldChange("bodyRaw", newText);
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(newStart, newEnd);
+        }, 10);
+    };
+
+    // Alterna subtítulo na linha atual (adiciona ou remove ###)
+    const handleToggleHeading = () => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const value = textarea.value;
+
+        const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+        let lineEnd = value.indexOf("\n", start);
+        if (lineEnd === -1) lineEnd = value.length;
+
+        const line = value.substring(lineStart, lineEnd);
+        let newLine = "";
+
+        if (line.startsWith("### ")) {
+            newLine = line.replace(/^###\s+/, "");
+        } else {
+            newLine = `### ${line.replace(/^#{1,3}\s*/, "")}`;
+        }
+
+        const newText = value.substring(0, lineStart) + newLine + value.substring(lineEnd);
+        handleFieldChange("bodyRaw", newText);
+        setTimeout(() => {
+            textarea.focus();
+            const newPos = lineStart + newLine.length;
+            textarea.setSelectionRange(newPos, newPos);
+        }, 10);
     };
 
     const fileName = useMemo(() => {
@@ -470,9 +544,9 @@ function LetterGeneratorPage() {
                             </div>
                         </div>
 
-                        {/* 3. Corpo da Carta */}
+                        {/* 3. Corpo da Carta com Barra de Ferramentas de Estilo */}
                         <div className="bg-surface-100 p-4 sm:p-5 rounded-2xl border border-surface-300 shadow-xs flex flex-col gap-3">
-                            <div className="flex items-center justify-between pb-2.5 border-b border-surface-200">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-surface-200 flex-wrap gap-2">
                                 <div className="flex items-center gap-2">
                                     <FileEdit className="w-4 h-4 text-primary-200" />
                                     <h3 className="font-bold text-xs uppercase tracking-wider text-typography-800">
@@ -480,27 +554,64 @@ function LetterGeneratorPage() {
                                     </h3>
                                 </div>
 
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleInsertHeadingShortcut}
-                                    className="text-[11px] h-7 gap-1 border-surface-300 text-primary-200 hover:bg-surface-200"
-                                    title="Inserir título de seção destacado"
-                                >
-                                    <Plus className="w-3 h-3" />
-                                    <span>Adicionar Subtítulo</span>
-                                </Button>
+                                {/* Barra de Ferramentas de Formatação Manual */}
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => applyWrapSelection("**", "**")}
+                                        className="text-[11px] h-7 px-2.5 gap-1 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                        title="Negrito: **texto** (Ctrl+B)"
+                                    >
+                                        <Bold className="w-3.5 h-3.5" />
+                                        <span className="font-bold">Negrito</span>
+                                    </Button>
+
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => applyWrapSelection("*", "*")}
+                                        className="text-[11px] h-7 px-2.5 gap-1 border-surface-300 text-typography-700 hover:bg-surface-200"
+                                        title="Itálico: *texto* (Ctrl+I)"
+                                    >
+                                        <Italic className="w-3.5 h-3.5" />
+                                        <span className="italic">Itálico</span>
+                                    </Button>
+
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleToggleHeading}
+                                        className="text-[11px] h-7 px-2.5 gap-1 border-surface-300 text-primary-200 hover:bg-surface-200"
+                                        title="Subtítulo: Adiciona ou remove ### na linha"
+                                    >
+                                        <Heading className="w-3.5 h-3.5" />
+                                        <span>Subtítulo</span>
+                                    </Button>
+                                </div>
                             </div>
 
                             <p className="text-[11px] text-typography-500 leading-relaxed">
-                                Cole aqui os parágrafos normalmente. Subtítulos iniciados com <code className="text-primary-200 font-semibold">###</code> ou linhas isoladas sem ponto final serão destacados em negrito automaticamente.
+                                Selecione um trecho e use os botões acima ou atalhos (<code className="text-primary-200 font-semibold">Ctrl+B</code> para <strong>negrito</strong>, <code className="text-primary-200 font-semibold">Ctrl+I</code> para <em>itálico</em>). Linhas iniciadas com <code className="text-primary-200 font-semibold">###</code> viram subtítulos destacados (remova os <code className="text-primary-200 font-semibold">###</code> para voltar a texto normal).
                             </p>
 
                             <textarea
+                                ref={textareaRef}
                                 rows={14}
                                 value={letterData.bodyRaw}
                                 onChange={e => handleFieldChange("bodyRaw", e.target.value)}
+                                onKeyDown={(e) => {
+                                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+                                        e.preventDefault();
+                                        applyWrapSelection("**", "**");
+                                    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "i") {
+                                        e.preventDefault();
+                                        applyWrapSelection("*", "*");
+                                    }
+                                }}
                                 placeholder="Cole ou digite aqui o texto da carta..."
                                 className="w-full p-3.5 text-xs font-mono leading-relaxed border rounded-xl bg-surface-100 border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 text-typography-800 resize-y"
                             />
@@ -544,29 +655,40 @@ function LetterGeneratorPage() {
                             </div>
 
                             <div className="flex flex-col gap-2 pt-1">
-                                <label className="text-xs font-semibold text-typography-700">
-                                    Irmãos que assinam a carta
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-semibold text-typography-700">
+                                        Irmãos que assinam a carta
+                                    </label>
+                                    <span className="text-[11px] text-typography-500 italic">
+                                        Nome acima da linha · Privilégio abaixo da linha
+                                    </span>
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     {letterData.signatures.map((sig, idx) => (
                                         <div key={idx} className="p-2.5 rounded-xl border border-surface-300 bg-surface-200/40 flex flex-col gap-2">
                                             <span className="text-[10px] font-bold text-typography-500 uppercase">
                                                 Assinatura {idx + 1}
                                             </span>
-                                            <input
-                                                type="text"
-                                                value={sig.name}
-                                                onChange={e => handleSignatureChange(idx, "name", e.target.value)}
-                                                placeholder="Nome completo"
-                                                className="p-1.5 text-xs border rounded-md bg-surface-100 border-surface-300 text-typography-800"
-                                            />
-                                            <input
-                                                type="text"
-                                                value={sig.role}
-                                                onChange={e => handleSignatureChange(idx, "role", e.target.value)}
-                                                placeholder="Função (Ex: Coordenador)"
-                                                className="p-1.5 text-xs border rounded-md bg-surface-100 border-surface-300 text-typography-800"
-                                            />
+                                            <div className="flex flex-col gap-0.5">
+                                                <label className="text-[10px] text-typography-500">Nome (acima da linha)</label>
+                                                <input
+                                                    type="text"
+                                                    value={sig.name}
+                                                    onChange={e => handleSignatureChange(idx, "name", e.target.value)}
+                                                    placeholder="Nome completo"
+                                                    className="p-1.5 text-xs border rounded-md bg-surface-100 border-surface-300 text-typography-800"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <label className="text-[10px] text-typography-500">Privilégio (abaixo da linha)</label>
+                                                <input
+                                                    type="text"
+                                                    value={sig.role}
+                                                    onChange={e => handleSignatureChange(idx, "role", e.target.value)}
+                                                    placeholder="Função (Ex: Coordenador)"
+                                                    className="p-1.5 text-xs border rounded-md bg-surface-100 border-surface-300 text-typography-800"
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -738,4 +860,3 @@ function LetterGeneratorPage() {
 LetterGeneratorPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION"]);
 
 export default LetterGeneratorPage;
-

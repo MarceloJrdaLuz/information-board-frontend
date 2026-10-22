@@ -1,7 +1,7 @@
 import React from "react";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { ILetterData } from "@/types/letterGenerator";
-import { formatLongDate, parseLetterBody } from "@/utils/letterParser";
+import { formatLongDate, parseInlineFormatting, parseLetterBody } from "@/utils/letterParser";
 
 interface Props {
     data: ILetterData;
@@ -97,14 +97,14 @@ const styles = StyleSheet.create({
     },
     closingText: {
         fontSize: 10,
-        marginBottom: 35,
+        marginBottom: 28,
     },
-    // Bloco de Assinaturas
+    // Bloco de Assinaturas (Nome ACIMA da linha, Função/Privilégio ABAIXO da linha)
     signaturesContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "flex-start",
-        marginTop: 10,
+        alignItems: "flex-end",
+        marginTop: 14,
         marginBottom: 20,
     },
     signatureBox: {
@@ -112,23 +112,24 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 8,
     },
-    signatureLine: {
-        borderTopWidth: 0.8,
-        borderTopColor: "#1A202C",
-        width: "90%",
-        marginBottom: 5,
-    },
     signatureName: {
         fontFamily: "Helvetica-Bold",
         fontSize: 8.5,
         textAlign: "center",
         color: "#1A202C",
+        marginBottom: 5,
+        minHeight: 12,
+    },
+    signatureLine: {
+        borderTopWidth: 0.8,
+        borderTopColor: "#1A202C",
+        width: "90%",
+        marginBottom: 4,
     },
     signatureRole: {
         fontSize: 8,
         textAlign: "center",
         color: "#4A5568",
-        marginTop: 1,
     },
     additionalFooterNote: {
         fontSize: 9,
@@ -159,6 +160,25 @@ const styles = StyleSheet.create({
         color: "#718096",
     },
 });
+
+/**
+ * Renderiza textos com suporte a negrito e itálico inline no PDF
+ */
+function renderPdfFormattedText(text: string, isHeading: boolean = false) {
+    const tokens = parseInlineFormatting(text);
+    return tokens.map((token, idx) => {
+        let fontFamily = isHeading ? "Helvetica-Bold" : "Helvetica";
+        if (token.bold && token.italic) fontFamily = "Helvetica-BoldOblique";
+        else if (token.bold) fontFamily = "Helvetica-Bold";
+        else if (token.italic) fontFamily = isHeading ? "Helvetica-BoldOblique" : "Helvetica-Oblique";
+
+        return (
+            <Text key={idx} style={{ fontFamily }}>
+                {token.text}
+            </Text>
+        );
+    });
+}
 
 export default function LetterPdfDocument({ data }: Props) {
     const formattedDate = formatLongDate(data.date);
@@ -220,41 +240,43 @@ export default function LetterPdfDocument({ data }: Props) {
                     <Text style={styles.salutationText}>{data.salutation}</Text>
                 ) : null}
 
-                {/* 5. Corpo da Carta (Parágrafos e Títulos) */}
+                {/* 5. Corpo da Carta (Parágrafos e Títulos com formatação inline) */}
                 {sections.map((section) => {
                     if (section.type === "heading") {
                         return (
                             <Text key={section.id} style={styles.heading} minPresenceAhead={30}>
-                                {section.text}
+                                {renderPdfFormattedText(section.text, true)}
                             </Text>
                         );
                     }
                     return (
                         <Text key={section.id} style={styles.paragraph}>
-                            {section.text}
+                            {renderPdfFormattedText(section.text)}
                         </Text>
                     );
                 })}
 
                 {/* 6. Conclusão e Despedida */}
                 {data.signOffPhrase ? (
-                    <Text style={styles.signOffPhrase}>{data.signOffPhrase}</Text>
+                    <Text style={styles.signOffPhrase}>
+                        {renderPdfFormattedText(data.signOffPhrase)}
+                    </Text>
                 ) : null}
 
                 {data.closing ? (
                     <Text style={styles.closingText}>{data.closing}</Text>
                 ) : null}
 
-                {/* 7. Bloco de Assinaturas (com quebra protegida) */}
+                {/* 7. Bloco de Assinaturas: Nome ACIMA da linha, Função/Privilégio ABAIXO da linha */}
                 {validSignatures.length > 0 && (
                     <View wrap={false}>
                         <View style={styles.signaturesContainer}>
                             {validSignatures.map((sig, idx) => (
                                 <View key={idx} style={styles.signatureBox}>
-                                    <View style={styles.signatureLine} />
                                     <Text style={styles.signatureName}>
-                                        {sig.name || "______________________"}
+                                        {sig.name || " "}
                                     </Text>
+                                    <View style={styles.signatureLine} />
                                     {sig.role ? (
                                         <Text style={styles.signatureRole}>{sig.role}</Text>
                                     ) : null}
@@ -284,4 +306,3 @@ export default function LetterPdfDocument({ data }: Props) {
         </Document>
     );
 }
-

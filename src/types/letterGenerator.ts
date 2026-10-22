@@ -9,6 +9,12 @@ export interface ILetterContentSection {
     text: string;
 }
 
+export interface IInlineToken {
+    text: string;
+    bold?: boolean;
+    italic?: boolean;
+}
+
 export interface ILetterData {
     // Cabeçalho da congregação remetente
     congregationName: string;
@@ -61,4 +67,3 @@ export const DEFAULT_LETTER_DATA: ILetterData = {
     additionalFooterNote: "",
     documentTitle: "Carta de apresentação",
 };
-
