@@ -15,29 +15,33 @@ import {
     AlertCircle,
     Bold,
     Building2,
-    Check,
-    Copy,
     Download,
     ExternalLink,
     Eye,
     FileEdit,
     FileSignature,
     FileText,
+    HardDrive,
     Heading,
-    HelpCircle,
-    Info,
     Italic,
     Layers,
     Loader2,
     Lock,
-    Plus,
     RotateCcw,
+    Save,
     Sparkles,
     Trash2,
     Users
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
+
+const DRAFT_STORAGE_KEY = "@information_board:letter_presentation_draft";
+
+interface IDraftStorage {
+    savedAt: string;
+    data: ILetterData;
+}
 
 const SAMPLE_PRESENTATION_TEXT = `Estamos enviando, em anexo, os cartões de publicador do irmão Fulano e Sobrenome e da irmã Fulana e Sobrenome, que estão se mudando para a sua congregação. Aproveitamos a oportunidade para compartilhar algumas informações sobre o casal, a fim de contribuir para a continuidade da assistência espiritual que lhes será oferecida.
 
@@ -91,7 +95,7 @@ function LetterGeneratorPage() {
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Estado da carta (100% mantido em memória - sem persistência em banco)
+    // Estado da carta (mantido em memória com opção de salvar rascunho no dispositivo)
     const [letterData, setLetterData] = useState<ILetterData>(() => ({
         ...DEFAULT_LETTER_DATA,
         date: dayjs().format("YYYY-MM-DD"),
@@ -103,6 +107,24 @@ function LetterGeneratorPage() {
             ? `Corpo de anciãos da Congregação ${congregation.name}`
             : "Corpo de anciãos da Congregação",
     }));
+
+    // Informação do rascunho gravado no dispositivo local
+    const [savedDraftInfo, setSavedDraftInfo] = useState<IDraftStorage | null>(null);
+
+    // Verifica rascunho salvo no dispositivo ao carregar
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+            if (raw) {
+                const parsed: IDraftStorage = JSON.parse(raw);
+                if (parsed && parsed.data && parsed.savedAt) {
+                    setSavedDraftInfo(parsed);
+                }
+            }
+        } catch (e) {
+            console.error("Erro ao verificar rascunho no dispositivo:", e);
+        }
+    }, []);
 
     // Versão com debounce leve para o PDF não reprocessar a cada letra digitada
     const [debouncedLetterData, setDebouncedLetterData] = useState<ILetterData>(letterData);
@@ -155,6 +177,37 @@ function LetterGeneratorPage() {
         });
     };
 
+    const handleSaveDraftToDevice = () => {
+        try {
+            const payload: IDraftStorage = {
+                savedAt: new Date().toISOString(),
+                data: letterData,
+            };
+            localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
+            setSavedDraftInfo(payload);
+            toast.success("Rascunho salvo com sucesso neste dispositivo! (Nenhum dado enviado à nuvem)");
+        } catch (e) {
+            console.error("Erro ao salvar rascunho no dispositivo:", e);
+            toast.error("Não foi possível salvar o rascunho neste dispositivo.");
+        }
+    };
+
+    const handleRestoreDraftFromDevice = () => {
+        if (!savedDraftInfo) return;
+        setLetterData(savedDraftInfo.data);
+        toast.success("Rascunho salvo neste dispositivo restaurado com sucesso!");
+    };
+
+    const handleDeleteDraftFromDevice = () => {
+        try {
+            localStorage.removeItem(DRAFT_STORAGE_KEY);
+            setSavedDraftInfo(null);
+            toast.info("Rascunho excluído deste dispositivo.");
+        } catch (e) {
+            console.error("Erro ao excluir rascunho:", e);
+        }
+    };
+
     const handleLoadSample = () => {
         setLetterData({
             congregationName: congregation?.name || "LUIS GOMES",
@@ -194,7 +247,7 @@ function LetterGeneratorPage() {
                 ? `Corpo de anciãos da Congregação ${congregation.name}`
                 : "Corpo de anciãos da Congregação",
         });
-        toast.info("Campos limpos com sucesso.");
+        toast.info("Campos da tela limpos.");
     };
 
     // Aplica formatação inline (Negrito ** ou Itálico *) na seleção atual do textarea
@@ -211,7 +264,6 @@ function LetterGeneratorPage() {
         let newStart = start;
         let newEnd = end;
 
-        // Se já estiver envolvido pelo prefixo e sufixo exato, remove (desfaz formatação)
         const isAlreadyWrapped =
             start >= prefix.length &&
             end + suffix.length <= value.length &&
@@ -299,21 +351,33 @@ function LetterGeneratorPage() {
                                 <h1 className="text-lg sm:text-xl font-bold text-typography-900">
                                     Carta de Apresentação e Recomendação
                                 </h1>
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                    <Lock className="w-3 h-3" />
-                                    100% Confidencial na Memória
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" title="Armazenamento seguro neste aparelho físico sem envio a servidores ou nuvem">
+                                    <HardDrive className="w-3 h-3" />
+                                    Salvo no Dispositivo (Sem Nuvem)
                                 </span>
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wide">
                                     Apenas Anciãos
                                 </span>
                             </div>
                             <p className="text-xs sm:text-sm text-typography-600 mt-1 leading-relaxed">
-                                Cole ou digite o texto da carta. A visualização é paginada e os dados não são salvos em nenhum banco de dados.
+                                Preencha ou cole o texto da carta. Se desejar, salve um rascunho <strong>exclusivamente neste dispositivo</strong> para continuar depois.
                             </p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 self-end md:self-auto shrink-0 flex-wrap">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSaveDraftToDevice}
+                            className="gap-1.5 text-xs border-primary-200/50 text-primary-200 hover:bg-primary-200/10 font-semibold shadow-2xs"
+                            title="Salva os dados digitados exclusivamente neste dispositivo (computador/celular), sem enviar nada para a nuvem"
+                        >
+                            <HardDrive className="w-3.5 h-3.5" />
+                            <span>Salvar Rascunho no Dispositivo</span>
+                        </Button>
+
                         <Button
                             type="button"
                             variant="outline"
@@ -332,13 +396,62 @@ function LetterGeneratorPage() {
                             size="sm"
                             onClick={handleClearForm}
                             className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-red-500 hover:text-red-600"
-                            title="Limpar todos os campos em memória"
+                            title="Limpar campos da tela"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span>Limpar</span>
                         </Button>
                     </div>
                 </div>
+
+                {/* Card Informativo de Rascunho Salvo no Dispositivo */}
+                {savedDraftInfo && (
+                    <div className="bg-surface-100 border border-primary-200/40 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-primary-200/10 text-primary-200 rounded-xl shrink-0">
+                                <HardDrive className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-bold text-typography-800">
+                                        Rascunho salvo neste dispositivo
+                                    </span>
+                                    <span className="text-[11px] bg-primary-200/10 text-primary-200 px-2 py-0.5 rounded-full font-semibold">
+                                        Salvo em {dayjs(savedDraftInfo.savedAt).format("DD/MM/YYYY [às] HH:mm")}
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-typography-500 mt-0.5 leading-relaxed">
+                                    Este rascunho está armazenado <strong>apenas na memória deste aparelho físico</strong> (offline e 100% privado, sem qualquer envio para a nuvem ou servidores).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleRestoreDraftFromDevice}
+                                className="h-8 text-xs gap-1.5 bg-primary-200 hover:bg-primary-300 text-white font-semibold shadow-2xs"
+                                title="Preencher os campos da tela com o rascunho deste dispositivo"
+                            >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                                <span>Restaurar Rascunho</span>
+                            </Button>
+
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={handleDeleteDraftFromDevice}
+                                className="h-8 text-xs gap-1.5 border-surface-300 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                                title="Excluir o rascunho salvo deste aparelho"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Excluir do dispositivo</span>
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Alternador Mobile (Formulário vs Prévia) */}
                 <div className="flex lg:hidden bg-surface-200/80 p-1 rounded-xl border border-surface-300 text-xs font-semibold">
