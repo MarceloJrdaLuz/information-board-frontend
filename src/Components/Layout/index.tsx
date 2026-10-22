@@ -576,16 +576,26 @@ export default function Layout(props: LayoutProps) {
                                     icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive.startsWith('/documentos/eventosespeciais')}
                                 />
+                            </NavBar.ListOptions>
+                        }
 
+                        {isAdminCongregation &&
+                            <NavBar.ListOptions
+                                key={"submenuModelos"}
+                                showList={openSubMenu === 'modelos'}
+                                onClick={() => toggleSubMenu('modelos')}
+                                title="Modelos"
+                                icon={() => <FileSignature className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            >
                                 <NavBar.Options
                                     isSubItem
-                                    title="Gerador de cartas"
+                                    title="Carta de apresentação"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
-                                        Router.push('/documentos/gerador')
+                                        Router.push('/modelos/cartas')
                                     }}
-                                    icon={() => <FileSignature className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive.startsWith('/documentos/gerador')}
+                                    icon={() => <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/cartas')}
                                 />
                             </NavBar.ListOptions>
                         }
