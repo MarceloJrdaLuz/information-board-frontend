@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
 import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import { Document, Font, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
@@ -1234,10 +1235,13 @@ export const MidweekMonthSchedulePdfModal: React.FC<{
                     </div>
                 </DialogHeader>
 
-                <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200">
-                    <PDFViewer width="100%" height="100%" showToolbar={true}>
-                        {currentDoc}
-                    </PDFViewer>
+                <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200 flex flex-col">
+                    <UniversalPdfViewer
+                        document={currentDoc}
+                        title={`Programação do Meio de Semana — ${MONTH_NAMES[month - 1]} de ${year}`}
+                        fileName={`Programacao_Meio_de_Semana_${MONTH_NAMES[month - 1]}_${year}_${selectedTemplate}.pdf`}
+                        minHeight="600px"
+                    />
                 </div>
             </DialogContent>
         </Dialog>

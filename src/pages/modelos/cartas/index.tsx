@@ -3,6 +3,7 @@ import Calendar from "@/Components/Calendar";
 import ContentDashboard from "@/Components/ContentDashboard";
 import LetterLivePreview from "@/Components/LetterGenerator/LetterLivePreview";
 import LetterPdfDocument from "@/Components/LetterGenerator/LetterPdfDocument";
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
 import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useCongregationContext } from "@/context/CongregationContext";
@@ -932,34 +933,14 @@ function LetterGeneratorPage() {
                                 <LetterLivePreview data={letterData} />
                             </div>
                         ) : (
-                            <div className="h-[85vh] w-full rounded-2xl border border-surface-300 shadow-inner bg-zinc-200/50 overflow-hidden flex flex-col justify-center items-center">
-                                <BlobProvider document={<LetterPdfDocument data={debouncedLetterData} />}>
-                                    {({ url, loading, error }) => {
-                                        if (loading) {
-                                            return (
-                                                <div className="flex flex-col items-center justify-center gap-3 p-8 text-typography-500">
-                                                    <Loader2 className="w-8 h-8 animate-spin text-primary-200" />
-                                                    <span className="text-xs font-medium">Renderizando páginas do PDF...</span>
-                                                </div>
-                                            );
-                                        }
-                                        if (error || !url) {
-                                            return (
-                                                <div className="flex flex-col items-center justify-center gap-2 p-8 text-red-500 text-center">
-                                                    <AlertCircle className="w-8 h-8" />
-                                                    <span className="text-xs font-semibold">Erro ao renderizar PDF. Use a visualização em Folhas A4.</span>
-                                                </div>
-                                            );
-                                        }
-                                        return (
-                                            <iframe
-                                                src={`${url}#toolbar=0&navpanes=0`}
-                                                className="w-full h-full border-0 bg-white"
-                                                title="Pré-visualização do Documento PDF Oficial"
-                                            />
-                                        );
-                                    }}
-                                </BlobProvider>
+                            <div className="h-[85vh] w-full rounded-2xl border border-surface-300 shadow-inner bg-zinc-200/50 overflow-hidden flex flex-col">
+                                <UniversalPdfViewer
+                                    document={<LetterPdfDocument data={debouncedLetterData} />}
+                                    title="Carta Oficial"
+                                    fileName={fileName}
+                                    onSwitchToA4={() => setPreviewMode("sheets")}
+                                    minHeight="85vh"
+                                />
                             </div>
                         )}
                     </div>

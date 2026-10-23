@@ -3,6 +3,7 @@ import Calendar from "@/Components/Calendar";
 import ContentDashboard from "@/Components/ContentDashboard";
 import PaymentAuthorizedPdf from "@/Components/DocumentModels/PaymentAuthorizedPdf";
 import PaymentAuthorizedPreview from "@/Components/DocumentModels/PaymentAuthorizedPreview";
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
 import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useCongregationContext } from "@/context/CongregationContext";
@@ -663,36 +664,14 @@ function PaymentAuthorizedPage() {
                                 <PaymentAuthorizedPreview data={formData} />
                             </div>
                         ) : (
-                            <div className="bg-surface-200/50 border border-surface-300 rounded-2xl overflow-hidden shadow-inner min-h-[850px] flex items-center justify-center">
-                                <BlobProvider document={<PaymentAuthorizedPdf data={debouncedData} />}>
-                                    {({ url, loading, error }) => {
-                                        if (loading) {
-                                            return (
-                                                <div className="flex flex-col items-center justify-center gap-2 p-8 text-typography-600">
-                                                    <Loader2 className="w-6 h-6 animate-spin text-primary-200" />
-                                                    <span className="text-xs font-medium">Renderizando PDF...</span>
-                                                </div>
-                                            );
-                                        }
-                                        if (error || !url) {
-                                            return (
-                                                <div className="flex flex-col items-center justify-center gap-2 p-8 text-red-500 text-center">
-                                                    <AlertCircle className="w-8 h-8" />
-                                                    <span className="text-xs font-semibold">
-                                                        Erro ao renderizar PDF. Use a visualização em Folha A4.
-                                                    </span>
-                                                </div>
-                                            );
-                                        }
-                                        return (
-                                            <iframe
-                                                src={`${url}#toolbar=0&navpanes=0`}
-                                                className="w-full h-full border-0 bg-white min-h-[850px]"
-                                                title="Pré-visualização do Documento PDF Oficial"
-                                            />
-                                        );
-                                    }}
-                                </BlobProvider>
+                            <div className="bg-surface-200/50 border border-surface-300 rounded-2xl overflow-hidden shadow-inner min-h-[600px] flex flex-col">
+                                <UniversalPdfViewer
+                                    document={<PaymentAuthorizedPdf data={debouncedData} />}
+                                    title="Pessoas Autorizadas a Efetuar Pagamentos"
+                                    fileName={fileName}
+                                    onSwitchToA4={() => setPreviewMode("sheets")}
+                                    minHeight="850px"
+                                />
                             </div>
                         )}
                     </div>
