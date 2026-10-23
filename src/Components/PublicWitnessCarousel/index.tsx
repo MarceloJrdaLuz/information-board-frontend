@@ -16,6 +16,12 @@ dayjs.locale("pt-br")
 const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1)
 
+const getTimeInMinutes = (time?: string): number => {
+    if (!time) return 0
+    const [h, m] = time.split(":").map(Number)
+    return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m)
+}
+
 interface Props {
     fixedSchedules: IPublicWitnessFixedSchedule[]
     rotationBlocks: IPublicWitnessRotationBlock[]
@@ -30,23 +36,50 @@ export default function PublicWitnessCarousel({
      *  ARRANJOS ESPECIAIS (AGRUPADOS POR DATA)
      * ===================================================== */
     const specialByDate = useMemo(() => {
-        return fixedSchedules
+        const grouped = fixedSchedules
             .filter(fs => fs.date)
             .reduce<Record<string, IPublicWitnessFixedSchedule[]>>((acc, fs) => {
                 acc[fs.date!] = acc[fs.date!] || []
                 acc[fs.date!].push(fs)
                 return acc
             }, {})
+
+        Object.keys(grouped).forEach(date => {
+            grouped[date].sort((a, b) => {
+                const timeDiff = getTimeInMinutes(a.start_time) - getTimeInMinutes(b.start_time)
+                if (timeDiff !== 0) return timeDiff
+                const endTimeDiff = getTimeInMinutes(a.end_time) - getTimeInMinutes(b.end_time)
+                if (endTimeDiff !== 0) return endTimeDiff
+                return a.title.localeCompare(b.title)
+            })
+        })
+
+        return grouped
     }, [fixedSchedules])
 
-    const specialDates = Object.entries(specialByDate).sort(
-        ([a], [b]) => (dayjs(a).isAfter(dayjs(b)) ? 1 : -1)
-    )
+    const specialDates = useMemo(() => {
+        return Object.entries(specialByDate).sort(
+            ([a], [b]) => (dayjs(a).isAfter(dayjs(b)) ? 1 : -1)
+        )
+    }, [specialByDate])
 
     /* =====================================================
      *  FIXOS SEM DATA (SEMANAIS)
      * ===================================================== */
-    const weeklyFixed = fixedSchedules.filter(fs => !fs.date)
+    const weeklyFixed = useMemo(() => {
+        return [...fixedSchedules]
+            .filter(fs => !fs.date)
+            .sort((a, b) => {
+                const dayA = a.weekday ?? 0
+                const dayB = b.weekday ?? 0
+                if (dayA !== dayB) return dayA - dayB
+                const timeDiff = getTimeInMinutes(a.start_time) - getTimeInMinutes(b.start_time)
+                if (timeDiff !== 0) return timeDiff
+                const endTimeDiff = getTimeInMinutes(a.end_time) - getTimeInMinutes(b.end_time)
+                if (endTimeDiff !== 0) return endTimeDiff
+                return a.title.localeCompare(b.title)
+            })
+    }, [fixedSchedules])
 
     /* =====================================================
      *  MESES DO RODÍZIO
@@ -102,9 +135,16 @@ export default function PublicWitnessCarousel({
             })
         })
 
-        return flattened.sort((a, b) =>
-            dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1
-        )
+        return flattened.sort((a, b) => {
+            if (a.date !== b.date) {
+                return dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1
+            }
+            const timeDiff = getTimeInMinutes(a.start_time) - getTimeInMinutes(b.start_time)
+            if (timeDiff !== 0) return timeDiff
+            const endTimeDiff = getTimeInMinutes(a.end_time) - getTimeInMinutes(b.end_time)
+            if (endTimeDiff !== 0) return endTimeDiff
+            return a.title.localeCompare(b.title)
+        })
     }, [rotationBlocks, currentMonth])
 
     const next = () =>
@@ -290,7 +330,12 @@ export default function PublicWitnessCarousel({
                                             acc[s.title].push(s)
                                             return acc
                                         }, {})
-                                    ).map(([title, items]) => (
+                                    ).sort(([titleA, itemsA], [titleB, itemsB]) => {
+                                        const minTimeA = itemsA.length > 0 ? getTimeInMinutes(itemsA[0].start_time) : 0
+                                        const minTimeB = itemsB.length > 0 ? getTimeInMinutes(itemsB[0].start_time) : 0
+                                        if (minTimeA !== minTimeB) return minTimeA - minTimeB
+                                        return titleA.localeCompare(titleB)
+                                    }).map(([title, items]) => (
                                         <div key={title} className="space-y-2">
                                             {/* TÍTULO DO ARRANJO */}
                                             <h4 className="text-xs font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1.5">
@@ -300,7 +345,14 @@ export default function PublicWitnessCarousel({
 
                                             {/* HORÁRIOS */}
                                             <div className="grid gap-2.5 sm:grid-cols-2">
-                                                {items.map((s, idx) => (
+                                                {items
+                                                    .slice()
+                                                    .sort((a, b) => {
+                                                        const timeDiff = getTimeInMinutes(a.start_time) - getTimeInMinutes(b.start_time)
+                                                        if (timeDiff !== 0) return timeDiff
+                                                        return getTimeInMinutes(a.end_time) - getTimeInMinutes(b.end_time)
+                                                    })
+                                                    .map((s, idx) => (
                                                     <div
                                                         key={idx}
                                                         className="flex flex-col justify-between p-3.5 rounded-xl bg-surface-100 border border-surface-300 shadow-2xs gap-2"
