@@ -5,6 +5,7 @@ import { MidweekChairmanHeader } from "@/Components/Midweek/Chairman/MidweekChai
 import { MidweekChairmanNextWeekPreview } from "@/Components/Midweek/Chairman/MidweekChairmanNextWeekPreview";
 import { MidweekChairmanReportModal } from "@/Components/Midweek/Chairman/MidweekChairmanReportModal";
 import { MidweekChairmanTimelineItem } from "@/Components/Midweek/Chairman/MidweekChairmanTimelineItem";
+import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
 import { useMidweekChairmanTimer } from "@/hooks/useMidweekChairmanTimer";
@@ -15,7 +16,7 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { useAtom } from "jotai";
-import { AlertCircle, CalendarOff, Clock, Loader2 } from "lucide-react";
+import { AlertCircle, CalendarOff, Clock, Loader2, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -200,6 +201,20 @@ function MidweekChairmanPage() {
         setIsReportModalOpen(true);
     };
 
+    const [dismissedPromptScheduleId, setDismissedPromptScheduleId] = useState<string | null>(null);
+
+    const handleClearCurrentWeek = () => {
+        timer.clearWeekStorage();
+        setDismissedPromptScheduleId(currentSchedule?.id || null);
+        toast.success("Dados salvos e cronômetros desta semana foram limpos do dispositivo!");
+    };
+
+    const handleClearAllWeeks = () => {
+        timer.clearAllStorage();
+        setDismissedPromptScheduleId(currentSchedule?.id || null);
+        toast.success("Todos os dados do presidente salvos no dispositivo foram limpos!");
+    };
+
     const handlePrevWeek = () => {
         if (currentIndex > 0) {
             setSelectedScheduleId(schedules[currentIndex - 1].id);
@@ -277,11 +292,63 @@ function MidweekChairmanPage() {
                             totalPartsCount={0}
                             onPrevWeek={handlePrevWeek}
                             onNextWeek={handleNextWeek}
-                            onResetAll={timer.resetAllTimers}
+                            onResetAll={handleClearCurrentWeek}
                             onCopyReport={handleCopyReport}
                             hasPrevWeek={hasPrevWeek}
                             hasNextWeek={hasNextWeek}
                         />
+
+                        {/* Aviso de Dados Salvos no LocalStorage */}
+                        {timer.hasSavedData && dismissedPromptScheduleId !== currentSchedule.id && (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="flex items-start sm:items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5 sm:mt-0">
+                                        <RotateCcw className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs sm:text-sm font-bold flex items-center gap-1.5">
+                                            <span>Tempos salvos encontrados no dispositivo</span>
+                                        </h4>
+                                        <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
+                                            Há registros de cronômetros e partes salvos para esta semana no navegador. Deseja limpá-los para começar do zero?
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 flex-wrap">
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={handleClearCurrentWeek}
+                                        className="h-8 px-3 text-xs font-semibold gap-1.5 bg-rose-600 hover:bg-rose-700 text-white shadow-xs cursor-pointer"
+                                        title="Apagar dados e cronômetros salvos desta reunião"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <span>Limpar esta semana</span>
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleClearAllWeeks}
+                                        className="h-8 px-2.5 text-xs text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
+                                        title="Apagar dados salvos de todas as semanas gravadas no navegador"
+                                    >
+                                        <span>Limpar todas as semanas</span>
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setDismissedPromptScheduleId(currentSchedule.id)}
+                                        className="h-8 px-2 text-xs text-typography-600 hover:text-typography-900 cursor-pointer"
+                                        title="Manter os dados salvos e fechar este aviso"
+                                    >
+                                        Manter dados
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="p-8 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800 text-center flex flex-col items-center gap-2">
                             <AlertCircle className="w-10 h-10 text-amber-600" />
@@ -312,11 +379,63 @@ function MidweekChairmanPage() {
                             totalPartsCount={timelineItems.length}
                             onPrevWeek={handlePrevWeek}
                             onNextWeek={handleNextWeek}
-                            onResetAll={timer.resetAllTimers}
+                            onResetAll={handleClearCurrentWeek}
                             onCopyReport={handleCopyReport}
                             hasPrevWeek={hasPrevWeek}
                             hasNextWeek={hasNextWeek}
                         />
+
+                        {/* Aviso de Dados Salvos no LocalStorage */}
+                        {timer.hasSavedData && dismissedPromptScheduleId !== currentSchedule.id && (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="flex items-start sm:items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5 sm:mt-0">
+                                        <RotateCcw className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs sm:text-sm font-bold flex items-center gap-1.5">
+                                            <span>Tempos salvos encontrados no dispositivo</span>
+                                        </h4>
+                                        <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
+                                            Há registros de cronômetros e partes salvos para esta semana no navegador. Deseja limpá-los para começar do zero?
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 flex-wrap">
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        onClick={handleClearCurrentWeek}
+                                        className="h-8 px-3 text-xs font-semibold gap-1.5 bg-rose-600 hover:bg-rose-700 text-white shadow-xs cursor-pointer"
+                                        title="Apagar dados e cronômetros salvos desta reunião"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <span>Limpar esta semana</span>
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleClearAllWeeks}
+                                        className="h-8 px-2.5 text-xs text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
+                                        title="Apagar dados salvos de todas as semanas gravadas no navegador"
+                                    >
+                                        <span>Limpar todas as semanas</span>
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setDismissedPromptScheduleId(currentSchedule.id)}
+                                        className="h-8 px-2 text-xs text-typography-600 hover:text-typography-900 cursor-pointer"
+                                        title="Manter os dados salvos e fechar este aviso"
+                                    >
+                                        Manter dados
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Lista da Linha do Tempo */}
                         <div className="flex flex-col gap-2.5">

@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, FileTextIcon, FunctionSquareIcon, HomeIcon, KanbanSquareIcon, LineChart, Radio, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, CreditCard, DollarSign, FileSignature, FileTextIcon, FunctionSquareIcon, Globe, HomeIcon, KanbanSquareIcon, Layers, LineChart, Radio, Shield, ShieldCheck, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -575,6 +575,97 @@ export default function Layout(props: LayoutProps) {
                                     }}
                                     icon={() => <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                     active={pageActive.startsWith('/documentos/eventosespeciais')}
+                                />
+                            </NavBar.ListOptions>
+                        }
+
+                        {isAdminCongregation &&
+                            <NavBar.ListOptions
+                                key={"submenuModelos"}
+                                showList={openSubMenu === 'modelos'}
+                                onClick={() => toggleSubMenu('modelos')}
+                                title="Modelos"
+                                icon={() => <FileSignature className="w-5 h-5 sm:w-6 sm:h-6" />}
+                            >
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Visão Geral"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos')
+                                    }}
+                                    icon={() => <Layers className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive === '/modelos'}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Carta de apresentação"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/cartas')
+                                    }}
+                                    icon={() => <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/cartas')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Declaração de conta"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/declaracao-conta')
+                                    }}
+                                    icon={() => <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/declaracao-conta')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Previsão de gastos"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/previsao-gastos')
+                                    }}
+                                    icon={() => <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/previsao-gastos')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Autorizados a pagar"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/autorizados-pagamentos')
+                                    }}
+                                    icon={() => <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/autorizados-pagamentos')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Resolução obra mundial"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/resolucao-obra-mundial')
+                                    }}
+                                    icon={() => <Globe className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/resolucao-obra-mundial')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Pauta da reunião de anciãos"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/pauta-reuniao-anciaos')
+                                    }}
+                                    icon={() => <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/pauta-reuniao-anciaos')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
+                                    title="Pagamentos CCA"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/pagamentos-cca')
+                                    }}
+                                    icon={() => <Shield className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/pagamentos-cca')}
                                 />
                             </NavBar.ListOptions>
                         }

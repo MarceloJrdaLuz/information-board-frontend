@@ -97,13 +97,17 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
   useEffect(() => {
     if (!arrangement || !publishers) return
 
+    const sortedInitialSlots = (arrangement.timeSlots ?? [])
+      .slice()
+      .sort((a, b) => a.start_time.localeCompare(b.start_time))
+
     setIsFixed(arrangement.is_fixed)
     setWeekday(arrangement.weekday)
 
     reset({
       title: arrangement.title,
       date: arrangement.date ?? "",
-      timeSlots: arrangement.timeSlots.map(slot => ({
+      timeSlots: sortedInitialSlots.map(slot => ({
         id: slot.id,
         start_time: slot.start_time,
         end_time: slot.end_time,
@@ -112,7 +116,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
     })
 
     setSlotPublishers(
-      arrangement.timeSlots.map(slot =>
+      sortedInitialSlots.map(slot =>
         (slot.defaultPublishers ?? [])
           .map(dp => publishers.find(p => p.id === dp.publisher_id))
           .filter(Boolean) as IPublicWitnessPublisher[]
@@ -120,7 +124,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
     )
 
     setSlotPreferences(
-      arrangement.timeSlots.map(slot =>
+      sortedInitialSlots.map(slot =>
         (slot.preferences ?? [])
           .map(pref => publishers.find(p => p.id === pref.publisher_id))
           .filter(Boolean) as IPublicWitnessPublisher[]
@@ -130,22 +134,30 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
 
   /** 🚀 FORM → BACKEND */
   async function onSubmit(form: FormValues) {
+    const indexedSlots = form.timeSlots.map((slot, index) => ({
+      slot,
+      publishers: slotPublishers[index] ?? [],
+      preferences: slotPreferences[index] ?? []
+    }))
+
+    indexedSlots.sort((a, b) => a.slot.start_time.localeCompare(b.slot.start_time))
+
     const payload: UpdatePublicWitnessArrangementPayload = {
       title: form.title,
       is_fixed: isFixed,
       weekday: isFixed ? weekday : null,
       date: !isFixed ? form.date ?? null : null,
-      timeSlots: form.timeSlots.map((slot, index) => ({
-        id: slot.id,
-        start_time: slot.start_time,
-        end_time: slot.end_time,
+      timeSlots: indexedSlots.map((item, index) => ({
+        id: item.slot.id,
+        start_time: item.slot.start_time,
+        end_time: item.slot.end_time,
         order: index + 1,
-        is_rotative: slot.is_rotative,
-        defaultPublishers: (slotPublishers[index] ?? []).map((p, i) => ({
+        is_rotative: item.slot.is_rotative,
+        defaultPublishers: item.publishers.map((p, i) => ({
           publisher_id: p.id,
           order: i
         })),
-        preferences: (slotPreferences[index] ?? []).map(p => ({
+        preferences: item.preferences.map(p => ({
           publisher_id: p.id
         }))
       }))

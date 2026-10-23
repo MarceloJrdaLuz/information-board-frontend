@@ -104,12 +104,13 @@ export default function FormAddPublicWitnessArrangement() {
     const isFixed = watch("is_fixed")
 
     async function onSubmit(data: FormValues) {
+        const sortedSlots = [...data.timeSlots].sort((a, b) => a.start_time.localeCompare(b.start_time))
         const payload: CreatePublicWitnessArrangementPayload = {
             title: data.title,
             is_fixed: data.is_fixed,
             weekday: data.is_fixed ? data.weekday : null,
             date: !data.is_fixed ? data.date : null,
-            timeSlots: data.timeSlots.map((slot, index) => ({
+            timeSlots: sortedSlots.map((slot, index) => ({
                 start_time: slot.start_time,
                 end_time: slot.end_time,
                 order: index + 1,
