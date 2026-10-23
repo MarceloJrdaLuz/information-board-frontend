@@ -649,6 +649,16 @@ export default function Layout(props: LayoutProps) {
                                 />
                                 <NavBar.Options
                                     isSubItem
+                                    title="Pauta da reunião de anciãos"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/modelos/pauta-reuniao-anciaos')
+                                    }}
+                                    icon={() => <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive.startsWith('/modelos/pauta-reuniao-anciaos')}
+                                />
+                                <NavBar.Options
+                                    isSubItem
                                     title="Pagamentos CCA"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }

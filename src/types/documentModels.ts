@@ -175,3 +175,63 @@ export const DEFAULT_CCA_PAYMENTS_APPROVAL: ICcaPaymentsApprovalData = {
     documentTitle: "Registro de valor pagamentos aprovados pelo CCA",
 };
 
+// 6. Pauta da Reunião do Corpo de Anciãos
+export interface IAgendaTopicItem {
+    id: string;
+    subject: string;
+    reference: string;
+    referenceText?: string;
+    duration?: string;
+    suggestedBy?: string;
+}
+
+export interface IAgendaRecommendationItem {
+    id: string;
+    name: string;
+    decision: string;
+    notes?: string;
+    birthDate?: string;
+    baptismDate?: string;
+    yearsAsServant?: string;
+}
+
+export interface IAgendaRemovalItem {
+    id: string;
+    role: "elder" | "servant";
+    name: string;
+    reason: string;
+}
+
+export interface IEldersMeetingAgendaData {
+    congregationName: string;
+    locationAndDate: string;
+    openingPrayer: string;
+    closingPrayer: string;
+    topics: IAgendaTopicItem[];
+    elderRecommendations: IAgendaRecommendationItem[];
+    servantRecommendations: IAgendaRecommendationItem[];
+    removals: IAgendaRemovalItem[];
+    footerNote: string;
+    documentTitle: string;
+}
+
+export const DEFAULT_AGENDA_FOOTER_NOTE =
+    "Querido ancião, por favor, considere todos os assuntos com oração e com base em todas as referências bíblicas e teocráticas.\n(Pro. 11:14; Sal. 127:1)";
+
+export const DEFAULT_ELDERS_MEETING_AGENDA: IEldersMeetingAgendaData = {
+    congregationName: "",
+    locationAndDate: "Salão do Reino",
+    openingPrayer: "",
+    closingPrayer: "",
+    topics: [
+        { id: "topic_1", subject: "", reference: "", referenceText: "", duration: "", suggestedBy: "" },
+        { id: "topic_2", subject: "", reference: "", referenceText: "", duration: "", suggestedBy: "" },
+        { id: "topic_3", subject: "", reference: "", referenceText: "", duration: "", suggestedBy: "" },
+    ],
+    elderRecommendations: [],
+    servantRecommendations: [],
+    removals: [],
+    footerNote: DEFAULT_AGENDA_FOOTER_NOTE,
+    documentTitle: "Pauta da Reunião do Corpo de Anciãos",
+};
+

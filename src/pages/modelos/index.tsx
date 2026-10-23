@@ -6,6 +6,7 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom } from "jotai";
 import {
     ArrowRight,
+    ClipboardList,
     CreditCard,
     DollarSign,
     FileSignature,
@@ -80,6 +81,18 @@ const DOCUMENT_MODELS = [
         icon: Globe,
         colorClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
         accentGradient: "from-teal-500 to-cyan-600",
+    },
+    {
+        id: "pauta-reuniao-anciaos",
+        title: "Pauta da Reunião de Anciãos",
+        subtitle: "Pauta Oficial com Assuntos e Recomendações",
+        description:
+            "Elaboração prática da pauta para reuniões com o corpo de anciãos: assuntos numerados, durações, referências teocráticas, trechos colados com 1 clique e recomendações.",
+        href: "/modelos/pauta-reuniao-anciaos",
+        category: "Corpo de Anciãos",
+        icon: ClipboardList,
+        colorClass: "bg-[#1e3a5f]/10 text-[#1e3a5f] dark:text-sky-400 border-[#1e3a5f]/20",
+        accentGradient: "from-[#1e3a5f] to-sky-600",
     },
     {
         id: "pagamentos-cca",
