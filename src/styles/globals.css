@@ -301,6 +301,51 @@ textarea:-webkit-autofill:active {
   background-color: rgb(var(--color-primary-200));
 }
 
+/* Scrollbar discreto e moderno para textareas */
+textarea,
+.discrete-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+textarea::-webkit-scrollbar,
+.discrete-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+textarea::-webkit-scrollbar-track,
+.discrete-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb,
+.discrete-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+textarea::-webkit-scrollbar-thumb:hover,
+.discrete-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.65);
+}
+
+.dark textarea,
+.dark .discrete-scrollbar {
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
+.dark textarea::-webkit-scrollbar-thumb,
+.dark .discrete-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark textarea::-webkit-scrollbar-thumb:hover,
+.dark .discrete-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.5);
+}
+
 .react-pdf__Page__canvas {
   margin: 0 auto;
   width: 100% !important;
