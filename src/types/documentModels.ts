@@ -183,6 +183,7 @@ export interface IAgendaTopicItem {
     referenceText?: string;
     duration?: string;
     suggestedBy?: string;
+    decision?: string; // Decisão tomada pelo corpo, detalhes de execução, responsável e prazo
 }
 
 export interface IAgendaRecommendationItem {
@@ -213,6 +214,8 @@ export interface IEldersMeetingAgendaData {
     removals: IAgendaRemovalItem[];
     footerNote: string;
     documentTitle: string;
+    coordinatorName?: string;
+    secretaryName?: string;
 }
 
 export const DEFAULT_AGENDA_FOOTER_NOTE =

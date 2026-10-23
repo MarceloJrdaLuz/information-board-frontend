@@ -130,7 +130,15 @@ export default function EldersMeetingAgendaPreview({ data }: Props) {
                                                         </div>
                                                     </td>
                                                     <td className="py-2 px-3 align-top text-slate-700 whitespace-pre-wrap">
-                                                        {topic.reference}
+                                                        <div>{topic.reference}</div>
+                                                        {topic.decision?.trim() && (
+                                                            <div className="bg-emerald-50/80 border-l-[3px] border-emerald-600 border border-emerald-200 rounded-r-md p-2 text-[11px] text-slate-800 mt-2 leading-relaxed">
+                                                                <div className="text-[9px] font-black uppercase text-emerald-800 tracking-wider mb-0.5">
+                                                                    Decisão / Providências:
+                                                                </div>
+                                                                {topic.decision}
+                                                            </div>
+                                                        )}
                                                     </td>
                                                 </tr>
 

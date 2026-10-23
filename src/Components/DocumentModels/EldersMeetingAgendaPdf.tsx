@@ -294,7 +294,19 @@ export default function EldersMeetingAgendaPdf({ data }: Props) {
                                                 </Text>
                                             ) : null}
                                         </View>
-                                        <Text style={styles.tdReference}>{topic.reference || ""}</Text>
+                                        <View style={styles.tdReference}>
+                                            <Text>{topic.reference || ""}</Text>
+                                            {topic.decision?.trim() ? (
+                                                <View style={{ marginTop: 3, padding: 3, backgroundColor: "#ECFDF5", borderLeftWidth: 2, borderLeftColor: "#059669", borderRadius: 2 }}>
+                                                    <Text style={{ fontSize: 6.5, fontFamily: "Helvetica-Bold", color: "#065F46", textTransform: "uppercase", marginBottom: 1 }}>
+                                                        Decisão / Providências:
+                                                    </Text>
+                                                    <Text style={{ fontSize: 7.5, color: "#064E3B", lineHeight: 1.3 }}>
+                                                        {topic.decision}
+                                                    </Text>
+                                                </View>
+                                            ) : null}
+                                        </View>
                                     </View>
 
                                     {/* Trecho / Parágrafo se houver */}

@@ -3,6 +3,8 @@ import Calendar from "@/Components/Calendar";
 import ContentDashboard from "@/Components/ContentDashboard";
 import EldersMeetingAgendaPdf from "@/Components/DocumentModels/EldersMeetingAgendaPdf";
 import EldersMeetingAgendaPreview from "@/Components/DocumentModels/EldersMeetingAgendaPreview";
+import EldersMeetingMinutesPdf from "@/Components/DocumentModels/EldersMeetingMinutesPdf";
+import EldersMeetingMinutesPreview from "@/Components/DocumentModels/EldersMeetingMinutesPreview";
 import { Button } from "@/Components/ui/button";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useCongregationContext } from "@/context/CongregationContext";
@@ -22,14 +24,18 @@ import {
     AlertCircle,
     Building2,
     CalendarDays,
+    CheckCircle2,
+    ClipboardCheck,
     ClipboardList,
     ClipboardPaste,
     Clock,
     Download,
     ExternalLink,
     Eye,
+    FileCheck,
     FileEdit,
     FileSignature,
+    FileText,
     HardDrive,
     Layers,
     Loader2,
@@ -59,12 +65,15 @@ function EldersMeetingAgendaPage() {
 
     const [activeTabMobile, setActiveTabMobile] = useState<"form" | "preview">("form");
     const [previewMode, setPreviewMode] = useState<"sheets" | "pdf">("sheets");
+    const [activeDocView, setActiveDocView] = useState<"pauta" | "ata">("pauta");
     const [openExcerptIds, setOpenExcerptIds] = useState<Record<string, boolean>>({});
 
     const [formData, setFormData] = useState<IEldersMeetingAgendaData>(() => ({
         ...DEFAULT_ELDERS_MEETING_AGENDA,
         congregationName: congregation?.name || "",
         locationAndDate: `Salão do Reino — ${dayjs().format("DD/MM/YYYY")}`,
+        coordinatorName: "",
+        secretaryName: "",
     }));
 
     const [savedDraftInfo, setSavedDraftInfo] = useState<IDraftStorage | null>(null);
@@ -100,7 +109,7 @@ function EldersMeetingAgendaPage() {
         setCrumbs([
             { label: "Início", link: "/dashboard" },
             { label: "Modelos", link: "/modelos" },
-            { label: "Pauta de reunião de anciãos", link: "/modelos/pauta-reuniao-anciaos" }
+            { label: "Pauta e Ata de reunião de anciãos", link: "/modelos/pauta-reuniao-anciaos" }
         ]);
     }, [setCrumbs, setPageActive]);
 
@@ -122,7 +131,7 @@ function EldersMeetingAgendaPage() {
             ...prev,
             topics: [
                 ...prev.topics,
-                { id: newId, subject: "", reference: "", referenceText: "", duration: "", suggestedBy: "" }
+                { id: newId, subject: "", reference: "", referenceText: "", duration: "", suggestedBy: "", decision: "" }
             ]
         }));
     };
@@ -266,7 +275,7 @@ function EldersMeetingAgendaPage() {
             };
             localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
             setSavedDraftInfo(payload);
-            toast.success("Rascunho da pauta salvo exclusivamente neste dispositivo!");
+            toast.success("Rascunho da pauta e ata salvo exclusivamente neste dispositivo!");
         } catch (e) {
             console.error("Erro ao salvar rascunho:", e);
             toast.error("Não foi possível salvar o rascunho neste dispositivo.");
@@ -289,13 +298,15 @@ function EldersMeetingAgendaPage() {
         }
     };
 
-    // Carregar Exemplo Prático Completo
+    // Carregar Exemplo Prático Completo (com decisões preenchidas)
     const handleLoadSample = () => {
         setFormData({
             congregationName: congregation?.name || "Luís Gomes",
             locationAndDate: `Salão do Reino — ${dayjs().format("DD/MM/YYYY")}`,
             openingPrayer: "Antônio Marcos Rocha",
             closingPrayer: "José Roberto Lima",
+            coordinatorName: "Carlos Eduardo Silva",
+            secretaryName: "Antônio Marcos Rocha",
             topics: [
                 {
                     id: "topic_1",
@@ -304,6 +315,7 @@ function EldersMeetingAgendaPage() {
                     referenceText: "Os anciãos devem se esforçar para visitar cada publicador da congregação pelo menos uma vez por ano, dando encorajamento amoroso e suporte bíblico personalizado.",
                     duration: "15 min",
                     suggestedBy: "Coordenador",
+                    decision: "Designado o irmão Carlos para coordenar as visitas aos pioneiros e idosos durante este mês. Os demais anciãos acompanharão os grupos designados até o dia 30.",
                 },
                 {
                     id: "topic_2",
@@ -312,6 +324,7 @@ function EldersMeetingAgendaPage() {
                     referenceText: "Revisar a cobertura dos territórios durante os fins de semana e os pontos de testemunho público com carrinho para assegurar que todos os pioneiros tenham apoio.",
                     duration: "10 min",
                     suggestedBy: "Supte. Serviço",
+                    decision: "Aprovado novo ponto de carrinho na Praça Central aos sábados das 09h às 11h. O irmão Marcos atualizará a escala dos pioneiros até sexta-feira.",
                 },
                 {
                     id: "topic_3",
@@ -320,6 +333,7 @@ function EldersMeetingAgendaPage() {
                     referenceText: "Avaliar o cronograma dos grupos de limpeza e a revisão semestral dos condicionadores de ar e instalações elétricas.",
                     duration: "10 min",
                     suggestedBy: "Secretário",
+                    decision: "O irmão José cuidará do agendamento da manutenção preventiva dos condicionadores de ar para o dia 10 do próximo mês. Orçamento de até R$ 350,00 aprovado.",
                 },
             ],
             elderRecommendations: [
@@ -354,7 +368,7 @@ function EldersMeetingAgendaPage() {
             footerNote: DEFAULT_AGENDA_FOOTER_NOTE,
             documentTitle: "Pauta da Reunião do Corpo de Anciãos",
         });
-        toast.success("Exemplo prático preenchido com sucesso!");
+        toast.success("Exemplo prático de pauta e ata preenchido com sucesso!");
     };
 
     const handleClearForm = () => {
@@ -362,19 +376,26 @@ function EldersMeetingAgendaPage() {
             ...DEFAULT_ELDERS_MEETING_AGENDA,
             congregationName: congregation?.name || "",
             locationAndDate: `Salão do Reino — ${dayjs().format("DD/MM/YYYY")}`,
+            coordinatorName: "",
+            secretaryName: "",
         });
         toast.info("Campos da pauta limpos.");
     };
 
-    const fileName = useMemo(() => {
+    const agendaFileName = useMemo(() => {
         const dateStr = dayjs().format("YYYY-MM-DD");
         return `pauta_reuniao_anciaos_${dateStr}.pdf`;
+    }, []);
+
+    const minutesFileName = useMemo(() => {
+        const dateStr = dayjs().format("YYYY-MM-DD");
+        return `ata_reuniao_anciaos_${dateStr}.pdf`;
     }, []);
 
     return (
         <ContentDashboard>
             <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
-                <BreadCrumbs crumbs={crumbs} pageActive="Pauta de reunião de anciãos" />
+                <BreadCrumbs crumbs={crumbs} pageActive="Pauta e Ata de reunião de anciãos" />
 
                 {/* Banner de Cabeçalho */}
                 <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -385,7 +406,7 @@ function EldersMeetingAgendaPage() {
                         <div>
                             <div className="flex items-center gap-2 flex-wrap">
                                 <h1 className="text-lg sm:text-xl font-bold text-typography-900">
-                                    Pauta da Reunião do Corpo de Anciãos
+                                    Pauta e Ata da Reunião do Corpo de Anciãos
                                 </h1>
                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                                     <HardDrive className="w-3 h-3" />
@@ -396,7 +417,7 @@ function EldersMeetingAgendaPage() {
                                 </span>
                             </div>
                             <p className="text-xs sm:text-sm text-typography-600 mt-1 leading-relaxed">
-                                Formate a pauta oficial de reuniões de anciãos com assuntos, durações, referências, trechos colados com 1 clique e recomendações.
+                                Formate a pauta com fontes e referências e gere automaticamente a <strong>Ata oficial</strong> com as deliberações, responsáveis e prazos.
                             </p>
                         </div>
                     </div>
@@ -411,7 +432,7 @@ function EldersMeetingAgendaPage() {
                             title="Salva os dados no disco deste aparelho"
                         >
                             <HardDrive className="w-3.5 h-3.5" />
-                            <span>Salvar Rascunho no Dispositivo</span>
+                            <span>Salvar no Dispositivo</span>
                         </Button>
 
                         <Button
@@ -447,7 +468,7 @@ function EldersMeetingAgendaPage() {
                             </div>
                             <div>
                                 <p className="font-semibold text-typography-800">
-                                    Há uma pauta guardada na memória física deste dispositivo
+                                    Há uma pauta/ata guardada na memória física deste dispositivo
                                 </p>
                                 <p className="text-[11px] text-typography-500">
                                     Último salvamento local em:{" "}
@@ -582,13 +603,13 @@ function EldersMeetingAgendaPage() {
                             </div>
                         </div>
 
-                        {/* Seção 2: Assuntos da Pauta */}
+                        {/* Seção 2: Assuntos da Pauta e Decisões da Ata */}
                         <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
                             <div className="flex items-center justify-between pb-2 border-b border-surface-200">
                                 <div className="flex items-center gap-2">
                                     <ClipboardList className="w-4 h-4 text-primary-200" />
                                     <h3 className="text-xs font-bold uppercase tracking-wider text-typography-700">
-                                        Assuntos da Pauta ({formData.topics.length})
+                                        Assuntos & Decisões ({formData.topics.length})
                                     </h3>
                                 </div>
                                 <Button
@@ -604,7 +625,7 @@ function EldersMeetingAgendaPage() {
                             </div>
 
                             <p className="text-[11px] text-typography-500">
-                                Digite os assuntos em discussão. O botão <strong>Colar trecho</strong> permite anexar o parágrafo copiado do JW Library/WOL com 1 clique.
+                                Cada assunto contém a referência para a pauta e o campo de <strong>Decisão Tomada</strong> para gerar a Ata com responsáveis e prazos.
                             </p>
 
                             <div className="space-y-4">
@@ -668,7 +689,7 @@ function EldersMeetingAgendaPage() {
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 <div>
                                                     <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
-                                                        Referência Teocrática
+                                                        Referência Teocrática (livro, carta, etc.)
                                                     </label>
                                                     <input
                                                         type="text"
@@ -692,7 +713,7 @@ function EldersMeetingAgendaPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Parágrafo de Referência Colado */}
+                                            {/* Parágrafo de Referência Colado (Aparece na Pauta) */}
                                             {!isExcerptOpen ? (
                                                 <button
                                                     type="button"
@@ -700,14 +721,14 @@ function EldersMeetingAgendaPage() {
                                                     className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary-200 hover:underline pt-0.5"
                                                 >
                                                     <ClipboardPaste className="w-3.5 h-3.5" />
-                                                    <span>+ Colar parágrafo da referência da área de transferência</span>
+                                                    <span>+ Colar parágrafo da referência da área de transferência (para Pauta)</span>
                                                 </button>
                                             ) : (
                                                 <div className="bg-primary-200/5 border-l-4 border-l-primary-200 border border-surface-300 rounded-r-xl rounded-l-xs p-2.5 space-y-2">
                                                     <div className="flex items-center justify-between gap-2 flex-wrap">
                                                         <span className="text-[10px] font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1">
                                                             <Quote className="w-3 h-3" />
-                                                            Trecho / Parágrafo da Referência
+                                                            Trecho da Referência (Aparece na Pauta)
                                                         </span>
                                                         <div className="flex items-center gap-2">
                                                             <button
@@ -731,7 +752,7 @@ function EldersMeetingAgendaPage() {
                                                         </div>
                                                     </div>
                                                     <textarea
-                                                        rows={3}
+                                                        rows={2}
                                                         value={topic.referenceText || ""}
                                                         onChange={e => handleTopicChange(idx, "referenceText", e.target.value)}
                                                         placeholder="Cole aqui o trecho copiado do JW Library ou WOL para ser exibido na pauta..."
@@ -739,6 +760,26 @@ function EldersMeetingAgendaPage() {
                                                     />
                                                 </div>
                                             )}
+
+                                            {/* CAMPO DE DECISÃO TOMADA (APARECE NA ATA) */}
+                                            <div className="bg-emerald-500/5 border border-emerald-500/25 rounded-xl p-2.5 space-y-1.5">
+                                                <div className="flex items-center justify-between gap-1 flex-wrap">
+                                                    <label className="text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
+                                                        <FileCheck className="w-3.5 h-3.5" />
+                                                        Decisão Tomada / Deliberação (Aparece na Ata)
+                                                    </label>
+                                                    <span className="text-[9.5px] text-typography-500">
+                                                        Quem fará, providências e data/prazo
+                                                    </span>
+                                                </div>
+                                                <textarea
+                                                    rows={2}
+                                                    value={topic.decision || ""}
+                                                    onChange={e => handleTopicChange(idx, "decision", e.target.value)}
+                                                    placeholder="Descreva a decisão tomada pelo corpo, quem foi designado para fazer e até que data..."
+                                                    className="w-full text-xs p-2 rounded-lg border border-emerald-500/30 bg-surface-50 focus:outline-hidden focus:border-emerald-500 text-typography-800 resize-y leading-relaxed"
+                                                />
+                                            </div>
                                         </div>
                                     );
                                 })}
@@ -821,7 +862,7 @@ function EldersMeetingAgendaPage() {
                                                     value={rec.decision}
                                                     onChange={e => handleRecommendationChange("elder", idx, "decision", e.target.value)}
                                                     placeholder="Decisão (ex: Aprovado)"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
+                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -892,7 +933,7 @@ function EldersMeetingAgendaPage() {
                                                     value={rec.decision}
                                                     onChange={e => handleRecommendationChange("servant", idx, "decision", e.target.value)}
                                                     placeholder="Decisão (ex: Aprovado)"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
+                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
                                                 />
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -974,10 +1015,51 @@ function EldersMeetingAgendaPage() {
                                 )}
                         </div>
 
-                        {/* Seção 4: Rodapé Bíblico */}
+                        {/* Seção 4: Assinaturas da Ata */}
+                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+                            <div className="flex items-center gap-2 pb-2 border-b border-surface-200">
+                                <FileSignature className="w-4 h-4 text-primary-200" />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-typography-700">
+                                    Assinaturas da Ata Oficial
+                                </h3>
+                            </div>
+
+                            <p className="text-[11px] text-typography-500">
+                                Nomes que assinarão formalmente o documento da Ata no rodapé.
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs font-semibold text-typography-700 mb-1 block">
+                                        Coordenador do Corpo de Anciãos
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.coordinatorName || ""}
+                                        onChange={e => handleFieldChange("coordinatorName", e.target.value)}
+                                        placeholder="Nome do Coordenador"
+                                        className="w-full text-xs px-3 py-2 rounded-xl border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-semibold text-typography-700 mb-1 block">
+                                        Secretário da Congregação
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.secretaryName || ""}
+                                        onChange={e => handleFieldChange("secretaryName", e.target.value)}
+                                        placeholder="Nome do Secretário"
+                                        className="w-full text-xs px-3 py-2 rounded-xl border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Seção 5: Rodapé Bíblico da Pauta */}
                         <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-typography-700">
-                                Lembrete Bíblico do Rodapé
+                                Lembrete Bíblico do Rodapé da Pauta
                             </h3>
                             <textarea
                                 rows={2}
@@ -995,9 +1077,37 @@ function EldersMeetingAgendaPage() {
                             activeTabMobile === "form" ? "hidden lg:flex" : "flex"
                         }`}
                     >
-                        {/* Barra de Ações Superior do Preview */}
-                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="flex items-center gap-1.5 bg-surface-200 p-1 rounded-xl">
+                        {/* Seletor de Tipo de Documento: PAUTA vs ATA */}
+                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 bg-surface-200/80 p-1.5 rounded-xl w-full sm:w-auto">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveDocView("pauta")}
+                                    className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                                        activeDocView === "pauta"
+                                            ? "bg-[#1e3a5f] text-white shadow-xs"
+                                            : "text-typography-600 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <ClipboardList className="w-4 h-4" />
+                                    <span>Pauta da Reunião</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveDocView("ata")}
+                                    className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                                        activeDocView === "ata"
+                                            ? "bg-[#1e3a5f] text-white shadow-xs"
+                                            : "text-typography-600 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <FileCheck className="w-4 h-4" />
+                                    <span>Ata da Reunião</span>
+                                </button>
+                            </div>
+
+                            {/* Alternador de Modo: Folha A4 vs PDF */}
+                            <div className="flex items-center gap-1.5 bg-surface-200 p-1 rounded-xl self-end sm:self-auto">
                                 <button
                                     type="button"
                                     onClick={() => setPreviewMode("sheets")}
@@ -1023,71 +1133,126 @@ function EldersMeetingAgendaPage() {
                                     <span>PDF Real</span>
                                 </button>
                             </div>
+                        </div>
 
-                            {/* Download do PDF */}
-                            <BlobProvider document={<EldersMeetingAgendaPdf data={debouncedData} />}>
-                                {({ url, loading, error }) => {
-                                    return (
-                                        <div className="flex items-center gap-2">
-                                            {url && !loading && (
-                                                <a
-                                                    href={url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-xl border border-surface-300 hover:bg-surface-200 text-typography-700 font-medium"
-                                                >
-                                                    <ExternalLink className="w-3.5 h-3.5" />
-                                                    <span>Abrir Nova Aba</span>
-                                                </a>
-                                            )}
+                        {/* Barra de Downloads de PDF: Pauta e Ata */}
+                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <span className="text-xs font-semibold text-typography-700 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-primary-200" />
+                                Exportar Documentos Oficiais:
+                            </span>
 
+                            <div className="flex items-center gap-2 flex-wrap">
+                                {/* Botão de Download da Pauta */}
+                                <BlobProvider document={<EldersMeetingAgendaPdf data={debouncedData} />}>
+                                    {({ url, loading, error }) => {
+                                        return (
                                             <Button
                                                 type="button"
+                                                variant="outline"
                                                 disabled={loading || !!error || !url}
                                                 onClick={() => {
                                                     if (!url) return;
                                                     const link = document.createElement("a");
                                                     link.href = url;
-                                                    link.download = fileName;
+                                                    link.download = agendaFileName;
                                                     document.body.appendChild(link);
                                                     link.click();
                                                     document.body.removeChild(link);
                                                     toast.success("Pauta baixada com sucesso!");
                                                 }}
-                                                className="gap-2 text-xs bg-[#1e3a5f] hover:bg-[#162c46] text-white font-semibold shadow-sm"
+                                                className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 font-semibold"
                                             >
                                                 {loading ? (
-                                                    <>
-                                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                        <span>Gerando PDF...</span>
-                                                    </>
+                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                                 ) : (
-                                                    <>
-                                                        <Download className="w-3.5 h-3.5" />
-                                                        <span>Baixar Pauta em PDF</span>
-                                                    </>
+                                                    <Download className="w-3.5 h-3.5 text-sky-600" />
                                                 )}
+                                                <span>Baixar Pauta (PDF)</span>
                                             </Button>
-                                        </div>
-                                    );
-                                }}
-                            </BlobProvider>
+                                        );
+                                    }}
+                                </BlobProvider>
+
+                                {/* Botão de Download da Ata */}
+                                <BlobProvider document={<EldersMeetingMinutesPdf data={debouncedData} />}>
+                                    {({ url, loading, error }) => {
+                                        return (
+                                            <div className="flex items-center gap-1.5">
+                                                {url && !loading && (
+                                                    <a
+                                                        href={url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs px-2.5 py-2 rounded-xl border border-surface-300 hover:bg-surface-200 text-typography-700 font-medium"
+                                                        title="Abrir Ata em nova aba"
+                                                    >
+                                                        <ExternalLink className="w-3.5 h-3.5" />
+                                                    </a>
+                                                )}
+
+                                                <Button
+                                                    type="button"
+                                                    disabled={loading || !!error || !url}
+                                                    onClick={() => {
+                                                        if (!url) return;
+                                                        const link = document.createElement("a");
+                                                        link.href = url;
+                                                        link.download = minutesFileName;
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                        toast.success("Ata da Reunião baixada com sucesso!");
+                                                    }}
+                                                    className="gap-2 text-xs bg-[#1e3a5f] hover:bg-[#162c46] text-white font-semibold shadow-sm"
+                                                >
+                                                    {loading ? (
+                                                        <>
+                                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                            <span>Gerando Ata...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FileCheck className="w-3.5 h-3.5" />
+                                                            <span>Baixar Ata da Reunião (PDF)</span>
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        );
+                                    }}
+                                </BlobProvider>
+                            </div>
                         </div>
 
-                        {/* Pré-visualização na Folha */}
+                        {/* Pré-visualização na Folha A4 ou PDF Real */}
                         {previewMode === "sheets" ? (
                             <div className="bg-surface-200/50 border border-surface-300 rounded-2xl p-2 sm:p-4 overflow-x-auto shadow-inner">
-                                <EldersMeetingAgendaPreview data={formData} />
+                                {activeDocView === "pauta" ? (
+                                    <EldersMeetingAgendaPreview data={formData} />
+                                ) : (
+                                    <EldersMeetingMinutesPreview data={formData} />
+                                )}
                             </div>
                         ) : (
                             <div className="bg-surface-200/50 border border-surface-300 rounded-2xl overflow-hidden shadow-inner min-h-[850px] flex items-center justify-center">
-                                <BlobProvider document={<EldersMeetingAgendaPdf data={debouncedData} />}>
+                                <BlobProvider
+                                    document={
+                                        activeDocView === "pauta" ? (
+                                            <EldersMeetingAgendaPdf data={debouncedData} />
+                                        ) : (
+                                            <EldersMeetingMinutesPdf data={debouncedData} />
+                                        )
+                                    }
+                                >
                                     {({ url, loading, error }) => {
                                         if (loading) {
                                             return (
                                                 <div className="flex flex-col items-center justify-center gap-2 p-8 text-typography-600">
                                                     <Loader2 className="w-6 h-6 animate-spin text-primary-200" />
-                                                    <span className="text-xs font-medium">Renderizando PDF da Pauta...</span>
+                                                    <span className="text-xs font-medium">
+                                                        Renderizando PDF ({activeDocView === "pauta" ? "Pauta" : "Ata"})...
+                                                    </span>
                                                 </div>
                                             );
                                         }
@@ -1105,7 +1270,7 @@ function EldersMeetingAgendaPage() {
                                             <iframe
                                                 src={`${url}#toolbar=0&navpanes=0`}
                                                 className="w-full h-full border-0 bg-white min-h-[850px]"
-                                                title="Pré-visualização da Pauta da Reunião de Anciãos"
+                                                title={`Pré-visualização da ${activeDocView === "pauta" ? "Pauta" : "Ata"}`}
                                             />
                                         );
                                     }}
@@ -1122,4 +1287,3 @@ function EldersMeetingAgendaPage() {
 EldersMeetingAgendaPage.getLayout = withProtectedLayout(["ADMIN_CONGREGATION"]);
 
 export default EldersMeetingAgendaPage;
-
