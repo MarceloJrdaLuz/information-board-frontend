@@ -9,6 +9,7 @@ import ScrollToTopButton from "@/Components/ScrollToTopButton"
 import SpeakerInvitationPdf from "@/Components/SpeakerInvitationPdf"
 import WeekendMeeting from "@/Components/WeekendSchedulePdf"
 import WeekendScheduleSkeleton from "@/Components/WeekendScheduleSkeleton"
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import {
@@ -735,12 +736,16 @@ function WeekendSchedulePage() {
                                 </div>
 
                                 {showPdfPreview && (
-                                    <div className="w-full h-[80vh] mt-3 border border-surface-300 rounded-2xl overflow-hidden shadow-inner">
-                                        <PDFViewer style={{ width: "100%", height: "100%" }}>
-                                            <Document>
-                                                <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
-                                            </Document>
-                                        </PDFViewer>
+                                    <div className="w-full h-[80vh] mt-3 border border-surface-300 rounded-2xl overflow-hidden shadow-inner flex flex-col bg-surface-200">
+                                        <UniversalPdfViewer
+                                            document={
+                                                <Document>
+                                                    <WeekendMeeting schedules={filteredSchedules} scale={pdfScale} />
+                                                </Document>
+                                            }
+                                            title={`Reunião do Fim de Semana — ${baseDate.format("MMMM [de] YYYY")}`}
+                                            fileName={`Reuniao_Fim_de_Semana_${baseDate.format("MMMM_YYYY")}.pdf`}
+                                        />
                                     </div>
                                 )}
                             </div>

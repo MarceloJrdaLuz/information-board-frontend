@@ -7,6 +7,7 @@ import { ListGeneric } from "@/Components/ListGeneric"
 import ScrollToTopButton from "@/Components/ScrollToTopButton"
 import SkeletonSpeakersList from "@/Components/SkeletonSpeakersList"
 import SpeakersListPdf from "@/Components/SpeakerListPdf"
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteSpeakerAtom, selectedSpeakerAtom } from "@/atoms/speakerAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -299,15 +300,19 @@ function SpeakersPage() {
                                     <X className="h-5 w-5" />
                                 </button>
                             </div>
-                            <div className="flex-1 w-full overflow-hidden rounded-xl">
-                                <PDFViewer style={{ width: "100%", height: "100%", border: "none" }}>
-                                    <Document>
-                                        <SpeakersListPdf
-                                            speakers={displayedSpeakers ?? []}
-                                            congregationName={speakerCongregationName}
-                                        />
-                                    </Document>
-                                </PDFViewer>
+                            <div className="flex-1 w-full overflow-hidden rounded-xl flex flex-col bg-surface-200">
+                                <UniversalPdfViewer
+                                    document={
+                                        <Document>
+                                            <SpeakersListPdf
+                                                speakers={displayedSpeakers ?? []}
+                                                congregationName={speakerCongregationName}
+                                            />
+                                        </Document>
+                                    }
+                                    title="Lista de Oradores Públicos"
+                                    fileName="Lista_Oradores.pdf"
+                                />
                             </div>
                         </div>
                     </div>
