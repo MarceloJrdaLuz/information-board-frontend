@@ -466,9 +466,19 @@ function ArrangementCardItem({
                     <RefreshCw className="w-2.5 h-2.5" /> Rodízio
                   </span>
                 ) : (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-typography-600 font-medium">
-                    Fixo ({slot.defaultPublishers?.length ?? 0})
-                  </span>
+                  <div className="flex flex-col items-end gap-0.5 max-w-[60%] text-right">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-typography-600 font-medium">
+                      Fixo ({slot.defaultPublishers?.length ?? 0})
+                    </span>
+                    {slot.defaultPublishers && slot.defaultPublishers.length > 0 && (
+                      <span
+                        className="text-[10px] text-typography-500 truncate max-w-full font-medium"
+                        title={slot.defaultPublishers.map(dp => dp.publisher?.fullName).filter(Boolean).join(", ")}
+                      >
+                        {slot.defaultPublishers.map(dp => dp.publisher?.fullName).filter(Boolean).join(", ")}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -478,24 +488,37 @@ function ArrangementCardItem({
 
       {/* Botão de Ação para a Programação */}
       <div className="pt-2 border-t border-surface-300">
-        <Button
-          onClick={() =>
-            Router.push(`/congregacao/testemunho-publico/programacao/${arrangement.id}`)
-          }
-          className="w-full text-xs flex items-center justify-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white font-semibold py-2"
-        >
-          {arrangement.is_fixed ? (
-            <>
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Ver Programação Mensal</span>
-            </>
-          ) : (
-            <>
-              <CalendarRange className="w-3.5 h-3.5" />
-              <span>Ver Designações da Data</span>
-            </>
-          )}
-        </Button>
+        {arrangement.is_fixed && !hasRotativeSlots ? (
+          <Button
+            onClick={() =>
+              Router.push(`/congregacao/testemunho-publico/edit/${arrangement.id}`)
+            }
+            variant="outline"
+            className="w-full text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 font-semibold py-2"
+          >
+            <Pencil className="w-3.5 h-3.5 text-primary-200" />
+            <span>Editar Horários e Publicadores Fixos</span>
+          </Button>
+        ) : (
+          <Button
+            onClick={() =>
+              Router.push(`/congregacao/testemunho-publico/programacao/${arrangement.id}`)
+            }
+            className="w-full text-xs flex items-center justify-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white font-semibold py-2"
+          >
+            {arrangement.is_fixed ? (
+              <>
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Gerar / Ver Programação Mensal</span>
+              </>
+            ) : (
+              <>
+                <CalendarRange className="w-3.5 h-3.5" />
+                <span>Ver Designações da Data</span>
+              </>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   )

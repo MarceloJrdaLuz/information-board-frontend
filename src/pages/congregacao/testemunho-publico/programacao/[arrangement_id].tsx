@@ -7,17 +7,17 @@ import {
 import ArrangementMonthScheduleSkeleton from "@/Components/ArrangementMonthScheduleSkeleton"
 import BreadCrumbs from "@/Components/BreadCrumbs"
 import ContentDashboard from "@/Components/ContentDashboard"
+import ArrangementPublishersModal from "@/Components/PublicWitnessSchedule/ArrangementPublishersModal"
 import DayScheduleCard from "@/Components/PublicWitnessSchedule/DayScheduleCard"
 import GenerateScheduleModal from "@/Components/PublicWitnessSchedule/GenerateScheduleModal"
 import SlotPreferencesModal from "@/Components/PublicWitnessSchedule/SlotPreferencesModal"
-import ArrangementPublishersModal from "@/Components/PublicWitnessSchedule/ArrangementPublishersModal"
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
 import { Button } from "@/Components/ui/button"
-import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
 import { useCongregationContext } from "@/context/CongregationContext"
+import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
-import { ISpecialEvent } from "@/types/specialEvent"
 import { WEEKDAY_LABEL, Weekday } from "@/types/fieldService"
+import { ISpecialEvent } from "@/types/specialEvent"
 import { getDatesForMonth } from "@/utils/publicWitnessDates"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
@@ -76,6 +76,10 @@ function ArrangementMonthSchedulePage() {
     if (!publishers) return []
     return publishers.filter(p => participatingPublisherIds.has(p.id))
   }, [publishers, participatingPublisherIds])
+
+  const hasRotativeSlots = useMemo(() => {
+    return arrangement?.timeSlots.some(s => s.is_rotative) ?? false
+  }, [arrangement])
 
   const baseDate = dayjs().add(monthOffset, "month")
   const currentMonthName = baseDate.format("MMMM [de] YYYY")
@@ -251,12 +255,33 @@ function ArrangementMonthSchedulePage() {
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-200 rounded-lg">
                 <Users className="h-4 w-4 text-primary-200" />
                 <span>
-                  <strong>{participatingPublishers.length}</strong> no rodízio deste arranjo
+                  <strong>{participatingPublishers.length}</strong>{" "}
+                  {arrangement.is_fixed ? "no rodízio deste arranjo" : "participantes desta data"}
                 </span>
                 <span className="text-typography-400">({publishers?.length ?? 0} habilitados)</span>
               </div>
             </div>
           </div>
+
+          {/* Aviso para arranjos 100% fixos */}
+          {arrangement.is_fixed && !hasRotativeSlots && (
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>
+                  Este arranjo possui <strong>apenas publicadores fixos</strong> configurados diretamente nos horários. Não utiliza escala mensal rotativa. Para alterar os participantes de cada horário, edite o arranjo.
+                </span>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => router.push(`/congregacao/testemunho-publico/edit/${arrangement.id}`)}
+                className="border-amber-400 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-100 shrink-0 font-semibold text-xs"
+              >
+                Editar Horários e Publicadores
+              </Button>
+            </div>
+          )}
 
           {/* Barra Superior de Controles e Ações */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-100 p-4 rounded-xl border border-surface-300 shadow-sm sticky top-0 z-20 backdrop-blur-md">
@@ -314,17 +339,71 @@ function ArrangementMonthSchedulePage() {
 
             {/* Botões de Ação */}
             <div className="flex flex-wrap items-center gap-2">
-              {arrangement.is_fixed && (
+              {arrangement.is_fixed ? (
+                hasRotativeSlots ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsPublishersModalOpen(true)}
+                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                      title="Definir quais publicadores participam do rodízio deste arranjo"
+                    >
+                      <UserCheck className="h-4 w-4 text-primary-200" />
+                      <span>Participantes do Rodízio</span>
+                      <span
+                        className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                          participatingPublishers.length > 0
+                            ? "bg-primary-100 text-primary-300"
+                            : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                        }`}
+                      >
+                        {participatingPublishers.length}
+                      </span>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsPreferencesModalOpen(true)}
+                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    >
+                      <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+                      <span>Preferências de Horário</span>
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsGenerateModalOpen(true)}
+                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    >
+                      <Wand2 className="h-4 w-4 text-primary-200" />
+                      <span>Auto-Preencher / Gerar...</span>
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => router.push(`/congregacao/testemunho-publico/edit/${arrangement.id}`)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                  >
+                    <span>Editar Publicadores Fixos</span>
+                  </Button>
+                )
+              ) : (
+                /* Data Específica: Gerenciamento dos participantes da data e geração dos pares */
                 <>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setIsPublishersModalOpen(true)}
                     className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-                    title="Definir quais publicadores participam do rodízio deste arranjo"
+                    title="Definir quais publicadores participam desta data especial"
                   >
                     <UserCheck className="h-4 w-4 text-primary-200" />
-                    <span>Participantes do Rodízio</span>
+                    <span>Participantes da Data</span>
                     <span
                       className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                         participatingPublishers.length > 0
@@ -339,21 +418,11 @@ function ArrangementMonthSchedulePage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setIsPreferencesModalOpen(true)}
-                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-                  >
-                    <SlidersHorizontal className="h-4 w-4 text-amber-600" />
-                    <span>Preferências de Horário</span>
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
                     onClick={() => setIsGenerateModalOpen(true)}
                     className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
                   >
                     <Wand2 className="h-4 w-4 text-primary-200" />
-                    <span>Auto-Preencher / Gerar...</span>
+                    <span>Gerar Pares do Dia</span>
                   </Button>
                 </>
               )}
@@ -502,6 +571,7 @@ function ArrangementMonthSchedulePage() {
             arrangementTitle={arrangement.title}
             defaultStartDate={start_date}
             defaultEndDate={end_date}
+            isFixed={arrangement.is_fixed}
             participatingPublishersCount={participatingPublishers.length}
             onOpenPublishersModal={() => setIsPublishersModalOpen(true)}
             onSuccess={handleGenerationSuccess}

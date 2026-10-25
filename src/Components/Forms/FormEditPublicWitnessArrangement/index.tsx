@@ -152,12 +152,12 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
         start_time: item.slot.start_time,
         end_time: item.slot.end_time,
         order: index + 1,
-        is_rotative: item.slot.is_rotative,
-        defaultPublishers: item.publishers.map((p, i) => ({
+        is_rotative: !isFixed ? true : item.slot.is_rotative,
+        defaultPublishers: !isFixed ? [] : item.publishers.map((p, i) => ({
           publisher_id: p.id,
           order: i
         })),
-        preferences: item.preferences.map(p => ({
+        preferences: !isFixed ? [] : item.preferences.map(p => ({
           publisher_id: p.id
         }))
       }))
@@ -399,28 +399,12 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
                     )}
                   </>
                 ) : (
-                  /* Para data específica: 100% manual e direto */
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
-                      Publicadores do Horário
+                  /* Para data específica: designações são feitas na tela do dia */
+                  <div className="rounded-xl border border-dashed border-primary-200/50 bg-primary-50/30 dark:bg-primary-950/20 p-3 text-xs text-typography-600 flex items-center gap-2.5">
+                    <Clock className="w-4 h-4 text-primary-200 shrink-0" />
+                    <span>
+                      As designações deste horário serão definidas na página <strong>&ldquo;Ver Designações da Data&rdquo;</strong>, onde você poderá gerar os pares automaticamente ou escolher quem fará cada turno.
                     </span>
-                    <DropdownMulti<IPublicWitnessPublisher>
-                      title="Selecione os publicadores deste horário"
-                      items={publishers ?? []}
-                      selectedItems={slotPublishers[index] ?? []}
-                      handleChange={items => {
-                        setSlotPublishers(prev => {
-                          const copy = [...prev]
-                          copy[index] = items
-                          return copy
-                        })
-                      }}
-                      labelKey="fullName"
-                      searchable
-                      full
-                      border
-                      textVisible
-                    />
                   </div>
                 )}
               </div>

@@ -114,11 +114,11 @@ export default function FormAddPublicWitnessArrangement() {
                 start_time: slot.start_time,
                 end_time: slot.end_time,
                 order: index + 1,
-                is_rotative: slot.is_rotative ?? false,
-                defaultPublishers: slot.defaultPublishers.map(p => ({
+                is_rotative: !data.is_fixed ? true : (slot.is_rotative ?? false),
+                defaultPublishers: !data.is_fixed ? [] : slot.defaultPublishers.map(p => ({
                     publisher_id: p.id
                 })),
-                preferences: (slot.preferences ?? []).map(p => ({
+                preferences: !data.is_fixed ? [] : (slot.preferences ?? []).map(p => ({
                     publisher_id: p.id
                 }))
             }))
@@ -365,30 +365,12 @@ export default function FormAddPublicWitnessArrangement() {
                                         )}
                                     </>
                                 ) : (
-                                    /* Para data específica: 100% manual e direto */
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-[11px] font-semibold text-typography-600 uppercase tracking-wider">
-                                            Publicadores do Horário
+                                    /* Para data específica: designações são feitas na tela do dia */
+                                    <div className="rounded-xl border border-dashed border-primary-200/50 bg-primary-50/30 dark:bg-primary-950/20 p-3 text-xs text-typography-600 flex items-center gap-2.5">
+                                        <Clock className="w-4 h-4 text-primary-200 shrink-0" />
+                                        <span>
+                                            As designações deste horário serão definidas na página <strong>&ldquo;Ver Designações da Data&rdquo;</strong>, onde você poderá gerar os pares automaticamente ou escolher quem fará cada turno.
                                         </span>
-                                        <DropdownMulti<IPublisher>
-                                            title="Selecione os publicadores (opcional)"
-                                            items={publishers}
-                                            selectedItems={watch(`timeSlots.${index}.defaultPublishers`) ?? []}
-                                            handleChange={selected => {
-                                                setValue(
-                                                    `timeSlots.${index}.defaultPublishers`,
-                                                    selected,
-                                                    { shouldDirty: true }
-                                                )
-                                            }}
-                                            border
-                                            full
-                                            position="left"
-                                            labelKey="fullName"
-                                            textVisible
-                                            searchable
-                                            emptyMessage="Nenhum publicador encontrado"
-                                        />
                                     </div>
                                 )}
                             </div>

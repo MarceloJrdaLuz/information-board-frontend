@@ -127,7 +127,9 @@ export default function ArrangementPublishersModal({
         updatePublishers(arrangement.id, Array.from(selectedIds)),
         {
           pending: "Atualizando participantes do arranjo...",
-          success: "Participantes do rodízio atualizados com sucesso!"
+          success: arrangement.is_fixed
+            ? "Participantes do rodízio atualizados com sucesso!"
+            : "Participantes da data especial atualizados com sucesso!"
         }
       )
       onSuccess()
@@ -153,7 +155,7 @@ export default function ArrangementPublishersModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-bold text-typography-900">
-                Participantes do Rodízio
+                {arrangement.is_fixed ? "Participantes do Rodízio" : "Participantes da Data Especial"}
               </DialogTitle>
               <DialogDescription className="text-xs text-typography-500 mt-0.5 leading-relaxed">
                 Arranjo: <strong className="text-typography-800">{arrangement.title}</strong>
@@ -161,7 +163,15 @@ export default function ArrangementPublishersModal({
             </div>
           </div>
           <p className="text-xs text-typography-500 mt-2 bg-surface-200/60 p-2.5 rounded-xl border border-surface-300/60">
-            💡 <strong>Como funciona:</strong> Somente os publicadores marcados abaixo entrarão no sorteio/rodízio automático deste arranjo. Quem não for selecionado aqui não receberá designações automáticas neste carrinho.
+            {arrangement.is_fixed ? (
+              <>
+                💡 <strong>Como funciona:</strong> Somente os publicadores marcados abaixo entrarão no sorteio/rodízio automático deste arranjo. Quem não for selecionado aqui não receberá designações automáticas neste carrinho.
+              </>
+            ) : (
+              <>
+                💡 <strong>Como funciona:</strong> Somente os publicadores marcados abaixo serão distribuídos entre os horários desta data especial ao gerar os pares automaticamente.
+              </>
+            )}
           </p>
         </DialogHeader>
 
@@ -364,7 +374,11 @@ export default function ArrangementPublishersModal({
               ) : (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>Salvar Participantes</span>
+                  <span>
+                    {arrangement.is_fixed
+                      ? "Salvar Participantes"
+                      : "Salvar Participantes da Data"}
+                  </span>
                 </>
               )}
             </Button>

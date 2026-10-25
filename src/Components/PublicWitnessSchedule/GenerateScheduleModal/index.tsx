@@ -22,6 +22,7 @@ interface Props {
   defaultStartDate: string
   defaultEndDate: string
   onSuccess: () => void
+  isFixed?: boolean
   participatingPublishersCount?: number
   onOpenPublishersModal?: () => void
 }
@@ -34,6 +35,7 @@ export default function GenerateScheduleModal({
   defaultStartDate,
   defaultEndDate,
   onSuccess,
+  isFixed = true,
   participatingPublishersCount,
   onOpenPublishersModal
 }: Props) {
@@ -53,23 +55,29 @@ export default function GenerateScheduleModal({
   }, [isOpen, defaultStartDate, defaultEndDate])
 
   const handleGenerate = async () => {
-    if (!startDate || !endDate) {
+    if (!startDate || (!endDate && isFixed)) {
       toast.error("Preencha a data inicial e final.")
       return
     }
+
+    const finalEndDate = isFixed ? endDate : startDate
 
     setLoading(true)
     try {
       await toast.promise(
         generateSchedule(arrangementId, {
           startDate,
-          endDate,
+          endDate: finalEndDate,
           mode,
           publishersPerSlot
         }),
         {
-          pending: "Gerando escala de carrinho automatizada...",
-          success: "Escala gerada com sucesso!"
+          pending: !isFixed
+            ? "Gerando pares do dia especial..."
+            : "Gerando escala de carrinho automatizada...",
+          success: !isFixed
+            ? "Pares gerados com sucesso!"
+            : "Escala gerada com sucesso!"
         }
       )
       onSuccess()
@@ -90,22 +98,29 @@ export default function GenerateScheduleModal({
               <Wand2 className="h-5 w-5" />
             </div>
             <DialogTitle className="text-lg font-bold">
-              Preenchimento Automático do Carrinho
+              {!isFixed ? "Gerar Pares do Dia Especial" : "Preenchimento Automático do Carrinho"}
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-typography-500 mt-1.5 leading-relaxed">
-            Arranjo: <strong className="text-typography-800">{arrangementTitle}</strong>. O algoritmo distribui os publicadores respeitando regras de indisponibilidade, preferências e conflitos com a saída de campo.
+            Arranjo: <strong className="text-typography-800">{arrangementTitle}</strong>.{" "}
+            {!isFixed
+              ? "O algoritmo distribui os participantes selecionados entre os horários do dia respeitando regras de indisponibilidade e conflitos."
+              : "O algoritmo distribui os publicadores respeitando regras de indisponibilidade, preferências e conflitos com a saída de campo."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
-          {/* Status dos Participantes do Rodízio */}
+          {/* Status dos Participantes */}
           {participatingPublishersCount !== undefined && (
             participatingPublishersCount === 0 ? (
               <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/50 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-800 dark:text-amber-200">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                  <span>Nenhum publicador selecionado para o rodízio deste arranjo.</span>
+                  <span>
+                    {!isFixed
+                      ? "Nenhum publicador selecionado para esta data especial."
+                      : "Nenhum publicador selecionado para o rodízio deste arranjo."}
+                  </span>
                 </div>
                 {onOpenPublishersModal && (
                   <Button
@@ -126,7 +141,11 @@ export default function GenerateScheduleModal({
               <div className="p-2.5 bg-surface-200/60 border border-surface-300 rounded-xl flex items-center justify-between text-xs text-typography-600">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary-200" />
-                  <span>Participantes no rodízio deste arranjo:</span>
+                  <span>
+                    {!isFixed
+                      ? "Participantes selecionados para a data:"
+                      : "Participantes no rodízio deste arranjo:"}
+                  </span>
                 </div>
                 <span className="font-bold text-typography-900">
                   {participatingPublishersCount} {participatingPublishersCount === 1 ? "publicador" : "publicadores"}
@@ -136,21 +155,30 @@ export default function GenerateScheduleModal({
           )}
 
           {/* Período */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Calendar
-              label="Data Inicial"
-              selectedDate={startDate || null}
-              handleDateChange={(d) => setStartDate(d || "")}
-              full
-            />
-            <Calendar
-              label="Data Final"
-              selectedDate={endDate || null}
-              minDate={startDate || null}
-              handleDateChange={(d) => setEndDate(d || "")}
-              full
-            />
-          </div>
+          {!isFixed ? (
+            <div className="p-3 bg-surface-200/50 rounded-xl border border-surface-300 flex items-center justify-between text-xs">
+              <span className="text-typography-600 font-semibold">Data do Arranjo:</span>
+              <span className="font-bold text-typography-900">
+                {startDate}
+              </span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Calendar
+                label="Data Inicial"
+                selectedDate={startDate || null}
+                handleDateChange={(d) => setStartDate(d || "")}
+                full
+              />
+              <Calendar
+                label="Data Final"
+                selectedDate={endDate || null}
+                minDate={startDate || null}
+                handleDateChange={(d) => setEndDate(d || "")}
+                full
+              />
+            </div>
+          )}
 
           {/* Vagas por horário */}
           <div className="flex flex-col gap-1">
@@ -201,7 +229,9 @@ export default function GenerateScheduleModal({
                   />
                 </div>
                 <p className="text-[11px] text-typography-500 leading-relaxed">
-                  Refaz o mês do zero nos horários rotativos com novo rodízio uniforme.
+                  {!isFixed
+                    ? "Refaz os pares de todos os horários do dia com novo sorteio uniforme."
+                    : "Refaz o mês do zero nos horários rotativos com novo rodízio uniforme."}
                 </p>
               </div>
 
@@ -225,7 +255,9 @@ export default function GenerateScheduleModal({
                   />
                 </div>
                 <p className="text-[11px] text-typography-500 leading-relaxed">
-                  Mantém quem já foi escalado e preenche somente horários em aberto.
+                  {!isFixed
+                    ? "Mantém quem já foi escalado na data e preenche somente horários em aberto."
+                    : "Mantém quem já foi escalado e preenche somente horários em aberto."}
                 </p>
               </div>
             </div>
@@ -280,7 +312,13 @@ export default function GenerateScheduleModal({
             ) : (
               <Wand2 className="w-4 h-4" />
             )}
-            <span>{loading ? "Gerando..." : "Gerar Programação"}</span>
+            <span>
+              {loading
+                ? "Gerando..."
+                : !isFixed
+                ? "Gerar Pares do Dia"
+                : "Gerar Programação"}
+            </span>
           </Button>
         </DialogFooter>
       </DialogContent>
