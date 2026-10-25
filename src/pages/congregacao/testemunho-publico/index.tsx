@@ -379,6 +379,8 @@ function ArrangementCardItem({
       .sort((a, b) => a.start_time.localeCompare(b.start_time))
   }, [arrangement.timeSlots])
 
+  const hasRotativeSlots = useMemo(() => sortedSlots.some(s => s.is_rotative), [sortedSlots])
+
   return (
     <div className="bg-surface-100 border border-surface-300 rounded-xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4">
       <div className="flex flex-col gap-3">
@@ -425,9 +427,26 @@ function ArrangementCardItem({
 
         {/* Lista de horários do arranjo */}
         <div className="flex flex-col gap-2 pt-1 border-t border-surface-300">
-          <span className="text-[11px] font-bold text-typography-500 uppercase tracking-wider">
-            Horários ({sortedSlots.length})
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-typography-500 uppercase tracking-wider">
+              Horários ({sortedSlots.length})
+            </span>
+            {hasRotativeSlots && (
+              <span className={`text-[11px] font-semibold flex items-center gap-1 ${
+                (arrangement.arrangementPublishers?.length ?? 0) > 0
+                  ? "text-primary-200"
+                  : "text-amber-600 dark:text-amber-400"
+              }`}>
+                <Users className="w-3.5 h-3.5" />
+                <span>
+                  {arrangement.arrangementPublishers?.length ?? 0}{" "}
+                  {(arrangement.arrangementPublishers?.length ?? 0) === 1
+                    ? "no rodízio"
+                    : "no rodízio"}
+                </span>
+              </span>
+            )}
+          </div>
 
           <div className="flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1">
             {sortedSlots.map(slot => (

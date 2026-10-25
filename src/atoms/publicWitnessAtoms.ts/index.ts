@@ -52,6 +52,28 @@ export const updatePublicWitnessArrangementAtom = atom(
   }
 )
 
+export const updateArrangementPublishersAtom = atom(
+  null,
+  async (_get, _set, arrangement_id: string, publisher_ids: string[]) => {
+    try {
+      const res = await api.patch(
+        `${API_ROUTES.PUBLIC_WITNESS_ARRANGEMENTS}/${arrangement_id}/publishers`,
+        { publisher_ids }
+      )
+      _set(handleSubmitSuccessAtom, {
+        messageSuccess: "Participantes do rodízio atualizados com sucesso!",
+      })
+      return res.data
+    } catch (err: any) {
+      console.error(err)
+      _set(handleSubmitErrorAtom, {
+        messageError: err.response?.data?.message || "Erro ao atualizar participantes."
+      })
+      throw err
+    }
+  }
+)
+
 export const deletePublicWitnessArrangementAtom = atom(
   null,
   async (_get, _set, arrangement_id: string) => {

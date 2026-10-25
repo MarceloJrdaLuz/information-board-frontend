@@ -12,7 +12,7 @@ import { Button } from "@/Components/ui/button"
 import { useSetAtom } from "jotai"
 import { generatePublicWitnessScheduleAtom } from "@/atoms/publicWitnessAtoms.ts/schedules"
 import { toast } from "react-toastify"
-import { Wand2, CheckCircle2, ShieldCheck, Loader2 } from "lucide-react"
+import { Wand2, CheckCircle2, ShieldCheck, Loader2, AlertTriangle, Users } from "lucide-react"
 
 interface Props {
   isOpen: boolean
@@ -22,6 +22,8 @@ interface Props {
   defaultStartDate: string
   defaultEndDate: string
   onSuccess: () => void
+  participatingPublishersCount?: number
+  onOpenPublishersModal?: () => void
 }
 
 export default function GenerateScheduleModal({
@@ -31,7 +33,9 @@ export default function GenerateScheduleModal({
   arrangementTitle,
   defaultStartDate,
   defaultEndDate,
-  onSuccess
+  onSuccess,
+  participatingPublishersCount,
+  onOpenPublishersModal
 }: Props) {
   const generateSchedule = useSetAtom(generatePublicWitnessScheduleAtom)
 
@@ -95,6 +99,42 @@ export default function GenerateScheduleModal({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
+          {/* Status dos Participantes do Rodízio */}
+          {participatingPublishersCount !== undefined && (
+            participatingPublishersCount === 0 ? (
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/50 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-800 dark:text-amber-200">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span>Nenhum publicador selecionado para o rodízio deste arranjo.</span>
+                </div>
+                {onOpenPublishersModal && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      onClose()
+                      onOpenPublishersModal()
+                    }}
+                    className="text-xs border-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 shrink-0 font-semibold h-7 px-2.5 text-amber-900 dark:text-amber-100"
+                  >
+                    Escolher participantes
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="p-2.5 bg-surface-200/60 border border-surface-300 rounded-xl flex items-center justify-between text-xs text-typography-600">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-primary-200" />
+                  <span>Participantes no rodízio deste arranjo:</span>
+                </div>
+                <span className="font-bold text-typography-900">
+                  {participatingPublishersCount} {participatingPublishersCount === 1 ? "publicador" : "publicadores"}
+                </span>
+              </div>
+            )
+          )}
+
           {/* Período */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Calendar
@@ -232,8 +272,8 @@ export default function GenerateScheduleModal({
           <Button
             type="button"
             onClick={handleGenerate}
-            disabled={loading}
-            className="text-xs flex items-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white"
+            disabled={loading || participatingPublishersCount === 0}
+            className="text-xs flex items-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -10,6 +10,7 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import DayScheduleCard from "@/Components/PublicWitnessSchedule/DayScheduleCard"
 import GenerateScheduleModal from "@/Components/PublicWitnessSchedule/GenerateScheduleModal"
 import SlotPreferencesModal from "@/Components/PublicWitnessSchedule/SlotPreferencesModal"
+import ArrangementPublishersModal from "@/Components/PublicWitnessSchedule/ArrangementPublishersModal"
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
 import { Button } from "@/Components/ui/button"
 import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
@@ -34,6 +35,7 @@ import {
     Clock,
     Save,
     SlidersHorizontal,
+    UserCheck,
     Users,
     Wand2
 } from "lucide-react"
@@ -63,7 +65,17 @@ function ArrangementMonthSchedulePage() {
   const [monthOffset, setMonthOffset] = useState(0)
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
   const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState(false)
+  const [isPublishersModalOpen, setIsPublishersModalOpen] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  const participatingPublisherIds = useMemo(() => {
+    return new Set((arrangement?.arrangementPublishers ?? []).map(ap => ap.publisher_id))
+  }, [arrangement])
+
+  const participatingPublishers = useMemo(() => {
+    if (!publishers) return []
+    return publishers.filter(p => participatingPublisherIds.has(p.id))
+  }, [publishers, participatingPublisherIds])
 
   const baseDate = dayjs().add(monthOffset, "month")
   const currentMonthName = baseDate.format("MMMM [de] YYYY")
@@ -239,8 +251,9 @@ function ArrangementMonthSchedulePage() {
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-200 rounded-lg">
                 <Users className="h-4 w-4 text-primary-200" />
                 <span>
-                  <strong>{publishers?.length ?? 0}</strong> publicadores habilitados
+                  <strong>{participatingPublishers.length}</strong> no rodízio deste arranjo
                 </span>
+                <span className="text-typography-400">({publishers?.length ?? 0} habilitados)</span>
               </div>
             </div>
           </div>
@@ -303,6 +316,26 @@ function ArrangementMonthSchedulePage() {
             <div className="flex flex-wrap items-center gap-2">
               {arrangement.is_fixed && (
                 <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsPublishersModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    title="Definir quais publicadores participam do rodízio deste arranjo"
+                  >
+                    <UserCheck className="h-4 w-4 text-primary-200" />
+                    <span>Participantes do Rodízio</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                        participatingPublishers.length > 0
+                          ? "bg-primary-100 text-primary-300"
+                          : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                      }`}
+                    >
+                      {participatingPublishers.length}
+                    </span>
+                  </Button>
+
                   <Button
                     size="sm"
                     variant="outline"
@@ -469,6 +502,8 @@ function ArrangementMonthSchedulePage() {
             arrangementTitle={arrangement.title}
             defaultStartDate={start_date}
             defaultEndDate={end_date}
+            participatingPublishersCount={participatingPublishers.length}
+            onOpenPublishersModal={() => setIsPublishersModalOpen(true)}
             onSuccess={handleGenerationSuccess}
           />
 
@@ -477,7 +512,18 @@ function ArrangementMonthSchedulePage() {
             isOpen={isPreferencesModalOpen}
             onClose={() => setIsPreferencesModalOpen(false)}
             arrangement={arrangement}
-            publishers={publishers}
+            publishers={participatingPublishers.length > 0 ? participatingPublishers : (publishers ?? [])}
+            onSuccess={() => {
+              mutateArrangement()
+            }}
+          />
+
+          {/* Modal de Participantes do Rodízio */}
+          <ArrangementPublishersModal
+            isOpen={isPublishersModalOpen}
+            onClose={() => setIsPublishersModalOpen(false)}
+            arrangement={arrangement}
+            publishers={publishers ?? []}
             onSuccess={() => {
               mutateArrangement()
             }}

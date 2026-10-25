@@ -39,6 +39,14 @@ export interface IPublicWitnessTimeSlotPreference {
   publisher?: IPublisher
 }
 
+// Publicador participante do rodízio do arranjo
+export interface IPublicWitnessArrangementPublisher {
+  id: string
+  arrangement_id: string
+  publisher_id: string
+  publisher?: IPublisher
+}
+
 // Slot de horário
 export interface IPublicWitnessTimeSlot {
   id: string
@@ -61,4 +69,5 @@ export interface IPublicWitnessArrangement {
   date: string | null
   created_at: string
   timeSlots: IPublicWitnessTimeSlot[]
+  arrangementPublishers?: IPublicWitnessArrangementPublisher[]
 }
