@@ -28,6 +28,7 @@ interface Props {
   date: string
   arrangement: IPublicWitnessArrangement
   publishers: IPublisher[]
+  allPublishers?: IPublisher[]
   assignmentsBySlot?: Record<string, IPublicWitnessAssignment>
   exceptions?: IFieldServiceException[]
   specialEvents?: ISpecialEvent[]
@@ -37,6 +38,7 @@ export default function DayScheduleCard({
   date,
   arrangement,
   publishers,
+  allPublishers,
   assignmentsBySlot,
   exceptions = [],
   specialEvents = [],
@@ -285,6 +287,8 @@ export default function DayScheduleCard({
                   date={date}
                   slot={slot}
                   publishers={publishers}
+                  allPublishers={allPublishers}
+                  allSlots={sortedSlots}
                   assignment={assignmentsBySlot?.[slot.id]}
                   publishersCount={countExcludingThisSlot}
                   isSpecialDate={!arrangement.is_fixed}

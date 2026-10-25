@@ -592,7 +592,8 @@ function ArrangementMonthSchedulePage() {
                   key={date}
                   date={date}
                   arrangement={arrangement}
-                  publishers={publishers}
+                  publishers={participatingPublishers.length > 0 ? participatingPublishers : (publishers ?? [])}
+                  allPublishers={publishers ?? []}
                   assignmentsBySlot={assignmentsByDate[date]}
                   exceptions={scheduleResponse?.exceptions}
                   specialEvents={specialEvents}

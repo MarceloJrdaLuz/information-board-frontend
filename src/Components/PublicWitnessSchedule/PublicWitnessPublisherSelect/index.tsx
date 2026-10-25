@@ -23,6 +23,7 @@ interface Props {
   partner?: IPublisher | null
   partners?: IPublisher[]
   publishers: IPublisher[]
+  allPublishers?: IPublisher[]
   date: string
   slotId: string
   slotPreferences?: Set<string>
@@ -41,6 +42,7 @@ export function PublicWitnessPublisherSelect({
   partner,
   partners,
   publishers,
+  allPublishers,
   date,
   slotId,
   slotPreferences = new Set(),
@@ -55,6 +57,14 @@ export function PublicWitnessPublisherSelect({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [filterTab, setFilterTab] = useState<"ALL" | "M" | "F" | "PREF">("ALL")
+  const [showAll, setShowAll] = useState(false)
+
+  const currentSourceList = useMemo(() => {
+    if (showAll && allPublishers && allPublishers.length > 0) {
+      return allPublishers
+    }
+    return publishers.length > 0 ? publishers : (allPublishers || [])
+  }, [showAll, publishers, allPublishers])
 
   const activePartners = useMemo(() => {
     return partners && partners.length > 0 ? partners : (partner ? [partner] : [])
@@ -64,8 +74,9 @@ export function PublicWitnessPublisherSelect({
 
   const selectedPublisher = useMemo(() => {
     if (!value) return null
-    return publishers.find(p => p.id === value) || null
-  }, [value, publishers])
+    const source = (allPublishers && allPublishers.length) ? allPublishers : publishers
+    return source.find(p => p.id === value) || null
+  }, [value, publishers, allPublishers])
 
   // Normalização de gênero
   const getGender = (gender?: string): "M" | "F" => {
@@ -91,7 +102,7 @@ export function PublicWitnessPublisherSelect({
   const filteredList = useMemo(() => {
     const term = search.trim().toLowerCase()
 
-    return publishers
+    return currentSourceList
       .filter(p => {
         // Se já está selecionado como parceiro em outra vaga do mesmo slot, oculta
         if (activePartners.some(ap => ap.id === p.id)) return false
@@ -137,7 +148,7 @@ export function PublicWitnessPublisherSelect({
         return (a.nickname || a.fullName).localeCompare(b.nickname || b.fullName)
       })
   }, [
-    publishers,
+    currentSourceList,
     activePartners,
     primaryPartner,
     value,
@@ -225,52 +236,64 @@ export function PublicWitnessPublisherSelect({
           </div>
 
           {/* Filtros Rápidos */}
-          <div className="flex items-center gap-1 border-b border-surface-300 pb-2 pt-0.5">
-            <button
-              type="button"
-              onClick={() => setFilterTab("ALL")}
-              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
-                filterTab === "ALL"
-                  ? "bg-primary-200 text-white shadow-sm"
-                  : "bg-surface-200 text-typography-600 hover:text-typography-900"
-              }`}
-            >
-              Todos ({publishers.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterTab("M")}
-              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
-                filterTab === "M"
-                  ? "bg-primary-200 text-white shadow-sm"
-                  : "bg-surface-200 text-typography-600 hover:text-typography-900"
-              }`}
-            >
-              Homens
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterTab("F")}
-              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
-                filterTab === "F"
-                  ? "bg-primary-200 text-white shadow-sm"
-                  : "bg-surface-200 text-typography-600 hover:text-typography-900"
-              }`}
-            >
-              Mulheres
-            </button>
-            {slotPreferences.size > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-surface-300 pb-2 pt-0.5">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setFilterTab("PREF")}
-                className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1 ${
-                  filterTab === "PREF"
+                onClick={() => setFilterTab("ALL")}
+                className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
+                  filterTab === "ALL"
                     ? "bg-primary-200 text-white shadow-sm"
-                    : "bg-amber-100 text-amber-900 hover:bg-amber-200"
+                    : "bg-surface-200 text-typography-600 hover:text-typography-900"
                 }`}
               >
-                <SlidersHorizontal className="h-2.5 w-2.5" />
-                Preferência ({slotPreferences.size})
+                {showAll ? `Todos (${currentSourceList.length})` : `Deste Horário (${currentSourceList.length})`}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterTab("M")}
+                className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
+                  filterTab === "M"
+                    ? "bg-primary-200 text-white shadow-sm"
+                    : "bg-surface-200 text-typography-600 hover:text-typography-900"
+                }`}
+              >
+                Homens
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterTab("F")}
+                className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors ${
+                  filterTab === "F"
+                    ? "bg-primary-200 text-white shadow-sm"
+                    : "bg-surface-200 text-typography-600 hover:text-typography-900"
+                }`}
+              >
+                Mulheres
+              </button>
+              {slotPreferences.size > 0 && !showAll && (
+                <button
+                  type="button"
+                  onClick={() => setFilterTab("PREF")}
+                  className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-colors flex items-center gap-1 ${
+                    filterTab === "PREF"
+                      ? "bg-primary-200 text-white shadow-sm"
+                      : "bg-amber-100 text-amber-900 hover:bg-amber-200"
+                  }`}
+                >
+                  <SlidersHorizontal className="h-2.5 w-2.5" />
+                  Preferência ({slotPreferences.size})
+                </button>
+              )}
+            </div>
+
+            {allPublishers && allPublishers.length > publishers.length && (
+              <button
+                type="button"
+                onClick={() => setShowAll(prev => !prev)}
+                className="text-[10px] text-primary-200 hover:text-primary-300 font-semibold underline shrink-0 cursor-pointer ml-auto"
+              >
+                {showAll ? "Apenas deste horário" : `Ver todos (${allPublishers.length})`}
               </button>
             )}
           </div>

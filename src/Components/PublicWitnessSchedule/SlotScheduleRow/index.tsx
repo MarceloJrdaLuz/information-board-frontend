@@ -39,6 +39,8 @@ interface Props {
   date: string
   assignment?: IPublicWitnessAssignment
   publishers: IPublisher[]
+  allPublishers?: IPublisher[]
+  allSlots?: IPublicWitnessTimeSlot[]
   publishersCount?: Record<string, number>
   isSpecialDate?: boolean
 }
@@ -48,6 +50,8 @@ export default function SlotScheduleRow({
   date,
   assignment,
   publishers,
+  allPublishers,
+  allSlots,
   publishersCount,
   isSpecialDate = false
 }: Props) {
@@ -119,6 +123,40 @@ export default function SlotScheduleRow({
     slot.preferences?.forEach(pref => set.add(pref.publisher_id))
     return set
   }, [slot.preferences])
+
+  // Publicadores específicos deste horário (via preferência ou defaultPublishers)
+  const thisSlotSpecificIds = useMemo(() => {
+    const ids = new Set<string>()
+    slot.preferences?.forEach(pref => ids.add(pref.publisher_id))
+    slot.defaultPublishers?.forEach(dp => ids.add(dp.publisher_id))
+    return ids
+  }, [slot.preferences, slot.defaultPublishers])
+
+  // Publicadores com preferência em outros horários deste arranjo
+  const otherSlotsSpecificIds = useMemo(() => {
+    const ids = new Set<string>()
+    allSlots?.forEach(s => {
+      if (s.id !== slot.id) {
+        s.preferences?.forEach(pref => ids.add(pref.publisher_id))
+      }
+    })
+    return ids
+  }, [allSlots, slot.id])
+
+  // Publicadores elegíveis que participam deste horário
+  const slotEligiblePublishers = useMemo(() => {
+    if (thisSlotSpecificIds.size > 0) {
+      return publishers.filter(p => thisSlotSpecificIds.has(p.id) || selectedPublishers.some(sp => sp.id === p.id))
+    }
+
+    return publishers.filter(p => {
+      if (otherSlotsSpecificIds.has(p.id) && !thisSlotSpecificIds.has(p.id)) {
+        if (selectedPublishers.some(sp => sp.id === p.id)) return true
+        return false
+      }
+      return true
+    })
+  }, [publishers, thisSlotSpecificIds, otherSlotsSpecificIds, selectedPublishers])
 
   // Publicadores já escalados neste dia em outros horários ou dirigentes
   const assignedTodayIds = useMemo(() => {
@@ -420,7 +458,8 @@ export default function SlotScheduleRow({
                     onChange={id => handleSetSlotPosition(pos, id)}
                     partner={otherPartners[0] || null}
                     partners={otherPartners}
-                    publishers={publishers}
+                    publishers={slotEligiblePublishers}
+                    allPublishers={allPublishers || publishers}
                     date={date}
                     slotId={slot.id}
                     slotPreferences={slotPreferences}
