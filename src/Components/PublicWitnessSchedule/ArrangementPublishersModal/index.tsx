@@ -274,7 +274,7 @@ export default function ArrangementPublishersModal({
         </div>
 
         {/* Lista de Publicadores com Scroll */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 max-h-[46vh] flex flex-col gap-2">
+        <div className="flex-1 overflow-y-auto discrete-scrollbar p-4 sm:p-5 max-h-[46vh] flex flex-col gap-2">
           {filteredPublishers.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center text-typography-500 gap-2">
               <Users className="w-8 h-8 opacity-40 text-typography-400" />

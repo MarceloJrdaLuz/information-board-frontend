@@ -448,7 +448,7 @@ function ArrangementCardItem({
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto discrete-scrollbar pr-1">
             {sortedSlots.map(slot => (
               <div
                 key={slot.id}

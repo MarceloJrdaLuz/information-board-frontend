@@ -82,7 +82,7 @@ export default function SlotPreferencesModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !loading && !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto discrete-scrollbar">
         <DialogHeader>
           <div className="flex items-center gap-2 text-primary-200">
             <div className="p-2 bg-primary-50 dark:bg-primary-950/40 rounded-lg">
