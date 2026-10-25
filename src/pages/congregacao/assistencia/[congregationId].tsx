@@ -3,6 +3,7 @@ import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import ListMeetingAssistance from "@/Components/ListMeetingAssistance";
 import { Button } from "@/Components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { useAuthContext } from "@/context/AuthContext";
 import { getYearService } from "@/functions/meses";
@@ -145,135 +146,150 @@ function ListReportsPage() {
             <BreadCrumbs crumbs={crumbs} pageActive={"Assistência"} />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Cabeçalho Principal */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                                <FileText className="w-6 h-6" />
+                {/* Cabeçalho Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200">
+                                    <FileText className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
+                                        Assistência às Reuniões
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500">
+                                        Registro e acompanhamento mensal da assistência e formulário S-88.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Ações e Seletor de Ano */}
+                        <div className="flex flex-wrap items-center gap-3">
+                            {/* Seletor de Ano de Serviço */}
+                            <div className="flex items-center gap-2 bg-surface-100 px-3 py-1 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
+                                <span>Ano de Serviço:</span>
+                                <Select value={yearServiceSelected} onValueChange={setYearServiceSelected}>
+                                    <SelectTrigger className="w-[85px] h-8 bg-transparent border-none text-xs font-bold text-primary-200 shadow-none focus:ring-0 p-0">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl">
+                                        {yearOptions.map((y) => (
+                                            <SelectItem key={y} value={y} className="text-xs font-semibold">
+                                                {y}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {(roleContains("ASSISTANCE_MANAGER") ||
+                                roleContains("ADMIN_CONGREGATION")) && (
+                                <Button
+                                    onClick={() => {
+                                        router.push(
+                                            `/congregacao/assistencia/${congregationId}/enviar`
+                                        );
+                                    }}
+                                    className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
+                                >
+                                    <FilePlus2 className="w-4 h-4" />
+                                    <span>Registrar Assistência</span>
+                                </Button>
+                            )}
+
+                            {data && data.length > 0 && (
+                                <BlobProvider
+                                    document={
+                                        <Document>
+                                            <S88
+                                                meetingAssistance={data}
+                                                yearsServices={[
+                                                    yearServiceSelected,
+                                                    (Number(yearServiceSelected) - 1).toString(),
+                                                ]}
+                                            />
+                                        </Document>
+                                    }
+                                >
+                                    {({ blob, url, loading, error }) => (
+                                        <a
+                                            href={url ?? "#"}
+                                            download={`Assistencia_S88_${yearServiceSelected}.pdf`}
+                                            className={loading || !!error || !blob ? "pointer-events-none opacity-50" : ""}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                className="gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-xl"
+                                                disabled={loading || !!error || !blob}
+                                            >
+                                                <FileDown className="w-4 h-4" />
+                                                <span>{loading ? "Gerando..." : "Salvar S-88 (PDF)"}</span>
+                                            </Button>
+                                        </a>
+                                    )}
+                                </BlobProvider>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <TrendingUp className="h-4 w-4" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-typography-800">
-                                    Assistência às Reuniões
-                                </h1>
-                                <p className="text-sm text-typography-500">
-                                    Registro e acompanhamento mensal da assistência e formulário S-88.
-                                </p>
+                                <div className="text-[11px] font-medium text-typography-500">
+                                    Média Meio de Semana
+                                </div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        yearStats.avgMidweek
+                                    )}{" "}
+                                    <span className="text-xs font-normal text-typography-400">presentes</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Ações e Seletor de Ano */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* Seletor de Ano de Serviço */}
-                        <div className="flex items-center gap-2 bg-surface-100 px-3 py-2 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                            <span>Ano de Serviço:</span>
-                            <select
-                                value={yearServiceSelected}
-                                onChange={(e) => setYearServiceSelected(e.target.value)}
-                                className="bg-transparent font-bold text-primary-200 focus:outline-none cursor-pointer"
-                            >
-                                {yearOptions.map((y) => (
-                                    <option key={y} value={y} className="bg-surface-100 text-typography-800">
-                                        {y}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {(roleContains("ASSISTANCE_MANAGER") ||
-                            roleContains("ADMIN_CONGREGATION")) && (
-                            <Button
-                                onClick={() => {
-                                    router.push(
-                                        `/congregacao/assistencia/${congregationId}/enviar`
-                                    );
-                                }}
-                                className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
-                            >
-                                <FilePlus2 className="w-4 h-4" />
-                                <span>Registrar Assistência</span>
-                            </Button>
-                        )}
-
-                        {data && data.length > 0 && (
-                            <BlobProvider
-                                document={
-                                    <Document>
-                                        <S88
-                                            meetingAssistance={data}
-                                            yearsServices={[
-                                                yearServiceSelected,
-                                                (Number(yearServiceSelected) - 1).toString(),
-                                            ]}
-                                        />
-                                    </Document>
-                                }
-                            >
-                                {({ blob, url, loading, error }) => (
-                                    <a
-                                        href={url ?? "#"}
-                                        download={`Assistencia_S88_${yearServiceSelected}.pdf`}
-                                        className={loading || !!error || !blob ? "pointer-events-none opacity-50" : ""}
-                                    >
-                                        <Button
-                                            variant="outline"
-                                            className="gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-xl"
-                                            disabled={loading || !!error || !blob}
-                                        >
-                                            <FileDown className="w-4 h-4" />
-                                            <span>{loading ? "Gerando..." : "Salvar S-88 (PDF)"}</span>
-                                        </Button>
-                                    </a>
-                                )}
-                            </BlobProvider>
-                        )}
-                    </div>
-                </div>
-
-                {/* Métricas do Ano de Serviço Selecionado */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                            <TrendingUp className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <span className="text-xs font-semibold text-typography-500">
-                                Média Meio de Semana
-                            </span>
-                            <div className="text-lg font-bold text-typography-800">
-                                {yearStats.avgMidweek}{" "}
-                                <span className="text-xs font-normal text-typography-400">presentes</span>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <TrendingUp className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">
+                                    Média Fim de Semana
+                                </div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        yearStats.avgEndweek
+                                    )}{" "}
+                                    <span className="text-xs font-normal text-typography-400">presentes</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-                            <TrendingUp className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <span className="text-xs font-semibold text-typography-500">
-                                Média Fim de Semana
-                            </span>
-                            <div className="text-lg font-bold text-typography-800">
-                                {yearStats.avgEndweek}{" "}
-                                <span className="text-xs font-normal text-typography-400">presentes</span>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 shrink-0">
+                                <Layers className="h-4 w-4" />
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-surface-100 text-typography-600">
-                            <Layers className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <span className="text-xs font-semibold text-typography-500">
-                                Meses Registrados
-                            </span>
-                            <div className="text-lg font-bold text-typography-800">
-                                {yearStats.count} / 12{" "}
-                                <span className="text-xs font-normal text-typography-400">meses</span>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">
+                                    Meses Registrados
+                                </div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-12 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        `${yearStats.count} / 12`
+                                    )}{" "}
+                                    <span className="text-xs font-normal text-typography-400">meses</span>
+                                </div>
                             </div>
                         </div>
                     </div>

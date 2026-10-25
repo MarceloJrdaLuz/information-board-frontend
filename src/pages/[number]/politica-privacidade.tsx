@@ -4,8 +4,10 @@ import { domainUrl } from "@/atoms/atom"
 import { useFetch } from "@/hooks/useFetch"
 import { ITermOfUse } from "@/types/termsofuse"
 import { ICongregation } from "@/types/types"
+import { buildPublicPageServerProps, PublicPageServerProps } from "@/utils/ogMetadata"
 import { useAtomValue } from "jotai"
 import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react"
+import { GetServerSideProps } from "next"
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -14,15 +16,18 @@ import "dayjs/locale/pt-br"
 
 dayjs.locale("pt-br")
 
-function PoliticaPrivacidade() {
+function PoliticaPrivacidade({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
 
-    const [congregationData, setCongregationData] = useState<ICongregation>()
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    )
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const { data: fetchedCongregation } = useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     const fetchTermsOfUsePublishersData = `/terms/active/publisher`
     const { data: terms, isLoading } = useFetch<ITermOfUse>(fetchTermsOfUsePublishersData)
@@ -36,8 +41,15 @@ function PoliticaPrivacidade() {
     return (
         <div className="flex flex-col h-screen w-screen bg-surface-200/40 text-typography-800">
             <HeadComponent
-                title="Política de Privacidade"
-                urlMiniatura={`${domain}/images/miniatura.png`}
+                title={
+                    congregationData?.name
+                        ? `Política de Privacidade - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Política de Privacidade"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/miniatura.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
             <div className="flex flex-col h-screen w-screen overflow-auto">
                 <LayoutPrincipal
@@ -141,3 +153,8 @@ PoliticaPrivacidade.getLayout = function getLayout(page: React.ReactElement) {
 }
 
 export default PoliticaPrivacidade
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'politica-privacidade')
+}
+

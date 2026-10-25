@@ -11,7 +11,8 @@ import { sortArrayByProperty } from '@/functions/sortObjects'
 import { useFetch } from '@/hooks/useFetch'
 import { useSubmit } from '@/hooks/useSubmitForms'
 import { api } from '@/services/api'
-import { IPublisher, Situation } from '@/types/types'
+import { IPublisher, PrivilegeCode, Situation } from '@/types/types'
+import { hasAnyPrivilege } from '@/functions/publisherPrivilegeHelper'
 import { messageErrorsSubmit, messageSuccessSubmit } from '@/utils/messagesSubmit'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useAtomValue } from 'jotai'
@@ -63,17 +64,7 @@ export default function FormAddGroup() {
                 if (publisher.gender !== "Masculino") return false
                 if (publisher.situation && publisher.situation !== Situation.ATIVO) return false
 
-                return publisher.privileges?.some((priv) => {
-                    const normalized = priv
-                        .toLowerCase()
-                        .normalize("NFD")
-                        .replace(/[\u0300-\u036f]/g, "")
-                    return (
-                        normalized.includes("anciao") ||
-                        normalized.includes("servo ministerial") ||
-                        normalized === "sm"
-                    )
-                })
+                return hasAnyPrivilege(publisher, [PrivilegeCode.ELDER, PrivilegeCode.MINISTERIAL_SERVANT])
             })
             const sort = sortArrayByProperty(qualifiedPublishers, "fullName")
             setPublishers(sort)

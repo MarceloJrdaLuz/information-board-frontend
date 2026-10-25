@@ -1,6 +1,6 @@
 export default function FormEditPublisherSkeleton() {
   return (
-    <section className="flex w-full justify-center items-center h-full m-2 animate-pulse">
+    <div className="flex w-full justify-center items-center h-auto my-2 animate-pulse">
       <div className="w-full h-fit flex-col justify-center items-center bg-surface-100">
         <div className="my-6 m-auto w-11/12 h-8 bg-surface-200 shimmer rounded-md" />
 
@@ -30,6 +30,6 @@ export default function FormEditPublisherSkeleton() {
         {/* Botão */}   
         <div className="w-11/12 m-auto my-6 h-12 bg-surface-200 shimmer rounded-md" />
       </div>
-    </section>
+    </div>
   )
 }

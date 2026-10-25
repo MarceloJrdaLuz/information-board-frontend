@@ -34,6 +34,21 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
   const [filteredItems, setFilteredItems] = useState(items)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  const getLabel = (item: T): string => {
+    if (props.labelRenderer) return props.labelRenderer(item)
+    if (props.labelKey && item[props.labelKey]) {
+      return String(item[props.labelKey])
+    }
+    return String(item)
+  }
+
+  const getLabelSecondary = (item: T): string => {
+    if (props.labelKeySecondary && item[props.labelKeySecondary]) {
+      return String(item[props.labelKeySecondary])
+    }
+    return ""
+  }
+
   useEffect(() => {
     if (!searchQuery) {
       setFilteredItems(items)
@@ -47,24 +62,9 @@ export default function DropdownMulti<T>(props: IDropdownMulti<T>) {
           secondary.includes(term)
         )
       })
+      setFilteredItems(filtered)
     }
   }, [searchQuery, items])
-
-  const getLabel = (item: T): string => {
-    if (props.labelRenderer) return props.labelRenderer(item)
-    if (props.labelKey && item[props.labelKey]) {
-      return String(item[props.labelKey])
-    }
-    return String(item)
-  }
-
-
-  const getLabelSecondary = (item: T): string => {
-    if (props.labelKeySecondary && item[props.labelKeySecondary]) {
-      return String(item[props.labelKeySecondary])
-    }
-    return ""
-  }
 
   const isSameItem = (a: T, b: T) => {
     if (props.itemKey) {

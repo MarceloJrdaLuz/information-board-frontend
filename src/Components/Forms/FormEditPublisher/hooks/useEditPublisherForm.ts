@@ -12,8 +12,11 @@ import { getMonthsByYear, getYearService } from "@/functions/meses"
 import { useFetch } from "@/hooks/useFetch"
 import { usePublisher } from "@/hooks/usePublisher"
 import { IPayloadUpdatePublisher } from "@/types/publishers"
-import { IPublisher, Privileges } from "@/types/types"
+import { IPublisher, PrivilegeCode, Privileges } from "@/types/types"
+import { getActivePrivilegeLabels, getPublisherStartDate, hasAnyPrivilege, hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { yupResolver } from "@hookform/resolvers/yup"
+import dayjs from "dayjs"
+import "dayjs/locale/pt-br"
 import { useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -23,7 +26,7 @@ import { publisherEditSchema } from "../validations"
 
 export function useEditPublisherForm(id: string) {
   const { updatePublisher } = usePublisher()
-  const { data } = useFetch<IPublisher>(`/publisher/${id}`)
+  const { data, mutate } = useFetch<IPublisher>(`/publisher/${id}`)
 
   // ---------------- States ----------------
   const [publisherToUpdate, setPublisherToUpdate] = useState<IPublisher>()
@@ -37,6 +40,8 @@ export function useEditPublisherForm(id: string) {
   const [situationPublisherCheckboxSelected, setSituationPublisherCheckboxSelected] = useState<string>("")
   const [immersedDate, setImmersedDate] = useState<string | null>(null)
   const [birthDate, setBirthDate] = useState<string | null>(null)
+  const [isPublisherApproved, setIsPublisherApproved] = useState<boolean>(true)
+  const [startDatePublisher, setStartDatePublisher] = useState<string | null>(null)
   const [startPioneer, setStartPioneer] = useState<string | null>(null)
   const [allPrivileges, setAllPrivileges] = useState<string[]>([])
   const [yearService, setYearService] = useState(getYearService().toString())
@@ -68,9 +73,35 @@ export function useEditPublisherForm(id: string) {
   // ---------------- Effects ----------------
   useEffect(() => {
     if (data) {
-      const isPrivilege = data.privileges.filter(p => privilegeOptions.includes(p as Privileges))
-      const isPioneer = data.privileges.filter(p => pioneerOptions.includes(p as Privileges))
-      const isAditionalsPrivileges = data.privileges.filter(p => additionalsPrivilegeOptions.includes(p as Privileges))
+      let normalizedPrivileges: string[] = []
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation) && data.privilegesRelation.length > 0) {
+        normalizedPrivileges = getActivePrivilegeLabels(data)
+      } else {
+        normalizedPrivileges = (data.privileges || []).map(p =>
+          p === Privileges.AUXILIARINDETERMINADO ? Privileges.AUXILIARTEMPOINDETERMINADO : p
+        )
+      }
+
+      let pioneerMonthsList: string[] = []
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation)) {
+        pioneerMonthsList = data.privilegesRelation
+          .filter(pp => 
+            (pp.privilege?.code === PrivilegeCode.AUXILIARY_PIONEER || pp.privilege?.name === "Auxiliary Pioneer") && 
+            pp.startDate
+          )
+          .map(pp => {
+            const d = dayjs(pp.startDate)
+            const m = d.locale("pt-br").format("MMMM")
+            const y = d.format("YYYY")
+            return `${capitalizeFirstLetter(m)}-${y}`
+          })
+      } else if (data.pioneerMonths && Array.isArray(data.pioneerMonths)) {
+        pioneerMonthsList = data.pioneerMonths
+      }
+
+      const isPrivilege = normalizedPrivileges.filter(p => privilegeOptions.includes(p as Privileges))
+      const isPioneer = normalizedPrivileges.filter(p => pioneerOptions.includes(p as Privileges))
+      const isAditionalsPrivileges = normalizedPrivileges.filter(p => additionalsPrivilegeOptions.includes(p as Privileges))
 
       setAdditionalsPrivilegeCheckboxSelected(isAditionalsPrivileges)
       setPublisherToUpdate(data)
@@ -78,12 +109,50 @@ export function useEditPublisherForm(id: string) {
       setSituationPublisherCheckboxSelected(data.situation)
       setPrivilegeCheckboxSelected(isPrivilege[0])
       setPioneerCheckboxSelected(isPioneer[0])
-      setAllPrivileges(data.privileges || [])
-      setAuxPioneerMonthsSelected(data.pioneerMonths || [])
+      setAllPrivileges(normalizedPrivileges)
+      setAuxPioneerMonthsSelected(pioneerMonthsList)
       setHopeCheckboxSelected(data.hope)
       setBirthDate(data.birthDate ? data.birthDate : null)
       setImmersedDate(data.dateImmersed ? data.dateImmersed : null)
-      setStartPioneer(data.startPioneer ? data.startPioneer : null)
+      const pubStartDate = getPublisherStartDate(data) || data.startDatePublisher || null
+      setStartDatePublisher(pubStartDate)
+      const isApproved =
+        hasPrivilege(data, PrivilegeCode.PUBLISHER) ||
+        hasAnyPrivilege(data, [
+          PrivilegeCode.REGULAR_PIONEER,
+          PrivilegeCode.SPECIAL_PIONEER,
+          PrivilegeCode.MISSIONARY_WORLDWIDE,
+          PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER,
+          PrivilegeCode.AUXILIARY_PIONEER,
+          PrivilegeCode.ELDER,
+          PrivilegeCode.MINISTERIAL_SERVANT,
+        ]) ||
+        (data.privileges && data.privileges.includes(Privileges.PUBLICADOR)) ||
+        (data.privilegesRelation && data.privilegesRelation.some(pp =>
+          (pp.privilege?.code === PrivilegeCode.PUBLISHER ||
+           pp.privilege?.name === "Publisher" ||
+           pp.privilege?.name === "Publicador")
+        ))
+      setIsPublisherApproved(!!isApproved)
+      let pioneerStartDate: string | null = null
+      if (data.privilegesRelation && Array.isArray(data.privilegesRelation)) {
+        const activePioneerPriv = data.privilegesRelation.find(pp =>
+          !pp.endDate &&
+          (pp.privilege?.code === PrivilegeCode.REGULAR_PIONEER ||
+           pp.privilege?.code === PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER ||
+           pp.privilege?.code === PrivilegeCode.SPECIAL_PIONEER ||
+           pp.privilege?.name === "Regular Pioneer" ||
+           pp.privilege?.name === "Continuous Auxiliary Pioneer" ||
+           pp.privilege?.name === "Special Pioneer")
+        )
+        if (activePioneerPriv?.startDate) {
+          pioneerStartDate = dayjs(activePioneerPriv.startDate).format("YYYY-MM-DD")
+        }
+      }
+      if (!pioneerStartDate && data.startPioneer) {
+        pioneerStartDate = data.startPioneer
+      }
+      setStartPioneer(pioneerStartDate)
       setSelectedEmergencyContact(data.emergencyContact?.id || null)
       data.emergencyContact?.id && setModalEmergencyContactShowAtom(true)
 
@@ -121,6 +190,18 @@ export function useEditPublisherForm(id: string) {
     handleBirthDateChange: setBirthDate,
     handleAuxPioneerMonths: setAuxPioneerMonthsSelected,
     handleImmersedDateChange: setImmersedDate,
+    handleIsPublisherApprovedChange: (approved: boolean) => {
+      setIsPublisherApproved(approved)
+      if (!approved) {
+        setPrivilegeCheckboxSelected('')
+        setPioneerCheckboxSelected('')
+        setAdditionalsPrivilegeCheckboxSelected([])
+        setAuxPioneerMonthsSelected([])
+        setStartPioneer(null)
+        setStartDatePublisher(null)
+      }
+    },
+    handleStartDatePublisherChange: setStartDatePublisher,
     handleStartPioneerDateChange: setStartPioneer,
     handleSelectedEmergencyContactChange: setSelectedEmergencyContact,
   }
@@ -131,21 +212,24 @@ export function useEditPublisherForm(id: string) {
     const payload: IPayloadUpdatePublisher = {
       fullName,
       address,
-      birthDate: birthDate ?? undefined,
-      dateImmersed: immersedDate ?? undefined,
-      emergencyContact_id: selectedEmergencyContact ?? undefined,
+      birthDate: birthDate ? birthDate : null,
+      dateImmersed: immersedDate ? immersedDate : null,
+      startDatePublisher: isPublisherApproved ? (startDatePublisher ? startDatePublisher : null) : null,
+      emergencyContact_id: selectedEmergencyContact ? selectedEmergencyContact : null,
       gender: genderCheckboxSelected,
       hope: hopeCheckboxSelected,
       nickname,
       phone,
-      pioneerMonths: auxPioneerMonthsSelected,
-      privileges: allPrivileges.length > 0 ? allPrivileges : [Privileges.PUBLICADOR],
+      pioneerMonths: isPublisherApproved ? auxPioneerMonthsSelected : [],
+      privileges: isPublisherApproved
+        ? Array.from(new Set([Privileges.PUBLICADOR, ...allPrivileges]))
+        : [],
       situation: situationPublisherCheckboxSelected,
-      startPioneer: startPioneer ?? undefined
+      startPioneer: isPublisherApproved ? (startPioneer ? startPioneer : null) : null
     }
     toast.promise(
       updatePublisher(publisherToUpdate?.id ?? "", payload),
-      { pending: "Atualizando publicador" }
+      { pending: "Atualizando pessoa" }
     ).then(() => {
 
     }).catch(err => {
@@ -157,6 +241,7 @@ export function useEditPublisherForm(id: string) {
 
   return {
     data,
+    mutate,
     formMethods,
     isFormChanged,
     handlers,
@@ -177,6 +262,8 @@ export function useEditPublisherForm(id: string) {
     values: {
       birthDate,
       immersedDate,
+      isPublisherApproved,
+      startDatePublisher,
       startPioneer,
       genderCheckboxSelected,
       hopeCheckboxSelected,

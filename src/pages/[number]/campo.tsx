@@ -1,5 +1,3 @@
-'use client'
-
 import { domainUrl } from '@/atoms/atom'
 import { themeAtom } from '@/atoms/themeAtoms'
 import FieldServiceCarousel from '@/Components/FieldServiceScheduleCarousel'
@@ -19,25 +17,30 @@ import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_
 import { FieldServicePdfResponse } from '@/types/fieldService'
 import { IPublicWitnessCarouselResponse } from '@/types/publicWitness/schedules'
 import { Categories, ICongregation, IDocument } from '@/types/types'
+import { buildPublicPageServerProps, PublicPageServerProps } from '@/utils/ogMetadata'
 import { motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { ArrowLeft, ChevronRight, Compass, FileText, MapPin, Users } from 'lucide-react'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-function Campo() {
+function Campo({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
 
     const [activeTab, setActiveTab] = useState<'field' | 'public'>('field')
-    const [congregationData, setCongregationData] = useState<ICongregation>()
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    )
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     useEffect(() => {
         if (congregation) {
@@ -107,8 +110,15 @@ function Campo() {
             </Head>
 
             <HeadComponent
-                title={`Campo e Pregação - Congregação ${congregationData?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/campo.png`}
+                title={
+                    congregationData?.name
+                        ? `Pregação e Campo - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Pregação e Campo"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/campo.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Top Bar de Navegação */}
@@ -340,3 +350,8 @@ Campo.getLayout = (page: React.ReactElement) => {
 }
 
 export default Campo
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'campo')
+}
+

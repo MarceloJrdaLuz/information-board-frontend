@@ -1,5 +1,3 @@
-'use client'
-
 import { domainUrl } from '@/atoms/atom'
 import { themeAtom } from '@/atoms/themeAtoms'
 import Footer from '@/Components/Footer'
@@ -12,25 +10,30 @@ import { removeMimeType } from '@/functions/removeMimeType'
 import { useFetch } from '@/hooks/useFetch'
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { Categories, ICongregation, IDocument } from '@/types/types'
+import { buildPublicPageServerProps, PublicPageServerProps } from '@/utils/ogMetadata'
 import { motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { ArrowLeft, Calculator, ChevronRight, FileText } from 'lucide-react'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-function Financeiro() {
+function Financeiro({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
     const theme = useAtomValue(themeAtom)
 
-    const [congregationData, setCongregationData] = useState<ICongregation>()
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    )
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     useEffect(() => {
         if (congregation) {
@@ -62,7 +65,7 @@ function Financeiro() {
         setPdfShow(true)
     }
 
-    const isLoading = isLoadingCongregation
+    const isLoading = isLoadingCongregation && !congregation
 
     return !pdfShow ? (
         <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
@@ -75,8 +78,15 @@ function Financeiro() {
             </Head>
 
             <HeadComponent
-                title={`Financeiro - Congregação ${congregationData?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/financeiro.png`}
+                title={
+                    congregationData?.name
+                        ? `Relatório Financeiro - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Relatório Financeiro"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/financeiro.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Top Bar de Navegação */}
@@ -190,3 +200,8 @@ Financeiro.getLayout = (page: React.ReactElement) => {
 }
 
 export default Financeiro
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'financeiro')
+}
+

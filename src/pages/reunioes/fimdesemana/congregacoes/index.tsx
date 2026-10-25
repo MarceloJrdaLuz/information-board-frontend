@@ -26,7 +26,7 @@ function AuxiliaryCongregationsPage() {
     const [congregations, setCongregations] = useState<ICongregation[]>()
     const [searchQuery, setSearchQuery] = useState("")
 
-    const { data: getAuxiliaryCongregations, mutate } = useAuthorizedFetch<ICongregation[]>("/auxiliaryCongregations", {
+    const { data: getAuxiliaryCongregations, mutate, isLoading } = useAuthorizedFetch<ICongregation[]>("/auxiliaryCongregations", {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
     })
 
@@ -131,7 +131,13 @@ function AuxiliaryCongregationsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Total de Congregações</div>
-                                <div className="text-base font-bold text-typography-900">{stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getAuxiliaryCongregations ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -141,7 +147,13 @@ function AuxiliaryCongregationsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Cidades Atendidas</div>
-                                <div className="text-base font-bold text-typography-900">{stats.cities}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getAuxiliaryCongregations ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.cities
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -151,7 +163,13 @@ function AuxiliaryCongregationsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Circuitos</div>
-                                <div className="text-base font-bold text-typography-900">{stats.circuits}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getAuxiliaryCongregations ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.circuits
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

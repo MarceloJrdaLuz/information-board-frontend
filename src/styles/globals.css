@@ -6,17 +6,43 @@ html, body {
   height: 100%;
   margin: 0;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 body {
-  min-height: 100svh;
+  min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: none;
+  background-color: rgb(var(--color-secondary-100));
+}
+
+/* Barra de rolagem personalizada padrão da página (idêntica à página restrita) */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-primary-200)) rgb(117 117 117);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background-color: rgb(117 117 117);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-primary-200));
 }
 
 
 #__next {
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -28,67 +54,124 @@ body {
   @apply z-[9999];
 }
 
-/* Toast container */
+@media (max-width: 480px) {
+  .Toastify__toast-container {
+    width: calc(100% - 24px) !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: 12px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Toast item com glassmorphism e borda suave */
 .toast-item {
-  background: rgb(var(--color-surface-100)) !important;
+  background: rgba(var(--color-surface-100), 0.95) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
   color: rgb(var(--color-typography-800)) !important;
   border-radius: 14px !important;
-  padding: 14px 16px !important;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgb(var(--color-surface-300)) !important;
+  padding: 12px 14px !important;
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.25), 0 4px 12px -2px rgba(0, 0, 0, 0.1) !important;
+  min-height: 52px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-/* Body text */
-.toast-body {
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
-  line-height: 1.3;
-}
-
-/* Close button */
-.Toastify__close-button {
-  color: rgb(var(--color-typography-600)) !important;
-  opacity: 1 !important;
-}
-
-/* Hover effect */
 .toast-item:hover {
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 44px -4px rgba(0, 0, 0, 0.3) !important;
 }
 
-.Toastify__toast {
-  animation: toast-enter 0.25s ease;
+/* Friso indicador vertical como cápsula elegante (não curva os cantos) */
+.toast-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3.5px;
+  border-radius: 4px;
 }
 
-@keyframes toast-enter {
-  from {
-    transform: translateY(10px) scale(0.98);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+.Toastify__toast--success::before {
+  background-color: #10b981;
 }
 
-
-/* ===== Variantes por tipo ===== */
-
-.Toastify__toast--success {
-  border-left: 5px solid rgb(7, 188, 12) !important;
+.Toastify__toast--error::before {
+  background-color: #f43f5e;
 }
 
-.Toastify__toast--error {
-  border-left: 5px solid rgb(220 38 38) !important;
+.Toastify__toast--warning::before {
+  background-color: #f59e0b;
 }
 
-.Toastify__toast--warning {
-  border-left: 5px solid rgb(245 158 11) !important;
+.Toastify__toast--info::before {
+  background-color: #3b82f6;
 }
 
-.Toastify__toast--info {
-  border-left: 5px solid rgb(59 130 246) !important;
+/* Ícones do Toast */
+.Toastify__toast-icon {
+  width: 20px !important;
+  margin-inline-end: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Texto do corpo */
+.toast-body {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  color: rgb(var(--color-typography-800)) !important;
+  letter-spacing: -0.01em !important;
+  padding: 0 !important;
+  margin: auto 0 !important;
+  cursor: pointer !important;
+}
+
+/* Botão de Fechar */
+.Toastify__close-button {
+  color: rgb(var(--color-typography-400)) !important;
+  opacity: 0.7 !important;
+  padding: 6px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  align-self: center !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+  background: rgb(var(--color-surface-200)) !important;
+  color: rgb(var(--color-typography-800)) !important;
+}
+
+/* Barra de progresso moderna com degradê */
+.Toastify__progress-bar {
+  height: 3px !important;
+  opacity: 0.85 !important;
+  border-radius: 0 0 14px 14px !important;
+}
+
+.Toastify__progress-bar--success {
+  background: linear-gradient(90deg, #10b981, #34d399) !important;
+}
+
+.Toastify__progress-bar--error {
+  background: linear-gradient(90deg, #f43f5e, #fb7185) !important;
+}
+
+.Toastify__progress-bar--warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
+}
+
+.Toastify__progress-bar--info {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa) !important;
 }
 
 
@@ -180,8 +263,14 @@ textarea:-webkit-autofill:active {
   box-sizing: border-box;
 }
 
-/* Classe para ocultar a barra de rolagem vertical */
+/* Classe para ocultar a barra de rolagem vertical e horizontal */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .hide-scrollbar::-webkit-scrollbar {
+  display: none;
   width: 0;
   height: 0;
 }
@@ -194,8 +283,14 @@ textarea:-webkit-autofill:active {
   background-color: transparent;
 }
 
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-primary-200)) rgb(117 117 117);
+}
+
 .thin-scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
 }
 
 .thin-scrollbar::-webkit-scrollbar-track {
@@ -204,6 +299,51 @@ textarea:-webkit-autofill:active {
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgb(var(--color-primary-200));
+}
+
+/* Scrollbar discreto e moderno para textareas */
+textarea,
+.discrete-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+textarea::-webkit-scrollbar,
+.discrete-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+textarea::-webkit-scrollbar-track,
+.discrete-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb,
+.discrete-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+textarea::-webkit-scrollbar-thumb:hover,
+.discrete-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.65);
+}
+
+.dark textarea,
+.dark .discrete-scrollbar {
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
+.dark textarea::-webkit-scrollbar-thumb,
+.dark .discrete-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark textarea::-webkit-scrollbar-thumb:hover,
+.dark .discrete-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.5);
 }
 
 .react-pdf__Page__canvas {
@@ -579,19 +719,19 @@ input[type=number] {
 /* ----- Calendário Base ----- */
 .react-datepicker {
   background: rgb(var(--color-surface-100)) !important;
-  border: 1px solid #d4d4d8 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgb(var(--color-surface-300)) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.28) !important;
   font-family: inherit !important;
-  color: #1f2937 !important;
-  /* texto básico */
+  color: rgb(var(--color-typography-800)) !important;
+  overflow: hidden !important;
 }
 
 /* ----- Cabeçalho ----- */
 .react-datepicker__header {
   background: rgb(var(--color-surface-200)) !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  border-radius: 10px 10px 0 0 !important;
+  border-bottom: 1px solid rgb(var(--color-surface-300)) !important;
+  border-radius: 16px 16px 0 0 !important;
 }
 
 /* Mês atual */

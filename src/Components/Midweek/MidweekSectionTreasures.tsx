@@ -176,8 +176,12 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                             <MidweekPublisherSelect
                                                 partId={part.id}
                                                 value={part.assigned_publisher_id}
+                                                customName={part.custom_speaker_name}
                                                 publisher={part.assignedPublisher}
-                                                onChange={(pubId) => onUpdatePart(part.id, { assigned_publisher_id: pubId })}
+                                                onChange={(pubId, customName) => onUpdatePart(part.id, {
+                                                    assigned_publisher_id: pubId,
+                                                    custom_speaker_name: customName ?? null
+                                                })}
                                                 placeholder="Selecione o leitor..."
                                             />
                                         </div>
@@ -194,8 +198,12 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                                     <MidweekPublisherSelect
                                                         partId={auxPart.id}
                                                         value={auxPart.assigned_publisher_id}
+                                                        customName={auxPart.custom_speaker_name}
                                                         publisher={auxPart.assignedPublisher}
-                                                        onChange={(pubId) => onUpdatePart(auxPart.id, { assigned_publisher_id: pubId })}
+                                                        onChange={(pubId, customName) => onUpdatePart(auxPart.id, {
+                                                            assigned_publisher_id: pubId,
+                                                            custom_speaker_name: customName ?? null
+                                                        })}
                                                         placeholder="Selecione o leitor (Sala Aux.)..."
                                                     />
                                                 </div>
@@ -210,8 +218,12 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                         <MidweekPublisherSelect
                                             partId={part.id}
                                             value={part.assigned_publisher_id}
+                                            customName={part.custom_speaker_name}
                                             publisher={part.assignedPublisher}
-                                            onChange={(pubId) => onUpdatePart(part.id, { assigned_publisher_id: pubId })}
+                                            onChange={(pubId, customName) => onUpdatePart(part.id, {
+                                                assigned_publisher_id: pubId,
+                                                custom_speaker_name: customName ?? null
+                                            })}
                                             placeholder="Selecione o irmão..."
                                         />
                                     </div>

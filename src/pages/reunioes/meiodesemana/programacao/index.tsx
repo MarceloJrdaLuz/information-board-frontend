@@ -403,8 +403,8 @@ function MidweekScheduleAssistantPage() {
                             );
                             const isCompleted = isWeekCancelled || (
                                 Boolean(s.parts && s.parts.length > 0) &&
-                                s.parts.every(p => !p.isActive || Boolean(p.assigned_publisher_id)) &&
-                                Boolean(s.chairman_id)
+                                s.parts.every(p => !p.isActive || Boolean(p.assigned_publisher_id || p.custom_speaker_name)) &&
+                                Boolean(s.chairman_id || s.custom_chairman_name)
                             );
 
                             return (

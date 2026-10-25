@@ -30,15 +30,44 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => 
 
   const mergedRef = mergeRefs<HTMLInputElement>(forwardedRef, registroRef)
 
+  const isDateTime =
+    props.type === "time" ||
+    props.type === "date" ||
+    (rest as any).type === "time" ||
+    (rest as any).type === "date"
+
+  const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    if (isDateTime && !props.readOnly && !props.disabled) {
+      try {
+        e.currentTarget.showPicker?.()
+      } catch {}
+    }
+    rest.onClick?.(e)
+  }
+
+  const handleWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDateTime && !props.readOnly && !props.disabled) {
+      const inputEl = e.currentTarget.querySelector("input") as HTMLInputElement
+      if (inputEl && e.target !== inputEl) {
+        try {
+          inputEl.showPicker?.()
+        } catch {}
+      }
+    }
+  }
+
   return (
     <div
+      onClick={handleWrapperClick}
       className={`input-component ${
         props.readOnly ? "focus-within:outline border-none" : "outline"
       } relative flex items-center rounded-xl border ${
         invalid === "invalido"
           ? "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/20 mb-1"
           : "border-surface-300 focus-within:border-primary-200 focus-within:ring-2 focus-within:ring-primary-200/20"
-      } outline-0 my-2.5 w-full h-full m-auto transition-all shadow-xs ${className || ""}`}
+      } outline-0 my-2.5 w-full transition-all shadow-xs ${
+        isDateTime ? "cursor-pointer" : ""
+      } ${className || ""}`}
     >
       {mask ? (
         <InputMask
@@ -48,8 +77,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => 
           {...registroRest}
           placeholder={props.placeholder || " "}
           inputRef={mergedRef}
+          onClick={handleInputClick}
           className={`block px-3.5 py-2.5 w-full text-sm text-typography-800 appearance-none placeholder-transparent focus:outline-none rounded-xl bg-transparent read-only:bg-surface-200/50 font-sans font-medium text-left ${
-            props.readOnly ? "cursor-not-allowed" : ""
+            props.readOnly
+              ? "cursor-not-allowed"
+              : isDateTime
+              ? "cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              : ""
           }`}
         />
       ) : (
@@ -58,8 +92,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => 
           {...registroRest}
           placeholder={props.placeholder || " "}
           ref={mergedRef}
+          onClick={handleInputClick}
           className={`block px-3.5 py-2.5 w-full text-sm text-typography-800 appearance-none placeholder-transparent focus:outline-none rounded-xl bg-transparent read-only:bg-surface-200/50 font-sans font-medium text-left ${
-            props.readOnly ? "cursor-not-allowed" : ""
+            props.readOnly
+              ? "cursor-not-allowed"
+              : isDateTime
+              ? "cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              : ""
           }`}
         />
       )}

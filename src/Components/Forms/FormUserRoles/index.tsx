@@ -156,7 +156,20 @@ export default function FormUserRoles() {
     // Quando seleciona um usuário, inicializa suas funções
     const handleSelectUser = (user: UserTypes) => {
         setSelectedUser(user)
-        const userRoleIds = (user.roles || []).map((r) => String(r.id))
+        const userRoleIds = (user.roles || [])
+            .map((r: any) => {
+                if (typeof r === "string") {
+                    const match = allRoles.find((ar) => ar.id === r || ar.name === r)
+                    return match ? String(match.id) : r
+                }
+                if (r && r.id) return String(r.id)
+                if (r && r.name) {
+                    const match = allRoles.find((ar) => ar.name === r.name)
+                    return match ? String(match.id) : ""
+                }
+                return ""
+            })
+            .filter(Boolean)
         setSelectedRoleIds(userRoleIds)
         setInitialRoleIds(userRoleIds)
     }

@@ -17,6 +17,9 @@ interface IDropdown {
   textSize?: 'md' | 'lg' | 'xl'
   textVisible?: boolean
   notBorderFocus?: boolean
+  maxHeight?: string
+  width?: string
+  buttonClassName?: string
 }
 
 export default function Dropdown(props: IDropdown) {
@@ -29,11 +32,11 @@ export default function Dropdown(props: IDropdown) {
   return (
     <Menu as="div" className={`relative inline-block text-left ${props.full && "w-full"}`}>
       <div>
-        <Menu.Button onClick={props.onClick} className={`inline-flex w-full items-center justify-between rounded-xl bg-surface-100 px-4 py-2.5 text-sm font-medium shadow-xs transition-all focus:outline-none ${props.border ? "border border-surface-300 hover:border-primary-200/80" : "border-none"} ${!props.notBorderFocus && "focus:ring-2 focus:ring-primary-200/20"} ${props.selectedItem ? "text-typography-800 font-semibold" : "text-typography-600"}`}>
+        <Menu.Button onClick={props.onClick} className={props.buttonClassName || `inline-flex w-full items-center justify-between rounded-xl bg-surface-100 px-4 py-2.5 text-sm font-medium shadow-xs transition-all focus:outline-none ${props.border ? "border border-surface-300 hover:border-primary-200/80" : "border-none"} ${!props.notBorderFocus && "focus:ring-2 focus:ring-primary-200/20"} ${props.selectedItem ? "text-typography-800 font-semibold" : "text-typography-600"}`}>
           <span className={`${!props.textVisible && 'hidden'} sm:flex truncate`}>
             {props.selectedItem ? props.selectedItem : props.title}
           </span>
-          <ChevronDownIcon className="-mr-1 sm:ml-2 h-5 w-5 text-typography-400 shrink-0" aria-hidden="true" />
+          <ChevronDownIcon className="-mr-1 sm:ml-2 h-4 w-4 text-typography-400 shrink-0" aria-hidden="true" />
         </Menu.Button>
       </div>
 
@@ -46,7 +49,7 @@ export default function Dropdown(props: IDropdown) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${currentPosition} z-20 mt-2 w-56 origin-top-right rounded-xl bg-surface-100 shadow-xl border border-surface-300 focus:outline-none h-fit max-h-80 overflow-auto p-1`} >
+        <Menu.Items className={`absolute thin-scrollbar cursor-pointer ${currentPosition} z-50 mt-1.5 ${props.width || 'w-56'} origin-top-right rounded-xl bg-surface-100 shadow-xl border border-surface-300 focus:outline-none h-fit ${props.maxHeight || 'max-h-60'} overflow-auto p-1`} >
           <div>
             {props.options.map((option, index) => (
               <Menu.Item key={index}>

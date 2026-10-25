@@ -15,6 +15,7 @@ export const API_ROUTES = {
     CLEANING_SCHEDULES_CONFIG: "/cleaning/schedule-config",
     CLEANING_SCHEDULES: "/cleaning/schedule",
     CLEANING_EXCEPTIONS: "/cleaning-exception",
+    CLEANING_GROUP_UNAVAILABILITIES: "/cleaning/group-unavailabilities",
     FAMILIES: "/families", 
     PUBLIC_WITNESS_ARRANGEMENTS: "/public-witness/arrangements",
     FIELD_SERVICE_TEMPLATES: "/field-service/templates",

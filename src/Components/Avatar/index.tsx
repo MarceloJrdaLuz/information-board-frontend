@@ -1,18 +1,22 @@
-﻿'use client'
+'use client'
 
 import { useAuthContext } from "@/context/AuthContext"
+import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { getInitials } from "@/functions/getInitials"
-import { ChevronDown, LogOut, Shield, User } from "lucide-react"
+import { Bell, ChevronDown, Fingerprint, LogOut, Shield, User } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import avatarFemale from "../../../public/images/avatar-female.png"
 import avatarMale from "../../../public/images/avatar-male.png"
+import PasskeysModal from "../PasskeysModal"
 import SkeletonAvatar from "./skeletonAvatar"
 import { IAvatar } from "./types"
 
 export default function Avatar(props: IAvatar) {
   const { logout, user } = useAuthContext()
+  const { isSubscribed, setIsModalOpen } = usePushNotifications()
   const [open, setOpen] = useState(false)
+  const [isPasskeysModalOpen, setIsPasskeysModalOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   // Fecha o modal ao clicar fora
@@ -111,8 +115,38 @@ export default function Avatar(props: IAvatar) {
           </div>
 
           {/* Ações */}
-          <div className="py-1.5">
+          <div className="py-1.5 flex flex-col gap-1">
             <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                setIsModalOpen(true)
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-typography-700 hover:bg-surface-200 transition text-left cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <Bell size={16} className="shrink-0 text-primary-200" />
+                <span>Notificações no Dispositivo</span>
+              </div>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isSubscribed ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-surface-300 text-typography-500'}`}>
+                {isSubscribed ? 'Ativo' : 'Inativo'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                setIsPasskeysModalOpen(true)
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-typography-700 hover:bg-surface-200 transition text-left cursor-pointer"
+            >
+              <Fingerprint size={16} className="shrink-0 text-primary-200" />
+              <span>Chaves de Acesso (Passkeys)</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => {
                 setOpen(false)
                 logout()
@@ -125,6 +159,12 @@ export default function Avatar(props: IAvatar) {
           </div>
         </div>
       )}
+
+      {/* Modal de Gerenciamento de Chaves de Acesso */}
+      <PasskeysModal
+        isOpen={isPasskeysModalOpen}
+        onClose={() => setIsPasskeysModalOpen(false)}
+      />
     </div>
   )
 }

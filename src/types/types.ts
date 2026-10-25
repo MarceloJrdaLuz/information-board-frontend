@@ -155,16 +155,29 @@ export interface IUpdateReport {
     privileges: string[]
 }
 
+export interface IPublisherPrivilege {
+    id: string
+    privilege: {
+        id: string
+        name: string
+        code?: PrivilegeCode | string
+    }
+    startDate?: string | null
+    endDate?: string | null
+}
+
 export interface IPublisher {
     id: string
     fullName: string
     nickname?: string
     privileges: string[]
+    privilegesRelation?: IPublisherPrivilege[]
     pioneerMonths?: string[]
     hope: Hope
     gender: Gender
     dateImmersed?: string | null
     startPioneer?: string | null
+    startDatePublisher?: string | null
     birthDate?: string | null
     congregation: ICongregation
     group: IGroup
@@ -254,6 +267,7 @@ export enum Privileges {
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
+    AUXILIARTEMPOINDETERMINADO = 'Auxiliar por Tempo Indeterminado',
     AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
     MISSIONARIOEMCAMPO = 'Missionário em Campo',
     ORADOR = "Orador",
@@ -269,9 +283,34 @@ export enum Privileges {
     PEDESTAL = "Pedestal"
 }
 
+export enum PrivilegeCode {
+    PUBLISHER = "PUBLISHER",
+    ELDER = "ELDER",
+    MINISTERIAL_SERVANT = "MINISTERIAL_SERVANT",
+    REGULAR_PIONEER = "REGULAR_PIONEER",
+    SPECIAL_PIONEER = "SPECIAL_PIONEER",
+    MISSIONARY_WORLDWIDE = "MISSIONARY_WORLDWIDE",
+    CONTINUOUS_AUXILIARY_PIONEER = "CONTINUOUS_AUXILIARY_PIONEER",
+    AUXILIARY_PIONEER = "AUXILIARY_PIONEER",
+    SPEAKER = "SPEAKER",
+    READER = "READER",
+    CHAIRMAN = "CHAIRMAN",
+    ATTENDANT = "ATTENDANT",
+    MICROPHONE_ATTENDANT = "MICROPHONE_ATTENDANT",
+    FIELD_CONDUCTOR = "FIELD_CONDUCTOR",
+    PUBLIC_WITNESS = "PUBLIC_WITNESS",
+    SOUND = "SOUND",
+    MEDIA = "MEDIA",
+    SOUND_AND_MEDIA = "SOUND_AND_MEDIA",
+    STAGE_ATTENDANT = "STAGE_ATTENDANT"
+}
+
+
 export enum PrivilegesMinistry {
     PUBLICADOR = "Publicador",
     PIONEIROAUXILIAR = 'Pioneiro Auxiliar',
+    AUXILIARTEMPOINDETERMINADO = 'Auxiliar por Tempo Indeterminado',
+    AUXILIARINDETERMINADO = 'Auxiliar Indeterminado',
     PIONEIROREGULAR = 'Pioneiro Regular',
     PIONEIROESPECIAL = 'Pioneiro Especial',
     MISSIONARIOEMCAMPO = 'Missionário em Campo'

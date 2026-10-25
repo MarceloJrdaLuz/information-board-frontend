@@ -29,7 +29,7 @@ function HospitalityGroupsPage() {
     const [hospitalityGroups, setHospitalityGroups] = useState<IHospitalityGroup[]>()
     const [searchQuery, setSearchQuery] = useState("")
 
-    const { data: getHospitalityGroups, mutate } = useAuthorizedFetch<IHospitalityGroup[]>(
+    const { data: getHospitalityGroups, mutate, isLoading } = useAuthorizedFetch<IHospitalityGroup[]>(
         `/congregation/${congregation_id ?? ""}/hospitalityGroups`,
         {
             allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
@@ -138,7 +138,13 @@ function HospitalityGroupsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Total de Grupos</div>
-                                <div className="text-base font-bold text-typography-900">{stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getHospitalityGroups ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -148,7 +154,13 @@ function HospitalityGroupsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Participantes</div>
-                                <div className="text-base font-bold text-typography-900">{stats.totalMembers}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getHospitalityGroups ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.totalMembers
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -158,7 +170,13 @@ function HospitalityGroupsPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Com Anfitrião</div>
-                                <div className="text-base font-bold text-typography-900">{stats.withHost} de {stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getHospitalityGroups ? (
+                                        <span className="inline-block h-4 w-12 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        `${stats.withHost} de ${stats.total}`
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

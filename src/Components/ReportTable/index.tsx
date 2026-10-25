@@ -1,5 +1,6 @@
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow"
-import { IReports } from "@/types/types"
+import { IPublisher, IReports, PrivilegeCode } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import {
     BookOpen,
     Calendar,
@@ -13,30 +14,40 @@ import {
 
 interface ReportTableProps {
   reports: IReports[] | undefined
+  publisher?: IPublisher
 }
 
-export default function ReportTable({ reports }: ReportTableProps) {
+export default function ReportTable({ reports, publisher }: ReportTableProps) {
   const reportsList = reports || []
   const reportedMonthsCount = reportsList.length
 
   const totalHours = reportsList.reduce((acc, report) => acc + (report.hours ?? 0), 0)
   const totalStudies = reportsList.reduce((acc, report) => acc + (report.studies ?? 0), 0)
 
-  const isPioneiroRegular = reportsList.some((r) =>
-    r.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular")) ||
-    r.publisher?.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+  // Requisito anual de horas (50h/mês) se aplica apenas a Pioneiros Regulares
+  const isPioneiroRegular = Boolean(
+    (publisher && (
+      hasPrivilege(publisher, PrivilegeCode.REGULAR_PIONEER) ||
+      publisher.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+    )) ||
+    reportsList.some((r) =>
+      r.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular")) ||
+      (r.publisher && (
+        hasPrivilege(r.publisher, PrivilegeCode.REGULAR_PIONEER) ||
+        r.publisher.privileges?.some((p) => p.toLowerCase().includes("pioneiro regular"))
+      ))
+    )
   )
 
-  const isPioneiroAuxiliar = reportsList.some((r) =>
-    r.privileges?.some((p) => p.toLowerCase().includes("pioneiro auxiliar")) ||
-    r.publisher?.privileges?.some((p) => p.toLowerCase().includes("pioneiro auxiliar"))
-  )
-
-  const expectedPerMonth = isPioneiroRegular ? 50 : isPioneiroAuxiliar ? 30 : 0
+  const expectedPerMonth = isPioneiroRegular ? 50 : 0
   const totalExpected = expectedPerMonth * reportedMonthsCount
   const diffHours = totalHours - totalExpected
 
-  const avgHours = reportedMonthsCount > 0 ? (totalHours / reportedMonthsCount).toFixed(1) : "0"
+  const rawAvgHours = reportedMonthsCount > 0 ? totalHours / reportedMonthsCount : 0
+  const avgHours = Number.isInteger(rawAvgHours) ? rawAvgHours.toString() : rawAvgHours.toFixed(1)
+
+  const rawAvgStudies = reportedMonthsCount > 0 ? totalStudies / reportedMonthsCount : 0
+  const avgStudies = Number.isInteger(rawAvgStudies) ? rawAvgStudies.toString() : rawAvgStudies.toFixed(1)
 
   return (
     <div className="w-full flex flex-col space-y-4">
@@ -68,27 +79,28 @@ export default function ReportTable({ reports }: ReportTableProps) {
           </div>
         </div>
 
-        {/* Total Studies */}
+        {/* Média de Estudos */}
         <div className="p-3.5 bg-surface-100 border border-surface-300 rounded-2xl shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-typography-500 font-medium mb-1">
             <span className="flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5 text-primary-200" />
-              Estudos Bíblicos
+              Média de Estudos
             </span>
           </div>
           <div className="flex items-baseline justify-between gap-1 mt-1">
             <span className="text-xl sm:text-2xl font-bold text-typography-900">
-              {totalStudies}
+              {avgStudies}
             </span>
+            <span className="text-[11px] text-typography-400 font-normal">/ mês</span>
           </div>
         </div>
 
-        {/* Monthly Average */}
+        {/* Média de Horas */}
         <div className="p-3.5 bg-surface-100 border border-surface-300 rounded-2xl shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-typography-500 font-medium mb-1">
             <span className="flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5 text-primary-200" />
-              Média Mensal
+              Média de Horas
             </span>
           </div>
           <div className="flex items-baseline justify-between gap-1 mt-1">
@@ -193,7 +205,7 @@ export default function ReportTable({ reports }: ReportTableProps) {
                     )}
                   </td>
                   <td className="py-3.5 px-4 text-sm font-bold text-typography-900">
-                    {totalStudies}
+                    Média: {avgStudies}
                   </td>
                   <td className="py-3.5 px-4 text-xs font-normal text-typography-500">
                     Média: {avgHours}h / mês

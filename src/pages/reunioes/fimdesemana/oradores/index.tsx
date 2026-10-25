@@ -7,6 +7,7 @@ import { ListGeneric } from "@/Components/ListGeneric"
 import ScrollToTopButton from "@/Components/ScrollToTopButton"
 import SkeletonSpeakersList from "@/Components/SkeletonSpeakersList"
 import SpeakersListPdf from "@/Components/SpeakerListPdf"
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer"
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteSpeakerAtom, selectedSpeakerAtom } from "@/atoms/speakerAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
@@ -39,7 +40,7 @@ function SpeakersPage() {
     const [searchTalkNumber, setSearchTalkNumber] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
 
-    const { data: getSpeakers, mutate } = useAuthorizedFetch<ISpeaker[]>("/speakers", {
+    const { data: getSpeakers, mutate, isLoading } = useAuthorizedFetch<ISpeaker[]>("/speakers", {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
     })
 
@@ -196,7 +197,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Total de Oradores</div>
-                                <div className="text-base font-bold text-typography-900">{stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -206,7 +213,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Locais</div>
-                                <div className="text-base font-bold text-typography-900">{stats.local}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.local
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -216,7 +229,13 @@ function SpeakersPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Visitantes</div>
-                                <div className="text-base font-bold text-typography-900">{stats.external}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !getSpeakers ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.external
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -281,15 +300,19 @@ function SpeakersPage() {
                                     <X className="h-5 w-5" />
                                 </button>
                             </div>
-                            <div className="flex-1 w-full overflow-hidden rounded-xl">
-                                <PDFViewer style={{ width: "100%", height: "100%", border: "none" }}>
-                                    <Document>
-                                        <SpeakersListPdf
-                                            speakers={displayedSpeakers ?? []}
-                                            congregationName={speakerCongregationName}
-                                        />
-                                    </Document>
-                                </PDFViewer>
+                            <div className="flex-1 w-full overflow-hidden rounded-xl flex flex-col bg-surface-200">
+                                <UniversalPdfViewer
+                                    document={
+                                        <Document>
+                                            <SpeakersListPdf
+                                                speakers={displayedSpeakers ?? []}
+                                                congregationName={speakerCongregationName}
+                                            />
+                                        </Document>
+                                    }
+                                    title="Lista de Oradores Públicos"
+                                    fileName="Lista_Oradores.pdf"
+                                />
                             </div>
                         </div>
                     </div>

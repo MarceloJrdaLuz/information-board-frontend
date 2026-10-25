@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import { Button } from "@/Components/ui/button";
@@ -9,6 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useAuthContext } from "@/context/AuthContext";
@@ -28,7 +30,7 @@ import "dayjs/locale/pt-br";
 import { useAtom } from "jotai";
 import {
     ArrowLeft,
-    Calendar,
+    Calendar as CalendarIcon,
     Check,
     CheckCircle2,
     Clock,
@@ -498,7 +500,7 @@ function EditHistoryTerritoryPage() {
                         {/* Detalhes da designação ativa */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-surface-300 text-xs text-typography-600">
                             <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-typography-400 shrink-0" />
+                                <CalendarIcon className="w-4 h-4 text-typography-400 shrink-0" />
                                 <span>
                                     Designado em:{" "}
                                     <strong className="text-typography-800">
@@ -605,7 +607,7 @@ function EditHistoryTerritoryPage() {
 
                                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-typography-600 pt-1">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Calendar className="w-3.5 h-3.5 text-typography-400" />
+                                                    <CalendarIcon className="w-3.5 h-3.5 text-typography-400" />
                                                     <span>
                                                         Designado:{" "}
                                                         <strong>
@@ -725,61 +727,47 @@ function EditHistoryTerritoryPage() {
                                     className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
                                 />
                             ) : (
-                                <select
-                                    value={formCaretaker}
-                                    onChange={(e) => setFormCaretaker(e.target.value)}
-                                    required
-                                    className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                                <Select
+                                    value={formCaretaker || undefined}
+                                    onValueChange={setFormCaretaker}
                                 >
-                                    <option value="">Selecione um dirigente...</option>
-                                    {conductorsList.map((conductor) => {
-                                        const name =
-                                            conductor.nickname?.trim() || conductor.fullName;
-                                        return (
-                                            <option key={conductor.id} value={name}>
-                                                {conductor.fullName}{" "}
-                                                {conductor.nickname
-                                                    ? `(${conductor.nickname})`
-                                                    : ""}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
+                                    <SelectTrigger className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 shadow-xs">
+                                        <SelectValue placeholder="Selecione um dirigente..." />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl max-h-60">
+                                        {conductorsList.map((conductor) => {
+                                            const name =
+                                                conductor.nickname?.trim() || conductor.fullName;
+                                            return (
+                                                <SelectItem key={conductor.id} value={name} className="text-xs">
+                                                    {conductor.fullName}{" "}
+                                                    {conductor.nickname
+                                                        ? `(${conductor.nickname})`
+                                                        : ""}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectContent>
+                                </Select>
                             )}
                         </div>
 
                         {/* Linha com Datas */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <label className="text-xs font-semibold text-typography-700">
-                                    Data da Designação *
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formAssignmentDate}
-                                    onChange={(e) => setFormAssignmentDate(e.target.value)}
-                                    required
-                                    className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data da Designação *"
+                                selectedDate={formAssignmentDate || null}
+                                handleDateChange={(d) => setFormAssignmentDate(d || "")}
+                                full
+                            />
 
-                            <div className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-xs font-semibold text-typography-700">
-                                        Data da Conclusão
-                                    </label>
-                                    <span className="text-[10px] text-typography-400">
-                                        (Opcional)
-                                    </span>
-                                </div>
-                                <input
-                                    type="date"
-                                    value={formCompletionDate}
-                                    min={formAssignmentDate || undefined}
-                                    onChange={(e) => setFormCompletionDate(e.target.value)}
-                                    className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data da Conclusão (Opcional)"
+                                selectedDate={formCompletionDate || null}
+                                minDate={formAssignmentDate || null}
+                                handleDateChange={(d) => setFormCompletionDate(d || "")}
+                                full
+                            />
                         </div>
 
                         {/* Tipo de Trabalho / Cobertura */}
@@ -787,17 +775,21 @@ function EditHistoryTerritoryPage() {
                             <label className="text-xs font-semibold text-typography-700">
                                 Tipo de Cobertura
                             </label>
-                            <select
+                            <Select
                                 value={formWorkType}
-                                onChange={(e) => setFormWorkType(e.target.value)}
-                                className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                                onValueChange={setFormWorkType}
                             >
-                                {Object.values(WORKTYPESTERRITORY).map((type) => (
-                                    <option key={type} value={type}>
-                                        {type}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-11 px-3.5 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 shadow-xs">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                    {Object.values(WORKTYPESTERRITORY).map((type) => (
+                                        <SelectItem key={type} value={type} className="text-xs">
+                                            {type}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
                             {formWorkType === "Outra" && (
                                 <input
@@ -851,20 +843,16 @@ function EditHistoryTerritoryPage() {
                     </DialogHeader>
 
                     <div className="space-y-3 py-2">
-                        <label className="text-xs font-semibold text-typography-700 block">
-                            Data de Conclusão *
-                        </label>
-                        <input
-                            type="date"
-                            value={completeDate}
-                            min={
+                        <Calendar
+                            label="Data de Conclusão *"
+                            selectedDate={completeDate || null}
+                            minDate={
                                 activeHistory?.assignment_date
                                     ? dayjs(activeHistory.assignment_date).format("YYYY-MM-DD")
-                                    : undefined
+                                    : null
                             }
-                            onChange={(e) => setCompleteDate(e.target.value)}
-                            required
-                            className="w-full h-11 px-3 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
+                            handleDateChange={(d) => setCompleteDate(d || "")}
+                            full
                         />
                     </div>
 
@@ -896,12 +884,16 @@ function EditHistoryTerritoryPage() {
                 onOpenChange={(open) => !open && setDeleteModalId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Registro de Histórico?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Registro de Histórico?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este registro de designação? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

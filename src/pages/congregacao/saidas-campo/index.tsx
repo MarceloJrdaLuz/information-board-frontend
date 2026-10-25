@@ -97,50 +97,85 @@ export default function FieldServiceTemplatesPage() {
             <BreadCrumbs crumbs={crumbs} pageActive="Saídas de Campo" />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Cabeçalho Principal */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="space-y-1">
+                {/* Cabeçalho Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200">
+                                    <PrechingHomeIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
+                                        Saídas de Campo
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500">
+                                        Configuração das saídas regulares da congregação (horários, locais e dirigentes).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                                <PrechingHomeIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-typography-800">
-                                    Saídas de Campo
-                                </h1>
-                                <p className="text-sm text-typography-500">
-                                    Configuração das saídas regulares da congregação (horários, locais e dirigentes).
-                                </p>
-                            </div>
+                            <Button
+                                onClick={() => Router.push("/congregacao/saidas-campo/add")}
+                                className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>Nova Saída</span>
+                            </Button>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={() => Router.push("/congregacao/saidas-campo/add")}
-                            className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>Nova Saída</span>
-                        </Button>
-                    </div>
-                </div>
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Layers className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Total de Saídas</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !templates ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                {/* Barra de Métricas */}
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                        <Layers className="w-4 h-4 text-primary-200" />
-                        <span>{stats.total} saídas cadastradas</span>
-                    </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 shrink-0">
+                                <Users className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Em Rodízio</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !templates ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.rotation
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                    <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-primary-200">
-                        <Users className="w-4 h-4" />
-                        <span>{stats.rotation} em Rodízio</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                        <UserCheck className="w-4 h-4" />
-                        <span>{stats.fixed} com Dirigente Fixo</span>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <UserCheck className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Com Dirigente Fixo</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !templates ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.fixed
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -276,12 +311,16 @@ export default function FieldServiceTemplatesPage() {
                 onOpenChange={(open) => !open && setDeleteTemplateId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Saída de Campo?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Saída de Campo?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este modelo de saída de campo? Esta ação removerá as configurações vinculadas.
                         </DialogDescription>
                     </DialogHeader>

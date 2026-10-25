@@ -152,26 +152,70 @@ export default function TerritoriesList() {
 
     return (
         <div className="flex flex-col gap-6 w-full">
-            {/* Barra de Métricas */}
-            <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                    <Layers className="w-4 h-4 text-primary-200" />
-                    <span>{stats.total} territórios</span>
+            {/* Metric Badges Strip (Estilo Oradores) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+                <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-surface-100 border border-surface-300 shadow-xs">
+                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                        <Layers className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-medium text-typography-500">Total</div>
+                        <div className="text-base font-bold text-typography-900">
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                `${stats.total} territórios`
+                            )}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    <UserCheck className="w-4 h-4" />
-                    <span>{stats.assigned} em andamento</span>
+                <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-surface-100 border border-surface-300 shadow-xs">
+                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                        <UserCheck className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-medium text-typography-500">Em Andamento</div>
+                        <div className="text-base font-bold text-typography-900">
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                `${stats.assigned} designados`
+                            )}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-600">
-                    <CheckCircle2 className="w-4 h-4 text-primary-200" />
-                    <span>{stats.available} disponíveis</span>
+                <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-surface-100 border border-surface-300 shadow-xs">
+                    <div className="p-2 rounded-lg bg-primary-100 dark:bg-primary-950/50 text-primary-200 shrink-0">
+                        <CheckCircle2 className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-medium text-typography-500">Disponíveis</div>
+                        <div className="text-base font-bold text-typography-900">
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                `${stats.available} livres`
+                            )}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-600">
-                    <ImageIcon className="w-4 h-4 text-primary-200" />
-                    <span>{stats.withImage} com mapa</span>
+                <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-surface-100 border border-surface-300 shadow-xs">
+                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 shrink-0">
+                        <ImageIcon className="h-4 w-4" />
+                    </div>
+                    <div>
+                        <div className="text-[11px] font-medium text-typography-500">Com Mapa</div>
+                        <div className="text-base font-bold text-typography-900">
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-4 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                `${stats.withImage} com imagem`
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -188,7 +232,13 @@ export default function TerritoriesList() {
                                 : "text-typography-500 hover:text-typography-800"
                         }`}
                     >
-                        Todos ({stats.total})
+                        Todos (
+                        {isLoading || !territories ? (
+                            <span className="inline-block h-3 w-4 rounded bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.total
+                        )}
+                        )
                     </button>
 
                     <button
@@ -201,7 +251,15 @@ export default function TerritoriesList() {
                         }`}
                     >
                         <UserCheck className="w-3.5 h-3.5" />
-                        <span>Designados ({stats.assigned})</span>
+                        <span>
+                            Designados (
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-3 w-4 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.assigned
+                            )}
+                            )
+                        </span>
                     </button>
 
                     <button
@@ -214,7 +272,15 @@ export default function TerritoriesList() {
                         }`}
                     >
                         <CheckCircle2 className="w-3.5 h-3.5 text-primary-200" />
-                        <span>Disponíveis ({stats.available})</span>
+                        <span>
+                            Disponíveis (
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-3 w-4 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.available
+                            )}
+                            )
+                        </span>
                     </button>
 
                     <button
@@ -227,7 +293,15 @@ export default function TerritoriesList() {
                         }`}
                     >
                         <ImageIcon className="w-3.5 h-3.5 text-primary-200" />
-                        <span>Com Mapa ({stats.withImage})</span>
+                        <span>
+                            Com Mapa (
+                            {isLoading || !territories ? (
+                                <span className="inline-block h-3 w-4 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.withImage
+                            )}
+                            )
+                        </span>
                     </button>
                 </div>
 
@@ -461,12 +535,16 @@ export default function TerritoriesList() {
                 onOpenChange={(open) => !open && setDeleteTerritoryId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Território?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Território?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este território? Todas as informações de histórico vinculadas a ele também serão excluídas permanentemente.
                         </DialogDescription>
                     </DialogHeader>

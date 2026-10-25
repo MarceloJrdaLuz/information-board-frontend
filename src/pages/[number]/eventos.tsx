@@ -1,5 +1,3 @@
-'use client';
-
 import { domainUrl } from '@/atoms/atom';
 import { themeAtom } from '@/atoms/themeAtoms';
 import Footer from '@/Components/Footer';
@@ -13,6 +11,7 @@ import { useFetch } from '@/hooks/useFetch';
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout';
 import { ISpecialEvent, SpecialEventType } from '@/types/specialEvent';
 import { Categories, ICongregation, IDocument } from '@/types/types';
+import { buildPublicPageServerProps, PublicPageServerProps } from '@/utils/ogMetadata';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import { motion } from 'framer-motion';
@@ -24,13 +23,14 @@ import {
     ChevronRight,
     Clock,
     FileText,
-    Heart,
+    Wine,
     MapPin,
     Mic,
     Radio,
     Sparkles,
     Users
 } from 'lucide-react';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -55,7 +55,7 @@ function getPublicEventBadge(type: SpecialEventType) {
         case SpecialEventType.MEMORIAL:
             return {
                 label: "Celebração",
-                icon: Heart,
+                icon: Wine,
                 bg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30"
             };
         case SpecialEventType.CIRCUIT_OVERSEER_VISIT:
@@ -94,16 +94,19 @@ function formatDateRange(startDate: string, endDate: string) {
     return `${s.format("DD [de] MMM")} a ${e.format("DD [de] MMM [de] YYYY")}`;
 }
 
-function Eventos() {
+function Eventos({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter();
-    const { number } = router.query;
+    const number = serverNumber || (router.query.number as string);
     const domain = useAtomValue(domainUrl);
 
-    const [congregationData, setCongregationData] = useState<ICongregation>();
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    );
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : "";
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData);
+    const congregation = fetchedCongregation || serverCongregation || undefined;
 
     useEffect(() => {
         if (congregation) {
@@ -144,7 +147,7 @@ function Eventos() {
     }
 
     const theme = useAtomValue(themeAtom);
-    const isLoading = isLoadingCongregation || isLoadingSpecialEvents;
+    const isLoading = (isLoadingCongregation && !congregation) || isLoadingSpecialEvents;
 
     const hasSpecialEvents = Boolean(specialEvents && specialEvents.length > 0);
     const hasPdfDocs = Boolean(documentsFilter && documentsFilter.length > 0);
@@ -160,8 +163,15 @@ function Eventos() {
             </Head>
 
             <HeadComponent
-                title={`Eventos Especiais - Congregação ${congregationData?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/eventos.png`}
+                title={
+                    congregationData?.name
+                        ? `Eventos Especiais - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Eventos Especiais"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/eventos.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Top Bar de Navegação */}
@@ -369,3 +379,8 @@ Eventos.getLayout = (page: React.ReactElement) => {
 };
 
 export default Eventos;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'eventos');
+};
+

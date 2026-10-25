@@ -5,13 +5,13 @@ import FilterGroups from "@/Components/FilterGroups"
 import FilterPrivileges from "@/Components/FilterPrivileges"
 import ListTotals from "@/Components/ListTotals"
 import MissingReportsModal from "@/Components/MissingReportsModal"
+import { ModalAuxiliaryPioneers } from "@/Components/ModalAuxiliaryPioneers"
 import ModalRelatorio from "@/Components/ModalRelatorio"
 import SkeletonModalReport from "@/Components/ModalRelatorio/skeletonModalReport"
 import { Button } from "@/Components/ui/button"
 import { crumbsAtom, pageActiveAtom, reportsAtom } from "@/atoms/atom"
 import { API_ROUTES } from "@/constants/apiRoutes"
 import { capitalizeFirstLetter, isAuxPioneerMonth } from "@/functions/isAuxPioneerMonthNow"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
 import { meses } from "@/functions/meses"
 import { normalizeTotalsReports } from "@/functions/normalizeTotalsReports"
 import { sortArrayByProperty } from "@/functions/sortObjects"
@@ -19,7 +19,8 @@ import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { useSubmit } from "@/hooks/useSubmitForms"
 import { api } from "@/services/api"
 import { InactiveCandidate } from "@/types/publishers"
-import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, Privileges, Situation } from "@/types/types"
+import { IMeetingAssistance, IPublisher, IReports, ITotalsReports, ITotalsReportsCreate, IUpdateReport, PrivilegeCode, Privileges, Situation } from "@/types/types"
+import { getActivePrivilegeLabelsInMonth, hasAnyPrivilegeInMonth, hasPrivilegeInMonth } from "@/functions/publisherPrivilegeHelper"
 import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmit"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import dayjs from "dayjs"
@@ -27,12 +28,16 @@ import "dayjs/locale/pt-br"
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { useAtom } from "jotai"
 import {
+    AlertCircle,
     AlertTriangle,
     ArrowLeft,
+    Award,
     BarChart3,
     CheckCheck,
     CheckCircle2,
+    ChevronDown,
     Clock,
+    ExternalLink,
     FileSpreadsheet,
     FileText,
     InfoIcon,
@@ -56,17 +61,17 @@ function ReportsMonthPage() {
 
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
 
-    const { data, isLoading: loadingPublishers } = useAuthorizedFetch<IPublisher[]>(
-        `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+    const { data, isLoading: loadingPublishers, mutate: mutatePublishers } = useAuthorizedFetch<IPublisher[]>(
+        congregationId ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER", "PUBLISHERS_MANAGER"] }
     )
     const { data: getAssistance } = useAuthorizedFetch<IMeetingAssistance[]>(
-        `/assistance/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+        congregationId ? `/assistance/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
     )
     const { data: getTotals } = useAuthorizedFetch<ITotalsReports[]>(
-        `/report/totals/${congregationId}`,
-        { allowedRoles: ["ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
+        congregationId ? `/report/totals/${congregationId}` : "",
+        { allowedRoles: ["ADMIN", "ADMIN_CONGREGATION", "REPORTS_MANAGER"] }
     )
 
     const [crumbs, setCrumbs] = useAtom(crumbsAtom)
@@ -79,6 +84,71 @@ function ReportsMonthPage() {
     const [publishers, setPublishers] = useState<IPublisher[]>()
     const [missingReports, setMissingReports] = useState<IPublisher[] | undefined>()
     const [missingReportsCount, setMissingReportsCount] = useState<number>(0)
+    const [modalAuxPioneersOpen, setModalAuxPioneersOpen] = useState(false)
+
+    const [yearSelected, setYearSelected] = useState("")
+    const [monthSelected, setMonthSelected] = useState("")
+    const [dateFormat, setDateFormat] = useState<Date>()
+
+    const getEffectivePublisher = useCallback((p?: IPublisher): IPublisher | undefined => {
+        if (!p) return undefined
+        const found = publishers?.find(pub => pub.id === p.id) || data?.find(pub => pub.id === p.id)
+        if (found) {
+            return {
+                ...p,
+                ...found,
+                privilegesRelation: (found.privilegesRelation && found.privilegesRelation.length > 0) ? found.privilegesRelation : p.privilegesRelation,
+                pioneerMonths: (found.pioneerMonths && found.pioneerMonths.length > 0) ? found.pioneerMonths : p.pioneerMonths
+            }
+        }
+        return p
+    }, [publishers, data])
+
+    const isPublisherContinuousAux = useCallback((p: IPublisher) => {
+        const effectivePub = getEffectivePublisher(p)
+        if (!effectivePub) return false
+        return hasPrivilegeInMonth(effectivePub, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, dateFormat || new Date())
+    }, [getEffectivePublisher, dateFormat])
+
+    const isPublisherRegularPioneer = useCallback((p: IPublisher) => {
+        const effectivePub = getEffectivePublisher(p)
+        if (!effectivePub) return false
+        return hasPrivilegeInMonth(effectivePub, PrivilegeCode.REGULAR_PIONEER, dateFormat || new Date())
+    }, [getEffectivePublisher, dateFormat])
+
+    const isPublisherSpecialPioneer = useCallback((p: IPublisher) => {
+        const effectivePub = getEffectivePublisher(p)
+        if (!effectivePub) return false
+        return hasAnyPrivilegeInMonth(effectivePub, [PrivilegeCode.SPECIAL_PIONEER, PrivilegeCode.MISSIONARY_WORLDWIDE], dateFormat || new Date())
+    }, [getEffectivePublisher, dateFormat])
+
+    const isPublisherAuxPioneerForMonth = useCallback((p: IPublisher) => {
+        const effectivePub = getEffectivePublisher(p)
+        if (!effectivePub) return false
+        return (
+            isAuxPioneerMonth(
+                effectivePub,
+                `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
+            ) ||
+            isPublisherContinuousAux(effectivePub)
+        )
+    }, [getEffectivePublisher, monthSelected, yearSelected, isPublisherContinuousAux])
+
+    const isReportAuxPioneer = useCallback((r: IReports) =>
+        Boolean(r && r.publisher && isPublisherAuxPioneerForMonth(r.publisher)),
+    [isPublisherAuxPioneerForMonth])
+
+    const isReportContinuousAux = useCallback((r: IReports) =>
+        Boolean(r && r.publisher && isPublisherContinuousAux(r.publisher)),
+    [isPublisherContinuousAux])
+
+    const isReportRegularPioneer = useCallback((r: IReports) =>
+        Boolean(r && r.publisher && isPublisherRegularPioneer(r.publisher)),
+    [isPublisherRegularPioneer])
+
+    const isReportSpecialPioneer = useCallback((r: IReports) =>
+        Boolean(r && r.publisher && isPublisherSpecialPioneer(r.publisher)),
+    [isPublisherSpecialPioneer])
 
     const [activeTab, setActiveTab] = useState<"reports" | "totals">("reports")
 
@@ -98,17 +168,20 @@ function ReportsMonthPage() {
     const [totalsRecover, setTotalsRecover] = useState<ITotalsReports[]>()
     const [meetingAssistanceEndWeek, setMeetingAssistanceEndWeek] = useState(0)
     const [groupSelecteds, setGroupSelecteds] = useState<string[]>([])
-    const [yearSelected, setYearSelected] = useState("")
-    const [monthSelected, setMonthSelected] = useState("")
-    const [dateFormat, setDateFormat] = useState<Date>()
     const [inactiveCandidates, setInactiveCandidates] = useState<InactiveCandidate[]>([])
+    const [isInactiveOpen, setIsInactiveOpen] = useState(true)
+    const [loadingReports, setLoadingReports] = useState(true)
 
     const monthParam = (month as string) || ""
 
     useEffect(() => {
-        const filterActives = data?.filter((publisher) => publisher.situation === Situation.ATIVO)
+        if (!dateFormat) return
+        const filterActives = data?.filter((publisher) => 
+            publisher.situation === Situation.ATIVO && 
+            hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, dateFormat)
+        )
         setPublishers(filterActives)
-    }, [data])
+    }, [data, dateFormat])
 
     useEffect(() => {
         if (getTotals) {
@@ -125,15 +198,17 @@ function ReportsMonthPage() {
     useEffect(() => {
         if (monthParam) {
             setPageActive(monthParam)
-            const dividirPalavra = monthParam.split(" ")
-            setMonthSelected(dividirPalavra[0])
-            setMonthSelected(dividirPalavra[0].toLowerCase())
-            setYearSelected(dividirPalavra[1])
+            const clean = decodeURIComponent(monthParam).trim().replace(/\s+de\s+/i, " ")
+            const dividirPalavra = clean.split(/[\s\-_]+/)
+            const mNome = (dividirPalavra[0] || "").toLowerCase()
+            const aAno = dividirPalavra[1] || `${new Date().getFullYear()}`
+            setMonthSelected(mNome)
+            setYearSelected(aAno)
+            const normalizeMonth = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+            const mesIdx = meses.findIndex(m => normalizeMonth(m) === normalizeMonth(mNome))
             setDateFormat(
                 new Date(
-                    `${meses.indexOf(`${capitalizeFirstLetter(dividirPalavra[0])}`) + 1}-01-${
-                        dividirPalavra[1]
-                    }`
+                    `${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${aAno}`
                 )
             )
         }
@@ -151,7 +226,7 @@ function ReportsMonthPage() {
     }, [getAssistance, monthSelected, yearSelected])
 
     useEffect(() => {
-        if (!publishers || !reports || !monthSelected || !yearSelected) return
+        if (loadingPublishers || loadingReports || !publishers || !reports || !monthSelected || !yearSelected) return
 
         const currentDate = dayjs(
             `${monthSelected.toLowerCase()} ${yearSelected}`,
@@ -209,7 +284,7 @@ function ReportsMonthPage() {
             .filter(Boolean) as InactiveCandidate[]
 
         setInactiveCandidates(publishersInactive)
-    }, [publishers, reports, monthSelected, yearSelected])
+    }, [publishers, reports, monthSelected, yearSelected, loadingPublishers, loadingReports])
 
     useEffect(() => {
         const someTotals = (reportsList: IReports[]) => {
@@ -228,41 +303,28 @@ function ReportsMonthPage() {
             let totalStudiesSpecialPioneer = 0
             let totalsReportsSpecialPioneer = 0
 
-            const filterSpecialPioneer = reportsList.filter(
-                (report) =>
-                    report.publisher.privileges.includes(Privileges.PIONEIROESPECIAL) ||
-                    report.publisher.privileges.includes(Privileges.MISSIONARIOEMCAMPO)
+            const filterSpecialPioneer = reportsList.filter((report) =>
+                isReportSpecialPioneer(report)
             )
 
             const filterPioneer = reportsList.filter(
                 (report) =>
-                    report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
-                    isPioneerNow(report.publisher, dateFormat ?? new Date())
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    isReportRegularPioneer(report)
             )
 
             const filterAuxPioneer = reportsList.filter(
                 (report) =>
-                    (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                        isAuxPioneerMonth(
-                            report.publisher,
-                            `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                        )) ||
-                    (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
-                        isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    !filterPioneer.some((r) => r.id === report.id) &&
+                    (isReportAuxPioneer(report) || isReportContinuousAux(report))
             )
 
             const filterPublishers = reportsList.filter(
                 (report) =>
-                    report.publisher.privileges.some((privilege) => privilege === Privileges.PUBLICADOR) ||
-                    (report.publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) &&
-                        !isAuxPioneerMonth(
-                            report.publisher,
-                            `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                        )) ||
-                    (report.publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) &&
-                        !isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
-                    (report.publisher.privileges.includes(Privileges.PIONEIROREGULAR) &&
-                        !isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                    !filterSpecialPioneer.some((r) => r.id === report.id) &&
+                    !filterPioneer.some((r) => r.id === report.id) &&
+                    !filterAuxPioneer.some((r) => r.id === report.id)
             )
 
             filterPublishers.forEach((report) => {
@@ -330,10 +392,18 @@ function ReportsMonthPage() {
                     report.month.toLowerCase() === monthSelected && report.year === yearSelected
             )
 
-            const updatePrivilegesArray = reportsFilteredByDate.map((report) => ({
-                report_id: report.id,
-                privileges: report.privileges ? report.privileges : report.publisher?.privileges
-            }))
+            const checkTargetDate = dateFormat || new Date()
+            const updatePrivilegesArray = reportsFilteredByDate.map((report) => {
+                const effectivePub = getEffectivePublisher(report.publisher) || report.publisher
+                const activeLabels = getActivePrivilegeLabelsInMonth(effectivePub, checkTargetDate)
+                if (isReportAuxPioneer(report) && !activeLabels.includes("Pioneiro Auxiliar")) {
+                    activeLabels.push("Pioneiro Auxiliar")
+                }
+                return {
+                    report_id: report.id,
+                    privileges: activeLabels.length > 0 ? activeLabels : (report.privileges || [])
+                }
+            })
 
             setReportsUpdatePrivileges(updatePrivilegesArray)
             someTotals(reportsFilteredByDate)
@@ -344,14 +414,21 @@ function ReportsMonthPage() {
                           const isAuxPioneerSelected = filterPrivileges.includes(
                               Privileges.PIONEIROAUXILIAR
                           )
-                          const isIndefinitePioneerSelected = filterPrivileges.includes(
-                              Privileges.AUXILIARINDETERMINADO
-                          )
+                          const isIndefinitePioneerSelected =
+                              filterPrivileges.includes(
+                                  Privileges.AUXILIARINDETERMINADO
+                              ) ||
+                              filterPrivileges.includes(
+                                  Privileges.AUXILIARTEMPOINDETERMINADO
+                              )
                           const isRegPioneerSelected = filterPrivileges.includes(
                               Privileges.PIONEIROREGULAR
                           )
                           const isServantSelected = filterPrivileges.includes(Privileges.SM)
                           const isElderSelected = filterPrivileges.includes(Privileges.ANCIAO)
+
+                          const targetDate = dateFormat || new Date()
+                          const effectivePub = getEffectivePublisher(report.publisher) || report.publisher
 
                           if (
                               (isAuxPioneerSelected ||
@@ -361,24 +438,9 @@ function ReportsMonthPage() {
                               !isServantSelected
                           ) {
                               return (
-                                  (isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
-                                  (isIndefinitePioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.AUXILIARINDETERMINADO
-                                      ) &&
-                                      isPioneerNow(report.publisher, dateFormat ?? new Date())) ||
-                                  (isRegPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROREGULAR
-                                      ) &&
-                                      isPioneerNow(report.publisher, dateFormat ?? new Date()))
+                                  (isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                  (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                  (isRegPioneerSelected && isReportRegularPioneer(report))
                               )
                           } else if (
                               (isAuxPioneerSelected ||
@@ -387,31 +449,10 @@ function ReportsMonthPage() {
                               isElderSelected
                           ) {
                               return (
-                                  ((isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
-                                      (isIndefinitePioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.AUXILIARINDETERMINADO
-                                          ) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          )) ||
-                                      (isRegPioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.PIONEIROREGULAR
-                                          ) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          ))) &&
-                                  report.publisher.privileges.includes(Privileges.ANCIAO)
+                                  ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                      (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                      (isRegPioneerSelected && isReportRegularPioneer(report))) &&
+                                  hasPrivilegeInMonth(effectivePub, PrivilegeCode.ELDER, targetDate)
                               )
                           } else if (
                               (isAuxPioneerSelected ||
@@ -420,36 +461,27 @@ function ReportsMonthPage() {
                               isServantSelected
                           ) {
                               return (
-                                  ((isAuxPioneerSelected &&
-                                      report.publisher.privileges.includes(
-                                          Privileges.PIONEIROAUXILIAR
-                                      ) &&
-                                      isAuxPioneerMonth(
-                                          report.publisher,
-                                          `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`
-                                      )) ||
-                                      (isIndefinitePioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.AUXILIARINDETERMINADO
-                                          ) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          )) ||
-                                      (isRegPioneerSelected &&
-                                          report.publisher.privileges.includes(
-                                              Privileges.PIONEIROREGULAR
-                                          ) &&
-                                          isPioneerNow(
-                                              report.publisher,
-                                              dateFormat ?? new Date()
-                                          ))) &&
-                                  report.publisher.privileges.includes(Privileges.SM)
+                                  ((isAuxPioneerSelected && isReportAuxPioneer(report)) ||
+                                      (isIndefinitePioneerSelected && isReportContinuousAux(report)) ||
+                                      (isRegPioneerSelected && isReportRegularPioneer(report))) &&
+                                  hasPrivilegeInMonth(effectivePub, PrivilegeCode.MINISTERIAL_SERVANT, targetDate)
                               )
                           } else {
-                              return filterPrivileges.every((privilege) =>
-                                  report.publisher.privileges.includes(privilege)
-                              )
+                              return filterPrivileges.every((privilege) => {
+                                  if (privilege === Privileges.PIONEIROAUXILIAR) {
+                                      return isReportAuxPioneer(report)
+                                  }
+                                  if (
+                                      privilege === Privileges.AUXILIARINDETERMINADO ||
+                                      privilege === Privileges.AUXILIARTEMPOINDETERMINADO
+                                  ) {
+                                      return isReportContinuousAux(report)
+                                  }
+                                  if (privilege === Privileges.PIONEIROREGULAR) {
+                                      return isReportRegularPioneer(report)
+                                  }
+                                  return hasPrivilegeInMonth(effectivePub, privilege, targetDate)
+                              })
                           }
                       })
                     : reportsFilteredByDate
@@ -487,7 +519,7 @@ function ReportsMonthPage() {
     }, [totalsAuxPioneers, totalsPioneers, totalsPublishers, totalsSpecialsPioneer])
 
     useEffect(() => {
-        if (publishers && reports) {
+        if (!loadingPublishers && !loadingReports && publishers && reports) {
             const missing = publishers.filter((publisher) => {
                 const hasSubmittedReport = reports.some(
                     (report) =>
@@ -505,19 +537,23 @@ function ReportsMonthPage() {
             setMissingReports(missing)
             setMissingReportsCount(missing.length)
         }
-    }, [monthSelected, yearSelected, publishers, reports, groupSelecteds])
+    }, [monthSelected, yearSelected, publishers, reports, groupSelecteds, loadingPublishers, loadingReports])
 
     const getRelatorios = useCallback(async () => {
         if (!congregationId) return
+        setLoadingReports(true)
         try {
             const res = await api.get(`/reports/${congregationId}`)
             setReports([...res.data])
         } catch (err) {
             console.error(err)
+        } finally {
+            setLoadingReports(false)
         }
     }, [congregationId, setReports])
 
     useEffect(() => {
+        setInactiveCandidates([])
         getRelatorios()
     }, [getRelatorios])
 
@@ -650,6 +686,15 @@ function ReportsMonthPage() {
                         </div>
 
                         <Button
+                            variant="outline"
+                            onClick={() => setModalAuxPioneersOpen(true)}
+                            className="border-primary-200/40 text-primary-200 hover:bg-primary-200/10 font-semibold shadow-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm cursor-pointer"
+                        >
+                            <Award className="h-4 w-4" />
+                            <span>Pioneiros Auxiliares</span>
+                        </Button>
+
+                        <Button
                             onClick={() =>
                                 router.push(
                                     `/congregacao/relatorios/${congregationId}/${month}/inserir`
@@ -725,51 +770,96 @@ function ReportsMonthPage() {
                     </div>
                 </div>
 
-                {/* Inactive Candidates Alert */}
-                {inactiveCandidates.length > 0 && (
-                    <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5 shadow-sm">
-                        <div className="flex items-start gap-3.5">
-                            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
-                                <AlertTriangle className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-1">
-                                    <h4 className="font-bold text-sm sm:text-base text-amber-900 dark:text-amber-300">
-                                        Possíveis Publicadores Inativos ({inactiveCandidates.length})
+                {/* Inactive Candidates Section */}
+                {!loadingReports && !loadingPublishers && inactiveCandidates.length > 0 && (
+                    <div className="rounded-2xl border border-amber-500/30 bg-surface-100 shadow-sm overflow-hidden transition-all">
+                        {/* Header bar */}
+                        <div
+                            onClick={() => setIsInactiveOpen(!isInactiveOpen)}
+                            className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent cursor-pointer select-none hover:bg-amber-500/10 transition-colors"
+                        >
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                    <AlertTriangle className="w-5 h-5" />
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h4 className="font-bold text-sm sm:text-base text-typography-900">
+                                        Possíveis Publicadores Inativos
                                     </h4>
-                                    <span className="text-xs text-amber-700 dark:text-amber-400 font-medium hidden sm:inline">
-                                        6 meses ou mais sem relatar
+                                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                        {inactiveCandidates.length}
+                                    </span>
+                                    <span className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md font-medium hidden sm:inline">
+                                        6+ meses consecutivos sem relatar
                                     </span>
                                 </div>
-                                <p className="text-xs text-amber-800 dark:text-amber-400 mb-3">
-                                    Os publicadores listados abaixo estão há pelo menos 6 meses consecutivos sem enviar relatório:
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs text-typography-500 font-medium hidden md:inline">
+                                    {isInactiveOpen ? "Ocultar" : "Expandir"}
+                                </span>
+                                <div className="w-7 h-7 rounded-lg hover:bg-surface-200/80 flex items-center justify-center text-typography-500 transition-transform">
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isInactiveOpen ? "rotate-180" : ""}`} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Collapsible Content */}
+                        {isInactiveOpen && (
+                            <div className="p-4 sm:p-5 pt-3 border-t border-amber-500/15">
+                                <p className="text-xs text-typography-600 mb-3.5 leading-relaxed">
+                                    Estes publicadores estão há 6 meses ou mais sem enviar relatório. Verifique se há relatórios atrasados antes de consolidar os totais para Betel:
                                 </p>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                                     {inactiveCandidates.map((item) => (
                                         <div
                                             key={item.publisher.id}
-                                            className="flex items-center justify-between bg-surface-100 border border-amber-500/20 rounded-xl px-3 py-2 shadow-2xs"
+                                            className="group flex items-center justify-between p-3 rounded-xl bg-surface-200/50 hover:bg-surface-200 border border-surface-300 hover:border-amber-500/40 transition-all duration-200 shadow-2xs"
                                         >
-                                            <div className="min-w-0 flex-1 pr-2">
-                                                <p className="text-xs font-semibold text-typography-900 truncate">
-                                                    {item.publisher.nickname || item.publisher.fullName}
-                                                </p>
-                                                <p className="text-[11px] text-typography-500 truncate">
-                                                    Último: {item.lastReport ? `${item.lastReport.month}/${item.lastReport.year}` : "Nunca"}
-                                                </p>
+                                            <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                                                <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold text-xs flex items-center justify-center shrink-0 uppercase">
+                                                    {(item.publisher.nickname || item.publisher.fullName)?.charAt(0) || "P"}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-xs font-semibold text-typography-900 truncate" title={item.publisher.fullName}>
+                                                        {item.publisher.nickname || item.publisher.fullName}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        {item.lastReport ? (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 dark:text-amber-400 font-medium">
+                                                                <Clock className="w-3 h-3 shrink-0" />
+                                                                <span>Último: {item.lastReport.month}/{item.lastReport.year}</span>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] text-rose-500 font-medium">
+                                                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                                                <span>Nunca relatou</span>
+                                                            </span>
+                                                        )}
+                                                        {item.publisher.group && (
+                                                            <span className="text-[10px] text-typography-400 truncate">
+                                                                • {item.publisher.group.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
+
                                             <Link
-                                                href={`/congregacao/publicadores/edit/${item.publisher.id}`}
-                                                className="text-xs font-semibold text-primary-200 hover:text-primary-150 shrink-0"
+                                                href={`/congregacao/pessoas/edit/${item.publisher.id}`}
+                                                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-primary-200 hover:text-primary-150 hover:bg-primary-200/10 transition-colors shrink-0"
+                                                title="Ver cadastro do publicador"
                                             >
-                                                Ver
+                                                <span>Ver</span>
+                                                <ExternalLink className="w-3 h-3" />
                                             </Link>
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
 
@@ -820,7 +910,7 @@ function ReportsMonthPage() {
                         </div>
 
                         {/* Reports List */}
-                        {loadingPublishers ? (
+                        {loadingPublishers || loadingReports ? (
                             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {Array.from({ length: 8 }).map((_, i) => (
                                     <SkeletonModalReport key={i} />
@@ -831,7 +921,7 @@ function ReportsMonthPage() {
                                 {searchedReports.map((report) => (
                                     <ModalRelatorio
                                         key={report.id}
-                                        publisher={report.publisher}
+                                        publisher={getEffectivePublisher(report.publisher) || report.publisher}
                                         month={report.month}
                                         year={report.year}
                                         hours={report.hours}
@@ -910,6 +1000,7 @@ function ReportsMonthPage() {
                             <div className="flex justify-end pt-2 border-t border-surface-300">
                                 <ConfirmRegisterReports
                                     onRegister={() => onSubmit()}
+                                    isUpdate={monthAlreadyRegister}
                                     button={
                                         <Button className="bg-primary-200 hover:bg-primary-150 text-typography-100 font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs flex items-center gap-2">
                                             <CheckCheck className="w-4 h-4" />
@@ -982,6 +1073,19 @@ function ReportsMonthPage() {
                     </div>
                 )}
             </div>
+
+            <ModalAuxiliaryPioneers
+                isOpen={modalAuxPioneersOpen}
+                onClose={() => setModalAuxPioneersOpen(false)}
+                congregationId={congregationId as string}
+                month={monthSelected}
+                year={yearSelected}
+                publishers={publishers || []}
+                onSaved={() => {
+                    mutatePublishers?.()
+                    getRelatorios()
+                }}
+            />
         </ContentDashboard>
     )
 }

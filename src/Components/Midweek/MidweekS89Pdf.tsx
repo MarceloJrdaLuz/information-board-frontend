@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
+import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
 import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
 import { Document, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
@@ -14,7 +15,8 @@ const MONTH_NAMES = [
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-const getDisplayName = (pub?: IPublisherMini | null): string => {
+const getDisplayName = (pub?: IPublisherMini | null, customName?: string | null): string => {
+    if (customName && customName.trim()) return customName.trim();
     if (!pub) return "";
     const nick = pub.nickname?.trim();
     if (nick) return nick;
@@ -385,7 +387,7 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
                                         <Text style={styles.fieldLabel}>Nome:</Text>
                                         <View style={styles.dottedLine}>
                                             <Text style={styles.fieldValueText}>
-                                                {getDisplayName(part.assignedPublisher)}
+                                                {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                             </Text>
                                         </View>
                                     </View>
@@ -395,7 +397,7 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
                                         <Text style={styles.fieldLabel}>Ajudante:</Text>
                                         <View style={styles.dottedLine}>
                                             <Text style={styles.fieldValueText}>
-                                                {part.requiresAssistant ? getDisplayName(part.assistantPublisher) : ""}
+                                                {part.requiresAssistant ? getDisplayName(part.assistantPublisher, part.custom_assistant_name) : ""}
                                             </Text>
                                         </View>
                                     </View>
@@ -583,10 +585,17 @@ export const MidweekS89PdfModal: React.FC<{
                     </div>
                 </DialogHeader>
 
-                <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200">
-                    <PDFViewer width="100%" height="100%" showToolbar={true}>
-                        {currentDoc}
-                    </PDFViewer>
+                <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200 flex flex-col">
+                    <UniversalPdfViewer
+                        document={currentDoc}
+                        title={isAll ? `Designações S-89 — ${MONTH_NAMES[currentMonth - 1]} de ${currentYear}` : `Designações S-89 — Semana de ${dayjs(filteredSchedules[0]?.meetingDate || filteredSchedules[0]?.weekDate).format("DD/MM/YYYY")}`}
+                        fileName={
+                            isAll
+                                ? `S89_Mes_${MONTH_NAMES[currentMonth - 1]}_${currentYear}.pdf`
+                                : `S89_Semana_${dayjs(filteredSchedules[0]?.meetingDate || filteredSchedules[0]?.weekDate).format("DD-MM-YYYY")}.pdf`
+                        }
+                        minHeight="600px"
+                    />
                 </div>
             </DialogContent>
         </Dialog>

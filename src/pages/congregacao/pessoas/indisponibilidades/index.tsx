@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import React, { useEffect, useState, useMemo } from "react";
 import ContentDashboard from "@/Components/ContentDashboard";
 import BreadCrumbs from "@/Components/BreadCrumbs";
@@ -9,13 +10,14 @@ import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { IPublisherMini } from "@/types/midweek";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import {
     CalendarOff,
     Search,
     Plus,
     Trash2,
     ArrowLeft,
-    Calendar,
+    Calendar as CalendarIcon,
     User,
     Loader2,
     CheckCircle2,
@@ -75,7 +77,7 @@ function PublisherUnavailabilitiesPage() {
         setPageActive("Indisponibilidades");
         setCrumbs([
             { label: "Início", link: "/dashboard" },
-            { label: "Publicadores", link: "/congregacao/publicadores" }
+            { label: "Pessoas", link: "/congregacao/pessoas" }
         ]);
     }, [setPageActive, setCrumbs]);
 
@@ -202,7 +204,7 @@ function PublisherUnavailabilitiesPage() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => router.push("/congregacao/publicadores")}
+                            onClick={() => router.push("/congregacao/pessoas")}
                             className="h-9 w-9 text-typography-700 hover:bg-surface-200"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -388,7 +390,7 @@ function PublisherUnavailabilitiesPage() {
                                         {/* Período */}
                                         <div className="bg-surface-200/60 p-2 rounded-lg border border-surface-300/60 flex items-center justify-between text-xs">
                                             <div className="flex items-center gap-1.5 text-typography-800 font-medium">
-                                                <Calendar className="h-3.5 w-3.5 text-primary-200" />
+                                                <CalendarIcon className="h-3.5 w-3.5 text-primary-200" />
                                                 <span>
                                                     {dayjs(item.startDate).format("DD/MM/YYYY")} até {dayjs(item.endDate).format("DD/MM/YYYY")}
                                                 </span>
@@ -431,50 +433,40 @@ function PublisherUnavailabilitiesPage() {
                         {/* Selecionar Publicador */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-bold text-typography-800">
-                                Publicador <span className="text-red-500">*</span>
+                                Pessoa / Publicador <span className="text-red-500">*</span>
                             </label>
-                            <select
-                                value={selectedPublisherId}
-                                onChange={(e) => setSelectedPublisherId(e.target.value)}
-                                required
-                                className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
+                            <Select
+                                value={selectedPublisherId || undefined}
+                                onValueChange={setSelectedPublisherId}
                             >
-                                <option value="">Selecione o publicador...</option>
-                                {publishers.map((pub) => (
-                                    <option key={pub.id} value={pub.id}>
-                                        {pub.fullName} {pub.nickname ? `(${pub.nickname})` : ""}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-10 rounded-xl border-surface-300 bg-surface-200 text-xs text-typography-900">
+                                    <SelectValue placeholder="Selecione a pessoa..." />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-60 rounded-xl">
+                                    {publishers.map((pub) => (
+                                        <SelectItem key={pub.id} value={pub.id} className="text-xs">
+                                            {pub.fullName} {pub.nickname ? `(${pub.nickname})` : ""}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {/* Datas (Início e Fim) */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-typography-800">
-                                    Data Inicial <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    required
-                                    className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
-
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-typography-800">
-                                    Data Final <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    required
-                                    className="w-full p-2 text-xs rounded-lg border border-surface-300 bg-surface-200 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data Inicial *"
+                                selectedDate={startDate || null}
+                                handleDateChange={(d) => setStartDate(d || "")}
+                                full
+                            />
+                            <Calendar
+                                label="Data Final *"
+                                selectedDate={endDate || null}
+                                minDate={startDate || null}
+                                handleDateChange={(d) => setEndDate(d || "")}
+                                full
+                            />
                         </div>
 
                         {/* Motivo */}

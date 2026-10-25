@@ -166,7 +166,11 @@ function ArrangementsPage() {
                 <MapPin className="w-4 h-4 text-primary-200" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {arrangements?.length ?? 0}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  arrangements?.length ?? 0
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 pontos de testemunho cadastrados
@@ -181,7 +185,11 @@ function ArrangementsPage() {
                 <CalendarDays className="w-4 h-4 text-blue-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {fixedArrangements.length}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  fixedArrangements.length
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 dias fixos toda semana
@@ -196,7 +204,11 @@ function ArrangementsPage() {
                 <CalendarRange className="w-4 h-4 text-purple-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {specialArrangements.length}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  specialArrangements.length
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 datas específicas
@@ -211,7 +223,11 @@ function ArrangementsPage() {
                 <Clock className="w-4 h-4 text-amber-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {totalSlotsCount}
+                {isLoading || !arrangements ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  totalSlotsCount
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 slots configurados no sistema
@@ -310,12 +326,16 @@ function ArrangementsPage() {
             onOpenChange={open => !open && setArrangementToDelete(null)}
           >
             <AlertDialogContent className="sm:max-w-[440px]">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-lg font-bold text-red-600 flex items-center gap-2">
-                  <Trash2 className="w-5 h-5" />
-                  Excluir Arranjo
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-xs text-typography-600 mt-2 leading-relaxed">
+              <AlertDialogHeader className="gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-5 h-5" />
+                  </div>
+                  <AlertDialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                    Excluir Arranjo?
+                  </AlertDialogTitle>
+                </div>
+                <AlertDialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                   Tem certeza que deseja excluir o arranjo{" "}
                   <strong className="text-typography-900">
                     &ldquo;{arrangementToDelete?.title}&rdquo;
@@ -358,6 +378,8 @@ function ArrangementCardItem({
       .slice()
       .sort((a, b) => a.start_time.localeCompare(b.start_time))
   }, [arrangement.timeSlots])
+
+  const hasRotativeSlots = useMemo(() => sortedSlots.some(s => s.is_rotative), [sortedSlots])
 
   return (
     <div className="bg-surface-100 border border-surface-300 rounded-xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4">
@@ -405,9 +427,26 @@ function ArrangementCardItem({
 
         {/* Lista de horários do arranjo */}
         <div className="flex flex-col gap-2 pt-1 border-t border-surface-300">
-          <span className="text-[11px] font-bold text-typography-500 uppercase tracking-wider">
-            Horários ({sortedSlots.length})
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-typography-500 uppercase tracking-wider">
+              Horários ({sortedSlots.length})
+            </span>
+            {hasRotativeSlots && (
+              <span className={`text-[11px] font-semibold flex items-center gap-1 ${
+                (arrangement.arrangementPublishers?.length ?? 0) > 0
+                  ? "text-primary-200"
+                  : "text-amber-600 dark:text-amber-400"
+              }`}>
+                <Users className="w-3.5 h-3.5" />
+                <span>
+                  {arrangement.arrangementPublishers?.length ?? 0}{" "}
+                  {(arrangement.arrangementPublishers?.length ?? 0) === 1
+                    ? "no rodízio"
+                    : "no rodízio"}
+                </span>
+              </span>
+            )}
+          </div>
 
           <div className="flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1">
             {sortedSlots.map(slot => (
@@ -445,8 +484,17 @@ function ArrangementCardItem({
           }
           className="w-full text-xs flex items-center justify-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white font-semibold py-2"
         >
-          <Calendar className="w-3.5 h-3.5" />
-          <span>Ver Programação Mensal</span>
+          {arrangement.is_fixed ? (
+            <>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Ver Programação Mensal</span>
+            </>
+          ) : (
+            <>
+              <CalendarRange className="w-3.5 h-3.5" />
+              <span>Ver Designações da Data</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

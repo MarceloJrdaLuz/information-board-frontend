@@ -1,11 +1,12 @@
 import { reportsAtom, successFormSend } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
-import { capitalizeFirstLetter, isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
-import { isPioneerNow } from "@/functions/isRegularPioneerNow"
+import { capitalizeFirstLetter, isAuxPioneerMonth, isAuxPioneerMonthNow } from "@/functions/isAuxPioneerMonthNow"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { api } from "@/services/api"
-import { IPublisher, Privileges, Situation } from "@/types/types"
+import { meses } from "@/functions/meses"
+import { getActivePrivilegeLabels, hasPrivilege, hasPrivilegeInMonth } from "@/functions/publisherPrivilegeHelper"
+import { IPublisher, PrivilegeCode, Privileges, Situation } from "@/types/types"
 import { useAtom, useAtomValue } from "jotai"
 import {
     Calendar,
@@ -36,7 +37,7 @@ export default function PublisherListReports() {
     const monthParam = month as string
 
     const fetchConfig = congregationUser ? `${API_ROUTES.PUBLISHERS}/congregationId/${congregationUser?.id}` : ""
-    const { data, mutate } = useFetch<IPublisher[]>(fetchConfig)
+    const { data, mutate, isLoading } = useFetch<IPublisher[]>(fetchConfig)
 
     const [reports, setReports] = useAtom(reportsAtom)
     const dataSuccess = useAtomValue(successFormSend)
@@ -96,16 +97,28 @@ export default function PublisherListReports() {
         }
     }, [dataSuccess, fetchReports])
 
+    const targetDate = useMemo(() => {
+        if (!monthSelected || !yearSelected) return new Date()
+        const mesIdx = meses.findIndex(m => m.toLowerCase() === monthSelected.toLowerCase())
+        return new Date(`${(mesIdx >= 0 ? mesIdx : new Date().getMonth()) + 1}-01-${yearSelected}`)
+    }, [monthSelected, yearSelected])
+
     useEffect(() => {
         if (data) {
-            const filterActives = data?.filter(publisher => publisher.situation === Situation.ATIVO)
-            const filterOthers = data?.filter(publisher => (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO))
+            const filterActives = data?.filter(publisher => 
+                publisher.situation === Situation.ATIVO && 
+                hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, targetDate)
+            )
+            const filterOthers = data?.filter(publisher => 
+                (publisher.situation === Situation.INATIVO || publisher.situation === Situation.REMOVIDO || publisher.situation === Situation.DESASSOCIADO) &&
+                hasPrivilegeInMonth(publisher, PrivilegeCode.PUBLISHER, targetDate)
+            )
             const sortActives = sortArrayByProperty(filterActives, "fullName")
             const sortOthersSituation = sortArrayByProperty(filterOthers, "fullName")
             setPublishers(sortActives)
             setPublishersOthers(sortOthersSituation)
         }
-    }, [data])
+    }, [data, targetDate])
 
     useEffect(() => {
         mutate()
@@ -125,19 +138,19 @@ export default function PublisherListReports() {
                 return (publisher.situation === Situation.ATIVO &&
                     filterPrivileges.every(privilege => {
                         if (privilege === Privileges.PIONEIROAUXILIAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROAUXILIAR) && isAuxPioneerMonthNow(publisher)
+                            return isAuxPioneerMonth(publisher, `${capitalizeFirstLetter(monthSelected)}-${yearSelected}`)
                         } else if (privilege === Privileges.PIONEIROREGULAR) {
-                            return publisher.privileges.includes(Privileges.PIONEIROREGULAR) && isPioneerNow(publisher, new Date())
-                        } else if (privilege === Privileges.AUXILIARINDETERMINADO) {
-                            return publisher.privileges.includes(Privileges.AUXILIARINDETERMINADO) && isPioneerNow(publisher, new Date())
+                            return hasPrivilegeInMonth(publisher, PrivilegeCode.REGULAR_PIONEER, targetDate)
+                        } else if (privilege === Privileges.AUXILIARINDETERMINADO || privilege === Privileges.AUXILIARTEMPOINDETERMINADO) {
+                            return hasPrivilegeInMonth(publisher, PrivilegeCode.CONTINUOUS_AUXILIARY_PIONEER, targetDate)
                         } else {
-                            return publisher.privileges.includes(privilege)
+                            return hasPrivilegeInMonth(publisher, privilege, targetDate)
                         }
                     })
                 )
             }) : publishers?.filter(publisher => publisher.situation === Situation.ATIVO)
         setFilterPublishers(filterPublishersToPrivileges)
-    }, [filterPrivileges, publishers, inactivesShow, publishersOthers])
+    }, [filterPrivileges, publishers, inactivesShow, publishersOthers, targetDate])
 
     // Busca e filtragem por texto
     const displayedPublishers = useMemo(() => {
@@ -219,15 +232,33 @@ export default function PublisherListReports() {
                 <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mt-5 pt-4 border-t border-surface-300">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-surface-200/50 border border-surface-300">
                         <span className="text-xs font-medium text-typography-600">Total</span>
-                        <span className="text-base sm:text-lg font-bold text-typography-800">{stats.total}</span>
+                        <span className="text-base sm:text-lg font-bold text-typography-800">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.total
+                            )}
+                        </span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                         <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Lançados</span>
-                        <span className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400">{stats.reported}</span>
+                        <span className="text-base sm:text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.reported
+                            )}
+                        </span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
                         <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">Pendentes</span>
-                        <span className="text-base sm:text-lg font-bold text-amber-700 dark:text-amber-400">{stats.pending}</span>
+                        <span className="text-base sm:text-lg font-bold text-amber-700 dark:text-amber-400">
+                            {isLoading || !data ? (
+                                <span className="inline-block h-4 sm:h-5 w-8 rounded bg-surface-300/70 animate-pulse align-middle" />
+                            ) : (
+                                stats.pending
+                            )}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -331,7 +362,7 @@ export default function PublisherListReports() {
                                                                 {publisher.group.name}
                                                             </span>
                                                         )}
-                                                        {publisher.privileges?.map((priv) => (
+                                                        {getActivePrivilegeLabels(publisher, targetDate).map((priv) => (
                                                             <span
                                                                 key={priv}
                                                                 className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-200/10 text-primary-200 border border-primary-200/20"

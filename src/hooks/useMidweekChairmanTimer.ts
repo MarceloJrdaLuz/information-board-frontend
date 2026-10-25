@@ -39,11 +39,15 @@ function cleanupOldStorage(): void {
 export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: string = "19:00") {
     const [meetingStartTime, setMeetingStartTimeState] = useState<string>(defaultStartTime);
     const [timers, setTimers] = useState<TimersMap>({});
+    const [hasSavedData, setHasSavedData] = useState<boolean>(false);
     const isInitializedRef = useRef(false);
 
     // Carrega dados persistidos do localStorage
     useEffect(() => {
-        if (!scheduleId || typeof window === 'undefined') return;
+        if (!scheduleId || typeof window === 'undefined') {
+            setHasSavedData(false);
+            return;
+        }
 
         cleanupOldStorage();
 
@@ -55,7 +59,12 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
                     setMeetingStartTimeState(parsed.meetingStartTime);
                 }
 
-                if (parsed.timers) {
+                if (parsed.timers && Object.keys(parsed.timers).length > 0) {
+                    const hasRecorded = Object.values(parsed.timers).some(
+                        t => t && (t.elapsedSeconds > 0 || t.isCompleted || t.isRunning)
+                    );
+                    setHasSavedData(hasRecorded);
+
                     const now = Date.now();
                     const restoredTimers: TimersMap = {};
 
@@ -77,10 +86,15 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
                     });
 
                     setTimers(restoredTimers);
+                } else {
+                    setHasSavedData(false);
                 }
+            } else {
+                setHasSavedData(false);
             }
         } catch (e) {
             console.warn("Erro ao carregar estado dos cronômetros do presidente:", e);
+            setHasSavedData(false);
         }
 
         isInitializedRef.current = true;
@@ -285,11 +299,43 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
         });
     }, [meetingStartTime, saveToLocalStorage]);
 
-    // Reseta todos os cronômetros desta reunião
-    const resetAllTimers = useCallback(() => {
+    // Limpa do localStorage e reseta os cronômetros desta reunião
+    const clearWeekStorage = useCallback(() => {
+        if (!scheduleId || typeof window === 'undefined') return;
+        try {
+            localStorage.removeItem(getStorageKey(scheduleId));
+        } catch (e) {
+            console.warn("Erro ao remover chave do localStorage:", e);
+        }
         setTimers({});
-        saveToLocalStorage({}, meetingStartTime);
-    }, [meetingStartTime, saveToLocalStorage]);
+        setMeetingStartTimeState(defaultStartTime);
+        setHasSavedData(false);
+    }, [scheduleId, defaultStartTime]);
+
+    // Limpa todas as chaves de presidente salvas no navegador
+    const clearAllStorage = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            const keysToRemove: string[] = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(STORAGE_PREFIX)) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+        } catch (e) {
+            console.warn("Erro ao limpar dados do localStorage:", e);
+        }
+        setTimers({});
+        setMeetingStartTimeState(defaultStartTime);
+        setHasSavedData(false);
+    }, [defaultStartTime]);
+
+    // Reseta todos os cronômetros desta reunião e remove do storage
+    const resetAllTimers = useCallback(() => {
+        clearWeekStorage();
+    }, [clearWeekStorage]);
 
     // Retorna o estado do timer de um item (com fallback seguro)
     const getTimer = useCallback((itemId: string): ITimerState => {
@@ -337,12 +383,15 @@ export function useMidweekChairmanTimer(scheduleId: string, defaultStartTime: st
         meetingStartTime,
         setMeetingStartTime,
         timers,
+        hasSavedData,
         getTimer,
         startTimer,
         pauseTimer,
         resetTimer,
         toggleCompleted,
         resetAllTimers,
+        clearWeekStorage,
+        clearAllStorage,
         formatTimeDisplay,
         getTimerStatus
     };

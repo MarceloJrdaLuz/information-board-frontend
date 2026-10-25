@@ -19,7 +19,8 @@ import { useCongregationContext } from "@/context/CongregationContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
 import { useFetch } from "@/hooks/useFetch"
 import { IFormDataCleaningGroup } from "@/types/cleaning"
-import { IPublisher } from "@/types/types"
+import { IPublisher, PrivilegeCode } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import FormStyle from "../FormStyle"
 
 interface FormValues {
@@ -38,6 +39,13 @@ export default function FormAddCleaningGroup() {
     const [selectedMembers, setSelectedMembers] = useState<IPublisher[]>([])
     const [availableNumbers, setAvailableNumbers] = useState<number[]>([])
     const [selectedNumber, setSelectedNumber] = useState<number>()
+    const [selectedDayPreference, setSelectedDayPreference] = useState<string>("ALL")
+
+    const DAY_PREFERENCE_OPTIONS = [
+        { value: "ALL", label: "Qualquer reunião (Ambos - padrão)" },
+        { value: "MIDWEEK", label: "Apenas Meio de Semana" },
+        { value: "WEEKEND", label: "Apenas Fim de Semana" },
+    ]
 
 
     const { data, mutate } = useFetch<IFormDataCleaningGroup>(`/form-data?form=cleaningGroup`)
@@ -59,7 +67,8 @@ export default function FormAddCleaningGroup() {
         })
     }
 
-    const allPublishers = sortArrayByProperty(data?.publishers ?? [], "fullName")
+    const validPublishers = (data?.publishers ?? []).filter(p => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+    const allPublishers = sortArrayByProperty(validPublishers, "fullName")
 
     const availablePublishers = allPublishers
         .filter(p => !publishersInGroups.has(p.id))
@@ -85,6 +94,7 @@ export default function FormAddCleaningGroup() {
         const payload: CreateCleaningGroupPayload = {
             name: data.name,
             order: selectedNumber,
+            dayPreference: selectedDayPreference,
             publisherIds: selectedMembers.map(m => m.id)
         }
 
@@ -96,6 +106,7 @@ export default function FormAddCleaningGroup() {
             setSelectedMembers([])
             setAvailableNumbers([])
             setSelectedNumber(undefined)
+            setSelectedDayPreference("ALL")
         }).catch(err => {
             console.log(err)
         })
@@ -139,6 +150,21 @@ export default function FormAddCleaningGroup() {
                 </div>
                 <div className="mt-4">
                     <Dropdown selectedItem={selectedNumber?.toString()} full border textVisible handleClick={option => setSelectedNumber(Number(option))} title='Número do grupo' options={availableNumbers.map(num => num.toString())} />
+                </div>
+
+                <div className="mt-4">
+                    <Dropdown
+                        title="Disponibilidade nas Reuniões"
+                        options={DAY_PREFERENCE_OPTIONS.map(o => o.label)}
+                        selectedItem={DAY_PREFERENCE_OPTIONS.find(o => o.value === selectedDayPreference)?.label}
+                        handleClick={label => {
+                            const found = DAY_PREFERENCE_OPTIONS.find(o => o.label === label)
+                            if (found) setSelectedDayPreference(found.value)
+                        }}
+                        full
+                        border
+                        textVisible
+                    />
                 </div>
 
                 <div className="w-full mt-6">

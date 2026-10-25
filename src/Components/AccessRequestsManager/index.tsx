@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import ApproveAccessModal from "../ApproveAccessModal";
 import RejectAccessModal from "../RejectAccessModal";
 
@@ -178,17 +179,21 @@ export default function AccessRequestsManager({
                         <Building2 className="w-4 h-4 text-primary-200" />
                         <span>Congregação ativa:</span>
                     </div>
-                    <select
-                        value={selectedCongregationId}
-                        onChange={(e) => setSelectedCongregationId(e.target.value)}
-                        className="px-3 py-1.5 text-sm rounded-xl border border-surface-300 bg-surface-100 text-typography-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-100"
+                    <Select
+                        value={selectedCongregationId || undefined}
+                        onValueChange={setSelectedCongregationId}
                     >
-                        {congregations.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.name} {c.city ? `(${c.city})` : ""}
-                            </option>
-                        ))}
-                    </select>
+                        <SelectTrigger className="w-[280px] h-9 text-sm rounded-xl border border-surface-300 bg-surface-100 text-typography-700 font-semibold">
+                            <SelectValue placeholder="Selecione a congregação..." />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl max-h-60">
+                            {congregations.map((c) => (
+                                <SelectItem key={c.id} value={c.id} className="text-sm">
+                                    {c.name} {c.city ? `(${c.city})` : ""}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             )}
 
@@ -208,7 +213,11 @@ export default function AccessRequestsManager({
                         <Clock className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.pending}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.pending
+                        )}
                     </span>
                 </button>
 
@@ -226,7 +235,11 @@ export default function AccessRequestsManager({
                         <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.approved}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.approved
+                        )}
                     </span>
                 </button>
 
@@ -244,7 +257,11 @@ export default function AccessRequestsManager({
                         <XCircle className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.rejected}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.rejected
+                        )}
                     </span>
                 </button>
 
@@ -262,7 +279,11 @@ export default function AccessRequestsManager({
                         <User className="w-4 h-4" />
                     </div>
                     <span className="text-2xl sm:text-3xl font-bold text-typography-700 mt-2">
-                        {stats.total}
+                        {loading ? (
+                            <span className="inline-block h-8 w-12 rounded-lg bg-surface-300/70 animate-pulse align-middle" />
+                        ) : (
+                            stats.total
+                        )}
                     </span>
                 </button>
             </div>

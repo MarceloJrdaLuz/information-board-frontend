@@ -1,4 +1,5 @@
-import { IGroup, Situation } from "@/types/types"
+import { IGroup, PrivilegeCode, Situation } from "@/types/types"
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import { Page, StyleSheet, Text, View } from "@react-pdf/renderer"
 
 export interface IGroupsFieldServicePdfProps {
@@ -99,9 +100,9 @@ export default function GroupsFieldServicePdf({
             <View style={styles.table}>
                 {groups.map(group => {
                     const leaderId = group.groupOverseers?.publisherId
-                    const publishers = group.publishers ?? []
+                    const validPublishers = (group.publishers ?? []).filter(pub => hasPrivilege(pub, PrivilegeCode.PUBLISHER))
                     // Remove o dirigente da lista
-                    const publishersWithoutLeader = group.publishers?.filter(
+                    const publishersWithoutLeader = validPublishers.filter(
                         pub => pub.id !== leaderId
                     )
                     const activeMembers = publishersWithoutLeader

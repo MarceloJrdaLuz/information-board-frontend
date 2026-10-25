@@ -1,3 +1,4 @@
+import Calendar from "@/Components/Calendar"
 import { Button } from "@/Components/ui/button";
 import {
     Dialog,
@@ -8,6 +9,7 @@ import {
     DialogTitle
 } from "@/Components/ui/dialog";
 import { Switch } from "@/Components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { CreateSpecialEventDTO, EventImpactScope, ISpecialEvent, SpecialEventType } from "@/types/specialEvent";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
@@ -18,7 +20,7 @@ import {
     CalendarPlus,
     CheckCircle2,
     Globe,
-    Heart,
+    Wine,
     Loader2,
     MapPin,
     Mic,
@@ -114,7 +116,7 @@ const EVENT_PRESETS: EventTypeOption[] = [
         type: SpecialEventType.MEMORIAL,
         title: "Celebração da Morte de Cristo",
         description: "Data pontual solene. Cancela a reunião regular de meio de semana.",
-        icon: Heart,
+        icon: Wine,
         colorClasses: {
             bg: "bg-rose-500/10",
             text: "text-rose-600 dark:text-rose-400",
@@ -417,7 +419,7 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
     return (
         <>
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] sm:w-full max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden">
+            <DialogContent className="max-w-3xl w-[calc(100%-2rem)] sm:w-full max-h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-6 overflow-hidden rounded-2xl">
                 <DialogHeader className="shrink-0 pb-3 border-b border-surface-300">
                     <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 flex items-center gap-2">
                         <CalendarDays className="h-5 w-5 text-primary-200" />
@@ -484,31 +486,20 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                 />
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-semibold text-typography-800">
-                                    Data de Início *
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    value={startDate}
-                                    onChange={(e) => handleStartDateChange(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data de Início *"
+                                selectedDate={startDate || null}
+                                handleDateChange={(d) => handleStartDateChange(d || "")}
+                                full
+                            />
 
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-semibold text-typography-800">
-                                    Data de Término *
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full px-3 py-2 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200"
-                                />
-                            </div>
+                            <Calendar
+                                label="Data de Término *"
+                                selectedDate={endDate || null}
+                                minDate={startDate || null}
+                                handleDateChange={(d) => setEndDate(d || "")}
+                                full
+                            />
 
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-semibold text-typography-800 flex items-center gap-1.5">
@@ -701,15 +692,25 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                         Como o evento afeta os arranjos de pregação:
                                     </span>
                                 </div>
-                                <select
+                                <Select
                                     value={fieldServiceImpact}
-                                    onChange={(e) => setFieldServiceImpact(e.target.value as EventImpactScope)}
-                                    className="px-2.5 py-1.5 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200 cursor-pointer"
+                                    onValueChange={(val) => setFieldServiceImpact(val as EventImpactScope)}
                                 >
-                                    <option value={EventImpactScope.NONE}>Normal (Não altera saídas de campo)</option>
-                                    <option value={EventImpactScope.EVENT_DAYS_ONLY}>Suspender apenas nos dias do evento</option>
-                                    <option value={EventImpactScope.ALL_DAYS}>Suspender toda a semana do evento</option>
-                                </select>
+                                    <SelectTrigger className="w-full h-9 text-xs rounded-lg border-surface-300 bg-surface-100 text-typography-900">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl">
+                                        <SelectItem value={EventImpactScope.NONE} className="text-xs">
+                                            Normal (Não altera saídas de campo)
+                                        </SelectItem>
+                                        <SelectItem value={EventImpactScope.EVENT_DAYS_ONLY} className="text-xs">
+                                            Suspender apenas nos dias do evento
+                                        </SelectItem>
+                                        <SelectItem value={EventImpactScope.ALL_DAYS} className="text-xs">
+                                            Suspender toda a semana do evento
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             {/* Impacto no Testemunho Público */}
@@ -722,15 +723,25 @@ export const SpecialEventModal: React.FC<SpecialEventModalProps> = ({
                                         Como o evento afeta os pontos de carrinho:
                                     </span>
                                 </div>
-                                <select
+                                <Select
                                     value={publicWitnessingImpact}
-                                    onChange={(e) => setPublicWitnessingImpact(e.target.value as EventImpactScope)}
-                                    className="px-2.5 py-1.5 text-xs rounded-lg border border-surface-300 bg-surface-100 text-typography-900 focus:outline-none focus:ring-1 focus:ring-primary-200 cursor-pointer"
+                                    onValueChange={(val) => setPublicWitnessingImpact(val as EventImpactScope)}
                                 >
-                                    <option value={EventImpactScope.NONE}>Normal (Não altera testemunho público)</option>
-                                    <option value={EventImpactScope.EVENT_DAYS_ONLY}>Suspender apenas nos dias do evento</option>
-                                    <option value={EventImpactScope.ALL_DAYS}>Suspender toda a semana do evento</option>
-                                </select>
+                                    <SelectTrigger className="w-full h-9 text-xs rounded-lg border-surface-300 bg-surface-100 text-typography-900">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl">
+                                        <SelectItem value={EventImpactScope.NONE} className="text-xs">
+                                            Normal (Não altera testemunho público)
+                                        </SelectItem>
+                                        <SelectItem value={EventImpactScope.EVENT_DAYS_ONLY} className="text-xs">
+                                            Suspender apenas nos dias do evento
+                                        </SelectItem>
+                                        <SelectItem value={EventImpactScope.ALL_DAYS} className="text-xs">
+                                            Suspender toda a semana do evento
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                     </div>

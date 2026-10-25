@@ -30,9 +30,7 @@ import { useRouter } from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import quadroDefault from "../../../public/images/miniatura-gray.png"
 
-interface HomeProps {
-    serverNumber?: string
-}
+import { buildPublicPageServerProps, PublicPageServerProps } from "@/utils/ogMetadata"
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -58,7 +56,7 @@ const cardVariants = {
     }
 }
 
-function Home({ serverNumber }: HomeProps) {
+function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
     const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
@@ -67,8 +65,9 @@ function Home({ serverNumber }: HomeProps) {
     const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0)
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     const fetchConfigNoticesData = congregation?.id
         ? `/notices/${congregation.id}`
@@ -164,7 +163,7 @@ function Home({ serverNumber }: HomeProps) {
     )
 
     const theme = useAtomValue(themeAtom)
-    const isFetching = isLoadingCongregation || !congregation
+    const isFetching = !congregation
 
     return (
         <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
@@ -180,9 +179,12 @@ function Home({ serverNumber }: HomeProps) {
                 title={
                     congregation?.name
                         ? `Quadro de Anúncios - Congregação ${congregation.name}`
-                        : "Quadro de Anúncios"
+                        : ogMeta?.title || "Quadro de Anúncios"
                 }
-                urlMiniatura={`${domain}/images/miniatura.png`}
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/miniatura.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Banner Superior de Avisos */}
@@ -268,12 +270,12 @@ function Home({ serverNumber }: HomeProps) {
                         />
                     )}
 
-                    {/* Gradiente de fusão inferior suave com a cor de fundo do tema */}
+                    {/* Gradiente de fusão inferior suave que dissolve completamente a foto no fundo */}
                     <div
                         aria-hidden
-                        className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+                        className="absolute -bottom-1 left-0 right-0 h-36 sm:h-44 pointer-events-none"
                         style={{
-                            background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgb(var(--color-surface-200)) 100%)`
+                            background: `linear-gradient(to bottom, transparent 0%, rgb(var(--color-surface-200) / 0.4) 40%, rgb(var(--color-surface-200) / 0.85) 75%, rgb(var(--color-surface-200)) 90%, rgb(var(--color-surface-200)) 100%)`
                         }}
                     />
 
@@ -283,14 +285,14 @@ function Home({ serverNumber }: HomeProps) {
                             Quadro de Anúncios
                         </span>
 
-                        {isFetching ? (
-                            <div className="h-6 w-48 shimmer rounded-md mt-2" />
-                        ) : (
+                        {congregation?.name ? (
                             <div className="mt-1 flex flex-col items-center gap-1">
                                 <h1 className="text-base sm:text-lg md:text-xl font-semibold text-typography-100 drop-shadow">
-                                    Congregação {congregation?.name}
+                                    Congregação {congregation.name}
                                 </h1>
                             </div>
+                        ) : (
+                            <div className="h-5 w-44 rounded-full bg-white/20 backdrop-blur-xs animate-pulse mt-2.5" />
                         )}
                     </div>
                 </div>
@@ -299,12 +301,33 @@ function Home({ serverNumber }: HomeProps) {
             {/* Conteúdo Principal / Grid dos Botões do Quadro */}
             <main className="flex-1 bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
                 {isFetching ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        {[
+                            { titleWidth: "w-24", descWidth: "w-48" },
+                            { titleWidth: "w-28", descWidth: "w-52" },
+                            { titleWidth: "w-20", descWidth: "w-44" },
+                            { titleWidth: "w-20", descWidth: "w-48" },
+                            { titleWidth: "w-28", descWidth: "w-40" },
+                            { titleWidth: "w-36", descWidth: "w-56" },
+                        ].map((skeleton, i) => (
                             <div
                                 key={i}
-                                className="h-20 sm:h-24 rounded-xl shimmer border border-surface-300"
-                            />
+                                className="flex items-center justify-between p-4 sm:p-4.5 rounded-xl bg-surface-100 border border-surface-300 shadow-xs animate-pulse"
+                            >
+                                <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
+                                    {/* Ícone placeholder */}
+                                    <div className="w-12 h-12 rounded-xl bg-surface-300/50 shrink-0" />
+
+                                    {/* Linhas de texto placeholder */}
+                                    <div className="space-y-2 min-w-0 flex-1">
+                                        <div className={`h-4.5 ${skeleton.titleWidth} bg-surface-300/80 rounded-md`} />
+                                        <div className={`h-3 ${skeleton.descWidth} bg-surface-300/50 rounded-md`} />
+                                    </div>
+                                </div>
+
+                                {/* Placeholder da seta */}
+                                <div className="w-7 h-7 rounded-full bg-surface-300/40 shrink-0 ml-2" />
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -430,10 +453,6 @@ Home.getLayout = (page: React.ReactElement) => {
 export default Home
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { number } = context.params as { number: string }
-    return {
-        props: {
-            serverNumber: number
-        }
-    }
+    return buildPublicPageServerProps(context, 'quadro')
 }
+

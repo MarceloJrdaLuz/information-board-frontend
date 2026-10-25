@@ -234,8 +234,12 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     <MidweekPublisherSelect
                                         partId={part.id}
                                         value={part.assigned_publisher_id}
+                                        customName={part.custom_speaker_name}
                                         publisher={part.assignedPublisher}
-                                        onChange={(pubId) => onUpdatePart(part.id, { assigned_publisher_id: pubId })}
+                                        onChange={(pubId, customName) => onUpdatePart(part.id, {
+                                            assigned_publisher_id: pubId,
+                                            custom_speaker_name: customName ?? null
+                                        })}
                                         placeholder="Selecione o irmão..."
                                     />
                                 </div>
@@ -391,8 +395,12 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     scheduleId={schedule.id}
                                     role="CBS_CONDUCTOR"
                                     value={schedule.cbs_conductor_id}
+                                    customName={schedule.custom_cbs_conductor_name}
                                     publisher={schedule.cbsConductor}
-                                    onChange={(pubId) => onUpdateSchedule({ cbs_conductor_id: pubId })}
+                                    onChange={(pubId, customName) => onUpdateSchedule({
+                                        cbs_conductor_id: pubId,
+                                        custom_cbs_conductor_name: customName ?? null
+                                    })}
                                     placeholder="Selecione o dirigente..."
                                 />
                             </div>
@@ -406,8 +414,12 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     scheduleId={schedule.id}
                                     role="CBS_READER"
                                     value={schedule.cbs_reader_id}
+                                    customName={schedule.custom_cbs_reader_name}
                                     publisher={schedule.cbsReader}
-                                    onChange={(pubId) => onUpdateSchedule({ cbs_reader_id: pubId })}
+                                    onChange={(pubId, customName) => onUpdateSchedule({
+                                        cbs_reader_id: pubId,
+                                        custom_cbs_reader_name: customName ?? null
+                                    })}
                                     placeholder="Selecione o leitor..."
                                 />
                             </div>

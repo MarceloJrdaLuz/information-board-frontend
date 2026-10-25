@@ -3,8 +3,8 @@ import { IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection } from "
 import { getLessonDetails } from "@/utils/midweekLessons";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
-import { AlertCircle, BookOpen, Calendar, ChevronRight, Sparkles, Users } from "lucide-react";
-import React from "react";
+import { AlertCircle, BookOpen, Calendar, CheckCircle2, ChevronRight, FileText, Maximize2, Minimize2, Sparkles, Users } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 dayjs.locale('pt-br');
 
@@ -19,6 +19,53 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
     hasNextWeek,
     onNextWeek
 }) => {
+    const [notes, setNotes] = useState<string>("");
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const adjustHeight = () => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.style.height = "auto";
+        const minHeight = isExpanded ? 240 : 84;
+        const targetHeight = Math.max(el.scrollHeight, minHeight);
+        el.style.height = `${targetHeight}px`;
+    };
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && nextSchedule?.id) {
+            const saved = localStorage.getItem(`midweek_chairman_notes_${nextSchedule.id}`);
+            setNotes(saved || "");
+        } else {
+            setNotes("");
+        }
+    }, [nextSchedule?.id]);
+
+    useEffect(() => {
+        adjustHeight();
+    }, [notes, isExpanded]);
+
+    useEffect(() => {
+        const handleResize = () => adjustHeight();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [notes, isExpanded]);
+
+    const handleNotesChange = (val: string) => {
+        setNotes(val);
+        if (typeof window !== "undefined" && nextSchedule?.id) {
+            localStorage.setItem(`midweek_chairman_notes_${nextSchedule.id}`, val);
+        }
+    };
+
+    const getDisplayName = (
+        publisher?: { nickname?: string | null; fullName?: string | null } | null,
+        custom?: string | null,
+        fallback = "A designar"
+    ) => {
+        if (custom && custom.trim()) return custom.trim();
+        return publisher?.nickname?.trim() || publisher?.fullName?.trim() || fallback;
+    };
     if (!nextSchedule) {
         return (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-100 border border-surface-300 rounded-xl">
@@ -114,6 +161,54 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                 </div>
             )}
 
+            {/* Notas ou Anúncios para a Reunião */}
+            <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-surface-200/50 border border-surface-300">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                    <label
+                        htmlFor="chairman-meeting-notes"
+                        className="flex items-center gap-1.5 text-xs font-bold text-typography-700 uppercase tracking-wider cursor-pointer"
+                    >
+                        <FileText className="w-3.5 h-3.5 text-primary-200" />
+                        <span>Notas / Anúncios para a Reunião</span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                        {notes.trim().length > 0 && (
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Salvo automaticamente
+                            </span>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setIsExpanded((prev) => !prev)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-typography-600 hover:text-typography-900 bg-surface-100 hover:bg-surface-300 border border-surface-300 rounded-md transition-colors shadow-xs"
+                            title={isExpanded ? "Reduzir altura padrão" : "Expandir área de notas"}
+                        >
+                            {isExpanded ? (
+                                <>
+                                    <Minimize2 className="w-3 h-3 text-typography-500" />
+                                    <span>Compactar</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Maximize2 className="w-3 h-3 text-typography-500" />
+                                    <span>Expandir</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+                <textarea
+                    ref={textareaRef}
+                    id="chairman-meeting-notes"
+                    value={notes}
+                    onChange={(e) => handleNotesChange(e.target.value)}
+                    rows={isExpanded ? 8 : 3}
+                    placeholder="Adicione aqui notas, anúncios locais, boas-vindas, lembretes de limpeza ou recados para a reunião..."
+                    className="w-full text-sm p-3 rounded-lg bg-surface-100 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/50 resize-y min-h-[84px] leading-relaxed overflow-hidden transition-[border-color,box-shadow]"
+                />
+            </div>
+
             {/* Bloco 1: Leitura da Bíblia */}
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#2F7682] uppercase tracking-wide">
@@ -133,9 +228,7 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                             )}
                         </div>
                         <div className="text-sm font-bold text-typography-900">
-                            {bibleReadingMain?.assignedPublisher?.fullName ||
-                             bibleReadingMain?.custom_speaker_name ||
-                             "Leitor a designar"}
+                            {getDisplayName(bibleReadingMain?.assignedPublisher, bibleReadingMain?.custom_speaker_name, "Leitor a designar")}
                         </div>
                         {bibleReadingMain?.sourceMaterial && (
                             <span className="text-xs font-semibold text-[#2F7682] dark:text-teal-400">
@@ -161,9 +254,7 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                 )}
                             </div>
                             <div className="text-sm font-bold text-typography-900">
-                                {bibleReadingAux?.assignedPublisher?.fullName ||
-                                 bibleReadingAux?.custom_speaker_name ||
-                                 "Leitor a designar"}
+                                {getDisplayName(bibleReadingAux?.assignedPublisher, bibleReadingAux?.custom_speaker_name, "Leitor a designar")}
                             </div>
                             {bibleReadingAux?.sourceMaterial && (
                                 <span className="text-xs font-semibold text-[#2F7682] dark:text-teal-400">
@@ -198,18 +289,19 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                 ) : (
                     <div className="grid grid-cols-1 gap-2.5">
                         {mainMinistryParts.map((part, idx) => {
-                            const lessonInfo = getLessonDetails(
+                            const isWWYS = part.partType === MidweekPartType.WHAT_WOULD_YOU_SAY || part.title?.toLowerCase().includes("o que você diria");
+                            const lessonInfo = !isWWYS ? getLessonDetails(
                                 part.brochure,
                                 part.lessonNumber,
                                 part.studyPoint,
                                 part.studyPointDescription
-                            );
+                            ) : null;
 
                             // Sala Auxiliar correspondente
-                            const auxPart = allMinistryParts.find(
+                            const auxPart = !isWWYS ? allMinistryParts.find(
                                 p => p.room === MidweekRoom.AUXILIARY_1 &&
                                      (p.orderIndex === part.orderIndex || (p.workbook_part_id && p.workbook_part_id === part.workbook_part_id))
-                            );
+                            ) : null;
 
                             return (
                                 <div
@@ -244,27 +336,31 @@ export const MidweekChairmanNextWeekPreview: React.FC<MidweekChairmanNextWeekPre
                                                 Salão Principal
                                             </span>
                                             <div className="font-semibold text-typography-900">
-                                                Titular: {part.assignedPublisher?.fullName || part.custom_speaker_name || "A designar"}
+                                                {isWWYS ? "Designado: " : "Titular: "}{getDisplayName(part.assignedPublisher, part.custom_speaker_name, "A designar")}
                                             </div>
-                                            {(part as any).assistantPublisher?.fullName && (
+                                            {!isWWYS && (((part as any).assistantPublisher?.nickname || (part as any).assistantPublisher?.fullName) || part.custom_assistant_name) && (
                                                 <div className="text-typography-600">
-                                                    Ajudante: {(part as any).assistantPublisher.fullName}
+                                                    Ajudante: {getDisplayName((part as any).assistantPublisher, part.custom_assistant_name)}
                                                 </div>
                                             )}
                                         </div>
 
                                         {/* Sala Auxiliar */}
-                                        {auxPart ? (
+                                        {isWWYS ? (
+                                            <div className="flex items-center text-[11px] text-typography-400 italic">
+                                                Consideração com a congregação (Salão Principal)
+                                            </div>
+                                        ) : auxPart ? (
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-[10px] font-semibold text-typography-500 uppercase">
                                                     Sala Auxiliar (Sala B)
                                                 </span>
                                                 <div className="font-semibold text-typography-900">
-                                                    Titular: {auxPart.assignedPublisher?.fullName || auxPart.custom_speaker_name || "A designar"}
+                                                    Titular: {getDisplayName(auxPart.assignedPublisher, auxPart.custom_speaker_name, "A designar")}
                                                 </div>
-                                                {(auxPart as any).assistantPublisher?.fullName && (
+                                                {(((auxPart as any).assistantPublisher?.nickname || (auxPart as any).assistantPublisher?.fullName) || auxPart.custom_assistant_name) && (
                                                     <div className="text-typography-600">
-                                                        Ajudante: {(auxPart as any).assistantPublisher.fullName}
+                                                        Ajudante: {getDisplayName((auxPart as any).assistantPublisher, auxPart.custom_assistant_name)}
                                                     </div>
                                                 )}
                                             </div>

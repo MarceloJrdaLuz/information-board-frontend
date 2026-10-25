@@ -24,9 +24,9 @@ export default function ConsentModal({
         <Dialog
             open={isOpen}
             onClose={() => { }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
         >
-            <Dialog.Panel className="bg-surface-100 dark:bg-secondary-100 rounded-2xl shadow-lg w-[90%] max-w-lg p-6 flex flex-col gap-4 max-h-[80vh]">
+            <Dialog.Panel className="bg-surface-100 dark:bg-secondary-100 rounded-2xl shadow-lg w-full max-w-lg p-6 flex flex-col gap-4 max-h-[85vh]">
                 <div className="flex justify-between items-start gap-3">
                     <Dialog.Title className="text-xl font-bold text-typography-900 dark:text-typography-100">
                         {title}

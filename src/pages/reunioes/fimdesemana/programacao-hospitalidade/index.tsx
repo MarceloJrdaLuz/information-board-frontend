@@ -62,7 +62,7 @@ function HospitalityWeekendPage() {
     const prevMonthLabel = baseDate.clone().subtract(1, "month").format("MMM")
     const nextMonthLabel = baseDate.clone().add(1, "month").format("MMM")
 
-    const { data, mutate } = useAuthorizedFetch<IHospitalityWeekend[]>(
+    const { data, mutate, isLoading } = useAuthorizedFetch<IHospitalityWeekend[]>(
         `congregation/${congregation_id ?? ""}/hospitality/weekends`,
         {
             allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
@@ -197,7 +197,13 @@ function HospitalityWeekendPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Total no mês</div>
-                                <div className="text-base font-bold text-typography-900">{stats.total} reuniões</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-14 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        `${stats.total} reuniões`
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -207,7 +213,13 @@ function HospitalityWeekendPage() {
                             </div>
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Com arranjo</div>
-                                <div className="text-base font-bold text-typography-900">{stats.assigned} de {stats.total}</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-14 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        `${stats.assigned} de ${stats.total}`
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -218,7 +230,9 @@ function HospitalityWeekendPage() {
                             <div>
                                 <div className="text-[11px] font-medium text-typography-500">Alterações pendentes</div>
                                 <div className="text-base font-bold text-typography-900">
-                                    {pendingChangesCount > 0 ? (
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-14 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : pendingChangesCount > 0 ? (
                                         <span className="text-amber-600 dark:text-amber-400 font-bold">
                                             {pendingChangesCount} não salva(s)
                                         </span>

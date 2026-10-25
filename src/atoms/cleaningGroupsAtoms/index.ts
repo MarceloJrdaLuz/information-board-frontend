@@ -79,14 +79,13 @@ export const deleteCleaningGroupAtom = atom(
     try {
       await api.delete(`${API_ROUTES.CLEANING_GROUPS}/${group_id}`)
       _set(handleSubmitSuccessAtom, {
-        messageSuccess: "Grupo de hospitalidade excluído com sucesso!",
+        messageSuccess: "Grupo de limpeza excluído com sucesso!",
       })
       return true
     } catch (err: any) {
       const message = err?.response?.data?.message
 
       if (message === "Cleaning group not found") {
-        4
         _set(handleSubmitErrorAtom, {
           messageError: "Grupo de limpeza não encontrado."
         })

@@ -1,11 +1,30 @@
 import { ICongregation, IPublisher } from "../types"
 
+export enum CleaningGroupDayPreference {
+    ALL = "ALL",
+    MIDWEEK = "MIDWEEK",
+    WEEKEND = "WEEKEND"
+}
+
 export interface ICleaningGroup {
     id: string
     congregation: ICongregation
     order: number
     name: string
+    dayPreference?: CleaningGroupDayPreference | string
     publishers: IPublisher[]
+}
+
+export interface ICleaningGroupUnavailability {
+    id: string
+    congregation_id: string
+    group_id: string
+    group: ICleaningGroup
+    startDate: string
+    endDate: string
+    reason?: string | null
+    created_at?: string
+    updated_at?: string
 }
 
 export interface IFormDataCleaningGroup {

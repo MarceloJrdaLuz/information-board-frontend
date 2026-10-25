@@ -1,6 +1,6 @@
 import ptBR from "date-fns/locale/pt-BR"
 import dayjs from 'dayjs'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, X } from 'lucide-react'
 import { forwardRef, useEffect } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'; // Estilos padrão do DatePicker
@@ -17,6 +17,7 @@ interface CalendarProps {
     full?: boolean
     allowedWeekday?: number
     error?: string | null
+    isClearable?: boolean
 }
 
 export default function Calendar({
@@ -28,7 +29,8 @@ export default function Calendar({
     disabled = false,
     full = false,
     allowedWeekday,
-    error
+    error,
+    isClearable = true
 }: CalendarProps) {
 
     // Converte string -> Date para exibir no DatePicker
@@ -81,11 +83,14 @@ export default function Calendar({
                         label={label}
                         disabled={disabled}
                         error={error}
+                        isClearable={isClearable}
+                        onClear={() => handleDateChange(null)}
                     />
                 }
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
+                popperPlacement="bottom-start"
                 className="px-3.5 py-2.5 w-full text-sm text-typography-800 appearance-none placeholder-transparent focus:outline-none rounded-xl bg-surface-100 font-sans font-medium text-left border border-surface-300 focus:border-primary-200 focus:ring-2 focus:ring-primary-200/20 shadow-xs transition-all"
                 renderCustomHeader={(props) => (
                     <DatePickerHeader
@@ -101,7 +106,7 @@ export default function Calendar({
     )
 }
 
-const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleHidden }: any, ref: any) => (
+const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleHidden, isClearable, onClear }: any, ref: any) => (
     <div className="w-full">
         <button
             type="button"
@@ -117,7 +122,22 @@ const CustomInput = forwardRef(({ value, onClick, label, disabled, error, titleH
             }`}
         >
             <span className={`${error ? "text-red-500" : value ? "text-typography-800 font-semibold" : "text-typography-500"}`}>{value || (titleHidden ? label : "Selecione uma data")}</span>
-            <CalendarIcon className={`w-4 h-4 shrink-0 ${error ? "text-red-500" : "text-typography-400"}`} />
+            <div className="flex items-center gap-1.5 shrink-0">
+                {isClearable && Boolean(value) && !disabled && (
+                    <span
+                        role="button"
+                        title="Limpar data"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onClear?.()
+                        }}
+                        className="p-0.5 rounded-md text-typography-400 hover:text-rose-500 hover:bg-surface-200 transition-all cursor-pointer"
+                    >
+                        <X className="w-4 h-4" />
+                    </span>
+                )}
+                <CalendarIcon className={`w-4 h-4 shrink-0 ${error ? "text-red-500" : "text-typography-400"}`} />
+            </div>
         </button>
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

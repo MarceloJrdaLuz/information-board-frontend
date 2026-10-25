@@ -1,5 +1,3 @@
-'use client'
-
 import { domainUrl } from '@/atoms/atom'
 import { themeAtom } from '@/atoms/themeAtoms'
 import CleaningScheduleCarousel from '@/Components/CleaningScheduleCarousel'
@@ -15,25 +13,30 @@ import { useFetch } from '@/hooks/useFetch'
 import PublicDocumentsProviderLayout from '@/layouts/providers/publicDocuments/_layout'
 import { ICleaningScheduleResponse } from '@/types/cleaning'
 import { Categories, ICongregation, IDocument } from '@/types/types'
+import { buildPublicPageServerProps, PublicPageServerProps } from '@/utils/ogMetadata'
 import { motion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { ArrowLeft, ChevronRight, FileText, Sparkles } from 'lucide-react'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-function Limpeza() {
+function Limpeza({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
     const theme = useAtomValue(themeAtom)
 
-    const [congregationData, setCongregationData] = useState<ICongregation>()
+    const [congregationData, setCongregationData] = useState<ICongregation | undefined>(
+        serverCongregation || undefined
+    )
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     useEffect(() => {
         if (congregation) {
@@ -71,7 +74,7 @@ function Limpeza() {
         setPdfShow(true)
     }
 
-    const isLoading = isLoadingCongregation || isLoadingSchedules
+    const isLoading = (isLoadingCongregation && !congregation) || isLoadingSchedules
 
     return !pdfShow ? (
         <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
@@ -84,8 +87,15 @@ function Limpeza() {
             </Head>
 
             <HeadComponent
-                title={`Limpeza do Salão - Congregação ${congregationData?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/limpeza-green.png`}
+                title={
+                    congregationData?.name
+                        ? `Limpeza do Salão - Congregação ${congregationData.name}`
+                        : ogMeta?.title || "Limpeza do Salão do Reino"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/limpeza-green.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Top Bar de Navegação */}
@@ -200,3 +210,8 @@ Limpeza.getLayout = (page: React.ReactElement) => {
 }
 
 export default Limpeza
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'limpeza')
+}
+

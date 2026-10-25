@@ -10,9 +10,13 @@ import ContentDashboard from "@/Components/ContentDashboard"
 import DayScheduleCard from "@/Components/PublicWitnessSchedule/DayScheduleCard"
 import GenerateScheduleModal from "@/Components/PublicWitnessSchedule/GenerateScheduleModal"
 import SlotPreferencesModal from "@/Components/PublicWitnessSchedule/SlotPreferencesModal"
+import ArrangementPublishersModal from "@/Components/PublicWitnessSchedule/ArrangementPublishersModal"
 import { IPublicWitnessAssignment } from "@/Components/PublicWitnessSchedule/SlotScheduleRow"
 import { Button } from "@/Components/ui/button"
 import { useArrangement, usePublicWitnessSchedules, usePublishers } from "@/hooks/useArrangements"
+import { useCongregationContext } from "@/context/CongregationContext"
+import { useAuthorizedFetch } from "@/hooks/useFetch"
+import { ISpecialEvent } from "@/types/specialEvent"
 import { WEEKDAY_LABEL, Weekday } from "@/types/fieldService"
 import { getDatesForMonth } from "@/utils/publicWitnessDates"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
@@ -31,6 +35,7 @@ import {
     Clock,
     Save,
     SlidersHorizontal,
+    UserCheck,
     Users,
     Wand2
 } from "lucide-react"
@@ -49,13 +54,28 @@ function ArrangementMonthSchedulePage() {
   const createSchedule = useSetAtom(createSchedulePublicWitnessAtom)
   const [dirty, setDirty] = useAtom(dirtyMonthScheduleAtom)
 
-  const { data: arrangement, mutate: mutateArrangement } = useArrangement(arrangement_id || "")
+  const { data: arrangement, mutate: mutateArrangement, isLoading } = useArrangement(arrangement_id || "")
   const { data: publishers } = usePublishers()
+  const { congregation } = useCongregationContext()
+  const specialEventsUrl = congregation ? `/congregation/${congregation.id}/special-events` : ""
+  const { data: specialEvents } = useAuthorizedFetch<ISpecialEvent[]>(specialEventsUrl, {
+    allowedRoles: ["ADMIN_CONGREGATION", "FIELD_SERVICE_MANAGER", "PUBLIC_WITNESS_MANAGER"]
+  })
 
   const [monthOffset, setMonthOffset] = useState(0)
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
   const [isPreferencesModalOpen, setIsPreferencesModalOpen] = useState(false)
+  const [isPublishersModalOpen, setIsPublishersModalOpen] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  const participatingPublisherIds = useMemo(() => {
+    return new Set((arrangement?.arrangementPublishers ?? []).map(ap => ap.publisher_id))
+  }, [arrangement])
+
+  const participatingPublishers = useMemo(() => {
+    if (!publishers) return []
+    return publishers.filter(p => participatingPublisherIds.has(p.id))
+  }, [publishers, participatingPublisherIds])
 
   const baseDate = dayjs().add(monthOffset, "month")
   const currentMonthName = baseDate.format("MMMM [de] YYYY")
@@ -231,76 +251,112 @@ function ArrangementMonthSchedulePage() {
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-200 rounded-lg">
                 <Users className="h-4 w-4 text-primary-200" />
                 <span>
-                  <strong>{publishers?.length ?? 0}</strong> publicadores habilitados
+                  <strong>{participatingPublishers.length}</strong> no rodízio deste arranjo
                 </span>
+                <span className="text-typography-400">({publishers?.length ?? 0} habilitados)</span>
               </div>
             </div>
           </div>
 
-          {/* Barra Superior de Controles e Ações (Idêntica ao Meio de Semana) */}
+          {/* Barra Superior de Controles e Ações */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-100 p-4 rounded-xl border border-surface-300 shadow-sm sticky top-0 z-20 backdrop-blur-md">
-            {/* Seletor de Mês e Ano */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setMonthOffset(m => m - 1)}
-                className="h-9 w-9 border-surface-300 hover:bg-surface-200"
-                title="Mês anterior"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            {/* Seletor de Mês e Ano (Arranjos Fixos) ou Exibição da Data (Data Específica) */}
+            {arrangement.is_fixed ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMonthOffset(m => m - 1)}
+                  className="h-9 w-9 border-surface-300 hover:bg-surface-200"
+                  title="Mês anterior"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
 
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-200 rounded-lg">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-200 rounded-lg">
+                  <CalendarIcon className="h-4 w-4 text-primary-200" />
+                  <span className="font-bold text-sm text-typography-900 min-w-[150px] text-center">
+                    {capitalizedMonthName}
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setMonthOffset(m => m + 1)}
+                  className="h-9 w-9 border-surface-300 hover:bg-surface-200"
+                  title="Próximo mês"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+
+                {monthOffset !== 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setMonthOffset(0)}
+                    className="text-xs text-primary-200 hover:bg-surface-200 h-9 px-2"
+                  >
+                    Mês atual
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-3.5 py-1.5 bg-surface-200 rounded-lg">
                 <CalendarIcon className="h-4 w-4 text-primary-200" />
-                <span className="font-bold text-sm text-typography-900 min-w-[150px] text-center">
-                  {capitalizedMonthName}
+                <span className="font-bold text-sm text-typography-900">
+                  {arrangement.date
+                    ? dayjs(arrangement.date).format("DD [de] MMMM [de] YYYY")
+                    : "Data específica"}
                 </span>
               </div>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setMonthOffset(m => m + 1)}
-                className="h-9 w-9 border-surface-300 hover:bg-surface-200"
-                title="Próximo mês"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-
-              {monthOffset !== 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMonthOffset(0)}
-                  className="text-xs text-primary-200 hover:bg-surface-200 h-9 px-2"
-                >
-                  Mês atual
-                </Button>
-              )}
-            </div>
+            )}
 
             {/* Botões de Ação */}
             <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsPreferencesModalOpen(true)}
-                className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-              >
-                <SlidersHorizontal className="h-4 w-4 text-amber-600" />
-                <span>Preferências de Horário</span>
-              </Button>
+              {arrangement.is_fixed && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsPublishersModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    title="Definir quais publicadores participam do rodízio deste arranjo"
+                  >
+                    <UserCheck className="h-4 w-4 text-primary-200" />
+                    <span>Participantes do Rodízio</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                        participatingPublishers.length > 0
+                          ? "bg-primary-100 text-primary-300"
+                          : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                      }`}
+                    >
+                      {participatingPublishers.length}
+                    </span>
+                  </Button>
 
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsGenerateModalOpen(true)}
-                className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
-              >
-                <Wand2 className="h-4 w-4 text-primary-200" />
-                <span>Auto-Preencher / Gerar...</span>
-              </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsPreferencesModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                  >
+                    <SlidersHorizontal className="h-4 w-4 text-amber-600" />
+                    <span>Preferências de Horário</span>
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsGenerateModalOpen(true)}
+                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                  >
+                    <Wand2 className="h-4 w-4 text-primary-200" />
+                    <span>Auto-Preencher / Gerar...</span>
+                  </Button>
+                </>
+              )}
 
               <Button
                 size="sm"
@@ -327,15 +383,19 @@ function ArrangementMonthSchedulePage() {
             <div className="bg-surface-100 border border-surface-300 rounded-xl p-3.5 flex flex-col gap-1 shadow-xs">
               <div className="flex items-center justify-between text-typography-500">
                 <span className="text-xs font-semibold uppercase tracking-wider">
-                  Dias no Mês
+                  {arrangement.is_fixed ? "Dias no Mês" : "Data do Arranjo"}
                 </span>
                 <CalendarDays className="w-4 h-4 text-primary-200" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {stats.totalDays}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.totalDays
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
-                dias programados para este carrinho
+                {arrangement.is_fixed ? "dias programados para este carrinho" : "data programada pontual"}
               </span>
             </div>
 
@@ -347,7 +407,11 @@ function ArrangementMonthSchedulePage() {
                 <Clock className="w-4 h-4 text-blue-500" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
-                {stats.totalCapacity}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.totalCapacity
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.totalSlots} horários (2 por horário)
@@ -362,7 +426,11 @@ function ArrangementMonthSchedulePage() {
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               </div>
               <span className="text-xl sm:text-2xl font-bold text-green-700">
-                {stats.filledSpots}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.filledSpots
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.totalCapacity > 0
@@ -387,7 +455,11 @@ function ArrangementMonthSchedulePage() {
                   stats.pendingSpots > 0 ? "text-amber-600" : "text-green-700"
                 }`}
               >
-                {stats.pendingSpots}
+                {isLoading || !arrangement ? (
+                  <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
+                ) : (
+                  stats.pendingSpots
+                )}
               </span>
               <span className="text-[11px] text-typography-500">
                 {stats.pendingSpots === 0 ? "Escala completa!" : "vagas restantes para preencher"}
@@ -406,6 +478,7 @@ function ArrangementMonthSchedulePage() {
                   publishers={publishers}
                   assignmentsBySlot={assignmentsByDate[date]}
                   exceptions={scheduleResponse?.exceptions}
+                  specialEvents={specialEvents}
                 />
               ))
             ) : (
@@ -429,6 +502,8 @@ function ArrangementMonthSchedulePage() {
             arrangementTitle={arrangement.title}
             defaultStartDate={start_date}
             defaultEndDate={end_date}
+            participatingPublishersCount={participatingPublishers.length}
+            onOpenPublishersModal={() => setIsPublishersModalOpen(true)}
             onSuccess={handleGenerationSuccess}
           />
 
@@ -437,7 +512,18 @@ function ArrangementMonthSchedulePage() {
             isOpen={isPreferencesModalOpen}
             onClose={() => setIsPreferencesModalOpen(false)}
             arrangement={arrangement}
-            publishers={publishers}
+            publishers={participatingPublishers.length > 0 ? participatingPublishers : (publishers ?? [])}
+            onSuccess={() => {
+              mutateArrangement()
+            }}
+          />
+
+          {/* Modal de Participantes do Rodízio */}
+          <ArrangementPublishersModal
+            isOpen={isPublishersModalOpen}
+            onClose={() => setIsPublishersModalOpen(false)}
+            arrangement={arrangement}
+            publishers={publishers ?? []}
             onSuccess={() => {
               mutateArrangement()
             }}

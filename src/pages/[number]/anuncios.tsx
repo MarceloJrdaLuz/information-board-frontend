@@ -4,6 +4,7 @@ import Footer from "@/Components/Footer"
 import HeadComponent from "@/Components/HeadComponent"
 import { useFetch } from "@/hooks/useFetch"
 import { ICongregation, INotice } from "@/types/types"
+import { buildPublicPageServerProps, PublicPageServerProps } from "@/utils/ogMetadata"
 import { AnimatePresence, motion } from "framer-motion"
 import { useAtomValue } from "jotai"
 import {
@@ -16,6 +17,7 @@ import {
     Share2,
     Sparkles
 } from "lucide-react"
+import { GetServerSideProps } from "next"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -44,15 +46,16 @@ const itemVariants = {
     }
 }
 
-function NoticesPage() {
+function NoticesPage({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProps) {
     const router = useRouter()
-    const { number } = router.query
+    const number = serverNumber || (router.query.number as string)
     const domain = useAtomValue(domainUrl)
     const [copiedId, setCopiedId] = useState<string | null>(null)
 
     const fetchConfigCongregationData = number ? `/congregation/${number}` : ""
-    const { data: congregation, isLoading: isLoadingCongregation } =
+    const { data: fetchedCongregation, isLoading: isLoadingCongregation } =
         useFetch<ICongregation>(fetchConfigCongregationData)
+    const congregation = fetchedCongregation || serverCongregation || undefined
 
     const fetchConfigNoticesData = congregation?.id
         ? `/notices/${congregation.id}`
@@ -72,14 +75,24 @@ function NoticesPage() {
     }, [noticesData])
 
     const handleCopyNotice = (notice: INotice) => {
-        const textToCopy = `📢 *${notice.title}*\n\n${notice.text}`
+        const origin = typeof window !== "undefined" ? window.location.origin : domain
+        const params = new URLSearchParams()
+        params.set("titulo", notice.title)
+        if (notice.text) {
+            params.set("subtitulo", notice.text.slice(0, 140))
+        }
+        if (congregation?.name) {
+            params.set("congregacao", congregation.name)
+        }
+        const shareUrl = `${origin}/${number}/anuncios?${params.toString()}`
+        const textToCopy = `📢 *${notice.title}*\n\n${notice.text}\n\n🔗 ${shareUrl}`
         navigator.clipboard.writeText(textToCopy)
         setCopiedId(notice.id)
         setTimeout(() => setCopiedId(null), 3000)
     }
 
     const theme = useAtomValue(themeAtom)
-    const isLoading = isLoadingCongregation || isLoadingNotices
+    const isLoading = (isLoadingCongregation && !congregation) || isLoadingNotices
 
     return (
         <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
@@ -92,8 +105,15 @@ function NoticesPage() {
             </Head>
 
             <HeadComponent
-                title={`Anúncios - Congregação ${congregation?.name ?? ""}`}
-                urlMiniatura={`${domain}/images/miniatura.png`}
+                title={
+                    congregation?.name
+                        ? `Anúncios e Avisos - Congregação ${congregation.name}`
+                        : ogMeta?.title || "Anúncios e Avisos"
+                }
+                description={ogMeta?.description}
+                urlMiniatura={ogMeta?.ogImageUrl || `${domain}/images/miniatura.png`}
+                pageUrl={ogMeta?.pageUrl}
+                siteName={ogMeta?.siteName}
             />
 
             {/* Cabeçalho da Página de Anúncios */}
@@ -252,3 +272,8 @@ NoticesPage.getLayout = function getLayout(page: React.ReactElement) {
 }
 
 export default NoticesPage
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    return buildPublicPageServerProps(context, 'anuncios')
+}
+

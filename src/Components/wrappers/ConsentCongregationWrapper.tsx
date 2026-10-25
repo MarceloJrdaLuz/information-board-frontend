@@ -8,6 +8,7 @@ import { createConsentCongregationAtom } from '@/atoms/ConsentAtoms';
 import { useAuthContext } from '@/context/AuthContext';
 import { ICheckConsentCongregation } from '@/types/consent';
 import { ITermOfUse } from '@/types/termsofuse';
+import { NavBar } from '../NavBar';
 
 interface ConsentWrapperProps {
     children: ReactNode;
@@ -25,10 +26,10 @@ export const ConsentCongregationWrapper = ({ children }: ConsentWrapperProps) =>
         shouldFetchConsent ? `/terms/active/congregation` : ''
     );
 
-    // 2️⃣ só busca o consentimento se houver termo ativo
+    // 2️⃣ só busca o consentimento se houver termo ativo e congregation.id carregado
     const { data: consentRecordData, isLoading: isLoadingConsent   } = useFetch<ICheckConsentCongregation>(
-        termActive && shouldFetchConsent
-            ? `/consent/check?congregation_id=${congregation?.id}&type=congregation`
+        termActive && shouldFetchConsent && congregation?.id
+            ? `/consent/check?congregation_id=${congregation.id}&type=congregation`
             : ''
     );
 
@@ -57,17 +58,17 @@ export const ConsentCongregationWrapper = ({ children }: ConsentWrapperProps) =>
             console.log(err)
         })
     }
-      // 3️⃣ se não for admin, libera conteúdo normalmente
+    // 3️⃣ se não for admin, libera conteúdo normalmente
     if (!shouldFetchConsent) return <>{children}</>;
 
-    // 4️⃣ se ainda carregando termo ou consentimento, não mostra nada
-    if (isLoadingTerm || isLoadingConsent) return null;
+    // 4️⃣ se ainda carregando termo ou consentimento, mostra skeletons no menu
+    if (isLoadingTerm || isLoadingConsent) return <NavBar.Skeleton items={6} />;
 
     // 5️⃣ se não há termo ativo, libera normalmente
     if (!termActive) return <>{children}</>;
 
-    // 6️⃣ se não há registro de consentimento, ainda não carrega conteúdo
-    if (!consentCongregation) return null;
+    // 6️⃣ se não há registro de consentimento, mostra skeletons no menu
+    if (!consentCongregation) return <NavBar.Skeleton items={6} />;
 
     return (
         <>

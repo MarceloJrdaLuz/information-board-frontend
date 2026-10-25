@@ -144,7 +144,14 @@ export function PublicWitnessSchedulePdf({
       .format("dddd – DD [de] MMMM")
       .replace(/^\w/, s => s.toUpperCase())
 
-  const weeklyFixed = fixedSchedules.filter(fs => !fs.date)
+  const weeklyFixed = [...fixedSchedules]
+    .filter(fs => !fs.date)
+    .sort((a, b) => {
+      const dayA = a.weekday ?? 0
+      const dayB = b.weekday ?? 0
+      if (dayA !== dayB) return dayA - dayB
+      return (a.start_time || "").localeCompare(b.start_time || "")
+    })
 
   // Contador global para alternar cores
   let globalRowIndex = 0
@@ -179,7 +186,9 @@ export function PublicWitnessSchedulePdf({
               </View>
 
               {block.schedules.map((day) =>
-                day.slots.map((slot, idxSlot) => {
+                [...day.slots]
+                  .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""))
+                  .map((slot, idxSlot) => {
                   const isEven = globalRowIndex % 2 !== 0
                   globalRowIndex++
 

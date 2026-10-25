@@ -102,60 +102,84 @@ function EmergencyContactsPage() {
             <BreadCrumbs crumbs={crumbs} pageActive={"Contatos de Emergência"} />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Cabeçalho Principal */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="space-y-1">
+                {/* Cabeçalho Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200">
+                                    <EmergencyContactIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
+                                        Contatos de Emergência
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500">
+                                        Lista de contatos e telefones de emergência para assistência e cuidado da congregação.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                                <EmergencyContactIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-typography-800">
-                                    Contatos de Emergência
-                                </h1>
-                                <p className="text-sm text-typography-500">
-                                    Lista de contatos e telefones de emergência para assistência e cuidado da congregação.
-                                </p>
-                            </div>
+                            <Button
+                                onClick={() =>
+                                    Router.push("/congregacao/contatos-emergencia/add")
+                                }
+                                className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>Novo Contato</span>
+                            </Button>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={() =>
-                                Router.push("/congregacao/contatos-emergencia/add")
-                            }
-                            className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>Novo Contato</span>
-                        </Button>
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Layers className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Total de Contatos</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !emergencyContacts ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <UserCheck className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Testemunhas de Jeová</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !emergencyContacts ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.tj
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Barra de Métricas e Busca */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                            <Layers className="w-4 h-4 text-primary-200" />
-                            <span>{stats.total} contatos cadastrados</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            <UserCheck className="w-4 h-4" />
-                            <span>{stats.tj} Testemunhas de Jeová</span>
-                        </div>
-                    </div>
-
-                    {/* Barra de busca */}
-                    <div className="relative min-w-[260px]">
-                        <Search className="w-4 h-4 absolute left-3 top-3 text-typography-400" />
+                {/* Barra de Busca */}
+                <div className="flex items-center justify-between gap-4">
+                    <div className="relative w-full sm:max-w-md">
+                        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-typography-400 pointer-events-none" />
                         <input
                             type="text"
                             placeholder="Buscar por nome ou telefone..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-surface-100 border border-surface-300 rounded-xl text-xs text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-sm"
+                            className="w-full pl-9 pr-4 py-2 bg-surface-100 border border-surface-300 rounded-xl text-xs sm:text-sm text-typography-800 placeholder-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200 shadow-xs"
                         />
                     </div>
                 </div>
@@ -295,12 +319,16 @@ function EmergencyContactsPage() {
                 onOpenChange={(open) => !open && setDeleteContactId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Contato de Emergência?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Contato de Emergência?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja excluir este contato de emergência? Esta ação não pode ser desfeita.
                         </DialogDescription>
                     </DialogHeader>

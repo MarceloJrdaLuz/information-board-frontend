@@ -78,21 +78,21 @@ export default function ListMonths(props: ListRelatoriosProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Ano de Serviço Atual */}
                 <div className="flex flex-col bg-surface-100 border border-surface-300 rounded-2xl shadow-sm overflow-hidden">
-                    <div className="p-4 sm:p-5 border-b border-surface-300 bg-surface-100/70 flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                            <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg">
+                    <div className="p-4 sm:p-5 border-b border-surface-300 bg-surface-100/70 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg shrink-0">
                                 <CalendarDays className="h-5 w-5" />
                             </div>
-                            <div>
-                                <h2 className="text-base font-bold text-typography-900">
+                            <div className="min-w-0">
+                                <h2 className="text-base font-bold text-typography-900 truncate">
                                     Ano de Serviço {currentYearService}
                                 </h2>
-                                <p className="text-xs text-typography-500">
+                                <p className="text-xs text-typography-500 truncate">
                                     Meses decorridos do ano corrente
                                 </p>
                             </div>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 whitespace-nowrap shrink-0">
                             Ano Atual
                         </span>
                     </div>
@@ -154,21 +154,21 @@ export default function ListMonths(props: ListRelatoriosProps) {
 
                 {/* Ano de Serviço Anterior */}
                 <div className="flex flex-col bg-surface-100 border border-surface-300 rounded-2xl shadow-sm overflow-hidden">
-                    <div className="p-4 sm:p-5 border-b border-surface-300 bg-surface-100/70 flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                            <div className="p-2 bg-typography-500/10 text-typography-600 rounded-lg">
+                    <div className="p-4 sm:p-5 border-b border-surface-300 bg-surface-100/70 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="p-2 bg-typography-500/10 text-typography-600 rounded-lg shrink-0">
                                 <History className="h-5 w-5" />
                             </div>
-                            <div>
-                                <h2 className="text-base font-bold text-typography-900">
+                            <div className="min-w-0">
+                                <h2 className="text-base font-bold text-typography-900 truncate">
                                     Ano de Serviço {currentYearService - 1}
                                 </h2>
-                                <p className="text-xs text-typography-500">
+                                <p className="text-xs text-typography-500 truncate">
                                     Histórico dos 12 meses anteriores
                                 </p>
                             </div>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-typography-500/10 text-typography-600 border border-typography-300/30">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-typography-500/10 text-typography-600 border border-typography-300/30 whitespace-nowrap shrink-0">
                             Histórico
                         </span>
                     </div>

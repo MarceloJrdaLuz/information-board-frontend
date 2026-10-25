@@ -4,6 +4,7 @@ import { CongregationReportsChart } from "@/Components/CongregationReportsChart"
 import ContentDashboard from "@/Components/ContentDashboard";
 import { ProfileCard } from "@/Components/ProfileCard";
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton";
+import PushNotificationBanner from "@/Components/PushNotificationBanner";
 import { UpcomingAssignmentsCard } from "@/Components/UpcomingAssignmentsCard";
 import UpcomingAssignmentsSkeleton from "@/Components/UpcomingAssignmentsCard/skeleton";
 import { UpcomingRemindersCard } from "@/Components/UpcomingRemindersCard";
@@ -84,6 +85,9 @@ function Dashboard() {
   return (
     <ContentDashboard>
       <section className="flex flex-col w-full h-fit justify-center items-center p-5 gap-4">
+        {/* Banner de convite para ativar notificações push (apenas se ainda não ativado) */}
+        <PushNotificationBanner />
+
         {/* Banner para administrador com solicitações pendentes caso ele esteja no dashboard */}
         {adminPendingCount > 0 && (
           <div className="w-full max-w-4xl p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm animate-fade-in">

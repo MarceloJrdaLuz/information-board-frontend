@@ -17,6 +17,8 @@ import { useCongregationContext } from "@/context/CongregationContext";
 import { sortArrayByProperty } from "@/functions/sortObjects";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup } from "@/types/cleaning";
+import { PrivilegeCode } from "@/types/types";
+import { hasPrivilege } from "@/functions/publisherPrivilegeHelper";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom, useSetAtom } from "jotai";
 import {
@@ -62,7 +64,11 @@ function CleaningGroupsPage() {
 
     const sortedGroups = useMemo(() => {
         if (!data) return [];
-        return sortArrayByProperty(data, "name");
+        const cleanGroups = data.map((g) => ({
+            ...g,
+            publishers: (g.publishers || []).filter((p) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
+        }));
+        return sortArrayByProperty(cleanGroups, "name");
     }, [data]);
 
     const filteredGroups = useMemo(() => {
@@ -90,12 +96,10 @@ function CleaningGroupsPage() {
         setIsDeleting(true);
         try {
             await deleteCleaningGroup(groupId);
-            toast.success("Grupo de limpeza excluído com sucesso!");
             setDeleteGroupId(null);
             await mutate();
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao excluir grupo de limpeza.");
         } finally {
             setIsDeleting(false);
         }
@@ -106,51 +110,75 @@ function CleaningGroupsPage() {
             <BreadCrumbs crumbs={crumbs} pageActive="Grupos de Limpeza" />
 
             <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-                {/* Cabeçalho Principal */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="space-y-1">
+                {/* Cabeçalho Principal com Métricas (Estilo Oradores) */}
+                <div className="flex flex-col gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200">
+                                    <GroupIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
+                                        Grupos de Limpeza
+                                    </h1>
+                                    <p className="text-xs sm:text-sm text-typography-500">
+                                        Organização dos grupos de publicadores responsáveis pela manutenção do Salão.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl bg-primary-200/10 text-primary-200 ">
-                                <GroupIcon className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-typography-800">
-                                    Grupos de Limpeza
-                                </h1>
-                                <p className="text-sm text-typography-500">
-                                    Organização dos grupos de publicadores responsáveis pela manutenção do Salão.
-                                </p>
-                            </div>
+                            <Button
+                                onClick={() => Router.push("/congregacao/grupos-limpeza/add")}
+                                className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>Novo Grupo</span>
+                            </Button>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={() => Router.push("/congregacao/grupos-limpeza/add")}
-                            className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>Novo Grupo</span>
-                        </Button>
+                    {/* Metric Badges Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-3 border-t border-surface-300">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Layers className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Total de Grupos</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        sortedGroups.length
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-200/50 border border-surface-300/80">
+                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <Users className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <div className="text-[11px] font-medium text-typography-500">Publicadores Vinculados</div>
+                                <div className="text-base font-bold text-typography-900">
+                                    {isLoading || !data ? (
+                                        <span className="inline-block h-4 w-7 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        totalMembers
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Barra de Métricas e Busca */}
+                {/* Barra de busca */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-typography-700">
-                            <Layers className="w-4 h-4 text-primary-200" />
-                            <span>{sortedGroups.length} grupos cadastrados</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-4 py-2 bg-surface-100 rounded-xl border border-surface-300 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            <Users className="w-4 h-4" />
-                            <span>{totalMembers} publicadores vinculados</span>
-                        </div>
-                    </div>
-
-                    {/* Barra de busca */}
-                    <div className="relative min-w-[260px]">
+                    <div className="relative w-full sm:max-w-md">
                         <Search className="w-4 h-4 absolute left-3 top-3 text-typography-400" />
                         <input
                             type="text"
@@ -215,9 +243,21 @@ function CleaningGroupsPage() {
                                                 </h3>
                                             </div>
 
-                                            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-100 text-typography-600 border border-surface-300">
-                                                {memberCount} {memberCount === 1 ? "membro" : "membros"}
-                                            </span>
+                                            <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                                                {group.dayPreference === "MIDWEEK" && (
+                                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                        Meio de Semana
+                                                    </span>
+                                                )}
+                                                {group.dayPreference === "WEEKEND" && (
+                                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                        Fim de Semana
+                                                    </span>
+                                                )}
+                                                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-100 text-typography-600 border border-surface-300">
+                                                    {memberCount} {memberCount === 1 ? "membro" : "membros"}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {/* Lista de Membros */}
@@ -285,12 +325,16 @@ function CleaningGroupsPage() {
                 onOpenChange={(open) => !open && setDeleteGroupId(null)}
             >
                 <DialogContent className="sm:max-w-[420px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-lg text-rose-600">
-                            <Trash2 className="w-5 h-5" />
-                            <span>Excluir Grupo de Limpeza?</span>
-                        </DialogTitle>
-                        <DialogDescription>
+                    <DialogHeader className="gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                                <Trash2 className="w-5 h-5" />
+                            </div>
+                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900 text-left">
+                                Excluir Grupo de Limpeza?
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
                             Tem certeza de que deseja remover este grupo de limpeza? As escalas futuras vinculadas poderão ser afetadas.
                         </DialogDescription>
                     </DialogHeader>
