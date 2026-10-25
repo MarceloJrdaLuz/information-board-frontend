@@ -149,22 +149,26 @@ function ArrangementMonthSchedulePage() {
 
     const totalDays = dates.length
     const totalSlots = totalDays * arrangement.timeSlots.length
-    const totalCapacity = totalSlots * 2
+    let totalCapacity = 0
     let filledSpots = 0
 
     dates.forEach(date => {
       arrangement.timeSlots.forEach(slot => {
         const dirtySlot = dirty[date]?.slots?.find(s => s.time_slot_id === slot.id)
+        let slotFilled = 0
         if (dirtySlot) {
-          filledSpots += dirtySlot.publishers.length
+          slotFilled = dirtySlot.publishers.length
         } else {
           const assignment = assignmentsByDate[date]?.[slot.id]
           if (assignment) {
-            filledSpots += assignment.publishers.length
-          } else if (!slot.is_rotative) {
-            filledSpots += slot.defaultPublishers?.length ?? 0
+            slotFilled = assignment.publishers.length
+          } else if (slot.defaultPublishers?.length) {
+            slotFilled = slot.defaultPublishers.length
           }
         }
+        const slotCap = Math.max(2, slotFilled)
+        totalCapacity += slotCap
+        filledSpots += slotFilled
       })
     })
 
@@ -338,7 +342,7 @@ function ArrangementMonthSchedulePage() {
             )}
 
             {/* Botões de Ação */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               {arrangement.is_fixed ? (
                 hasRotativeSlots ? (
                   <>
@@ -346,7 +350,7 @@ function ArrangementMonthSchedulePage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setIsPublishersModalOpen(true)}
-                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                      className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                       title="Definir quais publicadores participam do rodízio deste arranjo"
                     >
                       <UserCheck className="h-4 w-4 text-primary-200" />
@@ -366,7 +370,7 @@ function ArrangementMonthSchedulePage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setIsPreferencesModalOpen(true)}
-                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                      className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                     >
                       <SlidersHorizontal className="h-4 w-4 text-amber-600" />
                       <span>Preferências de Horário</span>
@@ -376,7 +380,7 @@ function ArrangementMonthSchedulePage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setIsGenerateModalOpen(true)}
-                      className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                      className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                     >
                       <Wand2 className="h-4 w-4 text-primary-200" />
                       <span>Auto-Preencher / Gerar...</span>
@@ -387,7 +391,7 @@ function ArrangementMonthSchedulePage() {
                     size="sm"
                     variant="outline"
                     onClick={() => router.push(`/congregacao/testemunho-publico/edit/${arrangement.id}`)}
-                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                   >
                     <span>Editar Publicadores Fixos</span>
                   </Button>
@@ -399,7 +403,7 @@ function ArrangementMonthSchedulePage() {
                     size="sm"
                     variant="outline"
                     onClick={() => setIsPublishersModalOpen(true)}
-                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                     title="Definir quais publicadores participam desta data especial"
                   >
                     <UserCheck className="h-4 w-4 text-primary-200" />
@@ -419,7 +423,7 @@ function ArrangementMonthSchedulePage() {
                     size="sm"
                     variant="outline"
                     onClick={() => setIsGenerateModalOpen(true)}
-                    className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
+                    className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
                   >
                     <Wand2 className="h-4 w-4 text-primary-200" />
                     <span>Gerar Pares do Dia</span>
@@ -431,7 +435,7 @@ function ArrangementMonthSchedulePage() {
                 size="sm"
                 onClick={handleSave}
                 disabled={dirtyDatesCount === 0 || saving}
-                className={`text-xs flex items-center gap-1.5 transition-all ${
+                className={`text-xs flex items-center justify-center gap-1.5 transition-all w-full sm:w-auto ${
                   dirtyDatesCount > 0
                     ? "bg-green-600 hover:bg-green-700 text-white shadow-sm"
                     : "border border-surface-300 text-typography-400 bg-surface-200 cursor-not-allowed"
@@ -483,7 +487,7 @@ function ArrangementMonthSchedulePage() {
                 )}
               </span>
               <span className="text-[11px] text-typography-500">
-                {stats.totalSlots} horários (2 por horário)
+                {stats.totalSlots} horários programados
               </span>
             </div>
 

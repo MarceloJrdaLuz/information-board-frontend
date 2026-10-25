@@ -146,9 +146,9 @@ export default function ArrangementPublishersModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !loading && !open && onClose()}>
-      <DialogContent className="sm:max-w-[650px] max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[95vw] sm:max-w-[650px] max-h-[90dvh] flex flex-col p-0 gap-0 overflow-hidden">
         {/* Cabeçalho */}
-        <DialogHeader className="p-5 pb-4 border-b border-surface-300">
+        <DialogHeader className="p-4 sm:p-5 pb-3 border-b border-surface-300 shrink-0">
           <div className="flex items-center gap-2.5 text-primary-200">
             <div className="p-2.5 bg-primary-100/30 dark:bg-primary-950/40 rounded-xl">
               <UserCheck className="h-5 w-5 text-primary-200" />
@@ -343,19 +343,19 @@ export default function ArrangementPublishersModal({
         </div>
 
         {/* Rodapé */}
-        <DialogFooter className="p-4 sm:p-5 border-t border-surface-300 bg-surface-50/70 flex flex-row items-center justify-between sm:justify-between w-full">
-          <div className="text-xs text-typography-600">
+        <DialogFooter className="p-3 sm:p-4 border-t border-surface-300 bg-surface-50/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full shrink-0">
+          <div className="text-xs text-typography-600 text-center sm:text-left">
             <strong>{selectedCount}</strong> de {totalCount} selecionados
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onClose}
               disabled={loading}
-              className="text-xs border-surface-300 hover:bg-surface-200"
+              className="text-xs border-surface-300 hover:bg-surface-200 flex-1 sm:flex-initial"
             >
               Cancelar
             </Button>
@@ -364,7 +364,7 @@ export default function ArrangementPublishersModal({
               size="sm"
               onClick={handleSave}
               disabled={loading}
-              className="text-xs bg-primary-200 hover:bg-primary-300 text-white font-semibold flex items-center gap-1.5"
+              className="text-xs bg-primary-200 hover:bg-primary-300 text-white font-semibold flex items-center justify-center gap-1.5 flex-1 sm:flex-initial whitespace-nowrap"
             >
               {loading ? (
                 <>
@@ -374,11 +374,7 @@ export default function ArrangementPublishersModal({
               ) : (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>
-                    {arrangement.is_fixed
-                      ? "Salvar Participantes"
-                      : "Salvar Participantes da Data"}
-                  </span>
+                  <span>Salvar Participantes</span>
                 </>
               )}
             </Button>

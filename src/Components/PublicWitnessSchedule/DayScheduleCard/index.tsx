@@ -138,8 +138,8 @@ export default function DayScheduleCard({
       if (existing) {
         return existing.publishers.length >= 2
       }
-      if (!slot.is_rotative) {
-        return (slot.defaultPublishers?.length ?? 0) >= 2
+      if (slot.defaultPublishers?.length) {
+        return slot.defaultPublishers.length >= 2
       }
       return false
     }).length

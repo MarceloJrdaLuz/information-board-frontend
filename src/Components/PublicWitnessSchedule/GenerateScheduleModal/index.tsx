@@ -91,13 +91,13 @@ export default function GenerateScheduleModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !loading && !open && onClose()}>
-      <DialogContent className="sm:max-w-[540px]">
-        <DialogHeader>
+      <DialogContent className="w-[95vw] sm:max-w-[540px] max-h-[90dvh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="p-4 sm:p-5 pb-3 border-b border-surface-300 shrink-0">
           <div className="flex items-center gap-2 text-primary-200">
             <div className="p-2 bg-primary-50 dark:bg-primary-950/40 rounded-lg">
               <Wand2 className="h-5 w-5" />
             </div>
-            <DialogTitle className="text-lg font-bold">
+            <DialogTitle className="text-base sm:text-lg font-bold">
               {!isFixed ? "Gerar Pares do Dia Especial" : "Preenchimento Automático do Carrinho"}
             </DialogTitle>
           </div>
@@ -109,7 +109,7 @@ export default function GenerateScheduleModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 py-2">
+        <div className="flex-1 overflow-y-auto discrete-scrollbar p-4 sm:p-5 flex flex-col gap-4">
           {/* Status dos Participantes */}
           {participatingPublishersCount !== undefined && (
             participatingPublishersCount === 0 ? (
@@ -291,13 +291,13 @@ export default function GenerateScheduleModal({
           </div>
         </div>
 
-        <DialogFooter className="flex justify-end gap-2 pt-3 border-t border-surface-200">
+        <DialogFooter className="p-3 sm:p-4 border-t border-surface-300 bg-surface-50/70 shrink-0 flex flex-row items-center justify-end gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={loading}
-            className="text-xs"
+            className="text-xs border-surface-300 hover:bg-surface-200 flex-1 sm:flex-initial"
           >
             Cancelar
           </Button>
@@ -305,7 +305,7 @@ export default function GenerateScheduleModal({
             type="button"
             onClick={handleGenerate}
             disabled={loading || participatingPublishersCount === 0}
-            className="text-xs flex items-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-xs flex items-center justify-center gap-1.5 bg-primary-200 hover:bg-primary-300 text-white disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
