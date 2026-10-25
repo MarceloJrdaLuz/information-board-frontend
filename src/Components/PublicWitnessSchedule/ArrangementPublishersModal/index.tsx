@@ -31,6 +31,7 @@ interface Props {
   onClose: () => void
   arrangement: IPublicWitnessArrangement
   publishers: IPublisher[]
+  assignedPublisherIds?: Set<string>
   onSuccess: () => void
 }
 
@@ -39,6 +40,7 @@ export default function ArrangementPublishersModal({
   onClose,
   arrangement,
   publishers,
+  assignedPublisherIds,
   onSuccess
 }: Props) {
   const updatePublishers = useSetAtom(updateArrangementPublishersAtom)
@@ -327,15 +329,26 @@ export default function ArrangementPublishersModal({
                   </div>
 
                   {/* Status Pill */}
-                  <span
-                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                      isSelected
-                        ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
-                        : "bg-surface-200 text-typography-500"
-                    }`}
-                  >
-                    {isSelected ? "No rodízio" : "Não participa"}
-                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {!arrangement.is_fixed && assignedPublisherIds?.has(pub.id) && (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+                        Escalado(a)
+                      </span>
+                    )}
+                    <span
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                        isSelected
+                          ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                          : "bg-surface-200 text-typography-500"
+                      }`}
+                    >
+                      {isSelected
+                        ? arrangement.is_fixed
+                          ? "No rodízio"
+                          : "Participa"
+                        : "Não participa"}
+                    </span>
+                  </div>
                 </div>
               )
             })
@@ -346,6 +359,11 @@ export default function ArrangementPublishersModal({
         <DialogFooter className="p-3 sm:p-4 border-t border-surface-300 bg-surface-50/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full shrink-0">
           <div className="text-xs text-typography-600 text-center sm:text-left">
             <strong>{selectedCount}</strong> de {totalCount} selecionados
+            {!arrangement.is_fixed && assignedPublisherIds && (
+              <span className="text-typography-500 ml-1.5">
+                • <strong>{Array.from(assignedPublisherIds).filter(id => selectedIds.has(id)).length}</strong> já escalados
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">

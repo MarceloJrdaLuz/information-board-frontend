@@ -178,6 +178,38 @@ function ArrangementMonthSchedulePage() {
 
   const dirtyDatesCount = Object.keys(dirty).length
 
+  /* ---------------- Publicadores escalados na data (dias pontuais) ---------------- */
+  const assignedPublisherIdsOnDate = useMemo(() => {
+    const ids = new Set<string>()
+    const date = arrangement?.date || dates[0]
+    if (!arrangement || !date) return ids
+
+    arrangement.timeSlots.forEach(slot => {
+      const dirtySlot = dirty[date]?.slots?.find(s => s.time_slot_id === slot.id)
+      if (dirtySlot) {
+        dirtySlot.publishers.forEach(p => ids.add(p.publisher_id))
+      } else {
+        const assignment = assignmentsByDate[date]?.[slot.id]
+        if (assignment) {
+          assignment.publishers.forEach(p => {
+            const id = p.publisher?.id || p.publisher_id
+            if (id) ids.add(id)
+          })
+        } else if (slot.defaultPublishers?.length) {
+          slot.defaultPublishers.forEach(dp => {
+            if (dp.publisher_id) ids.add(dp.publisher_id)
+          })
+        }
+      }
+    })
+    return ids
+  }, [arrangement, dates, dirty, assignmentsByDate])
+
+  const usedParticipatingCount = useMemo(() => {
+    if (!participatingPublishers.length) return 0
+    return participatingPublishers.filter(p => assignedPublisherIdsOnDate.has(p.id)).length
+  }, [participatingPublishers, assignedPublisherIdsOnDate])
+
   /* ---------------- Salvar Alterações Manuais ---------------- */
   const handleSave = async () => {
     const payload = { schedule: Object.values(dirty) }
@@ -404,7 +436,7 @@ function ArrangementMonthSchedulePage() {
                     variant="outline"
                     onClick={() => setIsPublishersModalOpen(true)}
                     className="text-xs flex items-center justify-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800 flex-1 sm:flex-initial"
-                    title="Definir quais publicadores participam desta data especial"
+                    title={`Definir participantes desta data (${usedParticipatingCount} de ${participatingPublishers.length} escalados)`}
                   >
                     <UserCheck className="h-4 w-4 text-primary-200" />
                     <span>Participantes da Data</span>
@@ -415,7 +447,7 @@ function ArrangementMonthSchedulePage() {
                           : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
                       }`}
                     >
-                      {participatingPublishers.length}
+                      {usedParticipatingCount}/{participatingPublishers.length} usados
                     </span>
                   </Button>
 
@@ -456,19 +488,31 @@ function ArrangementMonthSchedulePage() {
             <div className="bg-surface-100 border border-surface-300 rounded-xl p-3.5 flex flex-col gap-1 shadow-xs">
               <div className="flex items-center justify-between text-typography-500">
                 <span className="text-xs font-semibold uppercase tracking-wider">
-                  {arrangement.is_fixed ? "Dias no Mês" : "Data do Arranjo"}
+                  {arrangement.is_fixed ? "Dias no Mês" : "Participantes da Data"}
                 </span>
-                <CalendarDays className="w-4 h-4 text-primary-200" />
+                {arrangement.is_fixed ? (
+                  <CalendarDays className="w-4 h-4 text-primary-200" />
+                ) : (
+                  <Users className="w-4 h-4 text-primary-200" />
+                )}
               </div>
               <span className="text-xl sm:text-2xl font-bold text-typography-900">
                 {isLoading || !arrangement ? (
                   <span className="inline-block h-7 w-10 rounded-md bg-surface-300/70 animate-pulse align-middle" />
-                ) : (
+                ) : arrangement.is_fixed ? (
                   stats.totalDays
+                ) : (
+                  `${usedParticipatingCount} de ${participatingPublishers.length}`
                 )}
               </span>
               <span className="text-[11px] text-typography-500">
-                {arrangement.is_fixed ? "dias programados para este carrinho" : "data programada pontual"}
+                {arrangement.is_fixed
+                  ? "dias programados para este carrinho"
+                  : participatingPublishers.length === 0
+                  ? "nenhum participante selecionado"
+                  : participatingPublishers.length > usedParticipatingCount
+                  ? `${participatingPublishers.length - usedParticipatingCount} selecionados sem vaga`
+                  : "todos os selecionados foram escalados"}
               </span>
             </div>
 
@@ -592,12 +636,13 @@ function ArrangementMonthSchedulePage() {
             }}
           />
 
-          {/* Modal de Participantes do Rodízio */}
+          {/* Modal de Participantes do Rodízio / Data */}
           <ArrangementPublishersModal
             isOpen={isPublishersModalOpen}
             onClose={() => setIsPublishersModalOpen(false)}
             arrangement={arrangement}
             publishers={publishers ?? []}
+            assignedPublisherIds={assignedPublisherIdsOnDate}
             onSuccess={() => {
               mutateArrangement()
             }}
