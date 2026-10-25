@@ -289,7 +289,7 @@ export default function PublicWitnessCarousel({
                             <span className="text-sm font-medium">Nenhuma escalação para este mês.</span>
                         </div>
                     ) : (
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-4 sm:grid-cols-2 items-start">
                             {currentMonthDays.map(([date, slots]) => {
                                 const itemDate = dayjs(date)
                                 const isToday = itemDate.isSame(dayjs(), "day")
@@ -301,7 +301,7 @@ export default function PublicWitnessCarousel({
                                 return (
                                     <div
                                         key={date}
-                                        className="flex flex-col justify-between p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200 gap-4"
+                                        className="flex flex-col justify-start p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md hover:border-primary-200 transition-all duration-200 gap-4"
                                     >
                                         {/* Cabeçalho do Dia */}
                                         <div className="flex items-center justify-between pb-3 border-b border-surface-300 gap-3">
@@ -549,11 +549,11 @@ export default function PublicWitnessCarousel({
                             <span className="text-sm font-medium">Nenhum arranjo fixo configurado.</span>
                         </div>
                     ) : (
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 items-start">
                             {weeklyFixed.map((item, idx) => (
                                 <div
                                     key={idx}
-                                    className="flex flex-col justify-between p-4 rounded-xl bg-surface-200/40 border border-surface-300/80 shadow-2xs hover:border-primary-200 hover:shadow-xs transition-all duration-200 gap-3"
+                                    className="flex flex-col justify-start p-4 rounded-xl bg-surface-200/40 border border-surface-300/80 shadow-2xs hover:border-primary-200 hover:shadow-xs transition-all duration-200 gap-3"
                                 >
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between gap-2">
