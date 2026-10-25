@@ -45,7 +45,14 @@ interface FormValues {
 
 const validation = yup.object({
   title: yup.string().required("Campo obrigatório"),
-  timeSlots: yup.array().min(1, "Adicione ao menos um horário")
+  timeSlots: yup.array().of(
+    yup.object({
+      id: yup.string().optional().nullable(),
+      start_time: yup.string().required("Horário inicial obrigatório"),
+      end_time: yup.string().required("Horário final obrigatório"),
+      is_rotative: yup.boolean().default(false)
+    })
+  ).min(1, "Adicione ao menos um horário")
 })
 
 export default function FormEditPublicWitnessArrangement({ arrangement_id }: Props) {
@@ -134,11 +141,44 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
 
   /** 🚀 FORM → BACKEND */
   async function onSubmit(form: FormValues) {
-    const indexedSlots = form.timeSlots.map((slot, index) => ({
-      slot,
-      publishers: slotPublishers[index] ?? [],
-      preferences: slotPreferences[index] ?? []
-    }))
+    const sortedInitialSlots = (arrangement?.timeSlots ?? [])
+      .slice()
+      .sort((a, b) => a.start_time.localeCompare(b.start_time))
+
+    const indexedSlots = form.timeSlots.map((slot, index) => {
+      const matchedInitialSlot = sortedInitialSlots.find(
+        s =>
+          (slot.id && s.id === slot.id) ||
+          (s.start_time.slice(0, 5) === slot.start_time.slice(0, 5) &&
+            s.end_time.slice(0, 5) === slot.end_time.slice(0, 5))
+      )
+      const slotId = slot.id || matchedInitialSlot?.id
+
+      const existingDefaultPubs =
+        matchedInitialSlot?.defaultPublishers?.map(dp => ({
+          id: dp.publisher_id
+        } as any)) ?? []
+
+      const existingPrefs =
+        matchedInitialSlot?.preferences?.map(pref => ({
+          id: pref.publisher_id
+        } as any)) ?? []
+
+      return {
+        slot: {
+          ...slot,
+          id: slotId
+        },
+        publishers:
+          slotPublishers[index] && slotPublishers[index].length > 0
+            ? slotPublishers[index]
+            : existingDefaultPubs,
+        preferences:
+          slotPreferences[index] && slotPreferences[index].length > 0
+            ? slotPreferences[index]
+            : existingPrefs
+      }
+    })
 
     indexedSlots.sort((a, b) => a.slot.start_time.localeCompare(b.slot.start_time))
 
@@ -153,11 +193,11 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
         end_time: item.slot.end_time,
         order: index + 1,
         is_rotative: !isFixed ? true : item.slot.is_rotative,
-        defaultPublishers: !isFixed ? [] : item.publishers.map((p, i) => ({
+        defaultPublishers: item.publishers.map((p, i) => ({
           publisher_id: p.id,
           order: i
         })),
-        preferences: !isFixed ? [] : item.preferences.map(p => ({
+        preferences: item.preferences.map(p => ({
           publisher_id: p.id
         }))
       }))
@@ -268,6 +308,7 @@ export default function FormEditPublicWitnessArrangement({ arrangement_id }: Pro
                 key={field.id}
                 className="relative rounded-2xl border border-surface-300 bg-surface-100/60 dark:bg-surface-800/30 p-3.5 sm:p-5 shadow-xs transition hover:border-surface-400 flex flex-col gap-3.5 sm:gap-4"
               >
+                <input type="hidden" {...register(`timeSlots.${index}.id`)} />
                 {/* Header do card do turno */}
                 <div className="flex items-center justify-between gap-2 pb-2 border-b border-surface-200 dark:border-surface-700/60">
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
