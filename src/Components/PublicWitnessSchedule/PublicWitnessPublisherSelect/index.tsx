@@ -309,15 +309,13 @@ export function PublicWitnessPublisherSelect({
                     }
                   }
 
-                  // Checa compatibilidade com TODOS os parceiros do slot
-                  for (const ap of activePartners) {
-                    const comp = checkCompatibility(pub, ap)
-                    if (!comp.isCompatible) {
-                      compatibility = comp
-                      break
-                    } else if (comp.isFamily) {
-                      compatibility = comp
-                    }
+                  // Se o slot já possui 2 ou mais parceiros (esta será a 3ª ou 4ª pessoa),
+                  // é permitido qualquer gênero pois já é um grupo de 3 ou mais publicadores!
+                  if (activePartners.length >= 2) {
+                    compatibility = { isCompatible: true, isFamily: false, reason: "Grupo com 3 ou mais pessoas" }
+                  } else {
+                    // Há apenas 1 parceiro (formando uma dupla isolada de 2 pessoas):
+                    compatibility = checkCompatibility(pub, activePartners[0])
                   }
                 }
 

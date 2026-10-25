@@ -263,25 +263,25 @@ export default function SlotScheduleRow({
 
   // Verificação de conflito de gênero/família entre os selecionados no slot
   const hasGenderFamilyConflict = useMemo(() => {
-    if (selectedPublishers.length < 2) return false
+    // Se houver mais de 2 pessoas (3 ou 4), é um grupo e não há conflito de homem e mulher sozinhos!
+    if (selectedPublishers.length !== 2) return false
+
     const getGenderNorm = (g?: string) => {
       if (!g) return "M"
       return g.trim().toLowerCase().startsWith("f") ? "F" : "M"
     }
 
-    for (let i = 0; i < selectedPublishers.length; i++) {
-      for (let j = i + 1; j < selectedPublishers.length; j++) {
-        const p1 = selectedPublishers[i]
-        const p2 = selectedPublishers[j]
-        const g1 = getGenderNorm(p1.gender)
-        const g2 = getGenderNorm(p2.gender)
-        if (g1 !== g2) {
-          if (!p1.family_id || !p2.family_id || p1.family_id !== p2.family_id) {
-            return true
-          }
-        }
+    const p1 = selectedPublishers[0]
+    const p2 = selectedPublishers[1]
+    const g1 = getGenderNorm(p1.gender)
+    const g2 = getGenderNorm(p2.gender)
+
+    if (g1 !== g2) {
+      if (!p1.family_id || !p2.family_id || p1.family_id !== p2.family_id) {
+        return true
       }
     }
+
     return false
   }, [selectedPublishers])
 
