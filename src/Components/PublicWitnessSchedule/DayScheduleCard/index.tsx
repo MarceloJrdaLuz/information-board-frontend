@@ -287,6 +287,7 @@ export default function DayScheduleCard({
                   publishers={publishers}
                   assignment={assignmentsBySlot?.[slot.id]}
                   publishersCount={countExcludingThisSlot}
+                  isSpecialDate={!arrangement.is_fixed}
                 />
               )
             })}

@@ -6,13 +6,16 @@ import { IAssignmentsHistoryResponse } from "@/types/publicWitness/schedules"
 import { IPublisher } from "@/types/types"
 import dayjs from "dayjs"
 import { useAtom } from "jotai"
+import { Button } from "@/Components/ui/button"
 import {
     AlertCircleIcon,
     AlertTriangle,
     Clock,
     Lock,
+    Plus,
     RefreshCw,
     SlidersHorizontal,
+    Trash2,
     User,
     Users2
 } from "lucide-react"
@@ -37,6 +40,7 @@ interface Props {
   assignment?: IPublicWitnessAssignment
   publishers: IPublisher[]
   publishersCount?: Record<string, number>
+  isSpecialDate?: boolean
 }
 
 export default function SlotScheduleRow({
@@ -44,12 +48,26 @@ export default function SlotScheduleRow({
   date,
   assignment,
   publishers,
-  publishersCount
+  publishersCount,
+  isSpecialDate = false
 }: Props) {
   const { congregation } = useCongregationContext()
   const [dirty, setDirty] = useAtom(dirtyMonthScheduleAtom)
   const [selectedPublishers, setSelectedPublishers] = useState<IPublisher[]>([])
-  const isEditable = slot.is_rotative
+  const isEditable = isSpecialDate || slot.is_rotative
+
+  const [slotsCount, setSlotsCount] = useState<number>(() => {
+    return Math.max(2, assignment?.publishers?.length || slot.defaultPublishers?.length || 2)
+  })
+
+  // Sincroniza slotsCount quando assignment mudar
+  useEffect(() => {
+    if (assignment?.publishers?.length) {
+      setSlotsCount(prev => Math.max(prev, assignment.publishers.length))
+    } else if (slot.defaultPublishers?.length) {
+      setSlotsCount(prev => Math.max(prev, slot.defaultPublishers.length))
+    }
+  }, [assignment, slot.defaultPublishers])
 
   const urlFetch = congregation?.id
     ? `public-witness/schedules/congregation/${congregation.id}/history`
@@ -267,9 +285,20 @@ export default function SlotScheduleRow({
     return false
   }, [selectedPublishers])
 
+  const handleAddSpot = () => {
+    setSlotsCount(prev => Math.min(4, prev + 1))
+  }
+
+  const handleRemoveSpot = (indexToRemove: number) => {
+    const next = selectedPublishers.filter((_, idx) => idx !== indexToRemove)
+    setSelectedPublishers(next)
+    setSlotsCount(prev => Math.max(2, prev - 1))
+    updateDirty(next)
+  }
+
   // Status visual do slot
-  const isFilled = selectedPublishers.length >= 2
-  const isPartial = selectedPublishers.length === 1
+  const isFilled = selectedPublishers.length >= slotsCount
+  const isPartial = selectedPublishers.length > 0 && selectedPublishers.length < slotsCount
 
   return (
     <div
@@ -326,15 +355,15 @@ export default function SlotScheduleRow({
         <div>
           {isFilled ? (
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 font-semibold">
-              Completo ({selectedPublishers.length}/2)
+              Completo ({selectedPublishers.length}/{slotsCount})
             </span>
           ) : isPartial ? (
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">
-              Incompleto (1/2)
+              Incompleto ({selectedPublishers.length}/{slotsCount})
             </span>
           ) : (
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">
-              Vago (0/2)
+              Vago (0/{slotsCount})
             </span>
           )}
         </div>
@@ -352,48 +381,74 @@ export default function SlotScheduleRow({
 
       {/* Seleção de publicadores por vagas inteligentes */}
       {isEditable ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-semibold text-typography-600 flex items-center gap-1">
-              <User className="h-3 w-3 text-primary-200" />
-              1º Publicador:
-            </span>
-            <PublicWitnessPublisherSelect
-              value={selectedPublishers[0]?.id || null}
-              onChange={id => handleSetSlotPosition(0, id)}
-              partner={selectedPublishers[1] || null}
-              publishers={publishers}
-              date={date}
-              slotId={slot.id}
-              slotPreferences={slotPreferences}
-              daysSinceLastMap={daysSinceLastMap}
-              lastCartDateMap={lastCartDateMap}
-              pairCountMap={pairCountMap}
-              assignedTodayIds={assignedTodayIds}
-              placeholder="Selecionar 1º Publicador..."
-            />
+        <div className="flex flex-col gap-2.5">
+          <div className={`grid grid-cols-1 ${slotsCount === 2 ? 'sm:grid-cols-2' : slotsCount === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4'} gap-2.5`}>
+            {Array.from({ length: slotsCount }).map((_, pos) => {
+              const currentPub = selectedPublishers[pos] || null
+              const otherPartners = selectedPublishers.filter((p, idx) => idx !== pos && Boolean(p))
+              const label = pos === 0
+                ? "1º Publicador:"
+                : pos === 1
+                ? "2º Publicador (Dupla):"
+                : `${pos + 1}º Publicador:`
+
+              return (
+                <div key={pos} className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-typography-600 flex items-center gap-1">
+                      {pos === 0 ? (
+                        <User className="h-3 w-3 text-primary-200" />
+                      ) : (
+                        <Users2 className="h-3 w-3 text-amber-500" />
+                      )}
+                      {label}
+                    </span>
+                    {pos >= 2 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSpot(pos)}
+                        className="text-[10px] text-red-500 hover:text-red-700 hover:underline flex items-center gap-0.5 cursor-pointer"
+                        title="Remover esta vaga"
+                      >
+                        <Trash2 className="w-2.5 h-2.5" />
+                        Remover vaga
+                      </button>
+                    )}
+                  </div>
+                  <PublicWitnessPublisherSelect
+                    value={currentPub?.id || null}
+                    onChange={id => handleSetSlotPosition(pos, id)}
+                    partner={otherPartners[0] || null}
+                    partners={otherPartners}
+                    publishers={publishers}
+                    date={date}
+                    slotId={slot.id}
+                    slotPreferences={slotPreferences}
+                    daysSinceLastMap={daysSinceLastMap}
+                    lastCartDateMap={lastCartDateMap}
+                    pairCountMap={pairCountMap}
+                    assignedTodayIds={assignedTodayIds}
+                    placeholder={pos === 0 ? "Selecionar 1º Publicador..." : pos === 1 ? "Selecionar Dupla Inteligente..." : `Selecionar ${pos + 1}º Publicador...`}
+                  />
+                </div>
+              )
+            })}
           </div>
 
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-semibold text-typography-600 flex items-center gap-1">
-              <Users2 className="h-3 w-3 text-amber-500" />
-              2º Publicador (Dupla):
-            </span>
-            <PublicWitnessPublisherSelect
-              value={selectedPublishers[1]?.id || null}
-              onChange={id => handleSetSlotPosition(1, id)}
-              partner={selectedPublishers[0] || null}
-              publishers={publishers}
-              date={date}
-              slotId={slot.id}
-              slotPreferences={slotPreferences}
-              daysSinceLastMap={daysSinceLastMap}
-              lastCartDateMap={lastCartDateMap}
-              pairCountMap={pairCountMap}
-              assignedTodayIds={assignedTodayIds}
-              placeholder="Selecionar Dupla Inteligente..."
-            />
-          </div>
+          {slotsCount < 4 && (
+            <div className="flex justify-end pt-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleAddSpot}
+                className="text-[11px] h-7 px-2 text-primary-200 hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950/30 flex items-center gap-1 cursor-pointer font-medium"
+              >
+                <Plus className="w-3 h-3" />
+                Adicionar {slotsCount + 1}ª Vaga
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-xs text-typography-600 italic">

@@ -78,7 +78,7 @@ function ArrangementMonthSchedulePage() {
   }, [publishers, participatingPublisherIds])
 
   const hasRotativeSlots = useMemo(() => {
-    return arrangement?.timeSlots.some(s => s.is_rotative) ?? false
+    return !arrangement?.is_fixed || (arrangement?.timeSlots.some(s => s.is_rotative) ?? false)
   }, [arrangement])
 
   const baseDate = dayjs().add(monthOffset, "month")

@@ -379,7 +379,10 @@ function ArrangementCardItem({
       .sort((a, b) => a.start_time.localeCompare(b.start_time))
   }, [arrangement.timeSlots])
 
-  const hasRotativeSlots = useMemo(() => sortedSlots.some(s => s.is_rotative), [sortedSlots])
+  const hasRotativeSlots = useMemo(
+    () => !arrangement.is_fixed || sortedSlots.some(s => s.is_rotative),
+    [arrangement.is_fixed, sortedSlots]
+  )
 
   return (
     <div className="bg-surface-100 border border-surface-300 rounded-xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4">
@@ -461,7 +464,7 @@ function ArrangementCardItem({
                   </span>
                 </div>
 
-                {slot.is_rotative ? (
+                {!arrangement.is_fixed || slot.is_rotative ? (
                   <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
                     <RefreshCw className="w-2.5 h-2.5" /> Rodízio
                   </span>

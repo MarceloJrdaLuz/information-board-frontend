@@ -21,6 +21,7 @@ interface Props {
   value?: string | null
   onChange: (publisherId: string | null) => void
   partner?: IPublisher | null
+  partners?: IPublisher[]
   publishers: IPublisher[]
   date: string
   slotId: string
@@ -38,6 +39,7 @@ export function PublicWitnessPublisherSelect({
   value,
   onChange,
   partner,
+  partners,
   publishers,
   date,
   slotId,
@@ -53,6 +55,12 @@ export function PublicWitnessPublisherSelect({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [filterTab, setFilterTab] = useState<"ALL" | "M" | "F" | "PREF">("ALL")
+
+  const activePartners = useMemo(() => {
+    return partners && partners.length > 0 ? partners : (partner ? [partner] : [])
+  }, [partners, partner])
+
+  const primaryPartner = activePartners[0] || null
 
   const selectedPublisher = useMemo(() => {
     if (!value) return null
@@ -85,8 +93,8 @@ export function PublicWitnessPublisherSelect({
 
     return publishers
       .filter(p => {
-        // Se já está selecionado como o próprio parceiro do slot, oculta
-        if (partner && p.id === partner.id) return false
+        // Se já está selecionado como parceiro em outra vaga do mesmo slot, oculta
+        if (activePartners.some(ap => ap.id === p.id)) return false
 
         // Filtro por gênero ou preferência
         if (filterTab === "M" && getGender(p.gender) !== "M") return false
@@ -108,9 +116,9 @@ export function PublicWitnessPublisherSelect({
         if (b.id === value) return 1
 
         // Se há parceiro, prioriza duplas que nunca saíram juntas
-        if (partner) {
-          const keyA = a.id < partner.id ? `${a.id}:${partner.id}` : `${partner.id}:${a.id}`
-          const keyB = b.id < partner.id ? `${b.id}:${partner.id}` : `${partner.id}:${b.id}`
+        if (primaryPartner) {
+          const keyA = a.id < primaryPartner.id ? `${a.id}:${primaryPartner.id}` : `${primaryPartner.id}:${a.id}`
+          const keyB = b.id < primaryPartner.id ? `${b.id}:${primaryPartner.id}` : `${primaryPartner.id}:${b.id}`
           const countA = pairCountMap.get(keyA)?.count || 0
           const countB = pairCountMap.get(keyB)?.count || 0
           if (countA !== countB) return countA - countB
@@ -130,7 +138,8 @@ export function PublicWitnessPublisherSelect({
       })
   }, [
     publishers,
-    partner,
+    activePartners,
+    primaryPartner,
     value,
     filterTab,
     search,
@@ -195,11 +204,11 @@ export function PublicWitnessPublisherSelect({
             <div className="flex items-center gap-1.5 text-xs font-bold text-typography-900">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
               <span>
-                {partner ? "Selecionar Dupla Inteligente" : "Selecionar Publicador"}
+                {activePartners.length > 0 ? "Selecionar Parceiro Inteligente" : "Selecionar Publicador"}
               </span>
             </div>
             <span className="text-[10px] text-typography-500">
-              {partner ? `Parceiro atual: ${partner.nickname || partner.fullName}` : "Ordenado por descanso"}
+              {primaryPartner ? `Parceiro: ${primaryPartner.nickname || primaryPartner.fullName}` : "Ordenado por descanso"}
             </span>
           </div>
 
@@ -287,17 +296,29 @@ export function PublicWitnessPublisherSelect({
                 let daysSincePair: number | null = null
                 let compatibility = { isCompatible: true, isFamily: false, reason: null as string | null }
 
-                if (partner) {
-                  const pairKey = pub.id < partner.id ? `${pub.id}:${partner.id}` : `${partner.id}:${pub.id}`
-                  const pairData = pairCountMap.get(pairKey)
-                  if (pairData) {
-                    pairCount = pairData.count
-                    lastPairDate = pairData.lastDate
-                    if (lastPairDate) {
-                      daysSincePair = dayjs(date).diff(dayjs(lastPairDate), "day")
+                if (activePartners.length > 0) {
+                  if (primaryPartner) {
+                    const pairKey = pub.id < primaryPartner.id ? `${pub.id}:${primaryPartner.id}` : `${primaryPartner.id}:${pub.id}`
+                    const pairData = pairCountMap.get(pairKey)
+                    if (pairData) {
+                      pairCount = pairData.count
+                      lastPairDate = pairData.lastDate
+                      if (lastPairDate) {
+                        daysSincePair = dayjs(date).diff(dayjs(lastPairDate), "day")
+                      }
                     }
                   }
-                  compatibility = checkCompatibility(pub, partner)
+
+                  // Checa compatibilidade com TODOS os parceiros do slot
+                  for (const ap of activePartners) {
+                    const comp = checkCompatibility(pub, ap)
+                    if (!comp.isCompatible) {
+                      compatibility = comp
+                      break
+                    } else if (comp.isFamily) {
+                      compatibility = comp
+                    }
+                  }
                 }
 
                 const formattedLastDate = lastDate ? ` (${dayjs(lastDate).format("DD/MM/YYYY")})` : ""
