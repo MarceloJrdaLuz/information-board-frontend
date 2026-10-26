@@ -168,25 +168,26 @@ export default function PublicWitnessCarousel({
     const hasFixed = weeklyFixed.length > 0
 
     // Aba principal: 'escalacao' | 'special' | 'fixed'
-    const [activeMainTab, setActiveMainTab] = useState<MainTabType>(() => {
-        if (hasEscalacao) return "escalacao"
-        if (hasSpecial) return "special"
-        if (hasFixed) return "fixed"
-        return "escalacao"
-    })
+    const [activeMainTab, setActiveMainTab] = useState<MainTabType>("escalacao")
+    const [hasUserSelectedTab, setHasUserSelectedTab] = useState(false)
 
+    // Apenas seleciona uma aba inicial com dados se o usuário ainda não tiver clicado
     useEffect(() => {
-        if (activeMainTab === "escalacao" && !hasEscalacao) {
-            if (hasSpecial) setActiveMainTab("special")
-            else if (hasFixed) setActiveMainTab("fixed")
-        } else if (activeMainTab === "special" && !hasSpecial) {
-            if (hasEscalacao) setActiveMainTab("escalacao")
-            else if (hasFixed) setActiveMainTab("fixed")
-        } else if (activeMainTab === "fixed" && !hasFixed) {
-            if (hasEscalacao) setActiveMainTab("escalacao")
-            else if (hasSpecial) setActiveMainTab("special")
+        if (!hasUserSelectedTab) {
+            if (hasEscalacao) {
+                setActiveMainTab("escalacao")
+            } else if (hasSpecial) {
+                setActiveMainTab("special")
+            } else if (hasFixed) {
+                setActiveMainTab("fixed")
+            }
         }
-    }, [hasEscalacao, hasSpecial, hasFixed, activeMainTab])
+    }, [hasEscalacao, hasSpecial, hasFixed, hasUserSelectedTab])
+
+    const handleTabClick = (tab: MainTabType) => {
+        setHasUserSelectedTab(true)
+        setActiveMainTab(tab)
+    }
 
     /* =====================================================
      *  RENDER
@@ -196,10 +197,10 @@ export default function PublicWitnessCarousel({
             {/* =================================================
              *  SELETOR DE 3 ABAS: ESCALAÇÃO | ARRANJOS ESPECIAIS | ARRANJOS FIXOS
              * ================================================= */}
-            <div className="w-full sm:w-auto inline-flex items-center p-1 bg-surface-200/80 rounded-2xl border border-surface-300 shadow-2xs gap-1 overflow-x-auto max-w-full">
+            <div className="w-full sm:w-auto inline-flex items-center p-1 bg-surface-200/80 rounded-2xl border border-surface-300 shadow-2xs gap-1 overflow-x-auto max-w-full hide-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <button
                     type="button"
-                    onClick={() => setActiveMainTab("escalacao")}
+                    onClick={() => handleTabClick("escalacao")}
                     className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                         activeMainTab === "escalacao"
                             ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/80"
@@ -212,7 +213,7 @@ export default function PublicWitnessCarousel({
 
                 <button
                     type="button"
-                    onClick={() => setActiveMainTab("special")}
+                    onClick={() => handleTabClick("special")}
                     className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                         activeMainTab === "special"
                             ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/80"
@@ -230,7 +231,7 @@ export default function PublicWitnessCarousel({
 
                 <button
                     type="button"
-                    onClick={() => setActiveMainTab("fixed")}
+                    onClick={() => handleTabClick("fixed")}
                     className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                         activeMainTab === "fixed"
                             ? "bg-surface-100 text-typography-900 shadow-sm border border-surface-300/80"

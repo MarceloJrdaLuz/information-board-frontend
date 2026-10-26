@@ -56,7 +56,7 @@ export default function BreadCrumbs({ crumbs, pageActive }: IBreadCrumbsProps) {
     return (
         <nav
             aria-label="Breadcrumb"
-            className="flex items-center w-full px-4 sm:px-6 py-2 bg-surface-100/90 dark:bg-surface-100/70 border-b border-surface-300 backdrop-blur-sm overflow-x-auto whitespace-nowrap scroll-smooth transition-colors"
+            className="flex items-center w-full px-4 sm:px-6 py-2 bg-surface-100/90 dark:bg-surface-100/70 border-b border-surface-300 backdrop-blur-sm overflow-x-auto whitespace-nowrap scroll-smooth transition-colors hide-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
             <ol className="inline-flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
                 {sanitizedCrumbs.map((crumb, index) => {
