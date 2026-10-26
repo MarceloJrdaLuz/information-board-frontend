@@ -1,10 +1,11 @@
 import { installPromptAtom } from "@/atoms/atom"
 import { themeAtom } from "@/atoms/themeAtoms"
 import { useAtomValue } from "jotai"
-import { Check, Download, Forward, Info, RefreshCw, Shield, X } from "lucide-react"
+import { Check, Download, Info, RefreshCw, Shield, X } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import ShareArrowIcon from "../Icons/ShareArrowIcon"
 import PwaInstallModal from "../PwaInstallModal"
 import ThemeSwitcher from "../ThemeSwitcher"
 
@@ -163,7 +164,7 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
               {copied ? (
                 <Check size={16} className="text-emerald-300 transition-transform scale-110" />
               ) : (
-                <Forward size={16} />
+                <ShareArrowIcon className="w-4 h-4" />
               )}
             </button>
           </div>
