@@ -1,9 +1,10 @@
 import { installPromptAtom } from "@/atoms/atom"
 import { themeAtom } from "@/atoms/themeAtoms"
 import { useAtomValue } from "jotai"
-import { Download, Info, RefreshCw, Shield, X } from "lucide-react"
+import { Check, Download, Forward, Info, RefreshCw, Shield, X } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import PwaInstallModal from "../PwaInstallModal"
 import ThemeSwitcher from "../ThemeSwitcher"
 
@@ -26,6 +27,41 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
   const [showThemeInstallModal, setShowThemeInstallModal] = useState(false)
   const [showReinstallModal, setShowReinstallModal] = useState(false)
   const [showManualInstallModal, setShowManualInstallModal] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      toast.success("Link copiado para a área de transferência!")
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.info("Não foi possível copiar o link.")
+    }
+  }
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return
+
+    const pageUrl = window.location.href
+    const pageTitle = document.title || "Quadro de Anúncios"
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: pageTitle,
+          text: nomeCongregacao ? `${pageTitle} • Congregação ${nomeCongregacao}` : pageTitle,
+          url: pageUrl,
+        })
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          await copyToClipboard(pageUrl)
+        }
+      }
+    } else {
+      await copyToClipboard(pageUrl)
+    }
+  }
 
   useEffect(() => {
     // Detecta se está rodando instalado como PWA (standalone)
@@ -116,6 +152,20 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
 
             {/* Mudar Tema em formato pill */}
             <ThemeSwitcher showLabel />
+
+            {/* Compartilhar Página (ícone de flecha encurvada para direita) */}
+            <button
+              onClick={handleShare}
+              title="Compartilhar link desta página"
+              aria-label="Compartilhar link desta página"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 text-white transition-all shadow-sm cursor-pointer"
+            >
+              {copied ? (
+                <Check size={16} className="text-emerald-300 transition-transform scale-110" />
+              ) : (
+                <Forward size={16} />
+              )}
+            </button>
           </div>
 
           {/* Lado Direito: Link de Política de Privacidade */}
