@@ -1,5 +1,5 @@
 import Calendar from "@/Components/Calendar"
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import ContentDashboard from "@/Components/ContentDashboard";
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
@@ -11,7 +11,6 @@ import { IPublisherMini } from "@/types/midweek";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
 import { normalizeText } from "@/utils/normalizeText";
 import {
     CalendarOff,
@@ -27,7 +26,8 @@ import {
     Clock,
     Sparkles,
     ChevronsUpDown,
-    Check
+    Check,
+    X
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
@@ -73,9 +73,10 @@ function MidweekUnavailabilitiesPage() {
     const [submitting, setSubmitting] = useState(false);
 
     const filteredPublishers = useMemo(() => {
-        if (!publisherSearch.trim()) return publishers;
+        const sorted = [...publishers].sort((a, b) => a.fullName.localeCompare(b.fullName, "pt-BR"));
+        if (!publisherSearch.trim()) return sorted;
         const norm = normalizeText(publisherSearch);
-        return publishers.filter((p) =>
+        return sorted.filter((p) =>
             normalizeText(p.fullName).includes(norm) ||
             (p.nickname ? normalizeText(p.nickname).includes(norm) : false)
         );
@@ -84,6 +85,29 @@ function MidweekUnavailabilitiesPage() {
     const selectedPublisher = useMemo(() => {
         return publishers.find((p) => p.id === selectedPublisherId);
     }, [publishers, selectedPublisherId]);
+
+    const publisherSelectRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            if (
+                publisherSelectRef.current &&
+                !publisherSelectRef.current.contains(event.target as Node)
+            ) {
+                if (selectedPublisherId) {
+                    setIsPublisherSelectOpen(false);
+                    setPublisherSearch("");
+                }
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("touchstart", handleClickOutside);
+        };
+    }, [selectedPublisherId]);
 
     // Modal de Confirmação de Exclusão
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -224,7 +248,15 @@ function MidweekUnavailabilitiesPage() {
                     </div>
 
                     <Button
-                        onClick={() => setIsCreateModalOpen(true)}
+                        onClick={() => {
+                            setSelectedPublisherId("");
+                            setPublisherSearch("");
+                            setIsPublisherSelectOpen(false);
+                            setStartDate(dayjs().format("YYYY-MM-DD"));
+                            setEndDate(dayjs().add(7, "day").format("YYYY-MM-DD"));
+                            setReason("");
+                            setIsCreateModalOpen(true);
+                        }}
                         className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm h-9 px-4 cursor-pointer"
                     >
                         <Plus className="h-4 w-4" />
@@ -418,12 +450,14 @@ function MidweekUnavailabilitiesPage() {
                 onOpenChange={(open) => {
                     setIsCreateModalOpen(open);
                     if (!open) {
+                        setSelectedPublisherId("");
                         setPublisherSearch("");
                         setIsPublisherSelectOpen(false);
+                        setReason("");
                     }
                 }}
             >
-                <DialogContent className="max-w-md bg-surface-100 border border-surface-300 p-5">
+                <DialogContent className="max-w-md bg-surface-100 border border-surface-300 p-5 max-h-[90dvh] overflow-y-auto thin-scrollbar">
                     <DialogHeader className="pb-3 border-b border-surface-300">
                         <DialogTitle className="text-base font-bold text-typography-900 flex items-center gap-2">
                             <CalendarOff className="h-5 w-5 text-amber-500" />
@@ -433,83 +467,129 @@ function MidweekUnavailabilitiesPage() {
 
                     <form onSubmit={handleCreate} className="flex flex-col gap-4 mt-3">
                         {/* Selecionar Publicador */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-bold text-typography-800">
-                                Publicador <span className="text-red-500">*</span>
-                            </label>
-                            <Popover open={isPublisherSelectOpen} onOpenChange={setIsPublisherSelectOpen}>
-                                <PopoverTrigger asChild>
+                        <div className="flex flex-col gap-1.5" ref={publisherSelectRef}>
+                            <label className="text-xs font-bold text-typography-800 flex items-center justify-between">
+                                <span>
+                                    Publicador <span className="text-red-500">*</span>
+                                </span>
+                                {selectedPublisher && !isPublisherSelectOpen && (
                                     <button
                                         type="button"
-                                        role="combobox"
-                                        aria-expanded={isPublisherSelectOpen}
-                                        className="w-full h-10 flex items-center justify-between rounded-xl border border-surface-300 bg-surface-200/70 hover:bg-surface-200 text-xs font-normal text-typography-900 px-3.5 focus:outline-none focus:ring-2 focus:ring-primary-200/20 transition-all cursor-pointer"
+                                        onClick={() => {
+                                            setIsPublisherSelectOpen(true);
+                                            setPublisherSearch("");
+                                        }}
+                                        className="text-[11px] font-semibold text-primary-200 hover:underline cursor-pointer"
                                     >
-                                        <div className="flex items-center gap-2 truncate">
-                                            <User className="h-4 w-4 text-typography-400 shrink-0" />
-                                            <span className="truncate font-medium">
-                                                {selectedPublisher
-                                                    ? `${selectedPublisher.fullName}${selectedPublisher.nickname ? ` (${selectedPublisher.nickname})` : ""}`
-                                                    : "Buscar e selecionar pessoa..."}
-                                            </span>
-                                        </div>
-                                        <ChevronsUpDown className="h-4 w-4 text-typography-400 shrink-0 opacity-60" />
+                                        Alterar
                                     </button>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                    className="w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-2rem)] p-2 rounded-2xl bg-surface-100 border border-surface-300 shadow-xl z-50"
-                                    align="start"
+                                )}
+                            </label>
+
+                            {selectedPublisher && !isPublisherSelectOpen ? (
+                                <div
+                                    onClick={() => {
+                                        setIsPublisherSelectOpen(true);
+                                        setPublisherSearch("");
+                                    }}
+                                    className="w-full min-h-[44px] py-2 px-3 flex items-center justify-between rounded-xl border border-primary-200/40 bg-primary-200/5 hover:bg-primary-200/10 text-xs text-typography-900 cursor-pointer transition-all"
                                 >
-                                    <div className="relative mb-2">
-                                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-typography-400" />
+                                    <div className="flex items-center gap-2.5 truncate">
+                                        <div className="w-7 h-7 rounded-lg bg-primary-200/10 flex items-center justify-center shrink-0">
+                                            <User className="h-4 w-4 text-primary-200" />
+                                        </div>
+                                        <div className="flex flex-col truncate text-left">
+                                            <span className="font-bold text-typography-900 truncate">
+                                                {selectedPublisher.fullName}
+                                            </span>
+                                            {selectedPublisher.nickname && (
+                                                <span className="text-[10px] text-typography-500 font-normal truncate">
+                                                    Conhecido como: {selectedPublisher.nickname}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="text-[11px] text-primary-200 font-semibold px-2 py-0.5 rounded-md bg-primary-200/10 hover:bg-primary-200/20 shrink-0">
+                                        Trocar
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-1.5">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-typography-400 pointer-events-none" />
                                         <input
                                             type="text"
                                             value={publisherSearch}
-                                            onChange={(e) => setPublisherSearch(e.target.value)}
-                                            placeholder="Buscar por nome ou apelido..."
-                                            className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200"
-                                            autoFocus
+                                            onChange={(e) => {
+                                                setPublisherSearch(e.target.value);
+                                                setIsPublisherSelectOpen(true);
+                                            }}
+                                            onFocus={() => setIsPublisherSelectOpen(true)}
+                                            placeholder="Digite o nome ou selecione na lista..."
+                                            className="w-full h-11 pl-9 pr-9 text-xs rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/30 focus:border-primary-200 transition-all"
                                         />
+                                        {publisherSearch ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setPublisherSearch("")}
+                                                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-typography-400 hover:text-typography-700 cursor-pointer"
+                                                title="Limpar busca"
+                                            >
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        ) : selectedPublisher ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsPublisherSelectOpen(false)}
+                                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-typography-500 hover:text-typography-800 px-1 py-0.5 cursor-pointer"
+                                                title="Cancelar alteração"
+                                            >
+                                                Cancelar
+                                            </button>
+                                        ) : null}
                                     </div>
-                                    <div className="max-h-56 overflow-y-auto thin-scrollbar flex flex-col gap-1 pr-1">
-                                        {filteredPublishers.length === 0 ? (
-                                            <div className="py-6 text-center text-xs text-typography-400">
-                                                Nenhum publicador encontrado.
-                                            </div>
-                                        ) : (
-                                            filteredPublishers.map((pub) => {
-                                                const isSelected = pub.id === selectedPublisherId;
-                                                return (
-                                                    <button
-                                                        key={pub.id}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setSelectedPublisherId(pub.id);
-                                                            setIsPublisherSelectOpen(false);
-                                                            setPublisherSearch("");
-                                                        }}
-                                                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs transition-colors cursor-pointer ${
-                                                            isSelected
-                                                                ? "bg-primary-200/10 text-primary-200 font-bold"
-                                                                : "text-typography-800 hover:bg-surface-200/80"
-                                                        }`}
-                                                    >
-                                                        <div className="flex flex-col truncate">
-                                                            <span className="truncate">{pub.fullName}</span>
-                                                            {pub.nickname && (
-                                                                <span className="text-[10px] text-typography-500 font-normal truncate">
-                                                                    Conhecido como: {pub.nickname}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        {isSelected && <Check className="h-4 w-4 text-primary-200 shrink-0 ml-2" />}
-                                                    </button>
-                                                );
-                                            })
-                                        )}
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
+
+                                    {isPublisherSelectOpen && (
+                                        <div className="border border-surface-300 rounded-xl bg-surface-100 p-1 shadow-sm max-h-48 overflow-y-auto thin-scrollbar flex flex-col gap-0.5">
+                                            {filteredPublishers.length === 0 ? (
+                                                <div className="py-4 text-center text-xs text-typography-400">
+                                                    Nenhum publicador encontrado.
+                                                </div>
+                                            ) : (
+                                                filteredPublishers.map((pub) => {
+                                                    const isSelected = pub.id === selectedPublisherId;
+                                                    return (
+                                                        <button
+                                                            key={pub.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setSelectedPublisherId(pub.id);
+                                                                setIsPublisherSelectOpen(false);
+                                                                setPublisherSearch("");
+                                                            }}
+                                                            className={`flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs transition-colors cursor-pointer ${
+                                                                isSelected
+                                                                    ? "bg-primary-200/10 text-primary-200 font-bold"
+                                                                    : "text-typography-800 hover:bg-surface-200/80"
+                                                            }`}
+                                                        >
+                                                            <div className="flex flex-col truncate">
+                                                                <span className="truncate">{pub.fullName}</span>
+                                                                {pub.nickname && (
+                                                                    <span className="text-[10px] text-typography-500 font-normal truncate">
+                                                                        Conhecido como: {pub.nickname}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {isSelected && <Check className="h-4 w-4 text-primary-200 shrink-0 ml-2" />}
+                                                        </button>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Datas (Início e Fim) */}
