@@ -11,6 +11,8 @@ import { IPublisherMini } from "@/types/midweek";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
+import { normalizeText } from "@/utils/normalizeText";
 import {
     CalendarOff,
     Search,
@@ -24,7 +26,9 @@ import {
     AlertCircle,
     Clock,
     UserCheck,
-    Filter
+    Filter,
+    ChevronsUpDown,
+    Check
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
@@ -64,10 +68,25 @@ function PublisherUnavailabilitiesPage() {
     // Modal de Cadastro
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [selectedPublisherId, setSelectedPublisherId] = useState("");
+    const [publisherSearch, setPublisherSearch] = useState("");
+    const [isPublisherSelectOpen, setIsPublisherSelectOpen] = useState(false);
     const [startDate, setStartDate] = useState(dayjs().format("YYYY-MM-DD"));
     const [endDate, setEndDate] = useState(dayjs().add(7, "day").format("YYYY-MM-DD"));
     const [reason, setReason] = useState("");
     const [submitting, setSubmitting] = useState(false);
+
+    const filteredPublishers = useMemo(() => {
+        if (!publisherSearch.trim()) return publishers;
+        const norm = normalizeText(publisherSearch);
+        return publishers.filter((p) =>
+            normalizeText(p.fullName).includes(norm) ||
+            (p.nickname ? normalizeText(p.nickname).includes(norm) : false)
+        );
+    }, [publishers, publisherSearch]);
+
+    const selectedPublisher = useMemo(() => {
+        return publishers.find((p) => p.id === selectedPublisherId);
+    }, [publishers, selectedPublisherId]);
 
     // Modal de Exclusão
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -420,7 +439,16 @@ function PublisherUnavailabilitiesPage() {
             </div>
 
             {/* Modal de Criação */}
-            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <Dialog
+                open={isCreateModalOpen}
+                onOpenChange={(open) => {
+                    setIsCreateModalOpen(open);
+                    if (!open) {
+                        setPublisherSearch("");
+                        setIsPublisherSelectOpen(false);
+                    }
+                }}
+            >
                 <DialogContent className="max-w-md bg-surface-100 border border-surface-300 p-5">
                     <DialogHeader className="pb-3 border-b border-surface-300">
                         <DialogTitle className="text-base font-bold text-typography-900 flex items-center gap-2">
@@ -435,25 +463,83 @@ function PublisherUnavailabilitiesPage() {
                             <label className="text-xs font-bold text-typography-800">
                                 Pessoa / Publicador <span className="text-red-500">*</span>
                             </label>
-                            <Select
-                                value={selectedPublisherId || undefined}
-                                onValueChange={setSelectedPublisherId}
-                            >
-                                <SelectTrigger className="w-full h-10 rounded-xl border-surface-300 bg-surface-200 text-xs text-typography-900">
-                                    <SelectValue placeholder="Selecione a pessoa..." />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-60 rounded-xl">
-                                    {publishers.map((pub) => (
-                                        <SelectItem key={pub.id} value={pub.id} className="text-xs">
-                                            {pub.fullName} {pub.nickname ? `(${pub.nickname})` : ""}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <Popover open={isPublisherSelectOpen} onOpenChange={setIsPublisherSelectOpen}>
+                                <PopoverTrigger asChild>
+                                    <button
+                                        type="button"
+                                        role="combobox"
+                                        aria-expanded={isPublisherSelectOpen}
+                                        className="w-full h-10 flex items-center justify-between rounded-xl border border-surface-300 bg-surface-200/70 hover:bg-surface-200 text-xs font-normal text-typography-900 px-3.5 focus:outline-none focus:ring-2 focus:ring-primary-200/20 transition-all cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-2 truncate">
+                                            <User className="h-4 w-4 text-typography-400 shrink-0" />
+                                            <span className="truncate font-medium">
+                                                {selectedPublisher
+                                                    ? `${selectedPublisher.fullName}${selectedPublisher.nickname ? ` (${selectedPublisher.nickname})` : ""}`
+                                                    : "Buscar e selecionar pessoa..."}
+                                            </span>
+                                        </div>
+                                        <ChevronsUpDown className="h-4 w-4 text-typography-400 shrink-0 opacity-60" />
+                                    </button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                    className="w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-2rem)] p-2 rounded-2xl bg-surface-100 border border-surface-300 shadow-xl z-50"
+                                    align="start"
+                                >
+                                    <div className="relative mb-2">
+                                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-typography-400" />
+                                        <input
+                                            type="text"
+                                            value={publisherSearch}
+                                            onChange={(e) => setPublisherSearch(e.target.value)}
+                                            placeholder="Buscar por nome ou apelido..."
+                                            className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200"
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="max-h-56 overflow-y-auto thin-scrollbar flex flex-col gap-1 pr-1">
+                                        {filteredPublishers.length === 0 ? (
+                                            <div className="py-6 text-center text-xs text-typography-400">
+                                                Nenhum publicador encontrado.
+                                            </div>
+                                        ) : (
+                                            filteredPublishers.map((pub) => {
+                                                const isSelected = pub.id === selectedPublisherId;
+                                                return (
+                                                    <button
+                                                        key={pub.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedPublisherId(pub.id);
+                                                            setIsPublisherSelectOpen(false);
+                                                            setPublisherSearch("");
+                                                        }}
+                                                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs transition-colors cursor-pointer ${
+                                                            isSelected
+                                                                ? "bg-primary-200/10 text-primary-200 font-bold"
+                                                                : "text-typography-800 hover:bg-surface-200/80"
+                                                        }`}
+                                                    >
+                                                        <div className="flex flex-col truncate">
+                                                            <span className="truncate">{pub.fullName}</span>
+                                                            {pub.nickname && (
+                                                                <span className="text-[10px] text-typography-500 font-normal truncate">
+                                                                    Conhecido como: {pub.nickname}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {isSelected && <Check className="h-4 w-4 text-primary-200 shrink-0 ml-2" />}
+                                                    </button>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         </div>
 
                         {/* Datas (Início e Fim) */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Calendar
                                 label="Data Inicial *"
                                 selectedDate={startDate || null}
