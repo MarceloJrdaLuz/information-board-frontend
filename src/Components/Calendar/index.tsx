@@ -666,18 +666,18 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                             item.isSelected
                               ? 'bg-primary-200 text-white font-bold shadow-xs scale-102 ring-2 ring-primary-200/40 z-1 cursor-pointer'
                               : item.isDisabled
-                              ? 'text-typography-300 opacity-30 cursor-not-allowed line-through'
+                              ? 'text-typography-400/40 bg-surface-200/40 cursor-not-allowed select-none'
                               : item.isCurrentMonth
                               ? 'text-typography-800 hover:bg-surface-200 hover:text-typography-900 font-medium cursor-pointer'
                               : 'text-typography-400 hover:bg-surface-200/50 cursor-pointer'
                           } ${
-                            item.isToday && !item.isSelected
-                              ? 'border border-primary-200/60 font-bold'
+                            item.isToday && !item.isSelected && !item.isDisabled
+                              ? 'border border-primary-200/60 font-bold text-primary-200'
                               : ''
                           }`}
                         >
                           <span>{item.day}</span>
-                          {item.isToday && !item.isSelected && (
+                          {item.isToday && !item.isSelected && !item.isDisabled && (
                             <span className="absolute bottom-1 w-1 h-1 rounded-full bg-primary-200" />
                           )}
                         </button>
