@@ -23,3 +23,4 @@ export default function ShareArrowIcon({ className = "w-4 h-4", size }: ShareArr
     </svg>
   )
 }
+
