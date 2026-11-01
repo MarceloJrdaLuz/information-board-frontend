@@ -535,8 +535,11 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                 zIndex: 99999,
                 width: '320px',
               }}
-              className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 select-none font-sans text-typography-900 overflow-hidden"
+              className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden relative"
             >
+              {/* Linha de destaque na cor primária no topo do cartão */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-200/50 via-primary-200 to-primary-200/50" />
+
               {/* Cabeçalho do Calendário */}
               <div className="flex items-center justify-between gap-1 mb-2.5 pb-2 border-b border-surface-300/60">
                 <button
