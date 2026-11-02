@@ -9,9 +9,10 @@ interface MinistryGoalProgressProps {
 }
 
 const PRESET_GOALS = [
-    { label: "15h", value: 15, desc: "Publicador" },
+    { label: "15h", value: 15, desc: "Pion. Auxiliar" },
     { label: "30h", value: 30, desc: "Pion. Auxiliar" },
     { label: "50h", value: 50, desc: "Pion. Regular" },
+    { label: "100h", value: 100, desc: "Pion. Especial" },
 ];
 
 export default function MinistryGoalProgress({
@@ -146,7 +147,7 @@ export default function MinistryGoalProgress({
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {PRESET_GOALS.map((preset) => (
                             <button
                                 key={preset.value}
@@ -325,3 +326,4 @@ export default function MinistryGoalProgress({
         </div>
     );
 }
+

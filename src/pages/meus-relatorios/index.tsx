@@ -70,7 +70,7 @@ function MyReportsPage() {
                             className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-10 px-4 rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
                         >
                             <Clock className="w-4 h-4" />
-                            <span>Diário do Ministério</span>
+                            <span>Minhas Atividades</span>
                             <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
                         </Link>
 

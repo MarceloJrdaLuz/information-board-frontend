@@ -98,13 +98,13 @@ export default function Layout(props: LayoutProps) {
                         {isPublisher && (
                             <>
                                 <NavBar.Options
-                                    title="Diário de Campo"
+                                    title="Minhas Atividades"
                                     onClick={() => {
                                         { !isDesktop && setIsMenuOpen(false) }
                                         Router.push('/meus-relatorios/diario')
                                     }}
                                     icon={() => <Clock className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                    active={pageActive === '/meus-relatorios/diario' || pageActive === 'Diário do Ministério'}
+                                    active={pageActive === '/meus-relatorios/diario' || pageActive === 'Minhas Atividades'}
                                 />
                                 <NavBar.Options
                                     title="Meus relatórios"

@@ -61,7 +61,7 @@ function DailyMinistryPage() {
     const [isSubmitReportModalOpen, setIsSubmitReportModalOpen] = useState(false);
 
     useEffect(() => {
-        setPageActive("Diário do Ministério");
+        setPageActive("Minhas Atividades");
         setCrumbs([
             { label: "Início", link: "/dashboard" },
             { label: "Meus Relatórios", link: "/meus-relatorios" }
@@ -140,7 +140,7 @@ function DailyMinistryPage() {
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive={"Diário de Campo"} />
+            <BreadCrumbs crumbs={crumbs} pageActive={"Minhas Atividades"} />
 
             <section className="flex flex-col flex-1 w-full max-w-5xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto thin-scrollbar">
                 {/* Header Principal */}
@@ -151,7 +151,7 @@ function DailyMinistryPage() {
                         </div>
                         <div>
                             <h1 className="text-lg sm:text-2xl font-bold text-typography-900 tracking-tight flex items-center gap-2">
-                                Meu Ministério de Campo
+                                Minhas Atividades
                             </h1>
                             <p className="text-[11px] sm:text-sm text-typography-500 mt-0.5">
                                 Anote suas horas, créditos e estudos para enviar seu relatório com facilidade.
