@@ -80,11 +80,58 @@ function resolveThemeFolder(theme) {
   return ''
 }
 
-// Escuta mensagem da aplicacao informando o tema atual
+// Escuta mensagem da aplicacao informando o tema atual ou controle do cronometro
 self.addEventListener('message', function (event) {
   if (event.data && event.data.type === 'SET_THEME') {
     currentAppTheme = event.data.theme || ''
     saveThemeToIndexedDB(currentAppTheme)
+  }
+
+  // Notificacao nativa do Cronometro do Ministerio via Service Worker
+  if (event.data && event.data.type === 'HORA_TIMER_NOTIFICATION') {
+    var timer = event.data.timer || {}
+    var elapsedMs = timer.elapsedMs || 0
+    var seconds = Math.floor(elapsedMs / 1000)
+    var h = Math.floor(seconds / 3600)
+    var m = Math.floor((seconds % 3600) / 60)
+    var s = seconds % 60
+    var timeFormatted = [h, m, s].map(function (v) { return String(v).padStart(2, '0') }).join(':')
+
+    var title = (timer.running ? '⏱️ Ministério: ' : '⏸️ Ministério Pausado: ') + timeFormatted
+    var body = timer.running ? 'Contagem em andamento' : 'Contagem pausada'
+
+    var actions = []
+    if (timer.running) {
+      actions.push({ action: 'pause', title: 'Pausar' })
+      actions.push({ action: 'stop', title: 'Finalizar' })
+    } else {
+      actions.push({ action: 'resume', title: 'Continuar' })
+      actions.push({ action: 'stop', title: 'Finalizar' })
+    }
+
+    event.waitUntil(
+      self.registration.showNotification(title, {
+        body: body,
+        icon: '/icons/pwa-192.png',
+        badge: '/icons/badge.png',
+        tag: 'ministry-stopwatch-timer',
+        renotify: false,
+        silent: true,
+        actions: actions,
+        data: {
+          url: '/meus-relatorios/diario',
+          isTimer: true
+        }
+      })
+    )
+  }
+
+  if (event.data && event.data.type === 'HORA_TIMER_NOTIFICATION_CLOSE') {
+    event.waitUntil(
+      self.registration.getNotifications({ tag: 'ministry-stopwatch-timer' }).then(function (notifications) {
+        notifications.forEach(function (n) { n.close() })
+      })
+    )
   }
 })
 
@@ -153,6 +200,28 @@ self.addEventListener('push', function (event) {
 
 self.addEventListener('notificationclick', function (event) {
   event.notification.close()
+
+  var isTimer = event.notification.data?.isTimer
+  var action = event.action
+
+  if (isTimer && action) {
+    event.waitUntil(
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+        for (var i = 0; i < clientList.length; i++) {
+          var client = clientList[i]
+          if (client.url && client.url.indexOf('/meus-relatorios/diario') !== -1) {
+            client.postMessage({ type: 'HORA_TIMER_ACTION', action: action })
+            return client.focus()
+          }
+        }
+        var urlToOpen = '/meus-relatorios/diario?timerAction=' + action
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen)
+        }
+      })
+    )
+    return
+  }
 
   var urlToOpen = event.notification.data?.url || '/dashboard'
 
