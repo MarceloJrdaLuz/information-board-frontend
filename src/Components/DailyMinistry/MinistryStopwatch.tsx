@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, Clock, Plus, RotateCcw, Smartphone, AlertTriangle } from "lucide-react";
+import { Play, Pause, Clock, Square, RotateCcw, Smartphone } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/Components/ui/dialog";
 
@@ -13,26 +13,59 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioCtxRef = useRef<AudioContext | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const accumulatedSecsRef = useRef<number>(0);
 
-    const playSilentAudio = useCallback(() => {
+    const initAudio = useCallback(() => {
+        if (typeof window === "undefined") return;
+        if (audioRef.current) return;
+
         try {
-            if (typeof window === "undefined") return;
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContextClass) {
+                const ctx = new AudioContextClass();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
 
-            if (!audioRef.current) {
-                const audio = new Audio("/silence.wav");
-                audio.loop = true;
+                // Frequência inaudível (20Hz) e ganho mínimo (0.001) para manter a thread de áudio ativa no celular.
+                // Como gera um MediaStream de duração contínua (infinita), o Android oculta a barra de progresso/seek.
+                osc.frequency.value = 20;
+                gain.gain.value = 0.001;
+
+                const dest = ctx.createMediaStreamDestination();
+                osc.connect(gain);
+                gain.connect(dest);
+                osc.start();
+
+                const audio = new Audio();
+                audio.srcObject = dest.stream;
                 audioRef.current = audio;
+                audioCtxRef.current = ctx;
+                return;
             }
-
-            audioRef.current.play().catch((err) => {
-                console.log("Audio play error:", err);
-            });
         } catch (e) {
-            console.error("Audio init error:", e);
+            console.warn("Web Audio MediaStream não suportado, usando fallback:", e);
         }
+
+        const audio = new Audio("/silence.wav");
+        audio.loop = true;
+        audioRef.current = audio;
     }, []);
+
+    const playSilentAudio = useCallback(async () => {
+        try {
+            initAudio();
+            if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
+                await audioCtxRef.current.resume();
+            }
+            if (audioRef.current) {
+                await audioRef.current.play();
+            }
+        } catch (err) {
+            console.log("Audio play error:", err);
+        }
+    }, [initAudio]);
 
     const pauseSilentAudio = useCallback(() => {
         try {
@@ -206,8 +239,10 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     handleStartRef.current = handleStart;
     const handlePauseRef = useRef(handlePause);
     handlePauseRef.current = handlePause;
+    const handleStopAndSaveRef = useRef(handleStopAndSave);
+    handleStopAndSaveRef.current = handleStopAndSave;
 
-    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop)
+    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Finalizar/Stop)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             try {
@@ -217,8 +252,15 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 navigator.mediaSession.setActionHandler("pause", () => {
                     handlePauseRef.current();
                 });
+                // Permite finalizar o cronômetro diretamente pela notificação do celular
                 navigator.mediaSession.setActionHandler("stop", () => {
-                    handlePauseRef.current();
+                    handleStopAndSaveRef.current();
+                });
+                navigator.mediaSession.setActionHandler("nexttrack", () => {
+                    handleStopAndSaveRef.current();
+                });
+                navigator.mediaSession.setActionHandler("previoustrack", () => {
+                    handleStopAndSaveRef.current();
                 });
             } catch (err) {
                 console.error("Erro ao configurar MediaSession handlers:", err);
@@ -229,6 +271,9 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     useEffect(() => {
         return () => {
             pauseSilentAudio();
+            if (audioCtxRef.current) {
+                audioCtxRef.current.close().catch(() => {});
+            }
         };
     }, [pauseSilentAudio]);
 
@@ -292,8 +337,8 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                             onClick={handleStopAndSave}
                             className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex-1 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                         >
-                            <Plus className="w-4 h-4" />
-                            <span>Lançar Tempo</span>
+                            <Square className="w-3.5 h-3.5 fill-current" />
+                            <span>Finalizar</span>
                         </Button>
 
                         <Button
