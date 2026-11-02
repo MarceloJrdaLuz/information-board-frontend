@@ -7,70 +7,48 @@ interface MinistryStopwatchProps {
     onFinish: (elapsedMinutes: number) => void;
 }
 
+const ARTWORK = [
+    { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+    { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+];
+
 export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) {
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const audioCtxRef = useRef<AudioContext | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const accumulatedSecsRef = useRef<number>(0);
 
-    const initAudio = useCallback(() => {
-        if (typeof window === "undefined") return;
-        if (audioRef.current) return;
-
-        try {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContextClass) {
-                const ctx = new AudioContextClass();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                // Frequência inaudível (20Hz) e ganho mínimo (0.001) para manter a thread de áudio ativa no celular.
-                // Como gera um MediaStream de duração contínua (infinita), o Android oculta a barra de progresso/seek.
-                osc.frequency.value = 20;
-                gain.gain.value = 0.001;
-
-                const dest = ctx.createMediaStreamDestination();
-                osc.connect(gain);
-                gain.connect(dest);
-                osc.start();
-
-                const audio = new Audio();
-                audio.srcObject = dest.stream;
-                audioRef.current = audio;
-                audioCtxRef.current = ctx;
-                return;
-            }
-        } catch (e) {
-            console.warn("Web Audio MediaStream não suportado, usando fallback:", e);
+    const getAudio = useCallback(() => {
+        if (typeof window === "undefined") return null;
+        if (!audioRef.current) {
+            const audio = new Audio("/silence.wav");
+            audio.loop = true;
+            audioRef.current = audio;
         }
-
-        const audio = new Audio("/silence.wav");
-        audio.loop = true;
-        audioRef.current = audio;
+        return audioRef.current;
     }, []);
 
-    const playSilentAudio = useCallback(async () => {
+    const playSilentAudio = useCallback(() => {
         try {
-            initAudio();
-            if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-                await audioCtxRef.current.resume();
+            const audio = getAudio();
+            if (audio) {
+                audio.play().catch((err) => {
+                    console.log("Audio play error:", err);
+                });
             }
-            if (audioRef.current) {
-                await audioRef.current.play();
-            }
-        } catch (err) {
-            console.log("Audio play error:", err);
+        } catch (e) {
+            console.error("Audio init error:", e);
         }
-    }, [initAudio]);
+    }, [getAudio]);
 
     const pauseSilentAudio = useCallback(() => {
         try {
-            if (audioRef.current) {
-                audioRef.current.pause();
+            const audio = audioRef.current;
+            if (audio && !audio.paused) {
+                audio.pause();
             }
         } catch {}
     }, []);
@@ -192,7 +170,14 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
 
     const handleStopAndSave = () => {
         const finalSecs = syncTime();
-        handlePause();
+        startTimeRef.current = null;
+        accumulatedSecsRef.current = finalSecs;
+        setIsActive(false);
+        localStorage.setItem("ministry_timer_active", "false");
+        localStorage.setItem("ministry_timer_accumulated", finalSecs.toString());
+        localStorage.removeItem("ministry_timer_start");
+        pauseSilentAudio();
+
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             navigator.mediaSession.playbackState = "none";
         }
@@ -200,37 +185,38 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         onFinish(minutes);
     };
 
-    // Sincronização com a barra de notificações e tela de bloqueio do celular (MediaSession API)
+    // Sincroniza estado de reprodução apenas quando o status muda (evita reconstruir os botões todo segundo no Android)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             try {
                 if (isActive) {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: `⏱️ ${formatTime(seconds)}`,
-                        artist: " ", // Espaço em branco impede que o Chrome no Android preencha com a URL/domínio do site
-                        album: " ",
-                        artwork: [
-                            { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
-                            { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
-                        ]
-                    });
                     navigator.mediaSession.playbackState = "playing";
                 } else if (seconds > 0) {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: `⏸️ ${formatTime(seconds)}`,
-                        artist: " ",
-                        album: " ",
-                        artwork: [
-                            { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
-                            { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
-                        ]
-                    });
                     navigator.mediaSession.playbackState = "paused";
                 } else {
                     navigator.mediaSession.playbackState = "none";
                 }
             } catch (err) {
-                console.error("MediaSession error:", err);
+                console.error("MediaSession playbackState error:", err);
+            }
+        }
+    }, [isActive, seconds > 0]);
+
+    // Atualiza o título na notificação
+    useEffect(() => {
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            try {
+                if (isActive || seconds > 0) {
+                    const icon = isActive ? "⏱️" : "⏸️";
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: `${icon} ${formatTime(seconds)}`,
+                        artist: " ",
+                        album: " ",
+                        artwork: ARTWORK
+                    });
+                }
+            } catch (err) {
+                console.error("MediaSession metadata error:", err);
             }
         }
     }, [seconds, isActive]);
@@ -242,7 +228,33 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const handleStopAndSaveRef = useRef(handleStopAndSave);
     handleStopAndSaveRef.current = handleStopAndSave;
 
-    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Finalizar/Stop)
+    // Escuta eventos do elemento de áudio caso o próprio Android pause/inicie nativamente
+    useEffect(() => {
+        const audio = getAudio();
+        if (!audio) return;
+
+        const onAudioPause = () => {
+            if (startTimeRef.current) {
+                handlePauseRef.current();
+            }
+        };
+
+        const onAudioPlay = () => {
+            if (!startTimeRef.current && accumulatedSecsRef.current > 0) {
+                handleStartRef.current();
+            }
+        };
+
+        audio.addEventListener("pause", onAudioPause);
+        audio.addEventListener("play", onAudioPlay);
+
+        return () => {
+            audio.removeEventListener("pause", onAudioPause);
+            audio.removeEventListener("play", onAudioPlay);
+        };
+    }, [getAudio]);
+
+    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop/Finalizar)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             try {
@@ -252,7 +264,6 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 navigator.mediaSession.setActionHandler("pause", () => {
                     handlePauseRef.current();
                 });
-                // Permite finalizar o cronômetro diretamente pela notificação do celular
                 navigator.mediaSession.setActionHandler("stop", () => {
                     handleStopAndSaveRef.current();
                 });
@@ -271,9 +282,6 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     useEffect(() => {
         return () => {
             pauseSilentAudio();
-            if (audioCtxRef.current) {
-                audioCtxRef.current.close().catch(() => {});
-            }
         };
     }, [pauseSilentAudio]);
 
