@@ -318,7 +318,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 {!isActive ? (
                     <Button
                         onClick={handleStart}
-                        className={`bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer ${
+                        className={`bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer ${
                             seconds === 0 ? "col-span-2 sm:col-span-1" : ""
                         }`}
                     >

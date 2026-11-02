@@ -319,7 +319,7 @@ function DailyMinistryPage() {
 
                         <Button
                             onClick={() => setIsSubmitReportModalOpen(true)}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
+                            className="bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
                         >
                             <RefreshCw className="w-4 h-4" />
                             <span>Atualizar Relatório</span>

@@ -351,7 +351,7 @@ export default function SubmitReportModal({
                         size="sm"
                         disabled={submitting}
                         onClick={handleConfirmSubmit}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
+                        className="bg-primary-200 hover:bg-primary-150 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
                     >
                         {isUpdate ? <RefreshCw className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
                         <span>
