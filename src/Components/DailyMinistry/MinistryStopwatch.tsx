@@ -173,9 +173,9 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
             try {
                 if (isActive) {
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: `⏱️ Ministério: ${formatTime(seconds)}`,
-                        artist: "Quadro de Anúncios • Em andamento",
-                        album: "Minhas Atividades",
+                        title: `⏱️ ${formatTime(seconds)}`,
+                        artist: "",
+                        album: "",
                         artwork: [
                             { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
                             { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
@@ -184,9 +184,9 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     navigator.mediaSession.playbackState = "playing";
                 } else if (seconds > 0) {
                     navigator.mediaSession.metadata = new MediaMetadata({
-                        title: `⏸️ Pausado: ${formatTime(seconds)}`,
-                        artist: "Quadro de Anúncios • Pausado",
-                        album: "Minhas Atividades",
+                        title: `⏸️ ${formatTime(seconds)}`,
+                        artist: "",
+                        album: "",
                         artwork: [
                             { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
                             { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
