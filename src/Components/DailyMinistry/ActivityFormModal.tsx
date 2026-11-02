@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Clock, Award, BookOpen, FileText } from "lucide-react";
+import { Plus, Clock, Award, BookOpen, FileText, Check } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
@@ -34,7 +34,7 @@ export default function ActivityFormModal({
     const [creditHoursInput, setCreditHoursInput] = useState(0);
     const [creditMinutesInput, setCreditMinutesInput] = useState(0);
     const [creditDescription, setCreditDescription] = useState("");
-    const [selectedStudentId, setSelectedStudentId] = useState<string>("none");
+    const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [notes, setNotes] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
@@ -50,7 +50,14 @@ export default function ActivityFormModal({
             setCreditMinutesInput(totalCredM % 60);
 
             setCreditDescription(activityToEdit.credit_description || "");
-            setSelectedStudentId(activityToEdit.bible_student_id || "none");
+
+            const ids: string[] = [];
+            if (activityToEdit.bible_student_ids && Array.isArray(activityToEdit.bible_student_ids)) {
+                ids.push(...activityToEdit.bible_student_ids);
+            } else if (activityToEdit.bible_student_id) {
+                ids.push(activityToEdit.bible_student_id);
+            }
+            setSelectedStudentIds(Array.from(new Set(ids.filter(Boolean))));
             setNotes(activityToEdit.notes || "");
         } else {
             setDate(initialDate || dayjs().format("YYYY-MM-DD"));
@@ -61,19 +68,25 @@ export default function ActivityFormModal({
             setCreditHoursInput(0);
             setCreditMinutesInput(0);
             setCreditDescription("");
-            setSelectedStudentId("none");
+            setSelectedStudentIds([]);
             setNotes("");
         }
     }, [activityToEdit, initialMinutes, initialDate, isOpen]);
+
+    const toggleStudent = (id: string) => {
+        setSelectedStudentIds((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const totalMinutes = (hoursInput * 60) + minutesInput;
         const totalCreditMinutes = (creditHoursInput * 60) + creditMinutesInput;
-        const hasStudent = selectedStudentId && selectedStudentId !== "none";
+        const hasStudents = selectedStudentIds.length > 0;
 
-        if (totalMinutes === 0 && totalCreditMinutes === 0 && !hasStudent) {
-            toast.warn("Informe o tempo de ministério, crédito ou um estudo dirigido.");
+        if (totalMinutes === 0 && totalCreditMinutes === 0 && !hasStudents) {
+            toast.warn("Informe o tempo de ministério, crédito ou pelo menos um estudo dirigido.");
             return;
         }
 
@@ -89,7 +102,8 @@ export default function ActivityFormModal({
                 minutes: totalMinutes,
                 credit_minutes: totalCreditMinutes,
                 credit_description: creditDescription.trim() || null,
-                bible_student_id: hasStudent ? selectedStudentId : null,
+                bible_student_ids: selectedStudentIds,
+                bible_student_id: selectedStudentIds.length > 0 ? selectedStudentIds[0] : null,
                 notes: notes.trim() || null
             };
 
@@ -112,7 +126,19 @@ export default function ActivityFormModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-md w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl max-h-[92dvh] overflow-y-auto thin-scrollbar">
+            <DialogContent
+                onPointerDownOutside={(e) => {
+                    if ((e.target as HTMLElement)?.closest?.('[data-calendar-popover]')) {
+                        e.preventDefault();
+                    }
+                }}
+                onInteractOutside={(e) => {
+                    if ((e.target as HTMLElement)?.closest?.('[data-calendar-popover]')) {
+                        e.preventDefault();
+                    }
+                }}
+                className="max-w-md w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl max-h-[92dvh] overflow-y-auto thin-scrollbar"
+            >
                 <DialogHeader className="pb-3 border-b border-surface-300">
                     <DialogTitle className="text-sm sm:text-base font-bold text-typography-900 flex items-center gap-2">
                         <Clock className="w-5 h-5 text-primary-200 shrink-0" />
@@ -214,39 +240,61 @@ export default function ActivityFormModal({
                         )}
                     </div>
 
-                    {/* Estudo Bíblico Dirigido */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-typography-800 flex items-center gap-1.5">
-                            <BookOpen className="w-4 h-4 text-primary-200" />
-                            Estudo Bíblico Dirigido <span className="text-typography-400 font-normal">(se realizou hoje)</span>
-                        </label>
-                        <Select
-                            value={selectedStudentId}
-                            onValueChange={setSelectedStudentId}
-                        >
-                            <SelectTrigger className="w-full text-xs rounded-xl bg-surface-100 border border-surface-300 text-typography-900">
-                                <SelectValue placeholder="Selecione o estudante ou nenhum" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl bg-surface-100 border border-surface-300">
-                                <SelectItem value="none">Nenhum estudo hoje</SelectItem>
-                                {students.map((st) => (
-                                    <SelectItem key={st.id} value={st.id}>
-                                        {st.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                    {/* Estudos Bíblicos Dirigidos no Dia */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-typography-800 flex items-center gap-1.5">
+                                <BookOpen className="w-4 h-4 text-primary-200" />
+                                Estudos Bíblicos Dirigidos no Dia
+                            </label>
+                            {selectedStudentIds.length > 0 && (
+                                <span className="text-[10px] font-bold text-primary-200 bg-primary-200/10 px-2 py-0.5 rounded-full border border-primary-200/20">
+                                    {selectedStudentIds.length} {selectedStudentIds.length === 1 ? "estudo marcado" : "estudos marcados"}
+                                </span>
+                            )}
+                        </div>
+
+                        {students.length === 0 ? (
+                            <p className="text-[11px] text-typography-400 bg-surface-200/40 p-2.5 rounded-xl border border-dashed border-surface-300">
+                                Nenhum estudante cadastrado ainda. Você pode cadastrar seus estudantes na aba "Meus Estudantes".
+                            </p>
+                        ) : (
+                            <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-surface-200/40 border border-surface-300">
+                                {students.map((st) => {
+                                    const isSelected = selectedStudentIds.includes(st.id);
+                                    return (
+                                        <button
+                                            key={st.id}
+                                            type="button"
+                                            onClick={() => toggleStudent(st.id)}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                                                isSelected
+                                                    ? "bg-primary-200 text-white font-bold shadow-xs scale-102 ring-1 ring-primary-200/30"
+                                                    : "bg-surface-100 text-typography-700 hover:text-typography-900 border border-surface-300 hover:border-primary-200/50"
+                                            }`}
+                                        >
+                                            {isSelected ? (
+                                                <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                                            ) : (
+                                                <BookOpen className="w-3.5 h-3.5 text-typography-400" />
+                                            )}
+                                            <span>{st.name}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Observações Pessoais */}
+                    {/* Anotações Pessoais */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-bold text-typography-800 flex items-center gap-1.5">
                             <FileText className="w-4 h-4 text-typography-400" />
-                            Anotações Pessoais <span className="text-typography-400 font-normal">(apenas você vê)</span>
+                            Anotações Pessoais
                         </label>
                         <textarea
                             rows={2}
-                            placeholder="Ex: Trabalhei no território 04, conversei com o morador da casa amarela..."
+                            placeholder="Anotações sobre suas atividades do dia..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             className="w-full p-2.5 text-xs rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-2 focus:ring-primary-200/20 resize-none"

@@ -16,7 +16,9 @@ export interface IPublisherFieldActivity {
     credit_description?: string | null;
     notes?: string | null;
     bible_student_id?: string | null;
+    bible_student_ids?: string[] | null;
     bibleStudent?: IPublisherBibleStudent | null;
+    bibleStudents?: IPublisherBibleStudent[] | null;
     created_at: string;
     updated_at: string;
 }
@@ -46,6 +48,7 @@ export interface IDailyMinistryMonthData {
     month: string;
     activities: IPublisherFieldActivity[];
     balance: IPublisherMonthBalance;
+    studentsWithStudies?: Array<{ id: string; name: string }>;
     summary: IDailyMinistrySummary;
 }
 

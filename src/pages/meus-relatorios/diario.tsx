@@ -241,7 +241,7 @@ function DailyMinistryPage() {
                         <span className="text-base sm:text-2xl font-bold text-typography-900 font-mono tracking-tight">
                             {summary.totalStudiesCount}
                         </span>
-                        <span className="text-[10px] text-typography-400 truncate">Pessoas atendidas</span>
+                        <span className="text-[10px] text-typography-400 truncate">Estudantes diferentes no mês</span>
                     </div>
                 </div>
 
@@ -421,9 +421,11 @@ function DailyMinistryPage() {
                                                         </span>
                                                     )}
 
-                                                    {act.bibleStudent && (
+                                                    {((act.bibleStudents && act.bibleStudents.length > 0) || act.bibleStudent) && (
                                                         <span className="text-xs font-bold text-primary-200 bg-primary-200/10 px-2.5 py-0.5 rounded-md border border-primary-200/20">
-                                                            📖 Estudo: {act.bibleStudent.name}
+                                                            📖 {act.bibleStudents && act.bibleStudents.length > 0
+                                                                ? `Estudos: ${act.bibleStudents.map((s) => s.name).join(", ")}`
+                                                                : `Estudo: ${act.bibleStudent?.name}`}
                                                         </span>
                                                     )}
                                                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Send, CheckCircle2, Clock, BookOpen, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
@@ -27,9 +27,10 @@ export default function SubmitReportModal({
     summary,
     activities
 }: SubmitReportModalProps) {
-    const totalOverall = summary.totalMinutesOverall || 0;
-    const baseHours = Math.floor(totalOverall / 60);
-    const leftoverMinutes = totalOverall % 60;
+    // Horas de relatório: exclusivamente tempo de campo + saldo herdado do mês anterior
+    const ministryMinutesTotal = (summary.totalMinistryMinutes || 0) + (summary.transferredMinutesIn || 0);
+    const baseHours = Math.floor(ministryMinutesTotal / 60);
+    const leftoverMinutes = ministryMinutesTotal % 60;
 
     const [minutesHandling, setMinutesHandling] = useState<"transfer" | "round_up" | "round_down">(
         leftoverMinutes > 0 ? "transfer" : "round_down"
@@ -38,6 +39,21 @@ export default function SubmitReportModal({
     const [finalStudies, setFinalStudies] = useState(summary.totalStudiesCount || 0);
     const [observations, setObservations] = useState("");
     const [submitting, setSubmitting] = useState(false);
+
+    // Estudantes que tiveram estudos realizados pelo menos uma vez no mês
+    const studentsWithStudies: string[] = useMemo(() => {
+        const set = new Set<string>();
+        activities.forEach((act) => {
+            if (act.bibleStudents && Array.isArray(act.bibleStudents)) {
+                act.bibleStudents.forEach((s) => {
+                    if (s?.name) set.add(s.name);
+                });
+            } else if (act.bibleStudent?.name) {
+                set.add(act.bibleStudent.name);
+            }
+        });
+        return Array.from(set);
+    }, [activities]);
 
     // Ajusta as horas finais com base na escolha de minutos
     useEffect(() => {
@@ -102,30 +118,36 @@ export default function SubmitReportModal({
                     <div className="p-3.5 rounded-xl bg-surface-200/50 border border-surface-300/80 flex flex-col gap-2">
                         <div className="flex items-center justify-between text-xs font-semibold text-typography-600">
                             <span>Tempo de campo anotado:</span>
-                            <span className="font-bold text-typography-900">
+                            <span className="font-bold text-typography-900 font-mono">
                                 {Math.floor(summary.totalMinistryMinutes / 60)}h {summary.totalMinistryMinutes % 60}m
                             </span>
                         </div>
                         {summary.transferredMinutesIn > 0 && (
                             <div className="flex items-center justify-between text-xs font-semibold text-typography-600">
                                 <span>Saldo vindo do mês anterior:</span>
-                                <span className="font-bold text-emerald-600">+{summary.transferredMinutesIn}m</span>
-                            </div>
-                        )}
-                        {summary.totalCreditMinutes > 0 && (
-                            <div className="flex items-center justify-between text-xs font-semibold text-typography-600">
-                                <span>Crédito de atividades aprovadas:</span>
-                                <span className="font-bold text-amber-600">
-                                    +{Math.floor(summary.totalCreditMinutes / 60)}h {summary.totalCreditMinutes % 60}m
-                                </span>
+                                <span className="font-bold text-emerald-600 font-mono">+{summary.transferredMinutesIn}m</span>
                             </div>
                         )}
                         <div className="pt-2 border-t border-surface-300 flex items-center justify-between">
-                            <span className="text-xs font-bold text-typography-900">Total acumulado:</span>
+                            <span className="text-xs font-bold text-typography-900">Total de horas para relatório:</span>
                             <span className="text-sm font-bold text-primary-200 font-mono">
-                                {baseHours} horas e {leftoverMinutes} minutos
+                                {baseHours}h {leftoverMinutes > 0 ? `e ${leftoverMinutes}m` : ""}
                             </span>
                         </div>
+
+                        {summary.totalCreditMinutes > 0 && (
+                            <div className="mt-1 pt-2 border-t border-amber-500/20 flex flex-col gap-0.5 text-xs">
+                                <div className="flex items-center justify-between text-amber-700 dark:text-amber-400 font-semibold">
+                                    <span>Crédito de atividades aprovadas:</span>
+                                    <span className="font-bold font-mono">
+                                        +{Math.floor(summary.totalCreditMinutes / 60)}h {summary.totalCreditMinutes % 60}m
+                                    </span>
+                                </div>
+                                <span className="text-[10px] text-typography-500 italic">
+                                    * Não soma nas horas do relatório; vai automaticamente para as observações abaixo.
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Escolha do tratamento de minutos (se houver minutos fracionados) */}
@@ -241,10 +263,31 @@ export default function SubmitReportModal({
                                 className="w-full px-3 py-2 text-sm rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 text-center font-bold focus:outline-none focus:ring-2 focus:ring-primary-200/20"
                             />
                             <span className="text-[10px] text-typography-400 text-center">
-                                (Pessoas diferentes atendidas no mês)
+                                Estudantes diferentes no mês
                             </span>
                         </div>
                     </div>
+
+                    {/* Lista visual dos estudantes com estudos realizados */}
+                    {studentsWithStudies.length > 0 && (
+                        <div className="p-3 rounded-xl bg-surface-200/50 border border-surface-300 flex flex-col gap-1.5">
+                            <span className="text-[10px] font-bold text-typography-600 uppercase tracking-wider flex items-center gap-1.5">
+                                <BookOpen className="w-3.5 h-3.5 text-primary-200" />
+                                Estudos realizados no mês ({studentsWithStudies.length}):
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                                {studentsWithStudies.map((name) => (
+                                    <span
+                                        key={name}
+                                        className="px-2.5 py-1 rounded-lg bg-surface-100 border border-surface-300 text-[11px] font-semibold text-typography-800 flex items-center gap-1 shadow-2xs"
+                                    >
+                                        <span>📖</span>
+                                        <span>{name}</span>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Observações */}
                     <div className="flex flex-col gap-1.5">

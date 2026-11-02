@@ -536,6 +536,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                 width: '320px',
                 maxWidth: 'calc(100vw - 24px)',
               }}
+              data-calendar-popover="true"
+              onPointerDown={(e: React.PointerEvent<HTMLDivElement>) => e.stopPropagation()}
+              onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
               className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden relative"
             >
               {/* Linha de destaque na cor primária no topo do cartão */}
@@ -665,7 +668,14 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                           key={idx}
                           type="button"
                           disabled={item.isDisabled}
-                          onClick={() => handleSelectDay(item.ymd, item.isDisabled)}
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                            handleSelectDay(item.ymd, item.isDisabled);
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectDay(item.ymd, item.isDisabled);
+                          }}
                           className={`h-8 w-full rounded-xl flex items-center justify-center text-xs font-semibold transition-all relative ${
                             item.isSelected
                               ? 'bg-primary-200 text-white font-bold shadow-xs scale-102 ring-2 ring-primary-200/40 z-1 cursor-pointer'

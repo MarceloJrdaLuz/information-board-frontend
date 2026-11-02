@@ -123,7 +123,7 @@ export default function MinistryMonthCalendar({
                     dayActivities.forEach((act) => {
                         totalMinistryMinutes += act.minutes || 0;
                         totalCreditMinutes += act.credit_minutes || 0;
-                        if (act.bible_student_id) hasStudies = true;
+                        if (act.bible_student_id || (act.bible_student_ids && act.bible_student_ids.length > 0)) hasStudies = true;
                     });
 
                     const totalDayMinutes = totalMinistryMinutes + totalCreditMinutes;
