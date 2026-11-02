@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Play, Pause, Square, Clock, Plus, RotateCcw } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Play, Pause, Square, Clock, Plus, RotateCcw, Smartphone } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 
 interface MinistryStopwatchProps {
@@ -10,78 +10,32 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
 
-    useEffect(() => {
-        // Recuperar estado salvo do localStorage se o usuário fechar/recarregar a página
-        const savedStart = localStorage.getItem("ministry_timer_start");
-        const savedIsActive = localStorage.getItem("ministry_timer_active") === "true";
-        const savedAccumulated = parseInt(localStorage.getItem("ministry_timer_accumulated") || "0", 10);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const startTimeRef = useRef<number | null>(null);
+    const accumulatedSecsRef = useRef<number>(0);
 
-        if (savedIsActive && savedStart) {
-            const now = Date.now();
-            const elapsedSinceStart = Math.floor((now - parseInt(savedStart, 10)) / 1000);
-            setSeconds(savedAccumulated + elapsedSinceStart);
-            setIsActive(true);
-        } else if (savedAccumulated > 0) {
-            setSeconds(savedAccumulated);
-            setIsActive(false);
-        }
+    const playSilentAudio = useCallback(() => {
+        try {
+            if (typeof window === "undefined") return;
+            if (!audioRef.current) {
+                const audio = new Audio("/silence.wav");
+                audio.loop = true;
+                audioRef.current = audio;
+            }
+            audioRef.current.play().catch((err) => {
+                // Silencioso se o navegador exigir interação
+                console.log("Audio play error:", err);
+            });
+        } catch {}
     }, []);
 
-    useEffect(() => {
-        let interval: any = null;
-
-        if (isActive) {
-            interval = setInterval(() => {
-                setSeconds((prev) => prev + 1);
-            }, 1000);
-        } else {
-            clearInterval(interval);
-        }
-
-        return () => clearInterval(interval);
-    }, [isActive]);
-
-    // Tentar exibir status na MediaSession para controles e barra de notificações do celular
-    useEffect(() => {
-        if (typeof window !== "undefined" && "mediaSession" in navigator) {
-            if (isActive) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: "Ministério em Andamento",
-                    artist: formatTime(seconds),
-                    album: "Quadro de Anúncios"
-                });
+    const pauseSilentAudio = useCallback(() => {
+        try {
+            if (audioRef.current) {
+                audioRef.current.pause();
             }
-        }
-    }, [seconds, isActive]);
-
-    const handleStart = () => {
-        const now = Date.now();
-        localStorage.setItem("ministry_timer_start", now.toString());
-        localStorage.setItem("ministry_timer_active", "true");
-        localStorage.setItem("ministry_timer_accumulated", seconds.toString());
-        setIsActive(true);
-    };
-
-    const handlePause = () => {
-        setIsActive(false);
-        localStorage.setItem("ministry_timer_active", "false");
-        localStorage.setItem("ministry_timer_accumulated", seconds.toString());
-        localStorage.removeItem("ministry_timer_start");
-    };
-
-    const handleReset = () => {
-        setIsActive(false);
-        setSeconds(0);
-        localStorage.removeItem("ministry_timer_start");
-        localStorage.removeItem("ministry_timer_active");
-        localStorage.removeItem("ministry_timer_accumulated");
-    };
-
-    const handleStopAndSave = () => {
-        handlePause();
-        const minutes = Math.round(seconds / 60);
-        onFinish(minutes);
-    };
+        } catch {}
+    }, []);
 
     const formatTime = (totalSecs: number) => {
         const h = Math.floor(totalSecs / 3600);
@@ -89,6 +43,180 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         const s = totalSecs % 60;
         return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     };
+
+    // Atualiza tempo com precisão baseada em Date.now()
+    const syncTime = useCallback(() => {
+        if (startTimeRef.current) {
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTimeRef.current) / 1000);
+            const total = accumulatedSecsRef.current + elapsed;
+            setSeconds(total);
+            return total;
+        }
+        return accumulatedSecsRef.current;
+    }, []);
+
+    // Recuperar estado salvo do localStorage se o usuário fechar/recarregar a página
+    useEffect(() => {
+        const savedStart = localStorage.getItem("ministry_timer_start");
+        const savedIsActive = localStorage.getItem("ministry_timer_active") === "true";
+        const savedAccumulated = parseInt(localStorage.getItem("ministry_timer_accumulated") || "0", 10);
+
+        accumulatedSecsRef.current = savedAccumulated;
+
+        if (savedIsActive && savedStart) {
+            const startTimestamp = parseInt(savedStart, 10);
+            startTimeRef.current = startTimestamp;
+            const now = Date.now();
+            const elapsedSinceStart = Math.floor((now - startTimestamp) / 1000);
+            const total = savedAccumulated + elapsedSinceStart;
+            setSeconds(total);
+            setIsActive(true);
+        } else if (savedAccumulated > 0) {
+            setSeconds(savedAccumulated);
+            setIsActive(false);
+        }
+    }, []);
+
+    // Intervalo de contagem de tempo
+    useEffect(() => {
+        let interval: any = null;
+
+        if (isActive) {
+            interval = setInterval(() => {
+                syncTime();
+            }, 1000);
+        } else {
+            clearInterval(interval);
+        }
+
+        return () => clearInterval(interval);
+    }, [isActive, syncTime]);
+
+    // Ao voltar para a aba ou desbloquear a tela do celular, sincroniza o tempo instantaneamente
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible" && isActive) {
+                syncTime();
+            }
+        };
+
+        window.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("focus", handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("focus", handleVisibilityChange);
+        };
+    }, [isActive, syncTime]);
+
+    const handleStart = () => {
+        const now = Date.now();
+        startTimeRef.current = now;
+        accumulatedSecsRef.current = seconds;
+        localStorage.setItem("ministry_timer_start", now.toString());
+        localStorage.setItem("ministry_timer_active", "true");
+        localStorage.setItem("ministry_timer_accumulated", seconds.toString());
+        setIsActive(true);
+        playSilentAudio();
+    };
+
+    const handlePause = () => {
+        const currentTotal = syncTime();
+        startTimeRef.current = null;
+        accumulatedSecsRef.current = currentTotal;
+        setIsActive(false);
+        localStorage.setItem("ministry_timer_active", "false");
+        localStorage.setItem("ministry_timer_accumulated", currentTotal.toString());
+        localStorage.removeItem("ministry_timer_start");
+        pauseSilentAudio();
+    };
+
+    const handleReset = () => {
+        startTimeRef.current = null;
+        accumulatedSecsRef.current = 0;
+        setIsActive(false);
+        setSeconds(0);
+        localStorage.removeItem("ministry_timer_start");
+        localStorage.removeItem("ministry_timer_active");
+        localStorage.removeItem("ministry_timer_accumulated");
+        pauseSilentAudio();
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+        }
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "none";
+        }
+    };
+
+    const handleStopAndSave = () => {
+        const finalSecs = syncTime();
+        handlePause();
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+        }
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "none";
+        }
+        const minutes = Math.round(finalSecs / 60);
+        onFinish(minutes);
+    };
+
+    // Sincronização com o painel de mídia do Android / iOS (MediaSession API)
+    useEffect(() => {
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            if (isActive) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `⏱️ Ministério: ${formatTime(seconds)}`,
+                    artist: "Quadro de Anúncios • Em andamento",
+                    album: "Minhas Atividades",
+                    artwork: [
+                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                    ]
+                });
+                navigator.mediaSession.playbackState = "playing";
+            } else if (seconds > 0) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `⏸️ Pausado: ${formatTime(seconds)}`,
+                    artist: "Quadro de Anúncios • Pausado",
+                    album: "Minhas Atividades",
+                    artwork: [
+                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                    ]
+                });
+                navigator.mediaSession.playbackState = "paused";
+            } else {
+                navigator.mediaSession.playbackState = "none";
+            }
+        }
+    }, [seconds, isActive]);
+
+    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop)
+    useEffect(() => {
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            try {
+                navigator.mediaSession.setActionHandler("play", () => {
+                    handleStart();
+                });
+                navigator.mediaSession.setActionHandler("pause", () => {
+                    handlePause();
+                });
+                navigator.mediaSession.setActionHandler("stop", () => {
+                    handlePause();
+                });
+            } catch (err) {
+                console.error("Erro ao configurar MediaSession handlers:", err);
+            }
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            pauseSilentAudio();
+        };
+    }, [pauseSilentAudio]);
 
     return (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm">
@@ -98,13 +226,27 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 }`}>
                     <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div>
-                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-typography-500 block">
-                        Cronômetro do Ministério
-                    </span>
+                <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-typography-500 block truncate">
+                            Cronômetro do Ministério
+                        </span>
+                        {isActive && (
+                            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                <Smartphone className="w-3 h-3" />
+                                Ativo na barra do celular
+                            </span>
+                        )}
+                    </div>
                     <span className="text-2xl sm:text-3xl font-mono font-bold text-typography-900 tracking-tight">
                         {formatTime(seconds)}
                     </span>
+                    {isActive && (
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium sm:hidden flex items-center gap-1 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Controle ativo na barra de notificações
+                        </span>
+                    )}
                 </div>
             </div>
 
