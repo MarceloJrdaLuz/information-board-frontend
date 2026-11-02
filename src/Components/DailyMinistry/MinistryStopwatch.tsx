@@ -254,7 +254,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         };
     }, [getAudio]);
 
-    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop/Finalizar)
+    // Ações na tela de bloqueio e barra de notificações do celular (Apenas Play e Pause no centro)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             try {
@@ -265,14 +265,11 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     handlePauseRef.current();
                 });
                 navigator.mediaSession.setActionHandler("stop", () => {
-                    handleStopAndSaveRef.current();
+                    handlePauseRef.current();
                 });
-                navigator.mediaSession.setActionHandler("nexttrack", () => {
-                    handleStopAndSaveRef.current();
-                });
-                navigator.mediaSession.setActionHandler("previoustrack", () => {
-                    handleStopAndSaveRef.current();
-                });
+                // Remove os botões de avançar e retroceder da notificação
+                navigator.mediaSession.setActionHandler("nexttrack", null);
+                navigator.mediaSession.setActionHandler("previoustrack", null);
             } catch (err) {
                 console.error("Erro ao configurar MediaSession handlers:", err);
             }
