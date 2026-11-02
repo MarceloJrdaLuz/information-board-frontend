@@ -20,7 +20,8 @@ import {
     CalendarDays,
     List,
     Lock,
-    AlertCircle
+    AlertCircle,
+    RefreshCw
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { api } from "@/services/api";
@@ -142,9 +143,10 @@ function DailyMinistryPage() {
         totalStudiesCount: 0
     };
 
-    const isMonthClosed = Boolean(monthData?.isClosed ?? monthData?.balance?.is_closed);
+    const isClosedBySecretary = Boolean(monthData?.isClosedBySecretary);
     const isMonthExpired = Boolean(monthData?.isExpired);
-    const isMonthLocked = Boolean(monthData?.isLocked ?? (isMonthClosed || isMonthExpired));
+    const isMyReportSubmitted = Boolean(monthData?.isMyReportSubmitted ?? monthData?.balance?.is_closed);
+    const isMonthLocked = Boolean(monthData?.isLocked ?? (isClosedBySecretary || isMonthExpired));
     const deadlineFormatted = monthData?.deadlineDate
         ? dayjs(monthData.deadlineDate).format("DD/MM/YYYY")
         : "dia 20";
@@ -257,25 +259,25 @@ function DailyMinistryPage() {
                 </div>
 
                 {/* Banner de Ação de Fechamento / Envio do Relatório */}
-                {isMonthClosed ? (
-                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
+                {isClosedBySecretary ? (
+                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-600">
-                                <CheckCircle2 className="w-5 h-5" />
+                            <div className="p-2.5 rounded-xl shrink-0 bg-rose-500/20 text-rose-600">
+                                <Lock className="w-5 h-5" />
                             </div>
                             <div>
-                                <span className="text-xs sm:text-sm font-bold block text-emerald-800 dark:text-emerald-300">
-                                    Relatório de {currentMonthName} enviado e bloqueado
+                                <span className="text-xs sm:text-sm font-bold block text-rose-800 dark:text-rose-300">
+                                    Relatório de {currentMonthName} fechado pelo secretário
                                 </span>
                                 <span className="text-[11px] sm:text-xs text-typography-500">
-                                    Seu relatório já foi enviado. Para fazer qualquer alteração, fale com o secretário.
+                                    O secretário já registrou os relatórios da congregação para Betel. Para qualquer alteração, fale diretamente com o secretário.
                                 </span>
                             </div>
                         </div>
 
-                        <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600/15 border border-emerald-600/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs select-none self-end sm:self-center">
-                            <Lock className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Enviado ao Secretário</span>
+                        <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/15 border border-rose-600/30 text-rose-700 dark:text-rose-300 font-bold text-xs select-none self-end sm:self-center">
+                            <Lock className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Fechado pelo Secretário</span>
                         </div>
                     </div>
                 ) : isMonthExpired ? (
@@ -289,7 +291,7 @@ function DailyMinistryPage() {
                                     Prazo de envio encerrado ({deadlineFormatted})
                                 </span>
                                 <span className="text-[11px] sm:text-xs text-typography-500">
-                                    O relatório da congregação já foi enviado a Betel. Fale com o secretário caso precise incluir suas horas.
+                                    O prazo para registrar o relatório encerrou no dia 20 (os relatórios da congregação já foram enviados). Fale com o secretário caso precise de ajustes.
                                 </span>
                             </div>
                         </div>
@@ -298,6 +300,30 @@ function DailyMinistryPage() {
                             <Lock className="w-3.5 h-3.5 text-rose-600" />
                             <span>Prazo Expirado</span>
                         </div>
+                    </div>
+                ) : isMyReportSubmitted ? (
+                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-600">
+                                <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="text-xs sm:text-sm font-bold block text-emerald-800 dark:text-emerald-300">
+                                    Relatório de {currentMonthName} já enviado
+                                </span>
+                                <span className="text-[11px] sm:text-xs text-typography-500">
+                                    O secretário ainda não fechou os relatórios da congregação. Se você esqueceu alguma hora ou estudo, ainda pode atualizar suas anotações e reenviar.
+                                </span>
+                            </div>
+                        </div>
+
+                        <Button
+                            onClick={() => setIsSubmitReportModalOpen(true)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            <span>Atualizar Relatório</span>
+                        </Button>
                     </div>
                 ) : (
                     <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-primary-200/5 border-primary-200/20 text-typography-800">

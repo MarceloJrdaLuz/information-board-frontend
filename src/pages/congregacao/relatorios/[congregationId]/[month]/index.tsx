@@ -650,7 +650,7 @@ function ReportsMonthPage() {
                                 )}
                             </div>
                             <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
-                                Gerenciamento de relatórios e consolidação dos totais mensais.
+                                Gerenciamento de relatórios e registro dos totais mensais.
                             </p>
                         </div>
                     </div>
@@ -809,7 +809,7 @@ function ReportsMonthPage() {
                         {isInactiveOpen && (
                             <div className="p-4 sm:p-5 pt-3 border-t border-amber-500/15">
                                 <p className="text-xs text-typography-600 mb-3.5 leading-relaxed">
-                                    Estes publicadores estão há 6 meses ou mais sem enviar relatório. Verifique se há relatórios atrasados antes de consolidar os totais para Betel:
+                                    Estes publicadores estão há 6 meses ou mais sem enviar relatório. Verifique se há relatórios atrasados antes de registrar os totais para Betel:
                                 </p>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -982,7 +982,7 @@ function ReportsMonthPage() {
                                     {monthAlreadyRegister ? (
                                         date > 20 ? (
                                             <p>
-                                                <strong>Relatório já registrado em Betel:</strong> Como já passou do dia 20, o relatório já foi consolidado. Caso precise fazer alguma alteração extraordinária, faça o ajuste manual e declare as diferenças nos totais do mês seguinte.
+                                                <strong>Relatório já registrado em Betel:</strong> Como já passou do dia 20, o relatório deste mês já foi fechado e enviado a Betel. Caso precise fazer alguma alteração extraordinária, faça o ajuste manual e declare as diferenças nos totais do mês seguinte.
                                             </p>
                                         ) : (
                                             <p>
@@ -991,7 +991,7 @@ function ReportsMonthPage() {
                                         )
                                     ) : (
                                         <p>
-                                            <strong>Consolidação Mensal:</strong> Revise os totais calculados abaixo antes de enviar para Betel. Quando tudo estiver pronto, clique no botão de registro para confirmar.
+                                            <strong>Registro dos Totais:</strong> Revise os totais calculados abaixo antes de enviar para Betel. Ao registrar, o mês será fechado para envio dos publicadores.
                                         </p>
                                     )}
                                 </div>

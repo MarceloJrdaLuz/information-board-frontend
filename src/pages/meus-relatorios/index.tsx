@@ -59,7 +59,7 @@ function MyReportsPage() {
                                 Meus Relatórios de Serviço
                             </h1>
                             <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
-                                Histórico e consolidação das suas atividades no ministério de campo.
+                                Histórico e acompanhamento das suas atividades no ministério de campo.
                             </p>
                         </div>
                     </div>

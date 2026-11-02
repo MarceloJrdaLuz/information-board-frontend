@@ -60,8 +60,8 @@ export function ConfirmRegisterReports({
           <AlertDialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
             {description ||
               (isUpdate
-                ? "Deseja atualizar os totais consolidados deste mês? Os relatórios mais recentes serão recalculados e salvos no sistema."
-                : "Deseja confirmar e consolidar os relatórios e totais deste mês? Os dados registrados servirão de base para o envio dos totais.")}
+                ? "Deseja atualizar o registro de totais deste mês? Os relatórios mais recentes serão recalculados e salvos no sistema."
+                : "Deseja registrar os relatórios e totais deste mês? Ao confirmar o envio dos totais para Betel, o mês será fechado para alterações dos publicadores.")}
           </AlertDialogDescription>
 
           {isUpdate && (

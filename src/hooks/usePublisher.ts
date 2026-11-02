@@ -100,8 +100,8 @@ export function usePublisher() {
             observations
         }).catch(err => {
             console.log(err)
-            const { response: { data: { message } } } = err
-            handleSubmitError(messageErrorsSubmit.default)
+            const serverMsg = err?.response?.data?.message || messageErrorsSubmit.default
+            handleSubmitError(serverMsg)
             throw err
         })
 

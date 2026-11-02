@@ -51,9 +51,11 @@ export interface IDailyMinistryMonthData {
     studentsWithStudies?: Array<{ id: string; name: string }>;
     summary: IDailyMinistrySummary;
     isLocked?: boolean;
+    isClosedBySecretary?: boolean;
     isExpired?: boolean;
     isClosed?: boolean;
-    lockReason?: "closed" | "expired" | null;
+    isMyReportSubmitted?: boolean;
+    lockReason?: "closed_by_secretary" | "closed" | "expired" | null;
     deadlineDate?: string;
 }
 
