@@ -154,6 +154,7 @@ export default function ActivityFormModal({
                             selectedDate={date}
                             handleDateChange={(d) => setDate(d || dayjs().format("YYYY-MM-DD"))}
                             full
+                            usePortal={false}
                         />
                     </div>
 

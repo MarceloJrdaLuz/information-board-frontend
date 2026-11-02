@@ -53,6 +53,8 @@ export interface CalendarProps {
   buttonClassName?: string;
   /** Tamanho visual do botão */
   size?: 'sm' | 'md';
+  /** Forçar ou desativar renderização via Portal (false renderiza inline com absolute) */
+  usePortal?: boolean;
 }
 
 const MONTH_NAMES = [
@@ -148,9 +150,22 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
     className = '',
     buttonClassName = '',
     size = 'md',
+    usePortal,
   },
   ref
 ) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'days' | 'months' | 'years'>('days');
+  const [isInsideDialog, setIsInsideDialog] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && containerRef.current?.closest('[role="dialog"]')) {
+      setIsInsideDialog(true);
+    }
+  }, [isOpen]);
+
+  const shouldPortal = usePortal !== undefined ? usePortal : !isInsideDialog;
+
   // Unifica prop value / selectedDate
   const activeDateYMD = useMemo(() => {
     return parseDateToYMD(selectedDate ?? value);
@@ -166,9 +181,6 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
     },
     [onChange, handleDateChange]
   );
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'days' | 'months' | 'years'>('days');
 
   // Mês e ano em exibição no calendário
   const [viewYear, setViewYear] = useState<number>(() => {
@@ -242,6 +254,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
 
   const handleOpen = () => {
     if (disabled) return;
+    if (containerRef.current?.closest('[role="dialog"]')) {
+      setIsInsideDialog(true);
+    }
     updatePosition();
     setViewMode('days');
     setIsOpen(true);
@@ -514,32 +529,242 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
       {/* Mensagem de Erro */}
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
 
-      {/* Popover em Portal */}
-      {typeof window !== 'undefined' &&
-        isOpen &&
-        coords &&
-        createPortal(
+      {/* Popover de Seleção */}
+      {isOpen && (
+        shouldPortal && typeof window !== 'undefined' && coords ? (
+          createPortal(
+            <AnimatePresence>
+              <motion.div
+                ref={popoverRef}
+                initial={{ opacity: 0, scale: 0.95, y: coords.openUp ? 6 : -6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: coords.openUp ? 6 : -6 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                style={{
+                  position: 'fixed',
+                  top: coords.top !== undefined ? `${coords.top}px` : undefined,
+                  bottom:
+                    coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
+                  left: `${coords.left}px`,
+                  zIndex: 99999,
+                  width: '320px',
+                  maxWidth: 'calc(100vw - 24px)',
+                }}
+                data-calendar-popover="true"
+                onPointerDown={(e: React.PointerEvent<HTMLDivElement>) => e.stopPropagation()}
+                onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+                className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden relative"
+              >
+                {/* Linha de destaque na cor primária no topo do cartão */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-200/50 via-primary-200 to-primary-200/50" />
+
+                {/* Cabeçalho do Calendário */}
+                <div className="flex items-center justify-between gap-1 mb-2.5 pb-2 border-b border-surface-300/60">
+                  <button
+                    type="button"
+                    onClick={handlePrevMonth}
+                    title="Mês anterior"
+                    className="p-1.5 rounded-xl text-typography-500 hover:text-typography-900 hover:bg-surface-200 transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setViewMode((curr) => (curr === 'months' ? 'days' : 'months'))
+                      }
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                        viewMode === 'months'
+                          ? 'bg-primary-200/15 text-primary-200 border border-primary-200/30'
+                          : 'text-typography-900 hover:bg-surface-200'
+                      }`}
+                    >
+                      {MONTH_NAMES[viewMonth]}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setViewMode((curr) => (curr === 'years' ? 'days' : 'years'))
+                      }
+                      className={`px-2 py-1 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                        viewMode === 'years'
+                          ? 'bg-primary-200/15 text-primary-200 border border-primary-200/30'
+                          : 'text-typography-900 hover:bg-surface-200'
+                      }`}
+                    >
+                      {viewYear}
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleNextMonth}
+                    title="Próximo mês"
+                    className="p-1.5 rounded-xl text-typography-500 hover:text-typography-900 hover:bg-surface-200 transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Modo: Seletor de Meses */}
+                {viewMode === 'months' && (
+                  <div className="grid grid-cols-3 gap-1.5 p-1 max-h-[220px] overflow-y-auto thin-scrollbar">
+                    {MONTH_NAMES.map((name, idx) => (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => {
+                          setViewMonth(idx);
+                          setViewMode('days');
+                        }}
+                        className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                          idx === viewMonth
+                            ? 'bg-primary-200 text-white shadow-xs'
+                            : 'text-typography-700 hover:bg-surface-200 hover:text-typography-900'
+                        }`}
+                      >
+                        {name.slice(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Modo: Seletor de Anos */}
+                {viewMode === 'years' && (
+                  <div className="grid grid-cols-4 gap-1.5 p-1 max-h-[220px] overflow-y-auto thin-scrollbar">
+                    {yearOptions.map((y) => (
+                      <button
+                        key={y}
+                        type="button"
+                        onClick={() => {
+                          setViewYear(y);
+                          setViewMode('days');
+                        }}
+                        className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                          y === viewYear
+                            ? 'bg-primary-200 text-white shadow-xs'
+                            : 'text-typography-700 hover:bg-surface-200 hover:text-typography-900'
+                        }`}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Modo: Grade de Dias */}
+                {viewMode === 'days' && (
+                  <div>
+                    {/* Dias da Semana */}
+                    <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                      {WEEKDAY_NAMES.map((w, idx) => (
+                        <span
+                          key={w}
+                          className={`text-[10px] font-bold uppercase py-1 ${
+                            idx === 0 || idx === 6
+                              ? 'text-typography-400'
+                              : 'text-typography-500'
+                          }`}
+                        >
+                          {w}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Dias */}
+                    <div className="grid grid-cols-7 gap-1">
+                      {daysGrid.map((item, idx) => {
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            disabled={item.isDisabled}
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectDay(item.ymd, item.isDisabled);
+                            }}
+                            className={`h-8 w-full rounded-xl flex items-center justify-center text-xs font-semibold transition-all relative ${
+                              item.isSelected
+                                ? 'bg-primary-200 text-white font-bold shadow-xs scale-102 ring-2 ring-primary-200/40 z-1 cursor-pointer'
+                                : item.isDisabled
+                                ? 'text-typography-400/60 dark:text-typography-600 cursor-not-allowed select-none'
+                                : item.isCurrentMonth
+                                ? 'text-typography-800 hover:bg-surface-200 hover:text-typography-900 font-medium cursor-pointer'
+                                : 'text-typography-400 hover:bg-surface-200/50 cursor-pointer'
+                            } ${
+                              item.isToday && !item.isSelected && !item.isDisabled
+                                ? 'border border-primary-200/60 font-bold text-primary-200'
+                                : ''
+                            }`}
+                          >
+                            <span>{item.day}</span>
+                            {item.isToday && !item.isSelected && !item.isDisabled && (
+                              <span className="absolute bottom-1 w-1 h-1 rounded-full bg-primary-200" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Rodapé: Ações Rápidas */}
+                <div className="flex items-center justify-between gap-2 pt-2.5 mt-2.5 border-t border-surface-300/60 text-xs">
+                  <button
+                    type="button"
+                    onClick={handleSelectToday}
+                    className="px-2.5 py-1 rounded-xl text-primary-200 hover:bg-primary-200/10 font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Hoje
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {isClearable && Boolean(activeDateYMD) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleClear();
+                          handleClose();
+                        }}
+                        className="px-2.5 py-1 rounded-xl text-typography-400 hover:text-rose-500 hover:bg-rose-500/10 font-bold transition-colors cursor-pointer"
+                      >
+                        Limpar
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="px-3 py-1 rounded-xl bg-surface-200 text-typography-700 hover:text-typography-900 hover:bg-surface-300 font-bold transition-colors cursor-pointer"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>,
+            document.body
+          )
+        ) : (
+          /* Renderização Inline dentro do container (para modais/dialogs sem conflito de foco) */
           <AnimatePresence>
             <motion.div
               ref={popoverRef}
-              initial={{ opacity: 0, scale: 0.95, y: coords.openUp ? 6 : -6 }}
+              initial={{ opacity: 0, scale: 0.95, y: 4 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: coords.openUp ? 6 : -6 }}
+              exit={{ opacity: 0, scale: 0.95, y: 4 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              style={{
-                position: 'fixed',
-                top: coords.top !== undefined ? `${coords.top}px` : undefined,
-                bottom:
-                  coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
-                left: `${coords.left}px`,
-                zIndex: 99999,
-                width: '320px',
-                maxWidth: 'calc(100vw - 24px)',
-              }}
               data-calendar-popover="true"
               onPointerDown={(e: React.PointerEvent<HTMLDivElement>) => e.stopPropagation()}
               onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
-              className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden relative"
+              className="absolute top-full left-0 mt-2 z-50 bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden w-full sm:w-[320px] max-w-full"
             >
               {/* Linha de destaque na cor primária no topo do cartão */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-200/50 via-primary-200 to-primary-200/50" />
@@ -670,7 +895,6 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                           disabled={item.isDisabled}
                           onPointerDown={(e) => {
                             e.stopPropagation();
-                            handleSelectDay(item.ymd, item.isDisabled);
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -736,9 +960,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                 </div>
               </div>
             </motion.div>
-          </AnimatePresence>,
-          document.body
-        )}
+          </AnimatePresence>
+        )
+      )}
     </div>
   );
 });
