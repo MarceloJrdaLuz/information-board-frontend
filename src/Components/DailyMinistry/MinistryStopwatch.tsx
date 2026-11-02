@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, Clock, Plus, RotateCcw, Smartphone } from "lucide-react";
+import { Play, Pause, Clock, Plus, RotateCcw, Smartphone, AlertTriangle } from "lucide-react";
 import { Button } from "@/Components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/Components/ui/dialog";
 
 interface MinistryStopwatchProps {
     onFinish: (elapsedMinutes: number) => void;
@@ -9,6 +10,7 @@ interface MinistryStopwatchProps {
 export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) {
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const startTimeRef = useRef<number | null>(null);
@@ -135,8 +137,13 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         pauseSilentAudio();
     };
 
-    const handleReset = () => {
-        if (seconds > 0 && !window.confirm("Deseja zerar o cronômetro?")) return;
+    const handleResetClick = () => {
+        if (seconds === 0) return;
+        setIsResetModalOpen(true);
+    };
+
+    const confirmReset = () => {
+        setIsResetModalOpen(false);
         startTimeRef.current = null;
         accumulatedSecsRef.current = 0;
         setIsActive(false);
@@ -290,7 +297,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                         </Button>
 
                         <Button
-                            onClick={handleReset}
+                            onClick={handleResetClick}
                             variant="ghost"
                             size="icon"
                             title="Zerar cronômetro"
@@ -301,6 +308,41 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     </div>
                 )}
             </div>
+
+            {/* Modal de Confirmação para Zerar o Cronômetro */}
+            <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
+                <DialogContent className="w-[calc(100vw-2rem)] max-w-sm bg-surface-100 border border-surface-300 p-5 rounded-2xl shadow-xl flex flex-col gap-4">
+                    <DialogHeader className="flex flex-col items-center text-center gap-2">
+                        <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0">
+                            <RotateCcw className="w-6 h-6" />
+                        </div>
+                        <DialogTitle className="text-base font-bold text-typography-900">
+                            Zerar cronômetro?
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-typography-500 text-center">
+                            O tempo atual de <strong className="text-typography-900 font-mono font-bold">{formatTime(seconds)}</strong> será descartado e o cronômetro voltará para 00:00:00.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter className="grid grid-cols-2 gap-2 sm:flex sm:justify-end mt-1">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsResetModalOpen(false)}
+                            className="w-full sm:w-auto text-xs font-semibold rounded-xl h-9"
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={confirmReset}
+                            className="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl h-9 shadow-xs"
+                        >
+                            Zerar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
