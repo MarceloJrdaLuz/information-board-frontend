@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Clock, Award, BookOpen, FileText } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import Calendar from "@/Components/Calendar";
 import { IPublisherBibleStudent, IPublisherFieldActivity } from "@/types/dailyMinistry";
 import { api } from "@/services/api";
@@ -33,7 +34,7 @@ export default function ActivityFormModal({
     const [creditHoursInput, setCreditHoursInput] = useState(0);
     const [creditMinutesInput, setCreditMinutesInput] = useState(0);
     const [creditDescription, setCreditDescription] = useState("");
-    const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+    const [selectedStudentId, setSelectedStudentId] = useState<string>("none");
     const [notes, setNotes] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
@@ -49,7 +50,7 @@ export default function ActivityFormModal({
             setCreditMinutesInput(totalCredM % 60);
 
             setCreditDescription(activityToEdit.credit_description || "");
-            setSelectedStudentId(activityToEdit.bible_student_id || "");
+            setSelectedStudentId(activityToEdit.bible_student_id || "none");
             setNotes(activityToEdit.notes || "");
         } else {
             setDate(initialDate || dayjs().format("YYYY-MM-DD"));
@@ -60,7 +61,7 @@ export default function ActivityFormModal({
             setCreditHoursInput(0);
             setCreditMinutesInput(0);
             setCreditDescription("");
-            setSelectedStudentId("");
+            setSelectedStudentId("none");
             setNotes("");
         }
     }, [activityToEdit, initialMinutes, initialDate, isOpen]);
@@ -69,8 +70,9 @@ export default function ActivityFormModal({
         e.preventDefault();
         const totalMinutes = (hoursInput * 60) + minutesInput;
         const totalCreditMinutes = (creditHoursInput * 60) + creditMinutesInput;
+        const hasStudent = selectedStudentId && selectedStudentId !== "none";
 
-        if (totalMinutes === 0 && totalCreditMinutes === 0 && !selectedStudentId) {
+        if (totalMinutes === 0 && totalCreditMinutes === 0 && !hasStudent) {
             toast.warn("Informe o tempo de ministério, crédito ou um estudo dirigido.");
             return;
         }
@@ -87,7 +89,7 @@ export default function ActivityFormModal({
                 minutes: totalMinutes,
                 credit_minutes: totalCreditMinutes,
                 credit_description: creditDescription.trim() || null,
-                bible_student_id: selectedStudentId || null,
+                bible_student_id: hasStudent ? selectedStudentId : null,
                 notes: notes.trim() || null
             };
 
@@ -218,18 +220,22 @@ export default function ActivityFormModal({
                             <BookOpen className="w-4 h-4 text-primary-200" />
                             Estudo Bíblico Dirigido <span className="text-typography-400 font-normal">(se realizou hoje)</span>
                         </label>
-                        <select
+                        <Select
                             value={selectedStudentId}
-                            onChange={(e) => setSelectedStudentId(e.target.value)}
-                            className="w-full px-3 py-2 text-xs rounded-xl bg-surface-200/70 border border-surface-300 text-typography-900 focus:outline-none focus:ring-2 focus:ring-primary-200/20 cursor-pointer"
+                            onValueChange={setSelectedStudentId}
                         >
-                            <option value="">Nenhum estudo hoje</option>
-                            {students.map((st) => (
-                                <option key={st.id} value={st.id}>
-                                    {st.name}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger className="w-full text-xs rounded-xl bg-surface-100 border border-surface-300 text-typography-900">
+                                <SelectValue placeholder="Selecione o estudante ou nenhum" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl bg-surface-100 border border-surface-300">
+                                <SelectItem value="none">Nenhum estudo hoje</SelectItem>
+                                {students.map((st) => (
+                                    <SelectItem key={st.id} value={st.id}>
+                                        {st.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Observações Pessoais */}
@@ -271,3 +277,4 @@ export default function ActivityFormModal({
         </Dialog>
     );
 }
+

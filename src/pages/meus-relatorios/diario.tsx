@@ -16,7 +16,9 @@ import {
     FileSpreadsheet,
     ChevronLeft,
     ChevronRight,
-    CheckCircle2
+    CheckCircle2,
+    CalendarDays,
+    List
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { api } from "@/services/api";
@@ -28,6 +30,7 @@ import MinistryStopwatch from "@/Components/DailyMinistry/MinistryStopwatch";
 import BibleStudentsManager from "@/Components/DailyMinistry/BibleStudentsManager";
 import ActivityFormModal from "@/Components/DailyMinistry/ActivityFormModal";
 import SubmitReportModal from "@/Components/DailyMinistry/SubmitReportModal";
+import MinistryMonthCalendar from "@/Components/DailyMinistry/MinistryMonthCalendar";
 import { IDailyMinistryMonthData, IPublisherBibleStudent, IPublisherFieldActivity } from "@/types/dailyMinistry";
 
 dayjs.locale("pt-br");
@@ -43,6 +46,7 @@ function DailyMinistryPage() {
 
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [activeTab, setActiveTab] = useState<"diary" | "students">("diary");
+    const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar");
 
     const [monthData, setMonthData] = useState<IDailyMinistryMonthData | null>(null);
     const [students, setStudents] = useState<IPublisherBibleStudent[]>([]);
@@ -51,6 +55,7 @@ function DailyMinistryPage() {
     // Modais
     const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
     const [initialMinutesForModal, setInitialMinutesForModal] = useState(0);
+    const [selectedDateForModal, setSelectedDateForModal] = useState<string | undefined>(undefined);
     const [activityToEdit, setActivityToEdit] = useState<IPublisherFieldActivity | null>(null);
     const [isSubmitReportModalOpen, setIsSubmitReportModalOpen] = useState(false);
 
@@ -302,15 +307,40 @@ function DailyMinistryPage() {
                 {/* Conteúdo da Aba Ativa */}
                 {activeTab === "diary" ? (
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-typography-500 uppercase tracking-wider">
-                                Registros em {currentMonthName}
-                            </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            {/* Seletor Calendário / Lista */}
+                            <div className="flex items-center gap-1 p-1 bg-surface-200/70 rounded-xl border border-surface-300 w-fit">
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode("calendar")}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                        viewMode === "calendar"
+                                            ? "bg-surface-100 text-typography-900 shadow-xs"
+                                            : "text-typography-500 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <CalendarDays className="w-3.5 h-3.5" />
+                                    <span>Calendário</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode("list")}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                        viewMode === "list"
+                                            ? "bg-surface-100 text-typography-900 shadow-xs"
+                                            : "text-typography-500 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <List className="w-3.5 h-3.5" />
+                                    <span>Lista ({monthData?.activities?.length || 0})</span>
+                                </button>
+                            </div>
 
                             <Button
                                 onClick={() => {
                                     setActivityToEdit(null);
                                     setInitialMinutesForModal(0);
+                                    setSelectedDateForModal(undefined);
                                     setIsActivityModalOpen(true);
                                 }}
                                 className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer"
@@ -324,6 +354,23 @@ function DailyMinistryPage() {
                             <div className="p-8 text-center text-xs text-typography-400">
                                 Carregando atividades...
                             </div>
+                        ) : viewMode === "calendar" ? (
+                            <MinistryMonthCalendar
+                                currentDate={currentDate}
+                                activities={monthData?.activities || []}
+                                onSelectDay={(dateYMD, existingActivity) => {
+                                    if (existingActivity) {
+                                        setActivityToEdit(existingActivity);
+                                        setInitialMinutesForModal(0);
+                                        setSelectedDateForModal(dateYMD);
+                                    } else {
+                                        setActivityToEdit(null);
+                                        setInitialMinutesForModal(0);
+                                        setSelectedDateForModal(dateYMD);
+                                    }
+                                    setIsActivityModalOpen(true);
+                                }}
+                            />
                         ) : !monthData?.activities || monthData.activities.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-8 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center gap-2">
                                 <div className="p-3 bg-surface-200/60 rounded-full text-typography-400">
@@ -333,7 +380,7 @@ function DailyMinistryPage() {
                                     Nenhuma atividade anotada neste mês
                                 </span>
                                 <p className="text-xs text-typography-400 max-w-sm">
-                                    Use o botão acima ou o cronômetro para começar a registrar seu tempo de campo.
+                                    Use o botão acima, clique em um dia no calendário ou use o cronômetro para começar a registrar seu tempo de campo.
                                 </p>
                             </div>
                         ) : (
@@ -415,9 +462,14 @@ function DailyMinistryPage() {
                 {/* Modais */}
                 <ActivityFormModal
                     isOpen={isActivityModalOpen}
-                    onClose={() => setIsActivityModalOpen(false)}
+                    onClose={() => {
+                        setIsActivityModalOpen(false);
+                        setActivityToEdit(null);
+                        setSelectedDateForModal(undefined);
+                    }}
                     onSuccess={fetchData}
                     initialMinutes={initialMinutesForModal}
+                    initialDate={selectedDateForModal}
                     activityToEdit={activityToEdit}
                     students={students}
                 />
@@ -440,3 +492,4 @@ function DailyMinistryPage() {
 DailyMinistryPage.getLayout = withProtectedLayout();
 
 export default DailyMinistryPage;
+

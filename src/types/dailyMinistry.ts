@@ -48,3 +48,4 @@ export interface IDailyMinistryMonthData {
     balance: IPublisherMonthBalance;
     summary: IDailyMinistrySummary;
 }
+

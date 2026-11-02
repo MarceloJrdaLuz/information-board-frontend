@@ -669,7 +669,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                             item.isSelected
                               ? 'bg-primary-200 text-white font-bold shadow-xs scale-102 ring-2 ring-primary-200/40 z-1 cursor-pointer'
                               : item.isDisabled
-                              ? 'text-typography-400/40 bg-surface-200/40 cursor-not-allowed select-none'
+                              ? 'text-typography-400/60 dark:text-typography-600 cursor-not-allowed select-none'
                               : item.isCurrentMonth
                               ? 'text-typography-800 hover:bg-surface-200 hover:text-typography-900 font-medium cursor-pointer'
                               : 'text-typography-400 hover:bg-surface-200/50 cursor-pointer'
