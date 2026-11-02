@@ -11,28 +11,68 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const [isActive, setIsActive] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const accumulatedSecsRef = useRef<number>(0);
 
     const playSilentAudio = useCallback(() => {
         try {
             if (typeof window === "undefined") return;
+
+            // Criar stream de áudio contínuo (Live Stream infinito) via AudioContext.
+            // Por ser infinito/live, o Android/iOS remove a barra de progresso (seekbar) da notificação!
+            if (!audioContextRef.current) {
+                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                if (AudioCtx) {
+                    const ctx = new AudioCtx();
+                    const dest = ctx.createMediaStreamDestination();
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0; // silêncio absoluto
+                    const osc = ctx.createOscillator();
+                    osc.connect(gain);
+                    gain.connect(dest);
+                    osc.start();
+
+                    audioContextRef.current = ctx;
+                    streamRef.current = dest.stream;
+                }
+            }
+
+            if (audioContextRef.current && audioContextRef.current.state === "suspended") {
+                audioContextRef.current.resume().catch(() => {});
+            }
+
             if (!audioRef.current) {
-                const audio = new Audio("/silence.wav");
-                audio.loop = true;
+                const audio = new Audio();
                 audioRef.current = audio;
             }
+
+            // Atribuir o stream infinito como srcObject
+            if (streamRef.current) {
+                if (audioRef.current.srcObject !== streamRef.current) {
+                    audioRef.current.srcObject = streamRef.current;
+                }
+            } else if (!audioRef.current.src) {
+                audioRef.current.src = "/silence.wav";
+                audioRef.current.loop = true;
+            }
+
             audioRef.current.play().catch((err) => {
-                // Silencioso se o navegador exigir interação
                 console.log("Audio play error:", err);
             });
-        } catch {}
+        } catch (e) {
+            console.error("Audio init error:", e);
+        }
     }, []);
 
     const pauseSilentAudio = useCallback(() => {
         try {
             if (audioRef.current) {
                 audioRef.current.pause();
+            }
+            if (audioContextRef.current && audioContextRef.current.state === "running") {
+                audioContextRef.current.suspend().catch(() => {});
             }
         } catch {}
     }, []);
@@ -206,6 +246,10 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 navigator.mediaSession.setActionHandler("stop", () => {
                     handlePause();
                 });
+                // Desabilitar explicitamente ações de seek para não exibir controles ou barra de busca
+                try { navigator.mediaSession.setActionHandler("seekto" as any, null); } catch {}
+                try { navigator.mediaSession.setActionHandler("seekbackward" as any, null); } catch {}
+                try { navigator.mediaSession.setActionHandler("seekforward" as any, null); } catch {}
             } catch (err) {
                 console.error("Erro ao configurar MediaSession handlers:", err);
             }
