@@ -174,8 +174,8 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 if (isActive) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: `⏱️ ${formatTime(seconds)}`,
-                        artist: "",
-                        album: "",
+                        artist: " ", // Espaço em branco impede que o Chrome no Android preencha com a URL/domínio do site
+                        album: " ",
                         artwork: [
                             { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
                             { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
@@ -185,8 +185,8 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 } else if (seconds > 0) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: `⏸️ ${formatTime(seconds)}`,
-                        artist: "",
-                        album: "",
+                        artist: " ",
+                        album: " ",
                         artwork: [
                             { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
                             { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
