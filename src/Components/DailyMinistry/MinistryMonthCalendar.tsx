@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { IPublisherFieldActivity } from "@/types/dailyMinistry";
 import dayjs, { Dayjs } from "dayjs";
-import { Plus, Clock, Award, BookOpen, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { Plus, Clock, Award, BookOpen, ChevronLeft, ChevronRight, CalendarDays, Lock, Eye } from "lucide-react";
 
 interface MinistryMonthCalendarProps {
     currentDate: Dayjs;
@@ -110,19 +110,35 @@ export default function MinistryMonthCalendar({
     };
 
     return (
-        <div className="w-full bg-surface-100 rounded-2xl border border-surface-300 shadow-sm p-3 sm:p-5 flex flex-col gap-2.5 sm:gap-3.5">
+        <div className={`w-full rounded-2xl border shadow-sm p-3 sm:p-5 flex flex-col gap-2.5 sm:gap-3.5 transition-colors ${
+            isLocked
+                ? "bg-surface-100/90 border-amber-500/30 ring-1 ring-amber-500/10"
+                : "bg-surface-100 border-surface-300"
+        }`}>
             {/* Barra de Navegação do Mês no Próprio Calendário */}
-            <div className="flex items-center justify-between gap-2 border-b border-surface-300/70 pb-3">
-                <div className="flex items-center gap-2 min-w-0">
-                    <div className="p-1.5 sm:p-2 rounded-xl bg-primary-200/10 text-primary-200 shrink-0">
-                        <CalendarDays className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            <div className="flex items-center justify-between gap-2 border-b border-surface-300/70 pb-3 flex-wrap sm:flex-nowrap">
+                <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <div className={`p-1.5 sm:p-2 rounded-xl shrink-0 ${
+                        isLocked ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "bg-primary-200/10 text-primary-200"
+                    }`}>
+                        {isLocked ? (
+                            <Lock className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                        ) : (
+                            <CalendarDays className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                        )}
                     </div>
                     <span className="text-xs sm:text-base font-bold text-typography-900 truncate select-none">
                         {currentMonthLabel}
                     </span>
+                    {isLocked && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] sm:text-[11px] font-bold select-none">
+                            <Lock className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                            <span>Desativado • Modo Leitura</span>
+                        </span>
+                    )}
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0 bg-surface-200/70 p-1 rounded-xl border border-surface-300/80">
+                <div className="flex items-center gap-1 shrink-0 bg-surface-200/70 p-1 rounded-xl border border-surface-300/80 ml-auto sm:ml-0">
                     {onToday && !isCurrentMonthNow && (
                         <button
                             type="button"
@@ -151,6 +167,16 @@ export default function MinistryMonthCalendar({
                     </button>
                 </div>
             </div>
+
+            {/* Aviso inline dentro do calendário quando bloqueado */}
+            {isLocked && (
+                <div className="flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-xs">
+                    <Lock className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <span className="text-[11px] sm:text-xs leading-snug">
+                        <strong>Calendário desativado para novas anotações:</strong> o relatório deste mês já foi fechado pelo secretário ou o prazo foi encerrado. Você ainda pode clicar nas atividades registradas para consultá-las.
+                    </span>
+                </div>
+            )}
 
             {/* Cabeçalho dos dias da semana */}
             <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center border-b border-surface-300/60 pb-2">
@@ -187,24 +213,33 @@ export default function MinistryMonthCalendar({
                     return (
                         <div
                             key={idx}
+                            title={
+                                isLocked
+                                    ? hasActivities
+                                        ? "Ver atividade (somente leitura)"
+                                        : "Mês fechado para novas atividades"
+                                    : hasActivities
+                                    ? "Clique para editar ou ver detalhes"
+                                    : "Clique para adicionar atividade"
+                            }
                             onClick={() => {
                                 if (isLocked && !hasActivities) return;
                                 const latest = dayActivities[dayActivities.length - 1];
                                 onSelectDay(item.ymd, latest);
                             }}
                             className={`group min-h-[52px] sm:min-h-[82px] p-1 sm:p-2 rounded-xl sm:rounded-2xl border flex flex-col justify-between transition-all select-none ${
-                                isLocked && !hasActivities ? "cursor-default" : "cursor-pointer"
-                            } ${
-                                item.isCurrentMonth
-                                    ? "bg-surface-100 hover:border-primary-200 hover:bg-surface-200/50"
-                                    : "bg-surface-200/30 opacity-35 hover:opacity-70"
+                                isLocked
+                                    ? hasActivities
+                                        ? "cursor-pointer bg-primary-200/5 hover:bg-primary-200/10 border-surface-300 hover:border-primary-200/50"
+                                        : "cursor-not-allowed bg-surface-200/40 border-surface-300/50 opacity-50"
+                                    : item.isCurrentMonth
+                                    ? `cursor-pointer bg-surface-100 hover:border-primary-200 hover:bg-surface-200/50 border-surface-300/80 ${
+                                          hasActivities ? "bg-primary-200/5 hover:bg-primary-200/10" : ""
+                                      }`
+                                    : "cursor-pointer bg-surface-200/30 opacity-35 hover:opacity-70 border-surface-300/80"
                             } ${
                                 item.isToday
                                     ? "ring-2 ring-primary-200/30 border-primary-200"
-                                    : "border-surface-300/80"
-                            } ${
-                                hasActivities
-                                    ? "bg-primary-200/5 hover:bg-primary-200/10"
                                     : ""
                             }`}
                         >
@@ -215,15 +250,21 @@ export default function MinistryMonthCalendar({
                                         item.isToday
                                             ? "w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary-200 text-white font-black shadow-xs text-[11px] sm:text-xs"
                                             : item.isCurrentMonth
-                                            ? "text-typography-900"
+                                            ? isLocked && !hasActivities
+                                                ? "text-typography-400"
+                                                : "text-typography-900"
                                             : "text-typography-400"
                                     }`}
                                 >
                                     {item.day}
                                 </span>
 
-                                {!isLocked && (
+                                {!isLocked ? (
                                     <Plus className="w-3.5 h-3.5 text-typography-400 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                                ) : hasActivities ? (
+                                    <Eye className="w-3.5 h-3.5 text-typography-400 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                                ) : (
+                                    <Lock className="w-2.5 h-2.5 text-typography-400/50 opacity-0 group-hover:opacity-60 transition-opacity hidden sm:block" />
                                 )}
                             </div>
 
