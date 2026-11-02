@@ -115,7 +115,7 @@ export default function MinistryMonthCalendar({
                     <div className="p-1.5 sm:p-2 rounded-xl bg-primary-200/10 text-primary-200 shrink-0">
                         <CalendarDays className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </div>
-                    <span className="text-xs sm:text-base font-bold text-typography-900 truncate capitalize select-none">
+                    <span className="text-xs sm:text-base font-bold text-typography-900 truncate select-none">
                         {currentMonthLabel}
                     </span>
                 </div>
