@@ -1,23 +1,36 @@
 import React, { useMemo } from "react";
 import { IPublisherFieldActivity } from "@/types/dailyMinistry";
 import dayjs, { Dayjs } from "dayjs";
-import { Plus, Clock, Award, BookOpen } from "lucide-react";
+import { Plus, Clock, Award, BookOpen, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 
 interface MinistryMonthCalendarProps {
     currentDate: Dayjs;
     activities: IPublisherFieldActivity[];
     onSelectDay: (dateYMD: string, existingActivity?: IPublisherFieldActivity) => void;
+    onPrevMonth?: () => void;
+    onNextMonth?: () => void;
+    onToday?: () => void;
 }
+
+const MONTHS_NAMES = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
 
 const WEEKDAY_NAMES = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function MinistryMonthCalendar({
     currentDate,
     activities,
-    onSelectDay
+    onSelectDay,
+    onPrevMonth,
+    onNextMonth,
+    onToday
 }: MinistryMonthCalendarProps) {
     const year = currentDate.year();
     const month = currentDate.month(); // 0 a 11
+    const isCurrentMonthNow = currentDate.isSame(dayjs(), "month");
+    const currentMonthLabel = `${MONTHS_NAMES[month]} de ${year}`;
 
     // Mapear atividades por data YYYY-MM-DD
     const activitiesByDate = useMemo(() => {
@@ -95,7 +108,48 @@ export default function MinistryMonthCalendar({
     };
 
     return (
-        <div className="w-full bg-surface-100 rounded-2xl border border-surface-300 shadow-sm p-2 sm:p-5 flex flex-col gap-2.5 sm:gap-3">
+        <div className="w-full bg-surface-100 rounded-2xl border border-surface-300 shadow-sm p-3 sm:p-5 flex flex-col gap-2.5 sm:gap-3.5">
+            {/* Barra de Navegação do Mês no Próprio Calendário */}
+            <div className="flex items-center justify-between gap-2 border-b border-surface-300/70 pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                    <div className="p-1.5 sm:p-2 rounded-xl bg-primary-200/10 text-primary-200 shrink-0">
+                        <CalendarDays className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                    </div>
+                    <span className="text-xs sm:text-base font-bold text-typography-900 truncate capitalize select-none">
+                        {currentMonthLabel}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0 bg-surface-200/70 p-1 rounded-xl border border-surface-300/80">
+                    {onToday && !isCurrentMonthNow && (
+                        <button
+                            type="button"
+                            onClick={onToday}
+                            className="px-2 sm:px-2.5 py-1 text-[11px] font-bold text-primary-200 hover:bg-primary-200/10 rounded-lg transition-colors cursor-pointer select-none"
+                            title="Ir para o mês atual"
+                        >
+                            Hoje
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={onPrevMonth}
+                        className="p-1 sm:p-1.5 rounded-lg text-typography-600 hover:text-typography-900 hover:bg-surface-100 transition-colors cursor-pointer"
+                        title="Mês anterior"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onNextMonth}
+                        className="p-1 sm:p-1.5 rounded-lg text-typography-600 hover:text-typography-900 hover:bg-surface-100 transition-colors cursor-pointer"
+                        title="Próximo mês"
+                    >
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
             {/* Cabeçalho dos dias da semana */}
             <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center border-b border-surface-300/60 pb-2">
                 {WEEKDAY_NAMES.map((name, idx) => (

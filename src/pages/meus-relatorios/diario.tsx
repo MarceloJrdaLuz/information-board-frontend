@@ -101,6 +101,10 @@ function DailyMinistryPage() {
         setCurrentDate((prev) => prev.add(1, "month"));
     };
 
+    const handleToday = () => {
+        setCurrentDate(dayjs());
+    };
+
     const handleStopwatchFinish = (elapsedMinutes: number) => {
         setActivityToEdit(null);
         setInitialMinutesForModal(elapsedMinutes);
@@ -377,6 +381,9 @@ function DailyMinistryPage() {
                                     }
                                     setIsActivityModalOpen(true);
                                 }}
+                                onPrevMonth={handlePrevMonth}
+                                onNextMonth={handleNextMonth}
+                                onToday={handleToday}
                             />
                         ) : !monthData?.activities || monthData.activities.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-8 bg-surface-100 rounded-2xl border border-dashed border-surface-300 text-center gap-2">
