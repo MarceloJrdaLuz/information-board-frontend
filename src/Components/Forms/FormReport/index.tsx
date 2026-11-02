@@ -18,6 +18,7 @@ import {
     Check,
     Clock,
     FileText,
+    Lock,
     MessageSquare,
     Send,
     User,
@@ -57,6 +58,14 @@ export default function FormReport(props: IRelatorioFormProps) {
     const [savedPublishers, setSavedPublishers] = useState<IPublisherList[]>([])
     // IDs dos publicadores que já enviaram relatório neste dispositivo no mês/ano selecionado
     const [submittedIds, setSubmittedIds] = useState<string[]>([])
+    // Status de fechamento da congregação para o mês/ano
+    const [reportStatus, setReportStatus] = useState<{
+        isLocked: boolean
+        isClosedBySecretary: boolean
+        isExpired: boolean
+        deadlineDate?: string
+        message?: string
+    } | null>(null)
 
     const autoSelectedRef = useRef(false)
 
@@ -78,6 +87,19 @@ export default function FormReport(props: IRelatorioFormProps) {
         setMonth(capitalizeFirstLetter(newDate.format("MMMM")))
         setYear(newDate.format("YYYY"))
     }, [])
+
+    useEffect(() => {
+        if (!props.congregationNumber || !month || !year) return
+        api.get(`/report/status/${props.congregationNumber}`, {
+            params: { month, year }
+        })
+            .then((res) => {
+                setReportStatus(res.data)
+            })
+            .catch((err) => {
+                console.error("Erro ao verificar status do relatório:", err)
+            })
+    }, [props.congregationNumber, month, year])
 
     const getStorageSubmittedKey = (m: string, y: string) => {
         return `submitted_reports_${props.congregationNumber}_${m}_${y}`
@@ -269,7 +291,14 @@ export default function FormReport(props: IRelatorioFormProps) {
                 toast
                     .promise(createReport(payload), {
                         pending: "Enviando relatório...",
-                        error: "Erro ao enviar relatório."
+                        error: {
+                            render({ data }: any) {
+                                return (
+                                    data?.response?.data?.message ||
+                                    "Erro ao enviar relatório."
+                                )
+                            }
+                        }
                     })
                     .then(() => {
                         resetField("hours")
@@ -319,6 +348,14 @@ export default function FormReport(props: IRelatorioFormProps) {
     }
 
     async function onSubmit(data: FormValues) {
+        if (reportStatus?.isLocked) {
+            toast.error(
+                reportStatus.message ||
+                    "O relatório deste mês já foi fechado pelo secretário. Para qualquer alteração, fale diretamente com o secretário."
+            )
+            return
+        }
+
         setSubmittedData(data)
 
         if (!publisherToSend?.id) {
@@ -397,6 +434,24 @@ export default function FormReport(props: IRelatorioFormProps) {
                         Preencha seus dados de atividade para a congregação
                     </p>
                 </div>
+
+                {/* Banner de Mês Fechado / Prazo Expirado */}
+                {reportStatus?.isLocked && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex items-start gap-3 text-amber-800 dark:text-amber-300">
+                        <Lock size={18} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                        <div className="text-xs leading-relaxed">
+                            <strong className="block font-semibold mb-0.5">
+                                {reportStatus.isClosedBySecretary
+                                    ? `Relatório de ${month} fechado pelo secretário`
+                                    : `Prazo de envio de ${month} encerrado`}
+                            </strong>
+                            <span>
+                                {reportStatus.message ||
+                                    "O relatório deste mês já foi fechado pelo secretário. Para qualquer alteração, fale diretamente com o secretário."}
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Seleção de Publicador */}
                 <div className="flex flex-col gap-2">
@@ -591,11 +646,24 @@ export default function FormReport(props: IRelatorioFormProps) {
                 {/* Botão de Submissão */}
                 <button
                     type="submit"
-                    disabled={disabled || isSubmitting}
-                    className="w-full mt-2 py-3 px-4 rounded-xl bg-primary-200 hover:bg-primary-150 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={disabled || isSubmitting || reportStatus?.isLocked}
+                    className={`w-full mt-2 py-3 px-4 rounded-xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        reportStatus?.isLocked
+                            ? "bg-amber-600 hover:bg-amber-600 cursor-not-allowed"
+                            : "bg-primary-200 hover:bg-primary-150"
+                    }`}
                 >
-                    <Send size={16} />
-                    <span>{isSubmitting ? "Enviando..." : "Enviar Relatório"}</span>
+                    {reportStatus?.isLocked ? (
+                        <>
+                            <Lock size={16} />
+                            <span>Mês Fechado pelo Secretário</span>
+                        </>
+                    ) : (
+                        <>
+                            <Send size={16} />
+                            <span>{isSubmitting ? "Enviando..." : "Enviar Relatório"}</span>
+                        </>
+                    )}
                 </button>
 
                 {/* Link para Meus Relatórios */}

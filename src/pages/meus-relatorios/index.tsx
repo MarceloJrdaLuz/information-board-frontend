@@ -9,7 +9,8 @@ import { useFetch } from "@/hooks/useFetch"
 import { IReports } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom } from "jotai"
-import { Calendar, FileSpreadsheet } from "lucide-react"
+import { Calendar, FileSpreadsheet, Clock, ArrowRight } from "lucide-react"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
 function MyReportsPage() {
@@ -58,12 +59,21 @@ function MyReportsPage() {
                                 Meus Relatórios de Serviço
                             </h1>
                             <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
-                                Histórico e consolidação das suas atividades no ministério de campo.
+                                Histórico e acompanhamento das suas atividades no ministério de campo.
                             </p>
                         </div>
                     </div>
 
-                    <div className="w-full sm:w-auto flex items-center gap-2">
+                    <div className="w-full sm:w-auto flex items-center gap-2 flex-wrap">
+                        <Link
+                            href="/meus-relatorios/diario"
+                            className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-10 px-4 rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
+                        >
+                            <Clock className="w-4 h-4" />
+                            <span>Minhas Atividades</span>
+                            <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+                        </Link>
+
                         <Dropdown
                             textSize="md"
                             notBorderFocus

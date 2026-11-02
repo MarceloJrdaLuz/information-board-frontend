@@ -5,6 +5,7 @@ import ContentDashboard from "@/Components/ContentDashboard";
 import { ProfileCard } from "@/Components/ProfileCard";
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton";
 import PushNotificationBanner from "@/Components/PushNotificationBanner";
+import FeatureAnnouncementModal from "@/Components/FeatureAnnouncementModal";
 import { UpcomingAssignmentsCard } from "@/Components/UpcomingAssignmentsCard";
 import UpcomingAssignmentsSkeleton from "@/Components/UpcomingAssignmentsCard/skeleton";
 import { UpcomingRemindersCard } from "@/Components/UpcomingRemindersCard";
@@ -84,6 +85,9 @@ function Dashboard() {
 
   return (
     <ContentDashboard>
+      {/* Modal de Anúncio de Novos Recursos (Reutilizável) */}
+      <FeatureAnnouncementModal />
+
       <section className="flex flex-col w-full h-fit justify-center items-center p-5 gap-4">
         {/* Banner de convite para ativar notificações push (apenas se ainda não ativado) */}
         <PushNotificationBanner />

@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, CreditCard, DollarSign, FileSignature, FileTextIcon, FunctionSquareIcon, Globe, HomeIcon, KanbanSquareIcon, Layers, LineChart, Radio, Shield, ShieldCheck, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, ClipboardList, Clock, CreditCard, DollarSign, FileSignature, FileTextIcon, FunctionSquareIcon, Globe, HomeIcon, KanbanSquareIcon, Layers, LineChart, Radio, Shield, ShieldCheck, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -95,15 +95,28 @@ export default function Layout(props: LayoutProps) {
                     <NavBar.Skeleton items={6} />
                 ) : (
                     <ConsentCongregationWrapper>
-                        {isPublisher && <NavBar.Options
-                            title="Meus relatórios"
-                            onClick={() => {
-                                { !isDesktop && setIsMenuOpen(false) }
-                                Router.push('/meus-relatorios')
-                            }}
-                            icon={() => <MyReportsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                            active={pageActive === '/meus-relatorios'}
-                        />}
+                        {isPublisher && (
+                            <>
+                                <NavBar.Options
+                                    title="Minhas Atividades"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/meus-relatorios/diario')
+                                    }}
+                                    icon={() => <Clock className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive === '/meus-relatorios/diario' || pageActive === 'Minhas Atividades'}
+                                />
+                                <NavBar.Options
+                                    title="Meus relatórios"
+                                    onClick={() => {
+                                        { !isDesktop && setIsMenuOpen(false) }
+                                        Router.push('/meus-relatorios')
+                                    }}
+                                    icon={() => <MyReportsIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                    active={pageActive === '/meus-relatorios' || pageActive === 'Meus relatórios'}
+                                />
+                            </>
+                        )}
 
                         {(isAdminCongregation ||
                             roleContains('PUBLISHERS_MANAGER') ||
