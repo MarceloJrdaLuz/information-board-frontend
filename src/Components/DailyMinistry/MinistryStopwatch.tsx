@@ -163,78 +163,61 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     // Sincronização com a barra de notificações e tela de bloqueio do celular (MediaSession API)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
-            if (isActive) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: `⏱️ Ministério: ${formatTime(seconds)}`,
-                    artist: "Quadro de Anúncios • Em andamento",
-                    album: "Minhas Atividades",
-                    artwork: [
-                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
-                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
-                    ]
-                });
-                navigator.mediaSession.playbackState = "playing";
-
-                // Sobrescreve a barra nativa para uma escala de 24h com a posição exata em segundos.
-                // Isso elimina o efeito de ficar reiniciando a barra a cada 1 segundo!
-                if ("setPositionState" in navigator.mediaSession) {
-                    try {
-                        navigator.mediaSession.setPositionState({
-                            duration: 86400, // 24 horas
-                            playbackRate: 1.0,
-                            position: Math.min(Math.max(0, seconds), 86399)
-                        });
-                    } catch {}
+            try {
+                if (isActive) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: `⏱️ Ministério: ${formatTime(seconds)}`,
+                        artist: "Quadro de Anúncios • Em andamento",
+                        album: "Minhas Atividades",
+                        artwork: [
+                            { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                            { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                        ]
+                    });
+                    navigator.mediaSession.playbackState = "playing";
+                } else if (seconds > 0) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: `⏸️ Pausado: ${formatTime(seconds)}`,
+                        artist: "Quadro de Anúncios • Pausado",
+                        album: "Minhas Atividades",
+                        artwork: [
+                            { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                            { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                        ]
+                    });
+                    navigator.mediaSession.playbackState = "paused";
+                } else {
+                    navigator.mediaSession.playbackState = "none";
                 }
-            } else if (seconds > 0) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: `⏸️ Pausado: ${formatTime(seconds)}`,
-                    artist: "Quadro de Anúncios • Pausado",
-                    album: "Minhas Atividades",
-                    artwork: [
-                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
-                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
-                    ]
-                });
-                navigator.mediaSession.playbackState = "paused";
-
-                if ("setPositionState" in navigator.mediaSession) {
-                    try {
-                        navigator.mediaSession.setPositionState({
-                            duration: 86400,
-                            playbackRate: 0.0,
-                            position: Math.min(Math.max(0, seconds), 86399)
-                        });
-                    } catch {}
-                }
-            } else {
-                navigator.mediaSession.playbackState = "none";
+            } catch (err) {
+                console.error("MediaSession error:", err);
             }
         }
     }, [seconds, isActive]);
+
+    const handleStartRef = useRef(handleStart);
+    handleStartRef.current = handleStart;
+    const handlePauseRef = useRef(handlePause);
+    handlePauseRef.current = handlePause;
 
     // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop)
     useEffect(() => {
         if (typeof window !== "undefined" && "mediaSession" in navigator) {
             try {
                 navigator.mediaSession.setActionHandler("play", () => {
-                    handleStart();
+                    handleStartRef.current();
                 });
                 navigator.mediaSession.setActionHandler("pause", () => {
-                    handlePause();
+                    handlePauseRef.current();
                 });
                 navigator.mediaSession.setActionHandler("stop", () => {
-                    handlePause();
+                    handlePauseRef.current();
                 });
-                // Desabilitar explicitamente ações de seek para não exibir barra de progresso ou botões de pular tempo
-                try { navigator.mediaSession.setActionHandler("seekto" as any, null); } catch {}
-                try { navigator.mediaSession.setActionHandler("seekbackward" as any, null); } catch {}
-                try { navigator.mediaSession.setActionHandler("seekforward" as any, null); } catch {}
             } catch (err) {
                 console.error("Erro ao configurar MediaSession handlers:", err);
             }
         }
-    });
+    }, []);
 
     useEffect(() => {
         return () => {
