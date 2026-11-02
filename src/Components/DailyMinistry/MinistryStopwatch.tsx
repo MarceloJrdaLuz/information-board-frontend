@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, Clock, Plus, RotateCcw } from "lucide-react";
+import { Play, Pause, Clock, Plus, RotateCcw, Smartphone } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 
 interface MinistryStopwatchProps {
@@ -10,8 +10,66 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
 
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const accumulatedSecsRef = useRef<number>(0);
+
+    const playSilentAudio = useCallback(() => {
+        try {
+            if (typeof window === "undefined") return;
+
+            // Criar stream de áudio contínuo infinito (Live Stream) via AudioContext.
+            // Por ser infinito e sem duração pré-fixada, o Android/iOS NÃO exibe barra de progresso de 1 segundo!
+            if (!audioContextRef.current) {
+                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                if (AudioCtx) {
+                    const ctx = new AudioCtx();
+                    const dest = ctx.createMediaStreamDestination();
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0; // silêncio absoluto
+                    const osc = ctx.createOscillator();
+                    osc.connect(gain);
+                    gain.connect(dest);
+                    osc.start();
+
+                    audioContextRef.current = ctx;
+                    streamRef.current = dest.stream;
+                }
+            }
+
+            if (audioContextRef.current && audioContextRef.current.state === "suspended") {
+                audioContextRef.current.resume().catch(() => {});
+            }
+
+            if (!audioRef.current) {
+                const audio = new Audio();
+                audioRef.current = audio;
+            }
+
+            if (streamRef.current && audioRef.current.srcObject !== streamRef.current) {
+                audioRef.current.srcObject = streamRef.current;
+            }
+
+            audioRef.current.play().catch((err) => {
+                console.log("Audio play error:", err);
+            });
+        } catch (e) {
+            console.error("Audio init error:", e);
+        }
+    }, []);
+
+    const pauseSilentAudio = useCallback(() => {
+        try {
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+            if (audioContextRef.current && audioContextRef.current.state === "running") {
+                audioContextRef.current.suspend().catch(() => {});
+            }
+        } catch {}
+    }, []);
 
     const formatTime = (totalSecs: number) => {
         const h = Math.floor(totalSecs / 3600);
@@ -94,6 +152,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         localStorage.setItem("ministry_timer_active", "true");
         localStorage.setItem("ministry_timer_accumulated", seconds.toString());
         setIsActive(true);
+        playSilentAudio();
     };
 
     const handlePause = () => {
@@ -104,6 +163,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         localStorage.setItem("ministry_timer_active", "false");
         localStorage.setItem("ministry_timer_accumulated", currentTotal.toString());
         localStorage.removeItem("ministry_timer_start");
+        pauseSilentAudio();
     };
 
     const handleReset = () => {
@@ -115,14 +175,81 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         localStorage.removeItem("ministry_timer_start");
         localStorage.removeItem("ministry_timer_active");
         localStorage.removeItem("ministry_timer_accumulated");
+        pauseSilentAudio();
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "none";
+        }
     };
 
     const handleStopAndSave = () => {
         const finalSecs = syncTime();
         handlePause();
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            navigator.mediaSession.playbackState = "none";
+        }
         const minutes = Math.round(finalSecs / 60);
         onFinish(minutes);
     };
+
+    // Sincronização com a barra de notificações e tela de bloqueio do celular (MediaSession API)
+    useEffect(() => {
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            if (isActive) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `⏱️ Ministério: ${formatTime(seconds)}`,
+                    artist: "Quadro de Anúncios • Em andamento",
+                    album: "Minhas Atividades",
+                    artwork: [
+                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                    ]
+                });
+                navigator.mediaSession.playbackState = "playing";
+            } else if (seconds > 0) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `⏸️ Pausado: ${formatTime(seconds)}`,
+                    artist: "Quadro de Anúncios • Pausado",
+                    album: "Minhas Atividades",
+                    artwork: [
+                        { src: "/icons/pwa-192.png", sizes: "192x192", type: "image/png" },
+                        { src: "/icons/pwa-512.png", sizes: "512x512", type: "image/png" }
+                    ]
+                });
+                navigator.mediaSession.playbackState = "paused";
+            } else {
+                navigator.mediaSession.playbackState = "none";
+            }
+        }
+    }, [seconds, isActive]);
+
+    // Ações na tela de bloqueio e barra de notificações do celular (Play, Pause, Stop)
+    useEffect(() => {
+        if (typeof window !== "undefined" && "mediaSession" in navigator) {
+            try {
+                navigator.mediaSession.setActionHandler("play", () => {
+                    handleStart();
+                });
+                navigator.mediaSession.setActionHandler("pause", () => {
+                    handlePause();
+                });
+                navigator.mediaSession.setActionHandler("stop", () => {
+                    handlePause();
+                });
+                // Desabilitar explicitamente ações de seek para não exibir barra de progresso ou botões de pular tempo
+                try { navigator.mediaSession.setActionHandler("seekto" as any, null); } catch {}
+                try { navigator.mediaSession.setActionHandler("seekbackward" as any, null); } catch {}
+                try { navigator.mediaSession.setActionHandler("seekforward" as any, null); } catch {}
+            } catch (err) {
+                console.error("Erro ao configurar MediaSession handlers:", err);
+            }
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            pauseSilentAudio();
+        };
+    }, [pauseSilentAudio]);
 
     return (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm">
@@ -133,12 +260,26 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-typography-500 block truncate">
-                        Cronômetro do Ministério
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-typography-500 block truncate">
+                            Cronômetro do Ministério
+                        </span>
+                        {isActive && (
+                            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                <Smartphone className="w-3 h-3" />
+                                Ativo na barra do celular
+                            </span>
+                        )}
+                    </div>
                     <span className="text-2xl sm:text-3xl font-mono font-bold text-typography-900 tracking-tight">
                         {formatTime(seconds)}
                     </span>
+                    {isActive && (
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium sm:hidden flex items-center gap-1 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Controle ativo na barra de notificações
+                        </span>
+                    )}
                 </div>
             </div>
 
