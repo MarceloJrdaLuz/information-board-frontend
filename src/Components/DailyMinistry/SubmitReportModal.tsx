@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Send, CheckCircle2, Clock, BookOpen, AlertCircle, ArrowRight } from "lucide-react";
+import { Send, CheckCircle2, Clock, BookOpen, AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 import { IDailyMinistrySummary, IPublisherFieldActivity } from "@/types/dailyMinistry";
@@ -15,6 +15,13 @@ interface SubmitReportModalProps {
     monthName: string;
     summary: IDailyMinistrySummary;
     activities: IPublisherFieldActivity[];
+    isUpdate?: boolean;
+    submittedReport?: {
+        id?: string;
+        hours: number;
+        studies?: number;
+        observations?: string;
+    } | null;
 }
 
 export default function SubmitReportModal({
@@ -25,7 +32,9 @@ export default function SubmitReportModal({
     month,
     monthName,
     summary,
-    activities
+    activities,
+    isUpdate = false,
+    submittedReport = null
 }: SubmitReportModalProps) {
     // Horas de relatório: exclusivamente tempo de campo + saldo herdado do mês anterior
     const ministryMinutesTotal = (summary.totalMinistryMinutes || 0) + (summary.transferredMinutesIn || 0);
@@ -93,11 +102,15 @@ export default function SubmitReportModal({
                 leftoverMinutes
             });
 
-            toast.success("Relatório de serviço enviado com sucesso para a congregação!");
+            toast.success(
+                isUpdate
+                    ? "Relatório de serviço atualizado com sucesso!"
+                    : "Relatório de serviço enviado com sucesso para a congregação!"
+            );
             onSuccess();
             onClose();
         } catch {
-            toast.error("Erro ao enviar relatório.");
+            toast.error(isUpdate ? "Erro ao atualizar relatório." : "Erro ao enviar relatório.");
         } finally {
             setSubmitting(false);
         }
@@ -108,12 +121,31 @@ export default function SubmitReportModal({
             <DialogContent className="max-w-md w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl max-h-[92dvh] overflow-y-auto thin-scrollbar">
                 <DialogHeader className="pb-3 border-b border-surface-300">
                     <DialogTitle className="text-sm sm:text-base font-bold text-typography-900 flex items-center gap-2">
-                        <Send className="w-5 h-5 text-primary-200 shrink-0" />
-                        <span>Enviar Relatório de {monthName} / {year}</span>
+                        {isUpdate ? (
+                            <RefreshCw className="w-5 h-5 text-emerald-600 shrink-0" />
+                        ) : (
+                            <Send className="w-5 h-5 text-primary-200 shrink-0" />
+                        )}
+                        <span>{isUpdate ? "Atualizar Relatório" : "Enviar Relatório"} de {monthName} / {year}</span>
                     </DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4 mt-3">
+                    {/* Aviso de relatório existente na congregação */}
+                    {isUpdate && submittedReport && (
+                        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+                            <div className="leading-relaxed">
+                                <strong className="block font-semibold">Relatório já registrado na congregação:</strong>
+                                <span>
+                                    Atualmente com {submittedReport.hours}h de campo
+                                    {submittedReport.studies ? `, ${submittedReport.studies} estudo(s)` : ""}
+                                    {submittedReport.observations ? ` • Obs: "${submittedReport.observations}"` : ""}.
+                                    Ao confirmar, os totais serão atualizados para o secretário.
+                                </span>
+                            </div>
+                        </div>
+                    )}
                     {/* Resumo do Tempo Calculado */}
                     <div className="p-3.5 rounded-xl bg-surface-200/50 border border-surface-300/80 flex flex-col gap-2">
                         <div className="flex items-center justify-between text-xs font-semibold text-typography-600">
@@ -321,8 +353,14 @@ export default function SubmitReportModal({
                         onClick={handleConfirmSubmit}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm"
                     >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>{submitting ? "Enviando..." : "Confirmar e Enviar"}</span>
+                        {isUpdate ? <RefreshCw className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
+                        <span>
+                            {submitting
+                                ? "Salvando..."
+                                : isUpdate
+                                ? "Atualizar Relatório"
+                                : "Confirmar e Enviar"}
+                        </span>
                     </Button>
                 </DialogFooter>
             </DialogContent>

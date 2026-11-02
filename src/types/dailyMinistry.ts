@@ -55,6 +55,12 @@ export interface IDailyMinistryMonthData {
     isExpired?: boolean;
     isClosed?: boolean;
     isMyReportSubmitted?: boolean;
+    submittedReport?: {
+        id?: string;
+        hours: number;
+        studies?: number;
+        observations?: string;
+    } | null;
     lockReason?: "closed_by_secretary" | "closed" | "expired" | null;
     deadlineDate?: string;
 }

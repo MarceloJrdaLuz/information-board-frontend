@@ -586,6 +586,8 @@ function DailyMinistryPage() {
                     monthName={currentMonthName}
                     summary={summary}
                     activities={monthData?.activities || []}
+                    isUpdate={isMyReportSubmitted}
+                    submittedReport={monthData?.submittedReport}
                 />
             </section>
         </ContentDashboard>
