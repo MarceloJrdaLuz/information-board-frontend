@@ -10,6 +10,7 @@ interface MinistryMonthCalendarProps {
     onPrevMonth?: () => void;
     onNextMonth?: () => void;
     onToday?: () => void;
+    isLocked?: boolean;
 }
 
 const MONTHS_NAMES = [
@@ -25,7 +26,8 @@ export default function MinistryMonthCalendar({
     onSelectDay,
     onPrevMonth,
     onNextMonth,
-    onToday
+    onToday,
+    isLocked = false
 }: MinistryMonthCalendarProps) {
     const year = currentDate.year();
     const month = currentDate.month(); // 0 a 11
@@ -186,10 +188,13 @@ export default function MinistryMonthCalendar({
                         <div
                             key={idx}
                             onClick={() => {
+                                if (isLocked && !hasActivities) return;
                                 const latest = dayActivities[dayActivities.length - 1];
                                 onSelectDay(item.ymd, latest);
                             }}
-                            className={`group min-h-[52px] sm:min-h-[82px] p-1 sm:p-2 rounded-xl sm:rounded-2xl border flex flex-col justify-between transition-all cursor-pointer relative select-none ${
+                            className={`group min-h-[52px] sm:min-h-[82px] p-1 sm:p-2 rounded-xl sm:rounded-2xl border flex flex-col justify-between transition-all select-none ${
+                                isLocked && !hasActivities ? "cursor-default" : "cursor-pointer"
+                            } ${
                                 item.isCurrentMonth
                                     ? "bg-surface-100 hover:border-primary-200 hover:bg-surface-200/50"
                                     : "bg-surface-200/30 opacity-35 hover:opacity-70"
@@ -217,7 +222,9 @@ export default function MinistryMonthCalendar({
                                     {item.day}
                                 </span>
 
-                                <Plus className="w-3.5 h-3.5 text-typography-400 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                                {!isLocked && (
+                                    <Plus className="w-3.5 h-3.5 text-typography-400 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                                )}
                             </div>
 
                             {/* Conteúdo no Mobile: Compacto e Legível */}

@@ -18,7 +18,9 @@ import {
     ChevronRight,
     CheckCircle2,
     CalendarDays,
-    List
+    List,
+    Lock,
+    AlertCircle
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { api } from "@/services/api";
@@ -140,7 +142,12 @@ function DailyMinistryPage() {
         totalStudiesCount: 0
     };
 
-    const isMonthClosed = Boolean(monthData?.balance?.is_closed);
+    const isMonthClosed = Boolean(monthData?.isClosed ?? monthData?.balance?.is_closed);
+    const isMonthExpired = Boolean(monthData?.isExpired);
+    const isMonthLocked = Boolean(monthData?.isLocked ?? (isMonthClosed || isMonthExpired));
+    const deadlineFormatted = monthData?.deadlineDate
+        ? dayjs(monthData.deadlineDate).format("DD/MM/YYYY")
+        : "dia 20";
 
     return (
         <ContentDashboard>
@@ -250,41 +257,73 @@ function DailyMinistryPage() {
                 </div>
 
                 {/* Banner de Ação de Fechamento / Envio do Relatório */}
-                <div className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs ${
-                    isMonthClosed
-                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
-                        : "bg-primary-200/5 border-primary-200/20 text-typography-800"
-                }`}>
-                    <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl shrink-0 ${
-                            isMonthClosed ? "bg-emerald-500/20 text-emerald-600" : "bg-primary-200/10 text-primary-200"
-                        }`}>
-                            {isMonthClosed ? <CheckCircle2 className="w-5 h-5" /> : <FileSpreadsheet className="w-5 h-5" />}
+                {isMonthClosed ? (
+                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-600">
+                                <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="text-xs sm:text-sm font-bold block text-emerald-800 dark:text-emerald-300">
+                                    Relatório de {currentMonthName} enviado e bloqueado
+                                </span>
+                                <span className="text-[11px] sm:text-xs text-typography-500">
+                                    Seu relatório já foi enviado. Para fazer qualquer alteração, fale com o secretário.
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <span className="text-xs sm:text-sm font-bold block">
-                                {isMonthClosed
-                                    ? `Relatório de ${currentMonthName} já enviado!`
-                                    : `Pronto para enviar seu relatório de ${currentMonthName}?`}
-                            </span>
-                            <span className="text-[11px] sm:text-xs text-typography-500">
-                                {isMonthClosed
-                                    ? "Você pode reenviar a qualquer momento caso tenha feito novas atividades."
-                                    : "Transfira ou arredonde os minutos e envie diretamente para a congregação."}
-                            </span>
+
+                        <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600/15 border border-emerald-600/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs select-none self-end sm:self-center">
+                            <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Enviado ao Secretário</span>
                         </div>
                     </div>
+                ) : isMonthExpired ? (
+                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl shrink-0 bg-rose-500/20 text-rose-600">
+                                <AlertCircle className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="text-xs sm:text-sm font-bold block text-rose-800 dark:text-rose-300">
+                                    Prazo de envio encerrado ({deadlineFormatted})
+                                </span>
+                                <span className="text-[11px] sm:text-xs text-typography-500">
+                                    O relatório da congregação já foi enviado a Betel. Fale com o secretário caso precise incluir suas horas.
+                                </span>
+                            </div>
+                        </div>
 
-                    <Button
-                        onClick={() => setIsSubmitReportModalOpen(true)}
-                        className={`text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto ${
-                            isMonthClosed ? "bg-emerald-600 hover:bg-emerald-700" : "bg-primary-200 hover:opacity-90"
-                        }`}
-                    >
-                        <Send className="w-4 h-4" />
-                        <span>{isMonthClosed ? "Reenviar Relatório" : "Enviar Relatório"}</span>
-                    </Button>
-                </div>
+                        <div className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/15 border border-rose-600/30 text-rose-700 dark:text-rose-300 font-bold text-xs select-none self-end sm:self-center">
+                            <Lock className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Prazo Expirado</span>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs bg-primary-200/5 border-primary-200/20 text-typography-800">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl shrink-0 bg-primary-200/10 text-primary-200">
+                                <FileSpreadsheet className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="text-xs sm:text-sm font-bold block">
+                                    Pronto para enviar seu relatório de {currentMonthName}?
+                                </span>
+                                <span className="text-[11px] sm:text-xs text-typography-500">
+                                    Transfira ou arredonde os minutos e envie diretamente para o secretário da congregação.
+                                </span>
+                            </div>
+                        </div>
+
+                        <Button
+                            onClick={() => setIsSubmitReportModalOpen(true)}
+                            className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
+                        >
+                            <Send className="w-4 h-4" />
+                            <span>Enviar Relatório</span>
+                        </Button>
+                    </div>
+                )}
 
                 {/* Abas: Diário de Atividades vs Estudantes */}
                 <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-surface-300 pb-2">
@@ -347,18 +386,20 @@ function DailyMinistryPage() {
                                 </button>
                             </div>
 
-                            <Button
-                                onClick={() => {
-                                    setActivityToEdit(null);
-                                    setInitialMinutesForModal(0);
-                                    setSelectedDateForModal(undefined);
-                                    setIsActivityModalOpen(true);
-                                }}
-                                className="w-full sm:w-auto bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Anotar Atividade</span>
-                            </Button>
+                            {!isMonthLocked && (
+                                <Button
+                                    onClick={() => {
+                                        setActivityToEdit(null);
+                                        setInitialMinutesForModal(0);
+                                        setSelectedDateForModal(undefined);
+                                        setIsActivityModalOpen(true);
+                                    }}
+                                    className="w-full sm:w-auto bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>Anotar Atividade</span>
+                                </Button>
+                            )}
                         </div>
 
                         {isLoading ? (
@@ -369,17 +410,19 @@ function DailyMinistryPage() {
                             <MinistryMonthCalendar
                                 currentDate={currentDate}
                                 activities={monthData?.activities || []}
+                                isLocked={isMonthLocked}
                                 onSelectDay={(dateYMD, existingActivity) => {
                                     if (existingActivity) {
                                         setActivityToEdit(existingActivity);
                                         setInitialMinutesForModal(0);
                                         setSelectedDateForModal(dateYMD);
-                                    } else {
+                                        setIsActivityModalOpen(true);
+                                    } else if (!isMonthLocked) {
                                         setActivityToEdit(null);
                                         setInitialMinutesForModal(0);
                                         setSelectedDateForModal(dateYMD);
+                                        setIsActivityModalOpen(true);
                                     }
-                                    setIsActivityModalOpen(true);
                                 }}
                                 onPrevMonth={handlePrevMonth}
                                 onNextMonth={handleNextMonth}
@@ -418,7 +461,7 @@ function DailyMinistryPage() {
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     {act.minutes > 0 && (
                                                         <span className="text-xs font-bold text-typography-900 bg-surface-200/70 px-2.5 py-0.5 rounded-md border border-surface-300/60">
-                                                            ⏱️ {formatMinutesToString(act.minutes)} campo
+                                                             {formatMinutesToString(act.minutes)} campo
                                                         </span>
                                                     )}
 
@@ -446,25 +489,42 @@ function DailyMinistryPage() {
                                         </div>
 
                                         <div className="flex items-center gap-1 self-end sm:self-center shrink-0">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setActivityToEdit(act);
-                                                    setIsActivityModalOpen(true);
-                                                }}
-                                                className="p-1.5 rounded-lg text-typography-400 hover:text-typography-900 hover:bg-surface-200 transition-colors cursor-pointer"
-                                                title="Editar"
-                                            >
-                                                <Edit3 className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteActivity(act.id)}
-                                                className="p-1.5 rounded-lg text-typography-400 hover:text-rose-500 hover:bg-surface-200 transition-colors cursor-pointer"
-                                                title="Excluir"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            {!isMonthLocked ? (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setActivityToEdit(act);
+                                                            setIsActivityModalOpen(true);
+                                                        }}
+                                                        className="p-1.5 rounded-lg text-typography-400 hover:text-typography-900 hover:bg-surface-200 transition-colors cursor-pointer"
+                                                        title="Editar"
+                                                    >
+                                                        <Edit3 className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDeleteActivity(act.id)}
+                                                        className="p-1.5 rounded-lg text-typography-400 hover:text-rose-500 hover:bg-surface-200 transition-colors cursor-pointer"
+                                                        title="Excluir"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setActivityToEdit(act);
+                                                        setIsActivityModalOpen(true);
+                                                    }}
+                                                    className="p-1.5 rounded-lg text-typography-400 hover:text-typography-700 hover:bg-surface-200 transition-colors cursor-pointer flex items-center gap-1 text-[11px]"
+                                                    title="Ver detalhes da atividade (bloqueada)"
+                                                >
+                                                    <Lock className="w-3.5 h-3.5 text-typography-400" />
+                                                    <span className="hidden sm:inline">Bloqueado</span>
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -488,6 +548,7 @@ function DailyMinistryPage() {
                     initialDate={selectedDateForModal}
                     activityToEdit={activityToEdit}
                     students={students}
+                    isLocked={isMonthLocked}
                 />
 
                 <SubmitReportModal

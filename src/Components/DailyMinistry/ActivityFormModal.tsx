@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Clock, Award, BookOpen, FileText, Check } from "lucide-react";
+import { Plus, Clock, Award, BookOpen, FileText, Check, Lock } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
@@ -17,6 +17,7 @@ interface ActivityFormModalProps {
     initialDate?: string;
     activityToEdit?: IPublisherFieldActivity | null;
     students: IPublisherBibleStudent[];
+    isLocked?: boolean;
 }
 
 export default function ActivityFormModal({
@@ -26,7 +27,8 @@ export default function ActivityFormModal({
     initialMinutes = 0,
     initialDate,
     activityToEdit,
-    students
+    students,
+    isLocked = false
 }: ActivityFormModalProps) {
     const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"));
     const [hoursInput, setHoursInput] = useState(0);
@@ -147,6 +149,13 @@ export default function ActivityFormModal({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-3">
+                    {isLocked && (
+                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
+                            <Lock className="w-4 h-4 shrink-0 text-amber-600" />
+                            <span>Este mês está bloqueado para alterações. Fale com o secretário caso precise ajustar.</span>
+                        </div>
+                    )}
+
                     {/* Data */}
                     <div>
                         <Calendar
@@ -310,16 +319,18 @@ export default function ActivityFormModal({
                             onClick={onClose}
                             className="text-xs border-surface-300 hover:bg-surface-200"
                         >
-                            Cancelar
+                            {isLocked ? "Fechar" : "Cancelar"}
                         </Button>
-                        <Button
-                            type="submit"
-                            size="sm"
-                            disabled={submitting}
-                            className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs"
-                        >
-                            {submitting ? "Salvando..." : activityToEdit ? "Salvar Alterações" : "Registrar Atividade"}
-                        </Button>
+                        {!isLocked && (
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={submitting}
+                                className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs"
+                            >
+                                {submitting ? "Salvando..." : activityToEdit ? "Salvar Alterações" : "Registrar Atividade"}
+                            </Button>
+                        )}
                     </DialogFooter>
                 </form>
             </DialogContent>

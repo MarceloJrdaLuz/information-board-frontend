@@ -50,5 +50,10 @@ export interface IDailyMinistryMonthData {
     balance: IPublisherMonthBalance;
     studentsWithStudies?: Array<{ id: string; name: string }>;
     summary: IDailyMinistrySummary;
+    isLocked?: boolean;
+    isExpired?: boolean;
+    isClosed?: boolean;
+    lockReason?: "closed" | "expired" | null;
+    deadlineDate?: string;
 }
 
