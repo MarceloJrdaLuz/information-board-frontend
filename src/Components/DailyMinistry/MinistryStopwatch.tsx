@@ -11,8 +11,6 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     const [isActive, setIsActive] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const streamRef = useRef<MediaStream | null>(null);
     const startTimeRef = useRef<number | null>(null);
     const accumulatedSecsRef = useRef<number>(0);
 
@@ -20,36 +18,10 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         try {
             if (typeof window === "undefined") return;
 
-            // Criar stream de áudio contínuo infinito (Live Stream) via AudioContext.
-            // Por ser infinito e sem duração pré-fixada, o Android/iOS NÃO exibe barra de progresso de 1 segundo!
-            if (!audioContextRef.current) {
-                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-                if (AudioCtx) {
-                    const ctx = new AudioCtx();
-                    const dest = ctx.createMediaStreamDestination();
-                    const gain = ctx.createGain();
-                    gain.gain.value = 0; // silêncio absoluto
-                    const osc = ctx.createOscillator();
-                    osc.connect(gain);
-                    gain.connect(dest);
-                    osc.start();
-
-                    audioContextRef.current = ctx;
-                    streamRef.current = dest.stream;
-                }
-            }
-
-            if (audioContextRef.current && audioContextRef.current.state === "suspended") {
-                audioContextRef.current.resume().catch(() => {});
-            }
-
             if (!audioRef.current) {
-                const audio = new Audio();
+                const audio = new Audio("/silence.wav");
+                audio.loop = true;
                 audioRef.current = audio;
-            }
-
-            if (streamRef.current && audioRef.current.srcObject !== streamRef.current) {
-                audioRef.current.srcObject = streamRef.current;
             }
 
             audioRef.current.play().catch((err) => {
@@ -64,9 +36,6 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
         try {
             if (audioRef.current) {
                 audioRef.current.pause();
-            }
-            if (audioContextRef.current && audioContextRef.current.state === "running") {
-                audioContextRef.current.suspend().catch(() => {});
             }
         } catch {}
     }, []);
@@ -205,6 +174,18 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     ]
                 });
                 navigator.mediaSession.playbackState = "playing";
+
+                // Sobrescreve a barra nativa para uma escala de 24h com a posição exata em segundos.
+                // Isso elimina o efeito de ficar reiniciando a barra a cada 1 segundo!
+                if ("setPositionState" in navigator.mediaSession) {
+                    try {
+                        navigator.mediaSession.setPositionState({
+                            duration: 86400, // 24 horas
+                            playbackRate: 1.0,
+                            position: Math.min(Math.max(0, seconds), 86399)
+                        });
+                    } catch {}
+                }
             } else if (seconds > 0) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: `⏸️ Pausado: ${formatTime(seconds)}`,
@@ -216,6 +197,16 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     ]
                 });
                 navigator.mediaSession.playbackState = "paused";
+
+                if ("setPositionState" in navigator.mediaSession) {
+                    try {
+                        navigator.mediaSession.setPositionState({
+                            duration: 86400,
+                            playbackRate: 0.0,
+                            position: Math.min(Math.max(0, seconds), 86399)
+                        });
+                    } catch {}
+                }
             } else {
                 navigator.mediaSession.playbackState = "none";
             }
