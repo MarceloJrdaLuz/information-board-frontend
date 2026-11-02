@@ -534,6 +534,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calen
                 left: `${coords.left}px`,
                 zIndex: 99999,
                 width: '320px',
+                maxWidth: 'calc(100vw - 24px)',
               }}
               className="bg-surface-100 border border-surface-300 rounded-2xl shadow-2xl p-3.5 pt-4 select-none font-sans text-typography-900 overflow-hidden relative"
             >

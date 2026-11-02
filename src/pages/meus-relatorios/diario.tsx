@@ -31,6 +31,7 @@ import BibleStudentsManager from "@/Components/DailyMinistry/BibleStudentsManage
 import ActivityFormModal from "@/Components/DailyMinistry/ActivityFormModal";
 import SubmitReportModal from "@/Components/DailyMinistry/SubmitReportModal";
 import MinistryMonthCalendar from "@/Components/DailyMinistry/MinistryMonthCalendar";
+import MinistryGoalProgress from "@/Components/DailyMinistry/MinistryGoalProgress";
 import { IDailyMinistryMonthData, IPublisherBibleStudent, IPublisherFieldActivity } from "@/types/dailyMinistry";
 
 dayjs.locale("pt-br");
@@ -141,36 +142,36 @@ function DailyMinistryPage() {
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Diário de Campo"} />
 
-            <section className="flex flex-col flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-6 overflow-y-auto thin-scrollbar">
+            <section className="flex flex-col flex-1 w-full max-w-5xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto thin-scrollbar">
                 {/* Header Principal */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-100 p-5 rounded-2xl border border-surface-300 shadow-sm">
-                    <div className="flex items-center gap-3.5">
-                        <div className="p-3 bg-primary-200/10 text-primary-200 rounded-xl shrink-0 ring-1 ring-primary-200/20">
-                            <Clock className="h-6 w-6" />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 sm:gap-4 bg-surface-100 p-4 sm:p-5 rounded-2xl border border-surface-300 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 sm:p-3 bg-primary-200/10 text-primary-200 rounded-xl shrink-0 ring-1 ring-primary-200/20">
+                            <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
                         <div>
-                            <h1 className="text-xl sm:text-2xl font-bold text-typography-900 tracking-tight flex items-center gap-2">
+                            <h1 className="text-lg sm:text-2xl font-bold text-typography-900 tracking-tight flex items-center gap-2">
                                 Meu Ministério de Campo
                             </h1>
-                            <p className="text-xs sm:text-sm text-typography-500 mt-0.5">
-                                Anote suas horas, créditos e estudos ao longo do mês para enviar seu relatório com facilidade.
+                            <p className="text-[11px] sm:text-sm text-typography-500 mt-0.5">
+                                Anote suas horas, créditos e estudos para enviar seu relatório com facilidade.
                             </p>
                         </div>
                     </div>
 
                     {/* Navegação de Mês */}
-                    <div className="flex items-center gap-1.5 bg-surface-200/80 p-1 rounded-xl border border-surface-300 shrink-0">
+                    <div className="flex items-center justify-between sm:justify-start gap-1 bg-surface-200/80 p-1 rounded-xl border border-surface-300 w-full sm:w-auto shrink-0">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={handlePrevMonth}
-                            className="h-8 w-8 text-typography-600 hover:text-typography-900 rounded-lg cursor-pointer"
+                            className="h-8 w-8 text-typography-600 hover:text-typography-900 rounded-lg cursor-pointer shrink-0"
                             title="Mês anterior"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </Button>
 
-                        <span className="px-3 text-xs sm:text-sm font-bold text-typography-900 min-w-[130px] text-center select-none">
+                        <span className="px-2 text-xs sm:text-sm font-bold text-typography-900 flex-1 sm:min-w-[130px] text-center select-none truncate">
                             {currentMonthName} {currentDate.format("YYYY")}
                         </span>
 
@@ -178,7 +179,7 @@ function DailyMinistryPage() {
                             variant="ghost"
                             size="icon"
                             onClick={handleNextMonth}
-                            className="h-8 w-8 text-typography-600 hover:text-typography-900 rounded-lg cursor-pointer"
+                            className="h-8 w-8 text-typography-600 hover:text-typography-900 rounded-lg cursor-pointer shrink-0"
                             title="Próximo mês"
                         >
                             <ChevronRight className="w-4 h-4" />
@@ -189,57 +190,63 @@ function DailyMinistryPage() {
                 {/* Cronômetro de Ministério */}
                 <MinistryStopwatch onFinish={handleStopwatchFinish} />
 
+                {/* Meta de Horas do Mês e Acompanhamento de Ritmo */}
+                <MinistryGoalProgress
+                    currentDate={currentDate}
+                    totalMinutes={summary.totalMinutesOverall}
+                />
+
                 {/* Cards de Resumo do Mês Atual */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500 truncate">
                             Tempo de Campo
                         </span>
-                        <span className="text-lg sm:text-2xl font-bold text-typography-900 font-mono">
+                        <span className="text-base sm:text-2xl font-bold text-typography-900 font-mono tracking-tight">
                             {formatMinutesToString(summary.totalMinistryMinutes)}
                         </span>
                         {summary.transferredMinutesIn > 0 && (
-                            <span className="text-[10px] font-semibold text-emerald-600">
-                                +{summary.transferredMinutesIn}m do mês anterior
+                            <span className="text-[10px] font-semibold text-emerald-600 truncate">
+                                +{summary.transferredMinutesIn}m do anterior
                             </span>
                         )}
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500">
+                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500 truncate">
                             Crédito de Horas
                         </span>
-                        <span className="text-lg sm:text-2xl font-bold text-amber-600 font-mono">
+                        <span className="text-base sm:text-2xl font-bold text-amber-600 font-mono tracking-tight">
                             {formatMinutesToString(summary.totalCreditMinutes)}
                         </span>
-                        <span className="text-[10px] text-typography-400">Atividades aprovadas</span>
+                        <span className="text-[10px] text-typography-400 truncate">Ativ. aprovadas</span>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500">
+                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500 truncate">
                             Total Geral
                         </span>
-                        <span className="text-lg sm:text-2xl font-bold text-primary-200 font-mono">
+                        <span className="text-base sm:text-2xl font-bold text-primary-200 font-mono tracking-tight">
                             {formatMinutesToString(summary.totalMinutesOverall)}
                         </span>
-                        <span className="text-[10px] font-medium text-typography-500">
+                        <span className="text-[10px] font-medium text-typography-500 truncate">
                             (~{Math.floor(summary.totalMinutesOverall / 60)}h oficiais)
                         </span>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500">
+                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-100 border border-surface-300 shadow-xs flex flex-col gap-1">
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-typography-500 truncate">
                             Estudos Bíblicos
                         </span>
-                        <span className="text-lg sm:text-2xl font-bold text-typography-900 font-mono">
+                        <span className="text-base sm:text-2xl font-bold text-typography-900 font-mono tracking-tight">
                             {summary.totalStudiesCount}
                         </span>
-                        <span className="text-[10px] text-typography-400">Pessoas atendidas</span>
+                        <span className="text-[10px] text-typography-400 truncate">Pessoas atendidas</span>
                     </div>
                 </div>
 
                 {/* Banner de Ação de Fechamento / Envio do Relatório */}
-                <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs ${
+                <div className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs ${
                     isMonthClosed
                         ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
                         : "bg-primary-200/5 border-primary-200/20 text-typography-800"
@@ -251,22 +258,22 @@ function DailyMinistryPage() {
                             {isMonthClosed ? <CheckCircle2 className="w-5 h-5" /> : <FileSpreadsheet className="w-5 h-5" />}
                         </div>
                         <div>
-                            <span className="text-sm font-bold block">
+                            <span className="text-xs sm:text-sm font-bold block">
                                 {isMonthClosed
                                     ? `Relatório de ${currentMonthName} já enviado!`
                                     : `Pronto para enviar seu relatório de ${currentMonthName}?`}
                             </span>
-                            <span className="text-xs text-typography-500">
+                            <span className="text-[11px] sm:text-xs text-typography-500">
                                 {isMonthClosed
                                     ? "Você pode reenviar a qualquer momento caso tenha feito novas atividades."
-                                    : "Transfira ou arredonde os minutos e envie diretamente para o secretário da congregação."}
+                                    : "Transfira ou arredonde os minutos e envie diretamente para a congregação."}
                             </span>
                         </div>
                     </div>
 
                     <Button
                         onClick={() => setIsSubmitReportModalOpen(true)}
-                        className={`text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer ${
+                        className={`text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shrink-0 cursor-pointer w-full sm:w-auto ${
                             isMonthClosed ? "bg-emerald-600 hover:bg-emerald-700" : "bg-primary-200 hover:opacity-90"
                         }`}
                     >
@@ -276,44 +283,44 @@ function DailyMinistryPage() {
                 </div>
 
                 {/* Abas: Diário de Atividades vs Estudantes */}
-                <div className="flex items-center gap-2 border-b border-surface-300 pb-2">
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 border-b border-surface-300 pb-2">
                     <button
                         type="button"
                         onClick={() => setActiveTab("diary")}
-                        className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer ${
+                        className={`px-3 sm:px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
                             activeTab === "diary"
                                 ? "bg-primary-200 text-white shadow-xs"
                                 : "bg-surface-100 text-typography-600 hover:bg-surface-200 hover:text-typography-900 border border-surface-300"
                         }`}
                     >
-                        <Clock className="w-4 h-4" />
-                        <span>Atividades do Mês ({monthData?.activities?.length || 0})</span>
+                        <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                        <span className="truncate">Atividades ({monthData?.activities?.length || 0})</span>
                     </button>
 
                     <button
                         type="button"
                         onClick={() => setActiveTab("students")}
-                        className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer ${
+                        className={`px-3 sm:px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
                             activeTab === "students"
                                 ? "bg-primary-200 text-white shadow-xs"
                                 : "bg-surface-100 text-typography-600 hover:bg-surface-200 hover:text-typography-900 border border-surface-300"
                         }`}
                     >
-                        <BookOpen className="w-4 h-4" />
-                        <span>Meus Estudantes ({students.length})</span>
+                        <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                        <span className="truncate">Estudantes ({students.length})</span>
                     </button>
                 </div>
 
                 {/* Conteúdo da Aba Ativa */}
                 {activeTab === "diary" ? (
                     <div className="flex flex-col gap-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
                             {/* Seletor Calendário / Lista */}
-                            <div className="flex items-center gap-1 p-1 bg-surface-200/70 rounded-xl border border-surface-300 w-fit">
+                            <div className="grid grid-cols-2 sm:flex items-center gap-1 p-1 bg-surface-200/70 rounded-xl border border-surface-300 w-full sm:w-fit">
                                 <button
                                     type="button"
                                     onClick={() => setViewMode("calendar")}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                         viewMode === "calendar"
                                             ? "bg-surface-100 text-typography-900 shadow-xs"
                                             : "text-typography-500 hover:text-typography-900"
@@ -325,7 +332,7 @@ function DailyMinistryPage() {
                                 <button
                                     type="button"
                                     onClick={() => setViewMode("list")}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                         viewMode === "list"
                                             ? "bg-surface-100 text-typography-900 shadow-xs"
                                             : "text-typography-500 hover:text-typography-900"
@@ -343,7 +350,7 @@ function DailyMinistryPage() {
                                     setSelectedDateForModal(undefined);
                                     setIsActivityModalOpen(true);
                                 }}
-                                className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                className="w-full sm:w-auto bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Anotar Atividade</span>

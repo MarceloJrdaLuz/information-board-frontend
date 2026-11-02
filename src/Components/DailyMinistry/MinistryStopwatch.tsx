@@ -91,15 +91,15 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
     };
 
     return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm">
             <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div className={`p-3 rounded-xl shrink-0 transition-colors ${
+                <div className={`p-2.5 sm:p-3 rounded-xl shrink-0 transition-colors ${
                     isActive ? "bg-emerald-500/10 text-emerald-500 ring-2 ring-emerald-500/20" : "bg-primary-200/10 text-primary-200"
                 }`}>
                     <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-typography-500 block">
+                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-typography-500 block">
                         Cronômetro do Ministério
                     </span>
                     <span className="text-2xl sm:text-3xl font-mono font-bold text-typography-900 tracking-tight">
@@ -108,11 +108,13 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+            <div className="grid grid-cols-2 sm:flex sm:w-auto items-center gap-2 w-full justify-end">
                 {!isActive ? (
                     <Button
                         onClick={handleStart}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        className={`bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer ${
+                            seconds === 0 ? "col-span-2 sm:col-span-1" : ""
+                        }`}
                     >
                         <Play className="w-4 h-4 fill-current" />
                         <span>{seconds > 0 ? "Continuar" : "Iniciar Campo"}</span>
@@ -121,7 +123,7 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                     <Button
                         onClick={handlePause}
                         variant="outline"
-                        className="border-amber-500/40 text-amber-600 hover:bg-amber-500/10 font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                        className="border-amber-500/40 text-amber-600 hover:bg-amber-500/10 font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                         <Pause className="w-4 h-4 fill-current" />
                         <span>Pausar</span>
@@ -129,10 +131,10 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                 )}
 
                 {seconds > 0 && (
-                    <>
+                    <div className="flex items-center gap-1.5 col-span-1">
                         <Button
                             onClick={handleStopAndSave}
-                            className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer"
+                            className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex-1 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                         >
                             <Plus className="w-4 h-4" />
                             <span>Lançar Tempo</span>
@@ -143,11 +145,11 @@ export default function MinistryStopwatch({ onFinish }: MinistryStopwatchProps) 
                             variant="ghost"
                             size="icon"
                             title="Zerar cronômetro"
-                            className="h-9 w-9 text-typography-400 hover:text-rose-500 hover:bg-surface-200 rounded-xl cursor-pointer"
+                            className="h-9 w-9 text-typography-400 hover:text-rose-500 hover:bg-surface-200 rounded-xl cursor-pointer shrink-0"
                         >
                             <RotateCcw className="w-4 h-4" />
                         </Button>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

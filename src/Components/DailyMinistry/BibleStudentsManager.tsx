@@ -49,7 +49,7 @@ export default function BibleStudentsManager({ students, onRefresh }: BibleStude
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h3 className="text-base font-bold text-typography-900 flex items-center gap-2">
                         <BookOpen className="w-5 h-5 text-primary-200" />
@@ -62,7 +62,7 @@ export default function BibleStudentsManager({ students, onRefresh }: BibleStude
 
                 <Button
                     onClick={() => setIsCreateOpen(true)}
-                    className="bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer"
+                    className="w-full sm:w-auto bg-primary-200 hover:opacity-90 text-white font-semibold text-xs h-9 px-3.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
                     <Plus className="w-4 h-4" />
                     <span>Novo Estudante</span>
@@ -110,7 +110,7 @@ export default function BibleStudentsManager({ students, onRefresh }: BibleStude
 
             {/* Modal Novo Estudante */}
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogContent className="max-w-sm bg-surface-100 border border-surface-300 p-5 rounded-2xl">
+                <DialogContent className="max-w-sm w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl">
                     <DialogHeader className="pb-3 border-b border-surface-300">
                         <DialogTitle className="text-base font-bold text-typography-900 flex items-center gap-2">
                             <BookOpen className="w-5 h-5 text-primary-200" />
@@ -159,7 +159,7 @@ export default function BibleStudentsManager({ students, onRefresh }: BibleStude
 
             {/* Modal Confirmar Exclusão */}
             <Dialog open={Boolean(deletingId)} onOpenChange={() => setDeletingId(null)}>
-                <DialogContent className="max-w-sm bg-surface-100 border border-surface-300 p-5 rounded-2xl">
+                <DialogContent className="max-w-sm w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl">
                     <DialogHeader className="pb-2">
                         <DialogTitle className="text-base font-bold text-typography-900 flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 text-rose-500" />

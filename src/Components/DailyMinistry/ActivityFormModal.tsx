@@ -112,11 +112,11 @@ export default function ActivityFormModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-md bg-surface-100 border border-surface-300 p-5 rounded-2xl max-h-[92dvh] overflow-y-auto thin-scrollbar">
+            <DialogContent className="max-w-md w-[calc(100vw-24px)] sm:w-full bg-surface-100 border border-surface-300 p-4 sm:p-5 rounded-2xl max-h-[92dvh] overflow-y-auto thin-scrollbar">
                 <DialogHeader className="pb-3 border-b border-surface-300">
-                    <DialogTitle className="text-base font-bold text-typography-900 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-primary-200" />
-                        {activityToEdit ? "Editar Atividade Diária" : "Lançar Atividade no Ministério"}
+                    <DialogTitle className="text-sm sm:text-base font-bold text-typography-900 flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-primary-200 shrink-0" />
+                        <span>{activityToEdit ? "Editar Atividade Diária" : "Lançar Atividade no Ministério"}</span>
                     </DialogTitle>
                 </DialogHeader>
 
