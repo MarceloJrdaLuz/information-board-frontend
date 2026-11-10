@@ -9,9 +9,11 @@ import { useAtom } from "jotai"
 import { toast } from "react-toastify"
 import { useSubmit } from "./useSubmitForms"
 import { API_ROUTES } from "@/constants/apiRoutes"
+import { useSWRConfig } from "swr"
 
 export function usePublisher() {
     const { handleSubmitError, handleSubmitSuccess } = useSubmit()
+    const { mutate } = useSWRConfig()
     const [, setModalLinkForce] = useAtom(showConfirmForceModal)
 
     async function createPublisher({
@@ -258,15 +260,19 @@ export function usePublisher() {
     }
 
     async function transferPublishers({ publisherIds, newCongregationId }: ITransferPublishers) {
-        await api.put(`${API_ROUTES.PUBLISHERS}/transfer-congregation`, {
-            publisherIds,
-            newCongregationId
-        }).then(res => {
+        try {
+            const res = await api.put(`${API_ROUTES.PUBLISHERS}/transfer-congregation`, {
+                publisherIds,
+                newCongregationId
+            })
+            await mutate(() => true, undefined, { revalidate: true })
             handleSubmitSuccess(messageSuccessSubmit.transferPublisherSuccess, '/congregacao/pessoas')
-        }).catch(err => {
+            return res.data
+        } catch (err) {
             console.log(err)
             toast.error(messageErrorsSubmit.default)
-        })
+            throw err
+        }
     }
 
     return {
