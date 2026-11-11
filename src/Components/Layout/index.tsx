@@ -795,7 +795,7 @@ export default function Layout(props: LayoutProps) {
                                 {(isAdmin || isAdminCongregation) &&
                                     <NavBar.Options
                                         isSubItem
-                                        title="Responsáveis por Escalas"
+                                        title="Responsabilidades"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/responsaveis-programacoes')

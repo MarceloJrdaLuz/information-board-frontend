@@ -7,7 +7,7 @@ import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { IScheduleAlert, IScheduleAlertsResponse } from "@/types/scheduleReminder";
-import { ArrowRight, BellRing, CalendarClock, ChevronRight, X } from "lucide-react";
+import { ArrowRight, BellRing, CalendarClock, ChevronDown, ChevronRight, ChevronUp, X } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -15,6 +15,7 @@ export default function SchedulePendingAlertsCard() {
     const { congregation } = useCongregationContext();
     const router = useRouter();
     const [dismissed, setDismissed] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const alertsUrl = congregation
         ? `${API_ROUTES.SCHEDULE_REMINDERS_ALERTS}/congregation/${congregation.id}`
@@ -75,7 +76,7 @@ export default function SchedulePendingAlertsCard() {
                             <h3 className="text-sm sm:text-base font-bold text-typography-900 leading-tight">
                                 Lembretes de Programações
                             </h3>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-500 text-white shrink-0 whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-500 text-white shrink-0 whitespace-nowrap leading-none">
                                 {alerts.length} {alerts.length === 1 ? "pendência" : "pendências"}
                             </span>
                         </div>
@@ -95,9 +96,9 @@ export default function SchedulePendingAlertsCard() {
                 </button>
             </div>
 
-            {/* Lista de Alertas */}
+            {/* Lista de Alertas (mostra apenas o primeiro por padrão caso haja múltiplos) */}
             <div className="grid gap-2.5 sm:grid-cols-1 pt-1">
-                {alerts.map((alert) => (
+                {(isExpanded ? alerts : alerts.slice(0, 1)).map((alert) => (
                     <div
                         key={alert.id}
                         className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 bg-surface-100 rounded-xl border border-surface-300 shadow-2xs hover:border-amber-400/50 transition-all"
@@ -142,6 +143,29 @@ export default function SchedulePendingAlertsCard() {
                     </div>
                 ))}
             </div>
+
+            {/* Botão de Expandir / Recolher quando há mais de 1 pendência */}
+            {alerts.length > 1 && (
+                <div className="flex justify-center pt-1">
+                    <button
+                        type="button"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-typography-600 hover:text-typography-900 bg-surface-100 hover:bg-surface-200/80 border border-surface-300 rounded-xl transition-all cursor-pointer shadow-2xs"
+                    >
+                        {isExpanded ? (
+                            <>
+                                <ChevronUp className="w-3.5 h-3.5" />
+                                <span>Ocultar pendências adicionais</span>
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                                <span>Ver mais {alerts.length - 1} {alerts.length - 1 === 1 ? "pendência" : "pendências"}</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
