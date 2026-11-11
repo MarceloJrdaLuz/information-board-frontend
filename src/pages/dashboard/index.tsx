@@ -30,6 +30,8 @@ function Dashboard() {
   const router = useRouter();
   const [adminPendingCount, setAdminPendingCount] = useState<number>(0);
 
+  const isSuperAdmin = user?.roles?.some((r) => r.name === "ADMIN");
+
   const fetchConfig = user?.publisher ? `/publisher/${user.publisher.id}/assignment` : "";
   const { data, isLoading } = useFetch<IAssignment[]>(fetchConfig);
 
@@ -137,8 +139,8 @@ function Dashboard() {
             )
           )}
 
-          {/* Access Request Card if user has no congregation */}
-          {!loading && user && !user.congregation && (
+          {/* Access Request Card if user has no congregation (ignored for system super ADMIN) */}
+          {!loading && user && !user.congregation && !isSuperAdmin && (
             <AccessRequestCard />
           )}
 
