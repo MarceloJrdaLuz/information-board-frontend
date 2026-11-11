@@ -63,21 +63,23 @@ export default function SchedulePendingAlertsCard() {
     };
 
     return (
-        <div className="w-full max-w-4xl rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/5 border border-amber-500/30 p-4 sm:p-5 shadow-sm space-y-3 animate-fade-in">
-            {/* Header com título e botão de fechar */}
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-xl bg-amber-500 text-white shadow-xs">
+        <div className="w-full max-w-4xl rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/5 border border-amber-500/30 p-3.5 sm:p-5 shadow-sm space-y-3 animate-fade-in">
+            {/* Header com título, badge e botão de fechar */}
+            <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="p-2 rounded-xl bg-amber-500 text-white shadow-xs shrink-0">
                         <BellRing className="w-4 h-4 animate-bounce" />
                     </div>
-                    <div>
-                        <h3 className="text-sm sm:text-base font-bold text-typography-900 flex items-center gap-2">
-                            <span>Lembretes de Programações Pendentes</span>
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-white">
+                    <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <h3 className="text-sm sm:text-base font-bold text-typography-900 leading-tight">
+                                Lembretes de Programações
+                            </h3>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-500 text-white shrink-0 whitespace-nowrap">
                                 {alerts.length} {alerts.length === 1 ? "pendência" : "pendências"}
                             </span>
-                        </h3>
-                        <p className="text-xs text-typography-500 hidden sm:block">
+                        </div>
+                        <p className="text-xs text-typography-500 hidden sm:block mt-0.5">
                             Programações do próximo mês que necessitam da sua atenção para serem geradas ou completadas.
                         </p>
                     </div>
@@ -86,7 +88,7 @@ export default function SchedulePendingAlertsCard() {
                 <button
                     type="button"
                     onClick={() => setDismissed(true)}
-                    className="p-1.5 text-typography-400 hover:text-typography-700 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                    className="p-1.5 text-typography-400 hover:text-typography-700 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer shrink-0"
                     title="Dispensar aviso nesta sessão"
                 >
                     <X className="w-4 h-4" />
@@ -98,32 +100,32 @@ export default function SchedulePendingAlertsCard() {
                 {alerts.map((alert) => (
                     <div
                         key={alert.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-3.5 bg-surface-100 rounded-xl border border-surface-300 shadow-2xs hover:border-amber-400/50 transition-all"
+                        className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 bg-surface-100 rounded-xl border border-surface-300 shadow-2xs hover:border-amber-400/50 transition-all"
                     >
-                        <div className="flex items-start sm:items-center gap-3">
-                            <div className="p-2 rounded-lg bg-surface-200/80 shrink-0 mt-0.5 sm:mt-0">
+                        <div className="flex items-start gap-3 min-w-0">
+                            <div className="p-2 rounded-lg bg-surface-200/80 shrink-0 mt-0.5">
                                 {getModuleIcon(alert.module)}
                             </div>
-                            <div className="space-y-0.5">
+                            <div className="space-y-1 min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-1.5">
                                     <span
-                                        className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${getModuleBadgeColor(
+                                        className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider whitespace-nowrap ${getModuleBadgeColor(
                                             alert.module
                                         )}`}
                                     >
                                         {alert.title}
                                     </span>
                                     {alert.daysRemaining <= 7 ? (
-                                        <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 whitespace-nowrap">
                                             Faltam {alert.daysRemaining} {alert.daysRemaining === 1 ? "dia" : "dias"}
                                         </span>
                                     ) : (
-                                        <span className="px-1.5 py-0.2 rounded text-[10px] font-medium text-typography-500">
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium text-typography-500 whitespace-nowrap">
                                             Faltam {alert.daysRemaining} dias
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-xs sm:text-sm font-medium text-typography-700">
+                                <p className="text-xs sm:text-sm font-medium text-typography-700 leading-snug">
                                     {alert.message}
                                 </p>
                             </div>
@@ -132,7 +134,7 @@ export default function SchedulePendingAlertsCard() {
                         <button
                             type="button"
                             onClick={() => router.push(alert.link)}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white shadow-xs transition-colors cursor-pointer shrink-0"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 text-xs font-semibold rounded-xl bg-primary-200 hover:bg-primary-300 text-white shadow-xs transition-colors cursor-pointer shrink-0 mt-1 sm:mt-0"
                         >
                             <span>{alert.actionLabel}</span>
                             <ArrowRight className="w-3.5 h-3.5" />
