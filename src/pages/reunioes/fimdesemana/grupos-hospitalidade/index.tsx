@@ -9,6 +9,7 @@ import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteHospitalityGroupAtom, selectedHospitalityGroupAtom } from "@/atoms/hospitalityGroupsAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import { getHospitalityGroupDisplayName } from "@/functions/hospitalityGroupHelper"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IHospitalityGroup } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
@@ -38,7 +39,9 @@ function HospitalityGroupsPage() {
 
     useEffect(() => {
         if (getHospitalityGroups) {
-            const sort = sortArrayByProperty(getHospitalityGroups, "name")
+            const sort = [...getHospitalityGroups].sort(
+                (a, b) => (a.position ?? 0) - (b.position ?? 0)
+            )
             setHospitalityGroups(sort)
         }
     }, [getHospitalityGroups])
@@ -60,15 +63,17 @@ function HospitalityGroupsPage() {
         if (!hospitalityGroups) return []
 
         const term = normalize(searchQuery.trim())
-        if (!term) return sortArrayByProperty(hospitalityGroups, "name")
+        if (!term) return [...hospitalityGroups].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
 
         const filtered = hospitalityGroups.filter(group => {
+            const displayName = normalize(getHospitalityGroupDisplayName(group))
+            const groupNum = `grupo ${group.position}`
             const nameMatch = normalize(group.name ?? "").includes(term)
             const hostMatch = normalize(group.host?.fullName ?? "").includes(term)
             const memberMatch = group.members?.some(m => normalize(m.fullName ?? "").includes(term))
-            return nameMatch || hostMatch || memberMatch
+            return displayName.includes(term) || groupNum.includes(term) || nameMatch || hostMatch || memberMatch
         })
-        return sortArrayByProperty(filtered, "name")
+        return filtered.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     }, [hospitalityGroups, searchQuery])
 
     // Métricas
@@ -225,19 +230,36 @@ function HospitalityGroupsPage() {
                         items={filteredGroups}
                         path="/reunioes/fimdesemana/grupos-hospitalidade"
                         label="do grupo"
-                        renderItem={(group) => (
-                            <div className="flex flex-col h-full justify-between gap-3">
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <h3 className="text-base font-bold text-typography-900 leading-snug">
-                                            {group.name}
-                                        </h3>
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-primary-100/15 text-primary-200 border border-primary-200/20 shrink-0">
-                                            {group.members?.length ?? 0} membros
-                                        </span>
-                                    </div>
+                        deleteTitle="Excluir Grupo de Hospitalidade?"
+                        deleteMessage="Tem certeza de que deseja remover este grupo? Os grupos seguintes serão reordenados automaticamente para não deixar lacunas na numeração."
+                        renderItem={(group) => {
+                            const isDefaultName = !group.name || (group.position && new RegExp(`^grupo\\s*${group.position}$`, "i").test(group.name.trim()))
 
-                                    {/* Anfitrião */}
+                            return (
+                                <div className="flex flex-col h-full justify-between gap-3">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="w-8 h-8 rounded-lg bg-primary-200/10 text-primary-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                    {group.position ?? "•"}
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <h3 className="text-base font-bold text-typography-900 leading-snug line-clamp-1">
+                                                        Grupo {group.position ?? ""}
+                                                    </h3>
+                                                    {!isDefaultName && group.name && (
+                                                        <span className="text-xs text-typography-500 font-normal line-clamp-1">
+                                                            {group.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-primary-100/15 text-primary-200 border border-primary-200/20 shrink-0">
+                                                {group.members?.length ?? 0} membros
+                                            </span>
+                                        </div>
+
+                                        {/* Anfitrião */}
                                     <div className="flex items-center gap-2 p-2 rounded-lg bg-surface-200/60 border border-surface-300/80 text-xs text-typography-700 mt-1">
                                         <UserCheck className="h-4 w-4 text-primary-200 shrink-0" />
                                         <div className="flex flex-col">
@@ -272,7 +294,8 @@ function HospitalityGroupsPage() {
                                     )}
                                 </div>
                             </div>
-                        )}
+                        );
+                    }}
                     />
                 ) : (
                     <EmptyState

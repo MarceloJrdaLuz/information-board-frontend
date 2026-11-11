@@ -77,7 +77,9 @@ function GroupsPage() {
 
     useEffect(() => {
         if (getGroups) {
-            const sort = sortArrayByProperty(getGroups, "number")
+            const sort = [...getGroups].sort(
+                (a, b) => (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0)
+            )
             setGroups(sort)
         }
     }, [getGroups])

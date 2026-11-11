@@ -64,12 +64,15 @@ export default function FormEditHospitalityGroup() {
     const disabled = useAtomValue(buttonDisabled)
 
     const schemaValidation = yup.object({
-        name: yup.string().required()
+        name: yup.string().optional()
     })
+
+    const isDefaultName = selectedHospitalityGroup?.name && /^grupo\s*\d+$/i.test(selectedHospitalityGroup.name.trim());
+    const initialName = isDefaultName ? "" : selectedHospitalityGroup?.name || "";
 
     const { register, reset, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            name: selectedHospitalityGroup?.name,
+            name: initialName,
         },
         resolver: yupResolver(schemaValidation)
     })
@@ -80,7 +83,7 @@ export default function FormEditHospitalityGroup() {
         const member_ids = selectedGroupMembers?.map(m => m.id)
 
         const payload: UpdateHospitalityGroupPayload = {
-            name: data.name,
+            name: data.name?.trim() ? data.name.trim() : "",
             publisherHost_id: publisherHost_id,
             member_ids
         }
@@ -101,12 +104,23 @@ export default function FormEditHospitalityGroup() {
         <section className="flex w-full justify-center items-center h-auto m-2">
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className="w-full flex flex-col">
-                    <div className="form-title-modern">Atualizar grupo</div>
+                    <div className="form-title-modern">Atualizar grupo de hospitalidade</div>
 
-                    <Input type="text" placeholder="Nome completo" registro={{
-                        ...register('name', { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.name?.message ? 'invalido' : ''} />
+                    <div className="flex items-center justify-between mb-2 px-1">
+                        <span className="text-xs font-semibold text-primary-200">
+                            Grupo {selectedHospitalityGroup?.position ?? ""}
+                        </span>
+                        <span className="text-[11px] text-typography-400">
+                            Número sequencial fixo
+                        </span>
+                    </div>
+
+                    <Input
+                        type="text"
+                        placeholder={`Nome personalizado (opcional — padrão: Grupo ${selectedHospitalityGroup?.position ?? ""})`}
+                        registro={{ ...register('name') }}
+                        invalid={errors?.name?.message ? 'invalido' : ''}
+                    />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
                     <div className="mt-2">
