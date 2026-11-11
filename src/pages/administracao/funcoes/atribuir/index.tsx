@@ -15,8 +15,8 @@ function AssignRole() {
         setPageActive("Atribuir Funções")
         setCrumbs([
             { label: "Início", link: "/dashboard" },
+            { label: "Administração", link: "/administracao" },
             { label: "Funções", link: "/administracao/funcoes" },
-            { label: "Atribuir", link: "/administracao/funcoes/atribuir" }
         ])
     }, [setPageActive, setCrumbs])
 

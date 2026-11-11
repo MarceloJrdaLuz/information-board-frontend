@@ -1,3 +1,4 @@
+import { formatRoleLabel } from "@/Components/Forms/FormUserRoles";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { useAuthContext } from "@/context/AuthContext";
 import { getInitials } from "@/functions/getInitials";
@@ -51,6 +52,9 @@ const ROLE_LABELS: Record<string, { label: string; color: string }> = {
     PUBLISHERS_MANAGER: { label: "Gerenciar Publicadores", color: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/20" },
     PUBLISHERS_VIEWER: { label: "Ver Publicadores", color: "bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20" },
     NOTICES_MANAGER: { label: "Anúncios", color: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/20" },
+    ARRANGEMENTS_MANAGER: { label: "Arranjos", color: "bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20" },
+    FINANCE_MANAGER: { label: "Finanças", color: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20" },
+    MIDWEEK_VIEWER: { label: "Ver Meio de Semana", color: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20" },
 };
 
 export default function ActiveDomainUsersManager() {
@@ -279,7 +283,7 @@ export default function ActiveDomainUsersManager() {
                                             {u.roles && u.roles.length > 0 ? (
                                                 u.roles.map((r) => {
                                                     const meta = ROLE_LABELS[r.name] || {
-                                                        label: r.name,
+                                                        label: formatRoleLabel(r.name),
                                                         color: "bg-surface-200 text-typography-600 border-surface-300",
                                                     };
                                                     return (
