@@ -1,21 +1,21 @@
 import { crumbsAtom, pageActiveAtom } from "@/atoms/atom";
 import AccessRequestsManager from "@/Components/AccessRequestsManager";
+import ActiveDomainUsersManager from "@/Components/ActiveDomainUsersManager";
 import BreadCrumbs from "@/Components/BreadCrumbs";
 import ContentDashboard from "@/Components/ContentDashboard";
 import FormAddDomain from "@/Components/Forms/FormAddDomain";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom } from "jotai";
-import { KeyRound, UserCheck } from "lucide-react";
+import { KeyRound, UserCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function AddDomainPage() {
     const [crumbs, setCrumbs] = useAtom(crumbsAtom);
     const [, setPageActive] = useAtom(pageActiveAtom);
-    const [activeTab, setActiveTab] = useState<"requests" | "manual">("requests");
+    const [activeTab, setActiveTab] = useState<"active_users" | "requests" | "manual">("active_users");
     const [pendingCount, setPendingCount] = useState<number>(0);
 
     useEffect(() => {
-        setPageActive("Adicionar ao domínio");
         setPageActive("Acessos ao Domínio");
         setCrumbs([
             { label: "Administração", link: "/administracao" },
@@ -36,16 +36,29 @@ function AddDomainPage() {
                             Acessos ao Domínio da Congregação
                         </h1>
                         <p className="text-xs sm:text-sm text-typography-500 mt-1">
-                            Aprove solicitações de entrada feitas pelos usuários ou vincule manualmente por código.
+                            Gerencie os usuários ativos no domínio, aprove solicitações de entrada ou vincule manualmente por código.
                         </p>
                     </div>
 
                     {/* Tabs Switcher */}
-                    <div className="flex items-center p-1 bg-surface-200/80 rounded-2xl border border-surface-300/80 self-stretch sm:self-auto">
+                    <div className="flex flex-wrap items-center p-1 bg-surface-200/80 rounded-2xl border border-surface-300/80 self-stretch sm:self-auto gap-1">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab("active_users")}
+                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                                activeTab === "active_users"
+                                    ? "bg-surface-100 text-primary-200 shadow-sm"
+                                    : "text-typography-500 hover:text-typography-100"
+                            }`}
+                        >
+                            <Users className="w-4 h-4" />
+                            <span>Usuários Ativos</span>
+                        </button>
+
                         <button
                             type="button"
                             onClick={() => setActiveTab("requests")}
-                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                                 activeTab === "requests"
                                     ? "bg-surface-100 text-primary-200 shadow-sm"
                                     : "text-typography-500 hover:text-typography-100"
@@ -63,7 +76,7 @@ function AddDomainPage() {
                         <button
                             type="button"
                             onClick={() => setActiveTab("manual")}
-                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                                 activeTab === "manual"
                                     ? "bg-surface-100 text-primary-200 shadow-sm"
                                     : "text-typography-500 hover:text-typography-100"
@@ -77,9 +90,19 @@ function AddDomainPage() {
 
                 {/* Conteúdo da Aba */}
                 <div className="w-full flex justify-center mt-2">
-                    {activeTab === "requests" ? (
-                        <AccessRequestsManager onPendingCountChange={setPendingCount} />
-                    ) : (
+                    {activeTab === "active_users" && (
+                        <div className="w-full">
+                            <ActiveDomainUsersManager />
+                        </div>
+                    )}
+
+                    {activeTab === "requests" && (
+                        <div className="w-full">
+                            <AccessRequestsManager onPendingCountChange={setPendingCount} />
+                        </div>
+                    )}
+
+                    {activeTab === "manual" && (
                         <div className="w-full max-w-xl flex flex-col items-center">
                             <div className="w-full mb-4 p-4 rounded-2xl bg-surface-100 border border-surface-300 text-xs text-typography-500 leading-relaxed">
                                 <strong className="text-typography-100">Como funciona:</strong> Informe o código de usuário de 8 caracteres para vinculá-lo diretamente à sua congregação, sem necessidade de solicitação prévia no app.
