@@ -261,7 +261,7 @@ export default function Layout(props: LayoutProps) {
                                     roleContains('CLEANING_MANAGER')) &&
                                     <NavBar.Options
                                         isSubItem
-                                        title="Limpeza"
+                                        title="Programação de Limpeza"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/congregacao/programacao-limpeza')
@@ -789,6 +789,19 @@ export default function Layout(props: LayoutProps) {
                                         }}
                                         icon={() => <FunctionSquareIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive.startsWith('/administracao/funcoes')}
+                                    />
+                                }
+
+                                {(isAdmin || isAdminCongregation) &&
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Responsabilidades"
+                                        onClick={() => {
+                                            { !isDesktop && setIsMenuOpen(false) }
+                                            Router.push('/administracao/responsaveis-programacoes')
+                                        }}
+                                        icon={() => <UsersIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive.startsWith('/administracao/responsaveis-programacoes')}
                                     />
                                 }
 

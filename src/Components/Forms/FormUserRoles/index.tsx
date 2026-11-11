@@ -63,6 +63,21 @@ const ROLE_METADATA: Record<string, { label: string; category: string; descripti
         category: "Pregação",
         description: "Organiza programações, saídas e arranjos do serviço de campo da congregação.",
     },
+    PUBLIC_WITNESS_MANAGER: {
+        label: "Gerenciador de Testemunho Público",
+        category: "Pregação",
+        description: "Coordena pontos, horários e escalas de testemunho público / carrinhos.",
+    },
+    MIDWEEK_MANAGER: {
+        label: "Gerenciador de Meio de Semana",
+        category: "Reuniões",
+        description: "Programa partes, leitores e designações da Reunião Nossa Vida e Ministério.",
+    },
+    MIDWEEK_VIEWER: {
+        label: "Visualizador de Meio de Semana",
+        category: "Reuniões",
+        description: "Consulta programações da Reunião de Meio de Semana sem permissão para alteração.",
+    },
     ARRANGEMENTS_MANAGER: {
         label: "Gerenciador de Arranjos",
         category: "Reuniões",
@@ -73,6 +88,40 @@ const ROLE_METADATA: Record<string, { label: string; category: string; descripti
         category: "Administração",
         description: "Acessa e gerencia contas, comprovantes e relatórios de contas da congregação.",
     },
+}
+
+export function formatRoleLabel(roleName: string): string {
+    if (!roleName) return ""
+    if (ROLE_METADATA[roleName]?.label) return ROLE_METADATA[roleName].label
+
+    const friendlyMap: Record<string, string> = {
+        PUBLIC_WITNESS_MANAGER: "Gerenciador de Testemunho Público",
+        MIDWEEK_MANAGER: "Gerenciador de Meio de Semana",
+        MIDWEEK_VIEWER: "Visualizador de Meio de Semana",
+        CLEANING_MANAGER: "Gerenciador de Limpeza",
+        FIELD_SERVICE_MANAGER: "Gerenciador de Campo",
+        TALK_MANAGER: "Gerenciador de Discursos",
+        ADMIN_CONGREGATION: "Administrador da Congregação",
+        ADMIN: "Administrador Geral",
+        PUBLISHERS_MANAGER: "Gerenciador de Publicadores",
+        PUBLISHERS_VIEWER: "Visualizador de Publicadores",
+        NOTICES_MANAGER: "Gerenciador de Anúncios",
+        ARRANGEMENTS_MANAGER: "Gerenciador de Arranjos",
+        FINANCE_MANAGER: "Gerenciador de Finanças",
+    }
+
+    if (friendlyMap[roleName]) return friendlyMap[roleName]
+
+    return roleName
+        .replace(/_MANAGER$/i, " (Gerenciador)")
+        .replace(/_VIEWER$/i, " (Visualizador)")
+        .replace(/PUBLIC_WITNESS/i, "Testemunho Público")
+        .replace(/MIDWEEK/i, "Meio de Semana")
+        .replace(/FIELD_SERVICE/i, "Campo")
+        .replace(/TALK/i, "Discursos")
+        .replace(/CLEANING/i, "Limpeza")
+        .replace(/NOTICES/i, "Anúncios")
+        .replace(/_/g, " ")
 }
 
 export default function FormUserRoles() {
@@ -497,7 +546,7 @@ ${allRoles
                                                 key={r.id}
                                                 className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-surface-100 border border-surface-300 text-typography-700"
                                             >
-                                                {ROLE_METADATA[r.name]?.label || r.name}
+                                                {formatRoleLabel(r.name)}
                                             </span>
                                         ))
                                     ) : (
@@ -624,7 +673,7 @@ ${allRoles
                                             const isSuperAdminRole = role.name === "ADMIN"
                                             const isDisabled = isSuperAdminRole && !isAdmin
                                             const metadata = ROLE_METADATA[role.name] || {
-                                                label: role.name,
+                                                label: formatRoleLabel(role.name),
                                                 category: "Geral",
                                                 description: role.description || "Permissão de acesso.",
                                             }
