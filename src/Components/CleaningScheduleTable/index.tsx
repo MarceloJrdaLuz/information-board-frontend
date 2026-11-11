@@ -85,7 +85,7 @@ export default function CleaningScheduleTable({ schedule, onDelete, onScheduleUp
                     </h3>
                 </div>
                 <span className="text-xs font-semibold text-typography-500 bg-surface-100 px-3 py-1.5 rounded-xl border border-surface-300">
-                    {sortedSchedules.length} semanas programadas
+                    {sortedSchedules.length} {sortedSchedules.length === 1 ? "semana listada" : "semanas listadas"}
                 </span>
             </div>
 
@@ -95,24 +95,46 @@ export default function CleaningScheduleTable({ schedule, onDelete, onScheduleUp
                     const dayFormatted = itemDate.format("DD");
                     const monthFormatted = itemDate.format("MMM").toUpperCase();
                     const weekDayFormatted = itemDate.format("dddd");
+                    const isPast = item.isPast ?? itemDate.isBefore(dayjs(), "day");
 
                     return (
                         <div
                             key={item.date}
-                            className="flex flex-col justify-between p-5 rounded-2xl bg-surface-100 border border-surface-300 shadow-sm hover:shadow-md transition-all duration-200"
+                            className={`flex flex-col justify-between p-5 rounded-2xl bg-surface-100 border transition-all duration-200 ${
+                                isPast
+                                    ? "border-surface-300/60 opacity-90"
+                                    : "border-surface-300 shadow-sm hover:shadow-md"
+                            }`}
                         >
                             <div className="space-y-3">
                                 {/* Header da Data */}
                                 <div className="flex items-center justify-between pb-3 border-b border-surface-300">
                                     <div className="flex items-center gap-3">
-                                        <div className="flex flex-col items-center justify-center w-12 h-12 bg-primary-200/10 text-primary-200 rounded-xl font-bold border border-primary-200/20 shrink-0">
+                                        <div
+                                            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl font-bold border shrink-0 ${
+                                                isPast
+                                                    ? "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                                                    : "bg-primary-200/10 text-primary-200 border-primary-200/20"
+                                            }`}
+                                        >
                                             <span className="text-base leading-none">{dayFormatted}</span>
                                             <span className="text-[10px] tracking-wider uppercase">{monthFormatted}</span>
                                         </div>
                                         <div>
-                                            <span className="text-xs font-semibold text-primary-200 uppercase tracking-wide">
-                                                {weekDayFormatted}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className={`text-xs font-semibold uppercase tracking-wide ${
+                                                        isPast ? "text-typography-400" : "text-primary-200"
+                                                    }`}
+                                                >
+                                                    {weekDayFormatted}
+                                                </span>
+                                                {isPast && (
+                                                    <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20 uppercase tracking-wide">
+                                                        Histórico
+                                                    </span>
+                                                )}
+                                            </div>
                                             <h4 className="text-sm font-bold text-typography-800">
                                                 {itemDate.format("DD [de] MMMM [de] YYYY")}
                                             </h4>

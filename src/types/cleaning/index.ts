@@ -58,6 +58,7 @@ export interface ICleaningSchedule {
     date: string
     weekdayNumber: number,
     weekdayName: string
+    isPast?: boolean
     group: {
         id: string
         order: number,
