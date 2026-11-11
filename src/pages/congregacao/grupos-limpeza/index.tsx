@@ -13,6 +13,8 @@ import {
     DialogTitle,
 } from "@/Components/ui/dialog";
 import { API_ROUTES } from "@/constants/apiRoutes";
+import { api } from "@/services/api";
+import ModalReorderGroups, { IReorderGroupItem } from "@/Components/ModalReorderGroups";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { sortArrayByProperty } from "@/functions/sortObjects";
 import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
@@ -23,6 +25,7 @@ import { hasPrivilege } from "@/functions/publisherPrivilegeHelper";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom, useSetAtom } from "jotai";
 import {
+    ArrowUpDown,
     Layers,
     Loader2,
     Pencil,
@@ -45,6 +48,7 @@ function CleaningGroupsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteGroupId, setDeleteGroupId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isReorderOpen, setIsReorderOpen] = useState(false);
 
     const url = congregation
         ? `${API_ROUTES.CLEANING_GROUPS}/congregation/${congregation.id}`
@@ -111,6 +115,33 @@ function CleaningGroupsPage() {
         }
     }
 
+    const reorderItems: IReorderGroupItem[] = useMemo(() => {
+        return sortedGroups.map((g) => {
+            const isDefault = !g.name || new RegExp(`^grupo\\s*${g.order}$`, "i").test(g.name.trim());
+            return {
+                id: g.id,
+                currentNumber: g.order,
+                customName: isDefault ? null : g.name,
+                membersCount: g.publishers?.length ?? 0,
+                extraInfo: g.dayPreference === "MIDWEEK" ? "Meio de semana" : g.dayPreference === "WEEKEND" ? "Fim de semana" : null,
+            };
+        });
+    }, [sortedGroups]);
+
+    async function handleReorderSave(orderedIds: string[]) {
+        if (!congregation) return;
+        try {
+            await api.patch(`${API_ROUTES.CLEANING_GROUPS}/congregation/${congregation.id}/reorder`, {
+                orderedGroupIds: orderedIds,
+            });
+            toast.success("Ordem dos grupos atualizada com sucesso!");
+            await mutate();
+        } catch (err: any) {
+            toast.error("Erro ao reordenar grupos de limpeza.");
+            throw err;
+        }
+    }
+
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive="Grupos de Limpeza" />
@@ -135,7 +166,17 @@ function CleaningGroupsPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
+                            {sortedGroups.length > 1 && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsReorderOpen(true)}
+                                    className="rounded-xl gap-2 font-semibold text-xs h-10 border-surface-300"
+                                >
+                                    <ArrowUpDown className="w-4 h-4 text-primary-200" />
+                                    <span>Reordenar</span>
+                                </Button>
+                            )}
                             <Button
                                 onClick={() => Router.push("/congregacao/grupos-limpeza/add")}
                                 className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
@@ -372,6 +413,16 @@ function CleaningGroupsPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Modal de Reordenação */}
+            <ModalReorderGroups
+                open={isReorderOpen}
+                onClose={() => setIsReorderOpen(false)}
+                title="Reordenar Grupos de Limpeza"
+                description="Arraste ou selecione a nova posição para redefinir a sequência dos grupos de limpeza."
+                items={reorderItems}
+                onSave={handleReorderSave}
+            />
         </ContentDashboard>
     );
 }
