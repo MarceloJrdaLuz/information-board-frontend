@@ -62,7 +62,7 @@ export default function FormAddHospitalityGroup() {
     })
 
     const schemaValidation = yup.object({
-        name: yup.string().required()
+        name: yup.string().optional()
     })
 
     const { register, reset, handleSubmit, formState: { errors } } = useForm<FormValues>({
@@ -70,9 +70,12 @@ export default function FormAddHospitalityGroup() {
         resolver: yupResolver(schemaValidation)
     })
 
+    const nextPosition = (data?.hospitalityGroups?.length ?? 0) + 1;
+
     function onSubmit(data: FormValues) {
         const payload: CreateHospitalityGroupPayload = {
-            name: data.name,
+            name: data.name?.trim() ? data.name.trim() : undefined,
+            position: nextPosition,
             publisherHost_id: selectedPublisherHost?.id,
             member_ids: selectedGroupMembers.map(m => m.id)
         }
@@ -97,13 +100,22 @@ export default function FormAddHospitalityGroup() {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className="w-full flex flex-col">
                     <div className="form-title-modern">
-                        Novo grupo
+                        Novo grupo de hospitalidade
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2 px-1">
+                        <span className="text-xs font-semibold text-primary-200">
+                            Número sequencial: Grupo {nextPosition}
+                        </span>
+                        <span className="text-[11px] text-typography-400">
+                            Ordem automática
+                        </span>
                     </div>
 
                     <Input
                         type="text"
-                        placeholder="Nome do grupo"
-                        registro={{ ...register('name', { required: "Campo obrigatório" }) }}
+                        placeholder={`Nome opcional (ex: Família Silva — padrão: Grupo ${nextPosition})`}
+                        registro={{ ...register('name') }}
                         invalid={errors?.name?.message ? 'invalido' : ''}
                     />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}

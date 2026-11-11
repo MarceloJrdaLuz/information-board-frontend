@@ -26,11 +26,10 @@ interface Props {
 }
 
 interface FormValues {
-    name: string
+    name?: string
 }
 
 export default function FormEditCleaningGroup({ group_id }: Props) {
-
     const { congregation } = useCongregationContext()
     const congregation_id = congregation?.id
 
@@ -75,24 +74,30 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
         .map(p => selectedMembers.find(s => s.id === p.id) ?? p)
 
     const validation = yup.object({
-        name: yup.string().required("Campo obrigatório"),
+        name: yup.string().optional(),
     })
+
+    const isCurrentNameDefault = groupData?.name && /^grupo\s*\d+$/i.test(groupData.name.trim())
 
     const { register, reset, handleSubmit, formState: { errors } } =
         useForm<FormValues>({
             resolver: yupResolver(validation),
-            defaultValues: { name: groupData?.name ?? "" }
+            defaultValues: { name: isCurrentNameDefault ? "" : (groupData?.name ?? "") }
         })
 
     useEffect(() => {
         if (groupData?.name) {
-            reset({ name: groupData.name })
+            const isDefault = /^grupo\s*\d+$/i.test(groupData.name.trim())
+            reset({ name: isDefault ? "" : groupData.name })
         }
     }, [groupData, reset])
 
     function onSubmit(data: FormValues) {
+        const trimmed = data.name?.trim()
+        const finalName = trimmed || `Grupo ${groupData?.order || ""}`
+
         const payload = {
-            name: data.name,
+            name: finalName,
             dayPreference: selectedDayPreference,
             publisherIds: selectedMembers.map(m => m.id)
         }
@@ -114,16 +119,32 @@ export default function FormEditCleaningGroup({ group_id }: Props) {
         <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
             <div className="w-full flex flex-col">
                 <div className="form-title-modern">
-                    Editar Grupo
+                    Editar Grupo de Limpeza
                 </div>
 
-                <Input
-                    type="text"
-                    placeholder="Nome do grupo"
-                    registro={{ ...register("name") }}
-                    invalid={errors?.name?.message ? "invalido" : ""}
-                />
-                {errors?.name?.type && <InputError type={errors.name.type} field="name" />}
+                {groupData?.order && (
+                    <div className="p-3 bg-surface-200/50 border border-surface-300 rounded-xl mb-4 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-typography-600">
+                            Número do Grupo (Ordem):
+                        </span>
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-primary-200/10 text-primary-200">
+                            Grupo {groupData.order}
+                        </span>
+                    </div>
+                )}
+
+                <div className="flex flex-col gap-1">
+                    <Input
+                        type="text"
+                        placeholder={`Nome personalizado (opcional - padrão: "Grupo ${groupData?.order || ''}")`}
+                        registro={{ ...register("name") }}
+                        invalid={errors?.name?.message ? "invalido" : ""}
+                    />
+                    {errors?.name?.type && <InputError type={errors.name.type} field="name" />}
+                    <span className="text-[11px] text-typography-500">
+                        Deixe em branco para usar o número sequencial padrão ("Grupo {groupData?.order || ''}").
+                    </span>
+                </div>
 
                 <div className="mt-4">
                     <DropdownMulti<IPublisher>

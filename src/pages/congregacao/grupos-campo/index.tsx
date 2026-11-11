@@ -16,10 +16,11 @@ import { messageErrorsSubmit, messageSuccessSubmit } from "@/utils/messagesSubmi
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { BlobProvider, Document } from "@react-pdf/renderer"
 import { useAtom } from "jotai"
-import { FileDown, Layers, Plus, UserCheck, Users } from "lucide-react"
+import { ArrowUpDown, FileDown, Layers, Plus, UserCheck, Users } from "lucide-react"
 import Router from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import ModalReorderGroups, { IReorderGroupItem } from "@/Components/ModalReorderGroups"
 
 interface IGroupPdfLinkComponentProps {
     groups: IGroup[] | undefined
@@ -69,6 +70,7 @@ function GroupsPage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [groups, setGroups] = useState<IGroup[]>()
     const [showInactives, setShowInactives] = useState(false)
+    const [isReorderOpen, setIsReorderOpen] = useState(false)
 
     const fetchConfig = congregation_id ? `/groups/${congregation_id}` : ""
     const { data: getGroups, mutate, isLoading } = useAuthorizedFetch<IGroup[]>(fetchConfig, {
@@ -77,7 +79,9 @@ function GroupsPage() {
 
     useEffect(() => {
         if (getGroups) {
-            const sort = sortArrayByProperty(getGroups, "number")
+            const sort = [...getGroups].sort(
+                (a, b) => (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0)
+            )
             setGroups(sort)
         }
     }, [getGroups])
@@ -139,6 +143,34 @@ function GroupsPage() {
         return { total, totalPublishers, withOverseer }
     }, [groups])
 
+    const reorderItems: IReorderGroupItem[] = useMemo(() => {
+        if (!groups) return [];
+        return groups.map((g) => {
+            const isDefault = !g.name || (g.number && new RegExp(`^grupo\\s*(?:n[º°o]?\\s*)?${g.number}$`, "i").test(g.name.trim()));
+            return {
+                id: g.id,
+                currentNumber: parseInt(g.number, 10) || 1,
+                customName: isDefault ? null : g.name,
+                membersCount: g.publishers?.length ?? 0,
+                extraInfo: g.groupOverseers?.fullName ? `Dirigente: ${g.groupOverseers.fullName}` : null,
+            };
+        });
+    }, [groups]);
+
+    async function handleReorderSave(orderedIds: string[]) {
+        if (!congregation_id) return;
+        try {
+            await api.patch(`/groups/${congregation_id}/reorder`, {
+                orderedGroupIds: orderedIds,
+            });
+            toast.success("Ordem dos grupos de campo atualizada com sucesso!");
+            await mutate();
+        } catch (err: any) {
+            toast.error("Erro ao reordenar grupos de campo.");
+            throw err;
+        }
+    }
+
     return (
         <ContentDashboard>
             <BreadCrumbs crumbs={crumbs} pageActive={"Grupos de Campo"} />
@@ -177,6 +209,19 @@ function GroupsPage() {
                                     groups={groups}
                                     congregation={congregation?.name ?? ""}
                                 />
+                            )}
+
+                            {/* Botão Reordenar */}
+                            {groups && groups.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsReorderOpen(true)}
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-100 border border-surface-300 text-typography-700 hover:text-primary-200 hover:border-primary-200 text-xs sm:text-sm font-semibold transition active:scale-95 shadow-sm"
+                                    title="Reordenar sequência dos grupos"
+                                >
+                                    <ArrowUpDown className="w-4 h-4 text-primary-200" />
+                                    <span>Reordenar</span>
+                                </button>
                             )}
 
                             {/* Botão Criar Grupo */}
@@ -262,6 +307,15 @@ function GroupsPage() {
                     </>
                 )}
             </section>
+
+            <ModalReorderGroups
+                open={isReorderOpen}
+                onClose={() => setIsReorderOpen(false)}
+                title="Reordenar Grupos de Campo"
+                description="Arraste ou escolha a nova posição para reorganizar a ordem numérica dos grupos de serviço de campo."
+                items={reorderItems}
+                onSave={handleReorderSave}
+            />
         </ContentDashboard>
     )
 }

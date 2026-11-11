@@ -13,8 +13,11 @@ import {
     DialogTitle,
 } from "@/Components/ui/dialog";
 import { API_ROUTES } from "@/constants/apiRoutes";
+import { api } from "@/services/api";
+import ModalReorderGroups, { IReorderGroupItem } from "@/Components/ModalReorderGroups";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { sortArrayByProperty } from "@/functions/sortObjects";
+import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup } from "@/types/cleaning";
 import { PrivilegeCode } from "@/types/types";
@@ -22,6 +25,7 @@ import { hasPrivilege } from "@/functions/publisherPrivilegeHelper";
 import { withProtectedLayout } from "@/utils/withProtectedLayout";
 import { useAtom, useSetAtom } from "jotai";
 import {
+    ArrowUpDown,
     Layers,
     Loader2,
     Pencil,
@@ -44,6 +48,7 @@ function CleaningGroupsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteGroupId, setDeleteGroupId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isReorderOpen, setIsReorderOpen] = useState(false);
 
     const url = congregation
         ? `${API_ROUTES.CLEANING_GROUPS}/congregation/${congregation.id}`
@@ -68,21 +73,26 @@ function CleaningGroupsPage() {
             ...g,
             publishers: (g.publishers || []).filter((p) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
         }));
-        return sortArrayByProperty(cleanGroups, "name");
+        return cleanGroups.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }, [data]);
 
     const filteredGroups = useMemo(() => {
         if (!searchTerm.trim()) return sortedGroups;
         const term = searchTerm.toLowerCase();
-        return sortedGroups.filter(
-            (g) =>
-                g.name.toLowerCase().includes(term) ||
+        return sortedGroups.filter((g) => {
+            const displayName = getCleaningGroupDisplayName(g).toLowerCase();
+            const groupNum = `grupo ${g.order}`;
+            return (
+                displayName.includes(term) ||
+                groupNum.includes(term) ||
+                g.name?.toLowerCase().includes(term) ||
                 g.publishers?.some(
                     (p) =>
-                        p.fullName.toLowerCase().includes(term) ||
+                        p.fullName?.toLowerCase().includes(term) ||
                         p.nickname?.toLowerCase().includes(term)
                 )
-        );
+            );
+        });
     }, [sortedGroups, searchTerm]);
 
     const totalMembers = useMemo(() => {
@@ -102,6 +112,33 @@ function CleaningGroupsPage() {
             console.error(err);
         } finally {
             setIsDeleting(false);
+        }
+    }
+
+    const reorderItems: IReorderGroupItem[] = useMemo(() => {
+        return sortedGroups.map((g) => {
+            const isDefault = !g.name || new RegExp(`^grupo\\s*${g.order}$`, "i").test(g.name.trim());
+            return {
+                id: g.id,
+                currentNumber: g.order,
+                customName: isDefault ? null : g.name,
+                membersCount: g.publishers?.length ?? 0,
+                extraInfo: g.dayPreference === "MIDWEEK" ? "Meio de semana" : g.dayPreference === "WEEKEND" ? "Fim de semana" : null,
+            };
+        });
+    }, [sortedGroups]);
+
+    async function handleReorderSave(orderedIds: string[]) {
+        if (!congregation) return;
+        try {
+            await api.patch(`${API_ROUTES.CLEANING_GROUPS}/congregation/${congregation.id}/reorder`, {
+                orderedGroupIds: orderedIds,
+            });
+            toast.success("Ordem dos grupos atualizada com sucesso!");
+            await mutate();
+        } catch (err: any) {
+            toast.error("Erro ao reordenar grupos de limpeza.");
+            throw err;
         }
     }
 
@@ -129,7 +166,17 @@ function CleaningGroupsPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
+                            {sortedGroups.length > 1 && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsReorderOpen(true)}
+                                    className="rounded-xl gap-2 font-semibold text-xs h-10 border-surface-300"
+                                >
+                                    <ArrowUpDown className="w-4 h-4 text-primary-200" />
+                                    <span>Reordenar</span>
+                                </Button>
+                            )}
                             <Button
                                 onClick={() => Router.push("/congregacao/grupos-limpeza/add")}
                                 className="bg-primary-200 hover:bg-primary-300 text-white rounded-xl gap-2 font-semibold shadow-sm"
@@ -234,13 +281,20 @@ function CleaningGroupsPage() {
                                     <div className="space-y-4">
                                         {/* Header do Card */}
                                         <div className="flex items-center justify-between gap-2 pb-3 border-b border-surface-300">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-9 h-9 rounded-xl bg-primary-200/10 text-primary-200  flex items-center justify-center font-bold text-sm">
-                                                    {group.name.charAt(0).toUpperCase()}
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center font-bold text-sm shrink-0">
+                                                    {group.order}
                                                 </div>
-                                                <h3 className="font-bold text-base text-typography-800 line-clamp-1">
-                                                    {group.name}
-                                                </h3>
+                                                <div className="flex flex-col min-w-0">
+                                                    <h3 className="font-bold text-base text-typography-800 line-clamp-1">
+                                                        Grupo {group.order}
+                                                    </h3>
+                                                    {group.name && !new RegExp(`^grupo\\s*${group.order}$`, "i").test(group.name.trim()) && (
+                                                        <span className="text-xs text-typography-500 font-normal line-clamp-1">
+                                                            {group.name}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
 
                                             <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -335,7 +389,7 @@ function CleaningGroupsPage() {
                             </DialogTitle>
                         </div>
                         <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
-                            Tem certeza de que deseja remover este grupo de limpeza? As escalas futuras vinculadas poderão ser afetadas.
+                            Tem certeza de que deseja remover este grupo de limpeza? Os grupos seguintes serão reordenados automaticamente para não deixar lacunas na numeração.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -359,6 +413,16 @@ function CleaningGroupsPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Modal de Reordenação */}
+            <ModalReorderGroups
+                open={isReorderOpen}
+                onClose={() => setIsReorderOpen(false)}
+                title="Reordenar Grupos de Limpeza"
+                description="Arraste ou selecione a nova posição para redefinir a sequência dos grupos de limpeza."
+                items={reorderItems}
+                onSave={handleReorderSave}
+            />
         </ContentDashboard>
     );
 }

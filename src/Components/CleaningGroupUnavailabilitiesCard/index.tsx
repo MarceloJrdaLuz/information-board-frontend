@@ -24,6 +24,7 @@ import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup, ICleaningGroupUnavailability } from "@/types/cleaning";
+import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { useSetAtom } from "jotai";
@@ -163,7 +164,7 @@ export function CleaningGroupUnavailabilitiesCard() {
                                 <div className="space-y-1 min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                                            {item.group?.name || "Grupo"}
+                                            {item.group ? getCleaningGroupDisplayName(item.group) : "Grupo"}
                                         </span>
                                         {item.reason && (
                                             <span className="text-[11px] text-typography-500 truncate" title={item.reason}>
@@ -220,11 +221,13 @@ export function CleaningGroupUnavailabilitiesCard() {
                                     <SelectValue placeholder="Selecione o grupo..." />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
-                                    {groups?.map((g) => (
-                                        <SelectItem key={g.id} value={g.id} className="text-xs font-medium">
-                                            {g.name}
-                                        </SelectItem>
-                                    ))}
+                                    {[...(groups || [])]
+                                        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                                        .map((g) => (
+                                            <SelectItem key={g.id} value={g.id} className="text-xs font-medium">
+                                                {getCleaningGroupDisplayName(g)}
+                                            </SelectItem>
+                                        ))}
                                 </SelectContent>
                             </Select>
                         </div>

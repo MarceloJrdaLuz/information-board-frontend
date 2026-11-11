@@ -109,6 +109,8 @@ function ListGroups({ items, label, onDelete }: IListItemsProps) {
 
               {/* Botão Excluir */}
               <ConfirmDeleteModal
+                title={`Excluir Grupo ${item.number}?`}
+                message="Tem certeza que deseja remover este grupo? Os grupos seguintes serão reordenados automaticamente para não deixar lacunas na numeração."
                 onDelete={() => onDelete(`${item.id}`)}
                 button={
                   <button

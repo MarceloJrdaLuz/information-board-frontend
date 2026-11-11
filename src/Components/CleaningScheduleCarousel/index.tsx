@@ -5,6 +5,7 @@ import isoWeek from "dayjs/plugin/isoWeek";
 import { ICleaningScheduleResponse } from "@/types/cleaning";
 import { Calendar, CalendarDays, ChevronLeft, ChevronRight, Sparkles, Users } from "lucide-react";
 import { capitalizeFirstLetter } from "@/functions/isAuxPioneerMonthNow";
+import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
 import { WEEKDAYS_PT } from "@/utils/dateUtil";
 
 dayjs.extend(isoWeek);
@@ -143,7 +144,7 @@ export default function CleaningScheduleCarousel({ schedule }: Props) {
                                             Grupo Responsável:
                                         </span>
                                         <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-200/10 text-primary-200 border border-primary-200/20 shadow-2xs">
-                                            {item.group.name}
+                                            {getCleaningGroupDisplayName(item.group)}
                                         </span>
                                     </div>
 

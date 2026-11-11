@@ -9,14 +9,17 @@ import { crumbsAtom, pageActiveAtom } from "@/atoms/atom"
 import { deleteHospitalityGroupAtom, selectedHospitalityGroupAtom } from "@/atoms/hospitalityGroupsAtoms"
 import { useCongregationContext } from "@/context/CongregationContext"
 import { sortArrayByProperty } from "@/functions/sortObjects"
+import { getHospitalityGroupDisplayName } from "@/functions/hospitalityGroupHelper"
 import { useAuthorizedFetch } from "@/hooks/useFetch"
 import { IHospitalityGroup } from "@/types/types"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { useAtom, useSetAtom } from "jotai"
-import { Home, Plus, Search, UserCheck, Users, Utensils } from "lucide-react"
+import { ArrowUpDown, Home, Plus, Search, UserCheck, Users, Utensils } from "lucide-react"
 import Router from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import { api } from "@/services/api"
+import ModalReorderGroups, { IReorderGroupItem } from "@/Components/ModalReorderGroups"
 
 function HospitalityGroupsPage() {
     const { congregation } = useCongregationContext()
@@ -28,6 +31,7 @@ function HospitalityGroupsPage() {
     const [, setPageActive] = useAtom(pageActiveAtom)
     const [hospitalityGroups, setHospitalityGroups] = useState<IHospitalityGroup[]>()
     const [searchQuery, setSearchQuery] = useState("")
+    const [isReorderOpen, setIsReorderOpen] = useState(false)
 
     const { data: getHospitalityGroups, mutate, isLoading } = useAuthorizedFetch<IHospitalityGroup[]>(
         `/congregation/${congregation_id ?? ""}/hospitalityGroups`,
@@ -38,7 +42,9 @@ function HospitalityGroupsPage() {
 
     useEffect(() => {
         if (getHospitalityGroups) {
-            const sort = sortArrayByProperty(getHospitalityGroups, "name")
+            const sort = [...getHospitalityGroups].sort(
+                (a, b) => (a.position ?? 0) - (b.position ?? 0)
+            )
             setHospitalityGroups(sort)
         }
     }, [getHospitalityGroups])
@@ -60,15 +66,17 @@ function HospitalityGroupsPage() {
         if (!hospitalityGroups) return []
 
         const term = normalize(searchQuery.trim())
-        if (!term) return sortArrayByProperty(hospitalityGroups, "name")
+        if (!term) return [...hospitalityGroups].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
 
         const filtered = hospitalityGroups.filter(group => {
+            const displayName = normalize(getHospitalityGroupDisplayName(group))
+            const groupNum = `grupo ${group.position}`
             const nameMatch = normalize(group.name ?? "").includes(term)
             const hostMatch = normalize(group.host?.fullName ?? "").includes(term)
             const memberMatch = group.members?.some(m => normalize(m.fullName ?? "").includes(term))
-            return nameMatch || hostMatch || memberMatch
+            return displayName.includes(term) || groupNum.includes(term) || nameMatch || hostMatch || memberMatch
         })
-        return sortArrayByProperty(filtered, "name")
+        return filtered.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
     }, [hospitalityGroups, searchQuery])
 
     // Métricas
@@ -87,6 +95,34 @@ function HospitalityGroupsPage() {
         }).catch(err => {
             console.error(err)
         })
+    }
+
+    const reorderItems: IReorderGroupItem[] = useMemo(() => {
+        if (!hospitalityGroups) return [];
+        return hospitalityGroups.map((g) => {
+            const isDefault = !g.name || (g.position && new RegExp(`^grupo\\s*${g.position}$`, "i").test(g.name.trim()));
+            return {
+                id: g.id,
+                currentNumber: g.position ?? 1,
+                customName: isDefault ? null : g.name,
+                membersCount: g.members?.length ?? 0,
+                extraInfo: g.host?.fullName ? `Anfitrião: ${g.host.fullName}` : null,
+            };
+        });
+    }, [hospitalityGroups]);
+
+    async function handleReorderSave(orderedIds: string[]) {
+        if (!congregation_id) return;
+        try {
+            await api.patch(`/congregation/${congregation_id}/hospitalityGroups/reorder`, {
+                orderedGroupIds: orderedIds,
+            });
+            toast.success("Ordem dos grupos atualizada com sucesso!");
+            await mutate();
+        } catch (err: any) {
+            toast.error("Erro ao reordenar grupos de hospitalidade.");
+            throw err;
+        }
     }
 
     function renderSkeleton() {
@@ -120,14 +156,26 @@ function HospitalityGroupsPage() {
                             </p>
                         </div>
 
-                        <Button
-                            outline
-                            onClick={() => Router.push('/reunioes/fimdesemana/grupos-hospitalidade/add')}
-                            className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap self-start sm:self-center"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span className="font-semibold text-sm">Criar grupo</span>
-                        </Button>
+                        <div className="flex items-center gap-2.5 flex-wrap self-start sm:self-center">
+                            {hospitalityGroups && hospitalityGroups.length > 1 && (
+                                <Button
+                                    outline
+                                    onClick={() => setIsReorderOpen(true)}
+                                    className="text-typography-700 p-2.5 md:p-3 border-surface-300 rounded-xl hover:bg-surface-200 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap"
+                                >
+                                    <ArrowUpDown className="w-4 h-4 text-primary-200" />
+                                    <span className="font-semibold text-sm">Reordenar</span>
+                                </Button>
+                            )}
+                            <Button
+                                outline
+                                onClick={() => Router.push('/reunioes/fimdesemana/grupos-hospitalidade/add')}
+                                className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span className="font-semibold text-sm">Criar grupo</span>
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Metric Badges Strip */}
@@ -225,19 +273,36 @@ function HospitalityGroupsPage() {
                         items={filteredGroups}
                         path="/reunioes/fimdesemana/grupos-hospitalidade"
                         label="do grupo"
-                        renderItem={(group) => (
-                            <div className="flex flex-col h-full justify-between gap-3">
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <h3 className="text-base font-bold text-typography-900 leading-snug">
-                                            {group.name}
-                                        </h3>
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-primary-100/15 text-primary-200 border border-primary-200/20 shrink-0">
-                                            {group.members?.length ?? 0} membros
-                                        </span>
-                                    </div>
+                        deleteTitle="Excluir Grupo de Hospitalidade?"
+                        deleteMessage="Tem certeza de que deseja remover este grupo? Os grupos seguintes serão reordenados automaticamente para não deixar lacunas na numeração."
+                        renderItem={(group) => {
+                            const isDefaultName = !group.name || (group.position && new RegExp(`^grupo\\s*${group.position}$`, "i").test(group.name.trim()))
 
-                                    {/* Anfitrião */}
+                            return (
+                                <div className="flex flex-col h-full justify-between gap-3">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="w-8 h-8 rounded-lg bg-primary-200/10 text-primary-200 flex items-center justify-center font-bold text-xs shrink-0">
+                                                    {group.position ?? "•"}
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <h3 className="text-base font-bold text-typography-900 leading-snug line-clamp-1">
+                                                        Grupo {group.position ?? ""}
+                                                    </h3>
+                                                    {!isDefaultName && group.name && (
+                                                        <span className="text-xs text-typography-500 font-normal line-clamp-1">
+                                                            {group.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-primary-100/15 text-primary-200 border border-primary-200/20 shrink-0">
+                                                {group.members?.length ?? 0} membros
+                                            </span>
+                                        </div>
+
+                                        {/* Anfitrião */}
                                     <div className="flex items-center gap-2 p-2 rounded-lg bg-surface-200/60 border border-surface-300/80 text-xs text-typography-700 mt-1">
                                         <UserCheck className="h-4 w-4 text-primary-200 shrink-0" />
                                         <div className="flex flex-col">
@@ -272,7 +337,8 @@ function HospitalityGroupsPage() {
                                     )}
                                 </div>
                             </div>
-                        )}
+                        );
+                    }}
                     />
                 ) : (
                     <EmptyState
@@ -284,6 +350,15 @@ function HospitalityGroupsPage() {
                     />
                 )}
             </section>
+
+            <ModalReorderGroups
+                open={isReorderOpen}
+                onClose={() => setIsReorderOpen(false)}
+                title="Reordenar Grupos de Hospitalidade"
+                description="Arraste ou escolha a nova posição para reorganizar a ordem de atendimento aos oradores."
+                items={reorderItems}
+                onSave={handleReorderSave}
+            />
 
             <ScrollToTopButton />
         </ContentDashboard>

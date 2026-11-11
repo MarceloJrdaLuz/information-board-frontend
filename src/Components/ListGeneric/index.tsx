@@ -13,7 +13,9 @@ export function ListGeneric<T extends { id: string }>({
   showActions = true,
   showEdit = true,
   showDelete = true,
-  paddingBottom = "36"
+  paddingBottom = "36",
+  deleteTitle,
+  deleteMessage,
 }: IListItemsProps<T>) {
   return (
     <ul className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pb-${paddingBottom} w-full`}>
@@ -44,6 +46,8 @@ export function ListGeneric<T extends { id: string }>({
 
               {showDelete && (
                 <ConfirmDeleteModal
+                  title={deleteTitle}
+                  message={deleteMessage}
                   onDelete={() => onDelete(item.id)}
                   button={
                     <Button size="sm" outline className="text-red-500 w-fit">

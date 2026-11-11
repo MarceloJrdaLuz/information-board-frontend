@@ -6,9 +6,7 @@ import { toast } from "react-toastify"
 import * as yup from "yup"
 
 import { buttonDisabled, errorFormSend, successFormSend } from "@/atoms/atom"
-import {
-    createCleaningGroupAtom,
-} from "@/atoms/cleaningGroupsAtoms"
+import { createCleaningGroupAtom } from "@/atoms/cleaningGroupsAtoms"
 import { CreateCleaningGroupPayload } from "@/atoms/cleaningGroupsAtoms/types"
 import Button from "@/Components/Button"
 import Dropdown from "@/Components/Dropdown"
@@ -24,7 +22,7 @@ import { hasPrivilege } from "@/functions/publisherPrivilegeHelper"
 import FormStyle from "../FormStyle"
 
 interface FormValues {
-    name: string
+    name?: string
 }
 
 export default function FormAddCleaningGroup() {
@@ -47,17 +45,23 @@ export default function FormAddCleaningGroup() {
         { value: "WEEKEND", label: "Apenas Fim de Semana" },
     ]
 
-
     const { data, mutate } = useFetch<IFormDataCleaningGroup>(`/form-data?form=cleaningGroup`)
 
     useEffect(() => {
         if (data) {
             const existingNumbers = data.cleaningGroups.map(group => group.order)
             const allNumbers = Array.from({ length: 15 }, (_, index) => (index + 1))
-            const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(number))
-            setAvailableNumbers(availableNumbers)
+            const available = allNumbers.filter(number => !existingNumbers.includes(number))
+            setAvailableNumbers(available)
+
+            // Auto-seleciona o próximo número sequencial caso ainda não selecionado
+            if (available.length > 0 && selectedNumber === undefined) {
+                const nextSequential = (data.cleaningGroups.length + 1)
+                const chosen = available.includes(nextSequential) ? nextSequential : available[0]
+                setSelectedNumber(chosen)
+            }
         }
-    }, [data])
+    }, [data, selectedNumber])
 
     const publishersInGroups = new Set<string>()
 
@@ -75,7 +79,7 @@ export default function FormAddCleaningGroup() {
         .map(p => selectedMembers.find(s => s.id === p.id) ?? p)
 
     const validation = yup.object({
-        name: yup.string().required("Campo obrigatório"),
+        name: yup.string().optional(),
     })
 
     const { register, reset, handleSubmit, formState: { errors } } =
@@ -84,15 +88,17 @@ export default function FormAddCleaningGroup() {
             resolver: yupResolver(validation)
         })
 
-    async function onSubmit(data: FormValues) {
-
+    async function onSubmit(formData: FormValues) {
         if (!selectedNumber) {
             toast.info("É obrigatório escolher um número.")
             return
         }
 
+        const trimmedName = formData.name?.trim()
+        const finalName = trimmedName || `Grupo ${selectedNumber}`
+
         const payload: CreateCleaningGroupPayload = {
-            name: data.name,
+            name: finalName,
             order: selectedNumber,
             dayPreference: selectedDayPreference,
             publisherIds: selectedMembers.map(m => m.id)
@@ -123,15 +129,35 @@ export default function FormAddCleaningGroup() {
                     Novo Grupo de Limpeza
                 </div>
 
-                <Input
-                    type="text"
-                    placeholder="Nome do grupo"
-                    registro={{ ...register("name") }}
-                    invalid={errors?.name?.message ? "invalido" : ""}
-                />
-                {errors?.name?.type && (
-                    <InputError type={errors.name.type} field="name" />
-                )}
+                <div className="mt-2">
+                    <Dropdown
+                        selectedItem={selectedNumber?.toString()}
+                        full
+                        border
+                        textVisible
+                        handleClick={option => setSelectedNumber(Number(option))}
+                        title="Número do grupo (Ordem)"
+                        options={availableNumbers.map(num => num.toString())}
+                    />
+                    <span className="text-[11px] text-typography-500 mt-1 block">
+                        O número define a rotação padrão na escala de limpeza.
+                    </span>
+                </div>
+
+                <div className="mt-4 flex flex-col gap-1">
+                    <Input
+                        type="text"
+                        placeholder={`Nome personalizado (opcional - padrão: "Grupo ${selectedNumber ?? '...'}")`}
+                        registro={{ ...register("name") }}
+                        invalid={errors?.name?.message ? "invalido" : ""}
+                    />
+                    {errors?.name?.type && (
+                        <InputError type={errors.name.type} field="name" />
+                    )}
+                    <span className="text-[11px] text-typography-500">
+                        Opcional. Deixe em branco se a congregação utiliza apenas o número padrão ("Grupo {selectedNumber ?? '...'}").
+                    </span>
+                </div>
 
                 <div className="mt-4">
                     <DropdownMulti<IPublisher>
@@ -147,9 +173,6 @@ export default function FormAddCleaningGroup() {
                         searchable
                         emptyMessage="Nenhum publicador encontrado"
                     />
-                </div>
-                <div className="mt-4">
-                    <Dropdown selectedItem={selectedNumber?.toString()} full border textVisible handleClick={option => setSelectedNumber(Number(option))} title='Número do grupo' options={availableNumbers.map(num => num.toString())} />
                 </div>
 
                 <div className="mt-4">

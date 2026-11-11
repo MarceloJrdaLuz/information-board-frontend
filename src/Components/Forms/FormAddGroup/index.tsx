@@ -52,9 +52,19 @@ export default function FormAddGroup() {
     useEffect(() => {
         if (data) {
             const existingNumbers = data.map(group => group.number)
-            const allNumbers = Array.from({ length: 15 }, (_, index) => (index + 1).toString())
+            const allNumbers = Array.from({ length: 25 }, (_, index) => (index + 1).toString())
             const availableNumbers = allNumbers.filter(number => !existingNumbers.includes(number))
             setAvailableNumbers(availableNumbers)
+
+            // Auto-sugere o próximo número sequencial
+            if (!selectedNumber && availableNumbers.length > 0) {
+                const nextSequential = String(data.length + 1)
+                if (availableNumbers.includes(nextSequential)) {
+                    setSelectedNumber(nextSequential)
+                } else {
+                    setSelectedNumber(availableNumbers[0])
+                }
+            }
         }
     }, [data])
 
@@ -72,7 +82,7 @@ export default function FormAddGroup() {
     }, [publishersData])
 
     const esquemaValidacao = yup.object({
-        name: yup.string().required(),
+        name: yup.string().optional(),
     })
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -104,9 +114,10 @@ export default function FormAddGroup() {
         })
     }
 
-    function onSubmit(data: { name: string }) {
+    function onSubmit(data: { name?: string }) {
         if (selectedNumber && selectedItem && congregationUser?.id) {
-            toast.promise(createGroup(data.name, selectedNumber, selectedItem?.id, congregationUser.id), {
+            const groupName = data.name?.trim() ? data.name.trim() : `Grupo ${selectedNumber}`
+            toast.promise(createGroup(groupName, selectedNumber, selectedItem?.id, congregationUser.id), {
                 pending: 'Criando grupo...',
             }).then(() => {
 
@@ -129,13 +140,23 @@ export default function FormAddGroup() {
             <FormStyle onSubmit={handleSubmit(onSubmit, onError)}>
                 <div className="w-full flex flex-col">
 
-                    <div className="form-title-modern">Criar novo grupo</div>
+                    <div className="form-title-modern">Criar novo grupo de campo</div>
 
-                    <Input type="text" placeholder="Nome do grupo" registro={{
-                        ...register('name',
-                            { required: "Campo obrigatório" })
-                    }}
-                        invalid={errors?.name?.message ? 'invalido' : ''} />
+                    <div className="flex items-center justify-between mb-2 px-1">
+                        <span className="text-xs font-semibold text-primary-200">
+                            Número do grupo: Grupo {selectedNumber || "..."}
+                        </span>
+                        <span className="text-[11px] text-typography-400">
+                            Ordem sequencial
+                        </span>
+                    </div>
+
+                    <Input
+                        type="text"
+                        placeholder={`Nome personalizado (opcional — padrão: Grupo ${selectedNumber || "X"})`}
+                        registro={{ ...register('name') }}
+                        invalid={errors?.name?.message ? 'invalido' : ''}
+                    />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
 
                     <div className="mt-2">

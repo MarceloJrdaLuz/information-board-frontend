@@ -30,6 +30,7 @@ import { useAtom, useSetAtom } from "jotai";
 import {
     CalendarOff,
     FileDown,
+    History,
     Layers,
     Loader2,
     Settings2,
@@ -54,6 +55,7 @@ function CleaningSchedulePage() {
     );
     const [schedule, setSchedule] = useState<ICleaningScheduleResponse>();
     const [generating, setGenerating] = useState(false);
+    const [includeHistory, setIncludeHistory] = useState(false);
 
     // Modais
     const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
@@ -62,7 +64,9 @@ function CleaningSchedulePage() {
     const [isUnavailabilitiesModalOpen, setIsUnavailabilitiesModalOpen] = useState(false);
 
     const urlSchedulesConfig = congregation
-        ? `${API_ROUTES.CLEANING_SCHEDULES}/congregation/${congregation.id}`
+        ? `${API_ROUTES.CLEANING_SCHEDULES}/congregation/${congregation.id}${
+              includeHistory ? "?includeHistory=true&monthsBack=2" : ""
+          }`
         : "";
     const { data, mutate, isLoading } = useAuthorizedFetch<ICleaningScheduleResponse>(
         urlSchedulesConfig,
@@ -85,15 +89,25 @@ function CleaningSchedulePage() {
         if (data) {
             setSchedule(data);
             if (data?.schedules && data.schedules.length > 0) {
-                const sortedDates = data.schedules
-                    .map((s) => s.date)
-                    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+                // Considera apenas datas a partir de hoje para sugerir o próximo período ao gerar
+                const futureSchedules = data.schedules.filter((s) =>
+                    dayjs(s.date).isSameOrAfter(dayjs(), "day")
+                );
 
-                const lastDate = dayjs(sortedDates[sortedDates.length - 1])
-                    .add(1, "day")
-                    .format("YYYY-MM-DD");
-                setStartDate(lastDate);
-                setEndDate(dayjs(lastDate).endOf("month").format("YYYY-MM-DD"));
+                if (futureSchedules.length > 0) {
+                    const sortedDates = futureSchedules
+                        .map((s) => s.date)
+                        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+                    const lastDate = dayjs(sortedDates[sortedDates.length - 1])
+                        .add(1, "day")
+                        .format("YYYY-MM-DD");
+                    setStartDate(lastDate);
+                    setEndDate(dayjs(lastDate).endOf("month").format("YYYY-MM-DD"));
+                } else {
+                    setStartDate(dayjs().startOf("month").format("YYYY-MM-DD"));
+                    setEndDate(dayjs().endOf("month").format("YYYY-MM-DD"));
+                }
             } else {
                 setStartDate(dayjs().startOf("month").format("YYYY-MM-DD"));
                 setEndDate(dayjs().endOf("month").format("YYYY-MM-DD"));
@@ -157,6 +171,24 @@ function CleaningSchedulePage() {
 
                         {/* Botões de Ação */}
                         <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                                variant={includeHistory ? "default" : "outline"}
+                                onClick={() => setIncludeHistory(!includeHistory)}
+                                className={`gap-1.5 rounded-xl text-xs font-semibold ${
+                                    includeHistory
+                                        ? "bg-primary-200 hover:bg-primary-300 text-white"
+                                        : "text-typography-700 border-surface-300 hover:bg-surface-200"
+                                }`}
+                                title={
+                                    includeHistory
+                                        ? "Ocultar histórico dos últimos 2 meses"
+                                        : "Exibir histórico dos últimos 2 meses"
+                                }
+                            >
+                                <History className="w-4 h-4" />
+                                <span>{includeHistory ? "Ocultar Histórico" : "Ver Histórico (2 meses)"}</span>
+                            </Button>
+
                             <Button
                                 onClick={() => setIsGenerateModalOpen(true)}
                                 className="gap-2 bg-primary-200 hover:bg-primary-300 text-white rounded-xl shadow-sm text-xs font-semibold"
@@ -243,6 +275,25 @@ function CleaningSchedulePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Banner de Histórico Ativo */}
+                {includeHistory && (
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-700 dark:text-blue-300">
+                        <div className="flex items-center gap-2">
+                            <History className="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" />
+                            <span>
+                                Exibindo histórico dos últimos 2 meses juntamente com as escalas futuras.
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setIncludeHistory(false)}
+                            className="text-xs font-semibold underline hover:opacity-80 cursor-pointer"
+                        >
+                            Ocultar
+                        </button>
+                    </div>
+                )}
 
                 {/* Conteúdo: Tabela de Limpeza ou Estado Vazio */}
                 {isLoading ? (

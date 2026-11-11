@@ -1,5 +1,5 @@
 export type CreateHospitalityGroupPayload = {
-  name: string
+  name?: string
   publisherHost_id?: string
   next_reception?: string
   position?: number
