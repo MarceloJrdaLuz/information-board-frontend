@@ -376,10 +376,13 @@ function ScheduleResponsiblesPage() {
                                             {/* Seletor para adicionar novo responsável */}
                                             <div className="pt-2">
                                                 <Select
+                                                    value=""
                                                     disabled={isUpdating}
-                                                    onValueChange={(userId) => handleAddResponsible(module.key, userId)}
+                                                    onValueChange={(userId) => {
+                                                        if (userId) handleAddResponsible(module.key, userId);
+                                                    }}
                                                 >
-                                                    <SelectTrigger className="w-full text-xs rounded-xl bg-surface-200/50">
+                                                    <SelectTrigger className="w-full text-xs rounded-xl bg-surface-200/50 truncate">
                                                         <SelectValue
                                                             placeholder={
                                                                 isUpdating
@@ -388,15 +391,24 @@ function ScheduleResponsiblesPage() {
                                                             }
                                                         />
                                                     </SelectTrigger>
-                                                    <SelectContent>
+                                                    <SelectContent className="max-h-60 max-w-[300px] sm:max-w-sm">
                                                         {availableUsers
                                                             .filter(
                                                                 (u) =>
                                                                     !assignedUsers.some((assigned) => assigned.id === u.id)
                                                             )
                                                             .map((u) => (
-                                                                <SelectItem key={u.id} value={u.id} className="text-xs">
-                                                                    {u.name} ({u.email})
+                                                                <SelectItem key={u.id} value={u.id} className="text-xs py-1.5 cursor-pointer">
+                                                                    <div className="flex flex-col text-left truncate">
+                                                                        <span className="font-semibold text-typography-800 truncate">
+                                                                            {u.name}
+                                                                        </span>
+                                                                        {u.email && u.email !== u.name && (
+                                                                            <span className="text-[10px] text-typography-400 truncate">
+                                                                                {u.email}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </SelectItem>
                                                             ))}
                                                     </SelectContent>
