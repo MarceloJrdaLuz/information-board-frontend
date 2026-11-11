@@ -23,5 +23,8 @@ export const API_ROUTES = {
     FIELD_SERVICE_SCHEDULES: "/field-service/schedules",
     PUBLISHER_REMINDERS: "/reminders",
     PUSH: "/push",
-    NOTIFICATIONS: "/notifications"
+    NOTIFICATIONS: "/notifications",
+    SCHEDULE_REMINDERS_CONFIG: "/schedule-reminders/config",
+    SCHEDULE_REMINDERS_RESPONSIBLES: "/schedule-reminders/responsibles",
+    SCHEDULE_REMINDERS_ALERTS: "/schedule-reminders/alerts"
 }

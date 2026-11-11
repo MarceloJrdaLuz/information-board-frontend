@@ -6,6 +6,7 @@ import { ProfileCard } from "@/Components/ProfileCard";
 import ProfileCardSkeleton from "@/Components/ProfileCard/skeleton";
 import PushNotificationBanner from "@/Components/PushNotificationBanner";
 import FeatureAnnouncementModal from "@/Components/FeatureAnnouncementModal";
+import SchedulePendingAlertsCard from "@/Components/SchedulePendingAlertsCard";
 import { UpcomingAssignmentsCard } from "@/Components/UpcomingAssignmentsCard";
 import UpcomingAssignmentsSkeleton from "@/Components/UpcomingAssignmentsCard/skeleton";
 import { UpcomingRemindersCard } from "@/Components/UpcomingRemindersCard";
@@ -117,6 +118,9 @@ function Dashboard() {
             </button>
           </div>
         )}
+
+        {/* Lembretes de Programações Pendentes (Limpeza, Campo, Meio de Semana, Fim de Semana, TP) */}
+        <SchedulePendingAlertsCard />
 
         <div className="h-full w-full flex flex-wrap justify-center items-center gap-5">
           {/* Profile Card or Skeleton */}
