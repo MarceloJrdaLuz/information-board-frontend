@@ -15,6 +15,7 @@ import {
 import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { sortArrayByProperty } from "@/functions/sortObjects";
+import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup } from "@/types/cleaning";
 import { PrivilegeCode } from "@/types/types";
@@ -68,21 +69,26 @@ function CleaningGroupsPage() {
             ...g,
             publishers: (g.publishers || []).filter((p) => hasPrivilege(p, PrivilegeCode.PUBLISHER))
         }));
-        return sortArrayByProperty(cleanGroups, "name");
+        return cleanGroups.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }, [data]);
 
     const filteredGroups = useMemo(() => {
         if (!searchTerm.trim()) return sortedGroups;
         const term = searchTerm.toLowerCase();
-        return sortedGroups.filter(
-            (g) =>
-                g.name.toLowerCase().includes(term) ||
+        return sortedGroups.filter((g) => {
+            const displayName = getCleaningGroupDisplayName(g).toLowerCase();
+            const groupNum = `grupo ${g.order}`;
+            return (
+                displayName.includes(term) ||
+                groupNum.includes(term) ||
+                g.name?.toLowerCase().includes(term) ||
                 g.publishers?.some(
                     (p) =>
-                        p.fullName.toLowerCase().includes(term) ||
+                        p.fullName?.toLowerCase().includes(term) ||
                         p.nickname?.toLowerCase().includes(term)
                 )
-        );
+            );
+        });
     }, [sortedGroups, searchTerm]);
 
     const totalMembers = useMemo(() => {
@@ -234,13 +240,20 @@ function CleaningGroupsPage() {
                                     <div className="space-y-4">
                                         {/* Header do Card */}
                                         <div className="flex items-center justify-between gap-2 pb-3 border-b border-surface-300">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-9 h-9 rounded-xl bg-primary-200/10 text-primary-200  flex items-center justify-center font-bold text-sm">
-                                                    {group.name.charAt(0).toUpperCase()}
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-primary-200/10 text-primary-200 flex items-center justify-center font-bold text-sm shrink-0">
+                                                    {group.order}
                                                 </div>
-                                                <h3 className="font-bold text-base text-typography-800 line-clamp-1">
-                                                    {group.name}
-                                                </h3>
+                                                <div className="flex flex-col min-w-0">
+                                                    <h3 className="font-bold text-base text-typography-800 line-clamp-1">
+                                                        Grupo {group.order}
+                                                    </h3>
+                                                    {group.name && !new RegExp(`^grupo\\s*${group.order}$`, "i").test(group.name.trim()) && (
+                                                        <span className="text-xs text-typography-500 font-normal line-clamp-1">
+                                                            {group.name}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
 
                                             <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -335,7 +348,7 @@ function CleaningGroupsPage() {
                             </DialogTitle>
                         </div>
                         <DialogDescription className="text-xs sm:text-sm text-typography-600 leading-relaxed text-left">
-                            Tem certeza de que deseja remover este grupo de limpeza? As escalas futuras vinculadas poderão ser afetadas.
+                            Tem certeza de que deseja remover este grupo de limpeza? Os grupos seguintes serão reordenados automaticamente para não deixar lacunas na numeração.
                         </DialogDescription>
                     </DialogHeader>
 

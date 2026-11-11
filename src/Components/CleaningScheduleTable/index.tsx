@@ -19,6 +19,7 @@ import { API_ROUTES } from "@/constants/apiRoutes";
 import { useCongregationContext } from "@/context/CongregationContext";
 import { useAuthorizedFetch } from "@/hooks/useFetch";
 import { ICleaningGroup, ICleaningSchedule, ICleaningScheduleResponse } from "@/types/cleaning";
+import { getCleaningGroupDisplayName } from "@/functions/cleaningGroupHelper";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { useSetAtom } from "jotai";
@@ -153,7 +154,7 @@ export default function CleaningScheduleTable({ schedule, onDelete, onScheduleUp
                                             Grupo Responsável:
                                         </span>
                                         <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-200/10 text-primary-200 border border-primary-200/20">
-                                            {item.group.name}
+                                            {getCleaningGroupDisplayName(item.group)}
                                         </span>
                                     </div>
 
@@ -216,14 +217,16 @@ export default function CleaningScheduleTable({ schedule, onDelete, onScheduleUp
                                 <SelectValue placeholder="Escolha um grupo..." />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
-                                {groups?.map((g) => {
-                                    const count = g.publishers?.length || 0;
-                                    return (
-                                        <SelectItem key={g.id} value={g.id} className="text-xs font-medium">
-                                            {g.name} ({count} {count === 1 ? "membro" : "membros"})
-                                        </SelectItem>
-                                    );
-                                })}
+                                {[...(groups || [])]
+                                    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                                    .map((g) => {
+                                        const count = g.publishers?.length || 0;
+                                        return (
+                                            <SelectItem key={g.id} value={g.id} className="text-xs font-medium">
+                                                {getCleaningGroupDisplayName(g)} ({count} {count === 1 ? "membro" : "membros"})
+                                            </SelectItem>
+                                        );
+                                    })}
                             </SelectContent>
                         </Select>
                     </div>
