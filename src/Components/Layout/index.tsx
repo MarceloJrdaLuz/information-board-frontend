@@ -795,13 +795,13 @@ export default function Layout(props: LayoutProps) {
                                 {(isAdmin || isAdminCongregation) &&
                                     <NavBar.Options
                                         isSubItem
-                                        title="Responsabilidades"
+                                        title="Lembretes de Programações"
                                         onClick={() => {
                                             { !isDesktop && setIsMenuOpen(false) }
                                             Router.push('/administracao/responsaveis-programacoes')
                                         }}
                                         icon={() => <UsersIcon className="w-5 h-5 sm:w-6 sm:h-6" />}
-                                        active={pageActive.startsWith('/administracao/responsaveis-programacoes')}
+                                        active={pageActive.startsWith('/administracao/responsaveis-programacoes') || pageActive === 'Lembretes de Programações'}
                                     />
                                 }
 

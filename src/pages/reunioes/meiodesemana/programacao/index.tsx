@@ -558,6 +558,8 @@ function MidweekScheduleAssistantPage() {
                         selectedScheduleId={selectedScheduleId}
                         year={year}
                         month={month}
+                        congregationId={congregationId}
+                        dayMeetingLifeAndMinistary={user?.congregation?.dayMeetingLifeAndMinistary}
                     />
                 </>
             )}
@@ -570,6 +572,7 @@ function MidweekScheduleAssistantPage() {
                     year={year}
                     month={month}
                     congregationName={user?.congregation?.name}
+                    congregationId={congregationId}
                 />
             )}
             <MidweekAutoAssignModal
