@@ -1,12 +1,16 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
+import { useAuthContext } from "@/context/AuthContext";
+import { useCongregationContext } from "@/context/CongregationContext";
+import { api } from "@/services/api";
 import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Document, Font, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Page, PDFDownloadLink, StyleSheet, Text, View } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Columns, Download, LayoutTemplate, Printer } from "lucide-react";
-import React, { useState } from "react";
+import { Calendar, Check, Columns, Download, LayoutTemplate, Loader2, Plus, Printer } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 dayjs.locale("pt-br");
 
@@ -501,28 +505,34 @@ const styles2 = StyleSheet.create({
 // DOCUMENTO: MODELO 1 (Grade com Tabela)
 // ==========================================
 const MidweekModel1Document: React.FC<{
-    schedules: IMidweekSchedule[];
-    year: number;
-    month: number;
-}> = ({ schedules, year, month }) => {
+    schedules?: IMidweekSchedule[];
+    year?: number;
+    month?: number;
+    monthsData?: Array<{ year: number; month: number; schedules: IMidweekSchedule[] }>;
+}> = ({ schedules = [], year = 2026, month = 1, monthsData }) => {
+    const list = monthsData && monthsData.length > 0
+        ? monthsData
+        : [{ year, month, schedules }];
+
     return (
         <Document>
-            <Page size="A4" style={styles1.page}>
-                <View style={styles1.docHeader} fixed>
-                    <View>
-                        <Text style={styles1.docTitle}>Nossa Vida e Ministério Cristão</Text>
-                        <Text style={styles1.docSubtitle}>Programação das Reuniões de Meio de Semana</Text>
+            {list.map(({ year: mYear, month: mMonth, schedules: mSchedules }) => (
+                <Page key={`${mYear}-${mMonth}`} size="A4" style={styles1.page}>
+                    <View style={styles1.docHeader} fixed>
+                        <View>
+                            <Text style={styles1.docTitle}>Nossa Vida e Ministério Cristão</Text>
+                            <Text style={styles1.docSubtitle}>Programação das Reuniões de Meio de Semana</Text>
+                        </View>
+                        <Text style={styles1.docMonthTag}>
+                            {MONTH_NAMES[mMonth - 1]} de {mYear}
+                        </Text>
                     </View>
-                    <Text style={styles1.docMonthTag}>
-                        {MONTH_NAMES[month - 1]} de {year}
-                    </Text>
-                </View>
 
-                {schedules.map((schedule) => {
-                    const weekDateObj = dayjs(schedule.weekDate);
-                    const weekStart = weekDateObj.format("D");
-                    const weekEnd = weekDateObj.add(6, "day").format("D [DE] MMMM");
-                    const weekRangeFormatted = `${weekStart}-${weekEnd}`.toUpperCase();
+                    {mSchedules.map((schedule) => {
+                        const weekDateObj = dayjs(schedule.weekDate);
+                        const weekStart = weekDateObj.format("D");
+                        const weekEnd = weekDateObj.add(6, "day").format("D [DE] MMMM");
+                        const weekRangeFormatted = `${weekStart}-${weekEnd}`.toUpperCase();
 
                     const isNoMeeting = schedule.isSpecial && (
                         schedule.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
@@ -852,40 +862,47 @@ const MidweekModel1Document: React.FC<{
                     );
                 })}
             </Page>
-        </Document>
-    );
+        ))}
+    </Document>
+);
 };
 
 // ==========================================
 // DOCUMENTO: MODELO 2 (Modelo S-140 / Clean)
 // ==========================================
 const MidweekModel2Document: React.FC<{
-    schedules: IMidweekSchedule[];
-    year: number;
-    month: number;
+    schedules?: IMidweekSchedule[];
+    year?: number;
+    month?: number;
+    monthsData?: Array<{ year: number; month: number; schedules: IMidweekSchedule[] }>;
     congregationName?: string;
-}> = ({ schedules, year, month, congregationName }) => {
+}> = ({ schedules = [], year = 2026, month = 1, monthsData, congregationName }) => {
+    const list = monthsData && monthsData.length > 0
+        ? monthsData
+        : [{ year, month, schedules }];
+
     return (
         <Document>
-            <Page size="A4" style={styles2.page}>
-                <View style={styles2.docHeader} fixed>
-                    <View style={styles2.docHeaderTop}>
-                        <Text style={styles2.congregationName}>
-                            {congregationName || "CONGREGAÇÃO"}
-                        </Text>
-                        <Text style={styles2.mainTitle}>
-                            Programação da reunião do meio de semana
-                        </Text>
+            {list.map(({ year: mYear, month: mMonth, schedules: mSchedules }) => (
+                <Page key={`${mYear}-${mMonth}`} size="A4" style={styles2.page}>
+                    <View style={styles2.docHeader} fixed>
+                        <View style={styles2.docHeaderTop}>
+                            <Text style={styles2.congregationName}>
+                                {congregationName || "CONGREGAÇÃO"}
+                            </Text>
+                            <Text style={styles2.mainTitle}>
+                                Programação da reunião do meio de semana — {MONTH_NAMES[mMonth - 1]} de {mYear}
+                            </Text>
+                        </View>
+                        <View style={styles2.headerLineThick} />
+                        <View style={styles2.headerLineThin} />
                     </View>
-                    <View style={styles2.headerLineThick} />
-                    <View style={styles2.headerLineThin} />
-                </View>
 
-                {schedules.map((schedule) => {
-                    const weekDateObj = dayjs(schedule.weekDate);
-                    const weekStart = weekDateObj.format("D");
-                    const weekEnd = weekDateObj.add(6, "day").format("D [DE] MMMM");
-                    const weekRangeFormatted = `${weekStart}-${weekEnd}`.toUpperCase();
+                    {mSchedules.map((schedule) => {
+                        const weekDateObj = dayjs(schedule.weekDate);
+                        const weekStart = weekDateObj.format("D");
+                        const weekEnd = weekDateObj.add(6, "day").format("D [DE] MMMM");
+                        const weekRangeFormatted = `${weekStart}-${weekEnd}`.toUpperCase();
 
                     const isNoMeeting = schedule.isSpecial && (
                         schedule.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
@@ -1155,12 +1172,13 @@ const MidweekModel2Document: React.FC<{
                     );
                 })}
             </Page>
-        </Document>
-    );
+        ))}
+    </Document>
+);
 };
 
 // ==========================================
-// MODAL COM SELETOR DE MODELOS (1 e 2)
+// MODAL COM SELETOR DE MODELOS (1 e 2) E MULTI-MESES
 // ==========================================
 export const MidweekMonthSchedulePdfModal: React.FC<{
     open: boolean;
@@ -1169,77 +1187,241 @@ export const MidweekMonthSchedulePdfModal: React.FC<{
     year: number;
     month: number;
     congregationName?: string;
-}> = ({ open, onClose, schedules, year, month, congregationName }) => {
+    congregationId?: string;
+}> = ({
+    open,
+    onClose,
+    schedules = [],
+    year,
+    month,
+    congregationName: propCongName,
+    congregationId: propCongId
+}) => {
+    const { congregation } = useCongregationContext();
+    const { user } = useAuthContext();
+    const effectiveCongregationId = propCongId || congregation?.id || user?.congregation?.id;
+    const effectiveCongregationName = propCongName || congregation?.name || user?.congregation?.name;
+
+    const baseYear = year || (schedules[0] ? dayjs(schedules[0].weekDate).year() : dayjs().year());
+    const baseMonth = month || (schedules[0] ? dayjs(schedules[0].weekDate).month() + 1 : dayjs().month() + 1);
+
     const [selectedTemplate, setSelectedTemplate] = useState<"table" | "s140">("table");
 
+    // Meses selecionados pelo usuário (ex: [{ year: 2026, month: 11 }, { year: 2026, month: 12 }])
+    const [selectedMonths, setSelectedMonths] = useState<Array<{ year: number; month: number }>>([
+        { year: baseYear, month: baseMonth }
+    ]);
+
+    // Cache de programações por mês (chave 'YYYY-M')
+    const [cachedMonths, setCachedMonths] = useState<Record<string, IMidweekSchedule[]>>({});
+    const [loadingMonth, setLoadingMonth] = useState<string | null>(null);
+
+    // Inicializa o cache quando o modal abre ou os dados iniciais mudam
+    useEffect(() => {
+        if (open) {
+            const key = `${baseYear}-${baseMonth}`;
+            setCachedMonths(prev => ({
+                ...prev,
+                [key]: schedules || []
+            }));
+            setSelectedMonths([{ year: baseYear, month: baseMonth }]);
+        }
+    }, [open, baseYear, baseMonth, schedules]);
+
+    // Meses rápidos disponíveis para selecionar/alternar (-1 mês até +4 meses)
+    const quickMonths = useMemo(() => {
+        const baseDate = dayjs(`${baseYear}-${String(baseMonth).padStart(2, "0")}-01`);
+        const list = [];
+        for (let i = -1; i <= 4; i++) {
+            const d = baseDate.add(i, "month");
+            list.push({
+                year: d.year(),
+                month: d.month() + 1,
+                label: `${MONTH_NAMES[d.month()].slice(0, 3)}/${d.format("YY")}`,
+                fullLabel: `${MONTH_NAMES[d.month()]} de ${d.year()}`
+            });
+        }
+        return list;
+    }, [baseYear, baseMonth]);
+
+    const toggleMonth = async (mYear: number, mMonth: number) => {
+        const key = `${mYear}-${mMonth}`;
+        const isSelected = selectedMonths.some(m => m.year === mYear && m.month === mMonth);
+
+        if (isSelected) {
+            if (selectedMonths.length <= 1) {
+                toast.info("Pelo menos um mês deve permanecer selecionado.");
+                return;
+            }
+            setSelectedMonths(prev => prev.filter(m => !(m.year === mYear && m.month === mMonth)));
+        } else {
+            if (!cachedMonths[key]) {
+                if (!effectiveCongregationId) {
+                    toast.error("Congregação não encontrada para carregar dados adicionais.");
+                    return;
+                }
+                setLoadingMonth(key);
+                try {
+                    const res = await api.get(
+                        `/midweek/schedules/congregation/${effectiveCongregationId}?year=${mYear}&month=${mMonth}`
+                    );
+                    const fetched: IMidweekSchedule[] = Array.isArray(res.data) ? res.data : [];
+                    setCachedMonths(prev => ({ ...prev, [key]: fetched }));
+                    setSelectedMonths(prev =>
+                        [...prev, { year: mYear, month: mMonth }].sort((a, b) =>
+                            a.year !== b.year ? a.year - b.year : a.month - b.month
+                        )
+                    );
+                } catch (err) {
+                    console.error("Erro ao carregar mês adicional:", err);
+                    toast.error(`Erro ao carregar programação de ${MONTH_NAMES[mMonth - 1]} de ${mYear}`);
+                } finally {
+                    setLoadingMonth(null);
+                }
+            } else {
+                setSelectedMonths(prev =>
+                    [...prev, { year: mYear, month: mMonth }].sort((a, b) =>
+                        a.year !== b.year ? a.year - b.year : a.month - b.month
+                    )
+                );
+            }
+        }
+    };
+
+    const monthsData = useMemo(() => {
+        return selectedMonths.map(m => ({
+            year: m.year,
+            month: m.month,
+            schedules: cachedMonths[`${m.year}-${m.month}`] || []
+        }));
+    }, [selectedMonths, cachedMonths]);
+
     const currentDoc = selectedTemplate === "table" ? (
-        <MidweekModel1Document schedules={schedules} year={year} month={month} />
+        <MidweekModel1Document monthsData={monthsData} />
     ) : (
-        <MidweekModel2Document schedules={schedules} year={year} month={month} congregationName={congregationName} />
+        <MidweekModel2Document monthsData={monthsData} congregationName={effectiveCongregationName} />
     );
+
+    const monthsSummary = selectedMonths
+        .map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}/${m.year}`)
+        .join(", ");
+
+    const totalWeeks = monthsData.reduce((acc, curr) => acc + curr.schedules.length, 0);
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-6xl w-[95vw] h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5">
-                <DialogHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-surface-300 gap-3">
-                    <div className="flex items-center gap-2">
-                        <Printer className="h-5 w-5 text-primary-200" />
-                        <div>
-                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
-                                Programação do Mês para o Quadro de Avisos (PDF)
-                            </DialogTitle>
-                            <span className="text-xs text-typography-500">
-                                {MONTH_NAMES[month - 1]} de {year}
-                            </span>
+                <DialogHeader className="flex flex-col gap-3 pb-3 border-b border-surface-300">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <Printer className="h-5 w-5 text-primary-200" />
+                            <div>
+                                <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                                    Programação do Mês para o Quadro de Avisos (PDF)
+                                </DialogTitle>
+                                <span className="text-xs text-typography-500">
+                                    {selectedMonths.length === 1
+                                        ? `${MONTH_NAMES[selectedMonths[0].month - 1]} de ${selectedMonths[0].year}`
+                                        : `${selectedMonths.length} meses selecionados (${monthsSummary})`
+                                    } • {totalWeeks} semana(s) no total
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Ações da direita: Seletor de Modelo de Layout & Botão Baixar */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center bg-surface-200 p-1 rounded-lg border border-surface-300">
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedTemplate("table")}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all cursor-pointer ${
+                                        selectedTemplate === "table"
+                                            ? "bg-surface-100 text-typography-900 shadow-sm"
+                                            : "text-typography-500 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <LayoutTemplate className="h-3.5 w-3.5" />
+                                    <span>Modelo Grade</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedTemplate("s140")}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all cursor-pointer ${
+                                        selectedTemplate === "s140"
+                                            ? "bg-surface-100 text-typography-900 shadow-sm"
+                                            : "text-typography-500 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <Columns className="h-3.5 w-3.5" />
+                                    <span>Modelo S-140</span>
+                                </button>
+                            </div>
+
+                            <PDFDownloadLink
+                                document={currentDoc}
+                                fileName={
+                                    selectedMonths.length === 1
+                                        ? `Programacao_Meio_de_Semana_${MONTH_NAMES[selectedMonths[0].month - 1]}_${selectedMonths[0].year}_${selectedTemplate}.pdf`
+                                        : `Programacao_Meio_de_Semana_Multiplos_Meses_${selectedMonths.map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}_${m.year}`).join("_")}_${selectedTemplate}.pdf`
+                                }
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-200 hover:opacity-90 text-white font-semibold text-xs shadow-sm cursor-pointer whitespace-nowrap"
+                            >
+                                <Download className="h-4 w-4" />
+                                <span>Baixar PDF</span>
+                            </PDFDownloadLink>
                         </div>
                     </div>
 
-                    {/* Seletor de Modelo de Layout */}
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center bg-surface-200 p-1 rounded-lg border border-surface-300">
-                            <button
-                                type="button"
-                                onClick={() => setSelectedTemplate("table")}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
-                                    selectedTemplate === "table"
-                                        ? "bg-surface-100 text-typography-900 shadow-sm"
-                                        : "text-typography-500 hover:text-typography-900"
-                                }`}
-                            >
-                                <LayoutTemplate className="h-3.5 w-3.5" />
-                                <span>Modelo Grade</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => setSelectedTemplate("s140")}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
-                                    selectedTemplate === "s140"
-                                        ? "bg-surface-100 text-typography-900 shadow-sm"
-                                        : "text-typography-500 hover:text-typography-900"
-                                }`}
-                            >
-                                <Columns className="h-3.5 w-3.5" />
-                                <span>Modelo S-140</span>
-                            </button>
-                        </div>
-
-                        <PDFDownloadLink
-                            document={currentDoc}
-                            fileName={`Programacao_Meio_de_Semana_${MONTH_NAMES[month - 1]}_${year}_${selectedTemplate}.pdf`}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-200 hover:opacity-90 text-white font-semibold text-xs shadow-sm cursor-pointer"
-                        >
-                            <Download className="h-4 w-4" />
-                            <span>Baixar PDF</span>
-                        </PDFDownloadLink>
+                    {/* Barra de Seleção de Meses Rápidos */}
+                    <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                        <span className="text-xs font-semibold text-typography-700 mr-1 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-primary-200" />
+                            <span>Meses:</span>
+                        </span>
+                        {quickMonths.map(qm => {
+                            const isSelected = selectedMonths.some(m => m.year === qm.year && m.month === qm.month);
+                            const isLoading = loadingMonth === `${qm.year}-${qm.month}`;
+                            return (
+                                <button
+                                    key={`${qm.year}-${qm.month}`}
+                                    type="button"
+                                    disabled={isLoading}
+                                    onClick={() => toggleMonth(qm.year, qm.month)}
+                                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                        isSelected
+                                            ? "bg-primary-200 text-white shadow-2xs"
+                                            : "bg-surface-200 text-typography-600 hover:bg-surface-300 hover:text-typography-900 border border-surface-300"
+                                    }`}
+                                    title={qm.fullLabel}
+                                >
+                                    {isLoading ? (
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : isSelected ? (
+                                        <Check className="w-3 h-3" />
+                                    ) : (
+                                        <Plus className="w-3 h-3 opacity-60" />
+                                    )}
+                                    <span>{qm.label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </DialogHeader>
 
                 <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200 flex flex-col">
                     <UniversalPdfViewer
                         document={currentDoc}
-                        title={`Programação do Meio de Semana — ${MONTH_NAMES[month - 1]} de ${year}`}
-                        fileName={`Programacao_Meio_de_Semana_${MONTH_NAMES[month - 1]}_${year}_${selectedTemplate}.pdf`}
+                        title={
+                            selectedMonths.length === 1
+                                ? `Programação do Meio de Semana — ${MONTH_NAMES[selectedMonths[0].month - 1]} de ${selectedMonths[0].year}`
+                                : `Programação do Meio de Semana — ${monthsSummary}`
+                        }
+                        fileName={
+                            selectedMonths.length === 1
+                                ? `Programacao_Meio_de_Semana_${MONTH_NAMES[selectedMonths[0].month - 1]}_${selectedMonths[0].year}_${selectedTemplate}.pdf`
+                                : `Programacao_Meio_de_Semana_Multiplos_Meses_${selectedMonths.map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}_${m.year}`).join("_")}_${selectedTemplate}.pdf`
+                        }
                         minHeight="600px"
                     />
                 </div>

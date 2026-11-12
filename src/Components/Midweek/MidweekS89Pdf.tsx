@@ -1,12 +1,23 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import UniversalPdfViewer from "@/Components/UniversalPdfViewer";
-import { IMidweekSchedule, IPublisherMini, MidweekPartType, MidweekRoom, MidweekSection } from "@/types/midweek";
+import { useAuthContext } from "@/context/AuthContext";
+import { useCongregationContext } from "@/context/CongregationContext";
+import { api } from "@/services/api";
+import {
+    IMidweekSchedule,
+    IPublisherMini,
+    MidweekPartType,
+    MidweekRoom,
+    MidweekSection,
+    MidweekSpecialType,
+} from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Document, Page, PDFDownloadLink, PDFViewer, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Page, PDFDownloadLink, StyleSheet, Text, View } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, Download, FileText, Sparkles } from "lucide-react";
-import React, { useState } from "react";
+import { Calendar, Check, Download, FileText, Loader2, Plus, Sparkles } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 dayjs.locale("pt-br");
 
@@ -14,6 +25,33 @@ const MONTH_NAMES = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
+
+const MIDWEEK_DAY_MAP: Record<string, number> = {
+    "Segunda-feira": 1,
+    "Terça-feira": 2,
+    "Quarta-feira": 3,
+    "Quinta-feira": 4,
+    "Sexta-feira": 5,
+};
+
+export const getMidweekMeetingDayOffset = (dayName?: string | null): number => {
+    if (!dayName) return 0;
+    const isoDay = MIDWEEK_DAY_MAP[dayName];
+    if (!isoDay) return 0;
+    return isoDay - 1; // Segunda = 0, Terça = 1, Quarta = 2, Quinta = 3, Sexta = 4
+};
+
+export const formatMidweekActualDate = (
+    weekDate: string,
+    explicitMeetingDate?: string | null,
+    dayMeetingLifeAndMinistary?: string | null
+): string => {
+    if (explicitMeetingDate && explicitMeetingDate !== weekDate) {
+        return dayjs(explicitMeetingDate).format("DD/MM/YYYY");
+    }
+    const offset = getMidweekMeetingDayOffset(dayMeetingLifeAndMinistary);
+    return dayjs(weekDate).add(offset, "day").format("DD/MM/YYYY");
+};
 
 const getDisplayName = (pub?: IPublisherMini | null, customName?: string | null): string => {
     if (customName && customName.trim()) return customName.trim();
@@ -224,7 +262,10 @@ interface ItemWithSchedule {
     isAux2: boolean;
 }
 
-export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }> = ({ schedules = [] }) => {
+export const MidweekS89PdfDocument: React.FC<{
+    schedules?: IMidweekSchedule[];
+    dayMeetingLifeAndMinistary?: string | null;
+}> = ({ schedules = [], dayMeetingLifeAndMinistary }) => {
     const typeOrder: Record<string, number> = {
         [MidweekPartType.TALK]: 1,
         [MidweekPartType.GEMS]: 2,
@@ -244,7 +285,23 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
 
     // Itera por cada semana
     (schedules || []).forEach(schedule => {
-        const meetingDateFormatted = dayjs(schedule.meetingDate || schedule.weekDate).format("DD/MM/YYYY");
+        // Pula semanas especiais sem reunião (Assembleia, Congresso, Memorial)
+        const isNoMeeting = schedule.isSpecial && (
+            schedule.specialType === MidweekSpecialType.CIRCUIT_ASSEMBLY ||
+            schedule.specialType === MidweekSpecialType.REGIONAL_CONVENTION ||
+            schedule.specialType === MidweekSpecialType.MEMORIAL
+        );
+
+        if (isNoMeeting) {
+            return;
+        }
+
+        // Data real da reunião conforme o dia da semana configurado na congregação
+        const meetingDateFormatted = formatMidweekActualDate(
+            schedule.weekDate,
+            schedule.meetingDate,
+            dayMeetingLifeAndMinistary
+        );
 
         const sortMinistryParts = (a: any, b: any) => {
             if (a.partType === MidweekPartType.WHAT_WOULD_YOU_SAY && b.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY) return 1;
@@ -273,12 +330,20 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
         });
 
         // Partes dos estudantes desta semana (Salão Principal + Salas Auxiliares)
-        // Obs: WHAT_WOULD_YOU_SAY é consideração congregacional, não gera S-89
+        // Obs: WHAT_WOULD_YOU_SAY é consideração congregacional, não gera S-89.
+        // Se a parte não tiver estudante designado, NÃO gera S-89 vazio!
         const studentParts = (schedule.parts || []).filter(p => {
             const isMinistry = p.section === MidweekSection.MINISTRY && p.partType !== MidweekPartType.WHAT_WOULD_YOU_SAY;
             const isBibleReading = p.partType === MidweekPartType.BIBLE_READING;
             const isActive = p.isActive !== false;
-            return (isMinistry || isBibleReading) && isActive;
+
+            const studentName = getDisplayName(
+                p.assignedPublisher,
+                p.custom_speaker_name
+            );
+            const hasStudent = !!(studentName && studentName.trim().length > 0);
+
+            return (isMinistry || isBibleReading) && isActive && hasStudent;
         }).sort((a, b) => {
             if (a.room !== b.room) {
                 const roomOrder = { [MidweekRoom.MAIN]: 1, [MidweekRoom.AUXILIARY_1]: 2, [MidweekRoom.AUXILIARY_2]: 3 };
@@ -289,6 +354,11 @@ export const MidweekS89PdfDocument: React.FC<{ schedules?: IMidweekSchedule[] }>
             }
             return sortMinistryParts(a, b);
         });
+
+        // Se não houver partes de estudantes nesta semana com designações, não gera S-89 vazios
+        if (studentParts.length === 0) {
+            return;
+        }
 
         const weekSlips: ItemWithSchedule[] = studentParts.map(part => {
             let partNumberDisplay = "";
@@ -496,103 +566,277 @@ export const MidweekS89PdfModal: React.FC<{
     selectedScheduleId?: string | null;
     year?: number;
     month?: number;
-}> = ({ open, onClose, schedules = [], schedule, selectedScheduleId, year, month }) => {
-    // Array seguro com todas as semanas disponíveis
-    const list = schedules && schedules.length > 0
-        ? schedules
-        : schedule
-            ? [schedule]
-            : [];
+    congregationId?: string;
+    dayMeetingLifeAndMinistary?: string;
+}> = ({
+    open,
+    onClose,
+    schedules = [],
+    schedule,
+    selectedScheduleId,
+    year,
+    month,
+    congregationId: propCongregationId,
+    dayMeetingLifeAndMinistary: propDayMeeting
+}) => {
+    const { congregation } = useCongregationContext();
+    const { user } = useAuthContext();
+    const effectiveCongregationId = propCongregationId || congregation?.id || user?.congregation?.id;
+    const effectiveDayMeeting = propDayMeeting || congregation?.dayMeetingLifeAndMinistary || user?.congregation?.dayMeetingLifeAndMinistary;
 
-    // "all" = Mês Inteiro, ou o ID da semana
+    const baseYear = year || (schedules[0] ? dayjs(schedules[0].weekDate).year() : dayjs().year());
+    const baseMonth = month || (schedules[0] ? dayjs(schedules[0].weekDate).month() + 1 : dayjs().month() + 1);
+
+    // Meses selecionados pelo usuário (ex: [{ year: 2026, month: 11 }, { year: 2026, month: 12 }])
+    const [selectedMonths, setSelectedMonths] = useState<Array<{ year: number; month: number }>>([
+        { year: baseYear, month: baseMonth }
+    ]);
+
+    // Cache de programações por mês (chave 'YYYY-M')
+    const [cachedMonths, setCachedMonths] = useState<Record<string, IMidweekSchedule[]>>({});
+    const [loadingMonth, setLoadingMonth] = useState<string | null>(null);
+
+    // "all" = Mês Inteiro (ou todos os meses selecionados), ou ID da semana
     const [selectedScope, setSelectedScope] = useState<string>("all");
 
+    // Inicializa o cache quando o modal abre ou os dados iniciais mudam
+    useEffect(() => {
+        if (open) {
+            const initialList = schedules && schedules.length > 0
+                ? schedules
+                : schedule
+                    ? [schedule]
+                    : [];
+            const key = `${baseYear}-${baseMonth}`;
+            setCachedMonths(prev => ({
+                ...prev,
+                [key]: initialList
+            }));
+            setSelectedMonths([{ year: baseYear, month: baseMonth }]);
+            setSelectedScope("all");
+        }
+    }, [open, baseYear, baseMonth, schedules, schedule]);
+
+    // Meses rápidos disponíveis para selecionar/alternar (-1 mês até +4 meses)
+    const quickMonths = useMemo(() => {
+        const baseDate = dayjs(`${baseYear}-${String(baseMonth).padStart(2, "0")}-01`);
+        const list = [];
+        for (let i = -1; i <= 4; i++) {
+            const d = baseDate.add(i, "month");
+            list.push({
+                year: d.year(),
+                month: d.month() + 1,
+                label: `${MONTH_NAMES[d.month()].slice(0, 3)}/${d.format("YY")}`,
+                fullLabel: `${MONTH_NAMES[d.month()]} de ${d.year()}`
+            });
+        }
+        return list;
+    }, [baseYear, baseMonth]);
+
+    const toggleMonth = async (mYear: number, mMonth: number) => {
+        const key = `${mYear}-${mMonth}`;
+        const isSelected = selectedMonths.some(m => m.year === mYear && m.month === mMonth);
+
+        if (isSelected) {
+            if (selectedMonths.length <= 1) {
+                toast.info("Pelo menos um mês deve permanecer selecionado.");
+                return;
+            }
+            setSelectedMonths(prev => prev.filter(m => !(m.year === mYear && m.month === mMonth)));
+            setSelectedScope("all");
+        } else {
+            if (!cachedMonths[key]) {
+                if (!effectiveCongregationId) {
+                    toast.error("Congregação não encontrada para carregar dados adicionais.");
+                    return;
+                }
+                setLoadingMonth(key);
+                try {
+                    const res = await api.get(
+                        `/midweek/schedules/congregation/${effectiveCongregationId}?year=${mYear}&month=${mMonth}`
+                    );
+                    const fetched: IMidweekSchedule[] = Array.isArray(res.data) ? res.data : [];
+                    setCachedMonths(prev => ({ ...prev, [key]: fetched }));
+                    setSelectedMonths(prev =>
+                        [...prev, { year: mYear, month: mMonth }].sort((a, b) =>
+                            a.year !== b.year ? a.year - b.year : a.month - b.month
+                        )
+                    );
+                    setSelectedScope("all");
+                } catch (err) {
+                    console.error("Erro ao carregar mês adicional:", err);
+                    toast.error(`Erro ao carregar programação de ${MONTH_NAMES[mMonth - 1]} de ${mYear}`);
+                } finally {
+                    setLoadingMonth(null);
+                }
+            } else {
+                setSelectedMonths(prev =>
+                    [...prev, { year: mYear, month: mMonth }].sort((a, b) =>
+                        a.year !== b.year ? a.year - b.year : a.month - b.month
+                    )
+                );
+                setSelectedScope("all");
+            }
+        }
+    };
+
+    // Reúne todas as semanas dos meses selecionados
+    const combinedSchedules = useMemo(() => {
+        const result: IMidweekSchedule[] = [];
+        selectedMonths.forEach(m => {
+            const list = cachedMonths[`${m.year}-${m.month}`] || [];
+            result.push(...list);
+        });
+        return result.sort((a, b) => dayjs(a.weekDate).diff(dayjs(b.weekDate)));
+    }, [selectedMonths, cachedMonths]);
+
     const filteredSchedules = selectedScope === "all"
-        ? list
-        : list.filter(s => s.id === selectedScope);
+        ? combinedSchedules
+        : combinedSchedules.filter(s => s.id === selectedScope);
 
     const isAll = selectedScope === "all";
-    const currentYear = year || (list[0] ? dayjs(list[0].weekDate).year() : new Date().getFullYear());
-    const currentMonth = month || (list[0] ? dayjs(list[0].weekDate).month() + 1 : new Date().getMonth() + 1);
 
-    const currentDoc = <MidweekS89PdfDocument schedules={filteredSchedules} />;
+    const currentDoc = (
+        <MidweekS89PdfDocument
+            schedules={filteredSchedules}
+            dayMeetingLifeAndMinistary={effectiveDayMeeting}
+        />
+    );
+
+    const monthsSummary = selectedMonths
+        .map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}/${m.year}`)
+        .join(", ");
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-6xl w-[95vw] h-[92vh] flex flex-col bg-surface-100 border border-surface-300 p-4 sm:p-5">
-                <DialogHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-surface-300 gap-3">
-                    <div className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-primary-200" />
-                        <div>
-                            <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
-                                Folhetos de Designação S-89 (PDF)
-                            </DialogTitle>
-                            <span className="text-xs text-typography-500">
-                                {MONTH_NAMES[currentMonth - 1]} de {currentYear} • {filteredSchedules.length} semana(s) selecionada(s)
-                            </span>
+                <DialogHeader className="flex flex-col gap-3 pb-3 border-b border-surface-300">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <FileText className="h-5 w-5 text-primary-200" />
+                            <div>
+                                <DialogTitle className="text-base sm:text-lg font-bold text-typography-900">
+                                    Folhetos de Designação S-89 (PDF)
+                                </DialogTitle>
+                                <span className="text-xs text-typography-500">
+                                    {selectedMonths.length === 1
+                                        ? `${MONTH_NAMES[selectedMonths[0].month - 1]} de ${selectedMonths[0].year}`
+                                        : `${selectedMonths.length} meses selecionados (${monthsSummary})`
+                                    } • {combinedSchedules.length} semana(s) no total
+                                </span>
+                            </div>
                         </div>
+
+                        <PDFDownloadLink
+                            document={currentDoc}
+                            fileName={
+                                selectedMonths.length === 1
+                                    ? (isAll
+                                        ? `S89_${MONTH_NAMES[selectedMonths[0].month - 1]}_${selectedMonths[0].year}.pdf`
+                                        : `S89_Semana_${formatMidweekActualDate(filteredSchedules[0]?.weekDate, filteredSchedules[0]?.meetingDate, effectiveDayMeeting).replace(/\//g, "-")}.pdf`)
+                                    : `S89_Multiplos_Meses_${selectedMonths.map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}_${m.year}`).join("_")}.pdf`
+                            }
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-primary-200 hover:opacity-90 text-white font-semibold text-xs shadow-sm cursor-pointer whitespace-nowrap"
+                        >
+                            <Download className="h-4 w-4" />
+                            <span>Baixar PDF</span>
+                        </PDFDownloadLink>
                     </div>
 
-                    {/* Seletor de Escopo: Mês Inteiro vs Semana Específica */}
-                    <div className="flex flex-wrap items-center gap-2 max-w-full">
+                    {/* Barra de Seleção de Meses & Escopo de Semanas */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pt-1">
+                        {/* Seletor de Meses */}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs font-semibold text-typography-700 mr-1 flex items-center gap-1">
+                                <Calendar className="w-3.5 h-3.5 text-primary-200" />
+                                <span>Meses:</span>
+                            </span>
+                            {quickMonths.map(qm => {
+                                const isSelected = selectedMonths.some(m => m.year === qm.year && m.month === qm.month);
+                                const isLoading = loadingMonth === `${qm.year}-${qm.month}`;
+                                return (
+                                    <button
+                                        key={`${qm.year}-${qm.month}`}
+                                        type="button"
+                                        disabled={isLoading}
+                                        onClick={() => toggleMonth(qm.year, qm.month)}
+                                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                                            isSelected
+                                                ? "bg-primary-200 text-white shadow-2xs"
+                                                : "bg-surface-200 text-typography-600 hover:bg-surface-300 hover:text-typography-900 border border-surface-300"
+                                        }`}
+                                        title={qm.fullLabel}
+                                    >
+                                        {isLoading ? (
+                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                        ) : isSelected ? (
+                                            <Check className="w-3 h-3" />
+                                        ) : (
+                                            <Plus className="w-3 h-3 opacity-60" />
+                                        )}
+                                        <span>{qm.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Seletor de Escopo (Mês / Semana) */}
                         <div className="flex items-center bg-surface-200 p-1 rounded-lg border border-surface-300 overflow-x-auto max-w-full scrollbar-none">
                             <button
                                 type="button"
                                 onClick={() => setSelectedScope("all")}
-                                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-all ${
+                                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                                     isAll
                                         ? "bg-surface-100 text-typography-900 shadow-sm"
                                         : "text-typography-500 hover:text-typography-900"
                                 }`}
                             >
-                                <Sparkles className="h-3.5 w-3.5 text-purple-500" />
-                                <span>Mês Inteiro ({list.length} semanas)</span>
+                                <Sparkles className="h-3 w-3 text-purple-500" />
+                                <span>
+                                    {selectedMonths.length === 1 ? "Mês Inteiro" : "Todos os Meses"} ({combinedSchedules.length})
+                                </span>
                             </button>
 
-                            {list.map(s => {
-                                const weekFormatted = dayjs(s.meetingDate || s.weekDate).format("DD/MM");
+                            {combinedSchedules.map(s => {
+                                const actualDateStr = formatMidweekActualDate(s.weekDate, s.meetingDate, effectiveDayMeeting);
+                                const weekFormatted = actualDateStr.slice(0, 5);
                                 const isSelected = selectedScope === s.id;
                                 return (
                                     <button
                                         key={s.id}
                                         type="button"
                                         onClick={() => setSelectedScope(s.id)}
-                                        className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-semibold whitespace-nowrap transition-all ${
+                                        className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                                             isSelected
                                                 ? "bg-surface-100 text-typography-900 shadow-sm"
                                                 : "text-typography-500 hover:text-typography-900"
                                         }`}
                                     >
                                         <Calendar className="h-3 w-3" />
-                                        <span>Semana {weekFormatted}</span>
+                                        <span>{weekFormatted}</span>
                                     </button>
                                 );
                             })}
                         </div>
-
-                        <PDFDownloadLink
-                            document={currentDoc}
-                            fileName={
-                                isAll
-                                    ? `S89_Mes_${MONTH_NAMES[currentMonth - 1]}_${currentYear}.pdf`
-                                    : `S89_Semana_${dayjs(filteredSchedules[0]?.meetingDate || filteredSchedules[0]?.weekDate).format("DD-MM-YYYY")}.pdf`
-                            }
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-200 hover:opacity-90 text-white font-semibold text-xs shadow-sm cursor-pointer"
-                        >
-                            <Download className="h-4 w-4" />
-                            <span>Baixar PDF</span>
-                        </PDFDownloadLink>
                     </div>
                 </DialogHeader>
 
                 <div className="flex-1 w-full mt-3 rounded-xl overflow-hidden border border-surface-300 bg-surface-200 flex flex-col">
                     <UniversalPdfViewer
                         document={currentDoc}
-                        title={isAll ? `Designações S-89 — ${MONTH_NAMES[currentMonth - 1]} de ${currentYear}` : `Designações S-89 — Semana de ${dayjs(filteredSchedules[0]?.meetingDate || filteredSchedules[0]?.weekDate).format("DD/MM/YYYY")}`}
-                        fileName={
+                        title={
                             isAll
-                                ? `S89_Mes_${MONTH_NAMES[currentMonth - 1]}_${currentYear}.pdf`
-                                : `S89_Semana_${dayjs(filteredSchedules[0]?.meetingDate || filteredSchedules[0]?.weekDate).format("DD-MM-YYYY")}.pdf`
+                                ? (selectedMonths.length === 1
+                                    ? `Designações S-89 — ${MONTH_NAMES[selectedMonths[0].month - 1]} de ${selectedMonths[0].year}`
+                                    : `Designações S-89 — ${monthsSummary}`)
+                                : `Designações S-89 — Semana de ${formatMidweekActualDate(filteredSchedules[0]?.weekDate, filteredSchedules[0]?.meetingDate, effectiveDayMeeting)}`
+                        }
+                        fileName={
+                            selectedMonths.length === 1
+                                ? (isAll
+                                    ? `S89_${MONTH_NAMES[selectedMonths[0].month - 1]}_${selectedMonths[0].year}.pdf`
+                                    : `S89_Semana_${formatMidweekActualDate(filteredSchedules[0]?.weekDate, filteredSchedules[0]?.meetingDate, effectiveDayMeeting).replace(/\//g, "-")}.pdf`)
+                                : `S89_Multiplos_Meses_${selectedMonths.map(m => `${MONTH_NAMES[m.month - 1].slice(0, 3)}_${m.year}`).join("_")}.pdf`
                         }
                         minHeight="600px"
                     />

@@ -118,11 +118,11 @@ function ScheduleResponsiblesPage() {
     const [savingConfig, setSavingConfig] = useState(false);
 
     useEffect(() => {
-        setPageActive("Responsabilidades");
+        setPageActive("Lembretes de Programações");
         setCrumbs([
             { label: "Início", link: "/dashboard" },
             { label: "Administração", link: "/administracao" },
-            { label: "Responsabilidades", link: "/administracao/responsaveis-programacoes" },
+            { label: "Lembretes de Programações", link: "/administracao/responsaveis-programacoes" },
         ]);
     }, [setPageActive, setCrumbs]);
 
@@ -237,7 +237,7 @@ function ScheduleResponsiblesPage() {
 
     return (
         <ContentDashboard>
-            <BreadCrumbs crumbs={crumbs} pageActive={"Responsabilidades"} />
+            <BreadCrumbs crumbs={crumbs} pageActive={"Lembretes de Programações"} />
 
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
                 {/* Header da Página */}
@@ -248,7 +248,7 @@ function ScheduleResponsiblesPage() {
                             <span>Gestão de Escalas & Lembretes</span>
                         </div>
                         <h1 className="text-2xl sm:text-3xl font-extrabold text-typography-800 tracking-tight">
-                            Responsabilidades
+                            Lembretes de Programações
                         </h1>
                         <p className="text-xs sm:text-sm text-typography-500 mt-1">
                             Defina quais publicadores cuidam de cada escala e configure os prazos de avisos no Dashboard.
