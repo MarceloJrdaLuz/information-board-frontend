@@ -221,9 +221,16 @@ function ScheduleResponsiblesPage() {
         if (!congregation) return;
         setSavingConfig(true);
         try {
+            // Garante que todos os campos de dias contenham números válidos antes de enviar
+            const payload: any = { ...localConfig };
+            MODULES.forEach(m => {
+                const val = Number(payload[m.configKeyDays]);
+                payload[m.configKeyDays] = (!isNaN(val) && val >= 1) ? Math.min(val, 60) : m.defaultDays;
+            });
+
             await api.put(
                 `${API_ROUTES.SCHEDULE_REMINDERS_CONFIG}/congregation/${congregation.id}`,
-                localConfig
+                payload
             );
             toast.success("Configurações de lembretes salvas com sucesso!");
             await mutateConfig();
@@ -446,7 +453,9 @@ function ScheduleResponsiblesPage() {
                                     <div className="divide-y divide-surface-300 pt-2">
                                         {MODULES.map((m) => {
                                             const enabled = localConfig[m.configKeyEnabled] !== false;
-                                            const days = (localConfig[m.configKeyDays] as number) ?? m.defaultDays;
+                                            const rawDays = localConfig[m.configKeyDays];
+                                            const inputVal = (rawDays !== undefined && rawDays !== null) ? String(rawDays) : String(m.defaultDays);
+                                            const displayDays = (typeof rawDays === "number" && !isNaN(rawDays)) ? rawDays : (Number(rawDays) || m.defaultDays);
 
                                             return (
                                                 <div
@@ -465,12 +474,12 @@ function ScheduleResponsiblesPage() {
                                                                 <span
                                                                     className={`px-1.5 py-0.2 rounded text-[10px] font-bold border uppercase ${m.colorBadge}`}
                                                                 >
-                                                                    {days} dias antes
+                                                                    {displayDays} dias antes
                                                                 </span>
                                                             </div>
                                                             <p className="text-xs text-typography-500 mt-0.5">
                                                                 {enabled
-                                                                    ? `Aviso dispara a partir do dia ${Math.max(1, 31 - days)} do mês caso o próximo mês não esteja gerado.`
+                                                                    ? `Aviso dispara a partir do dia ${Math.max(1, 31 - displayDays)} do mês caso o próximo mês não esteja gerado.`
                                                                     : "Lembretes desativados para esta área."}
                                                             </p>
                                                         </div>
@@ -490,13 +499,38 @@ function ScheduleResponsiblesPage() {
                                                                 min={1}
                                                                 max={60}
                                                                 disabled={!enabled}
-                                                                value={days}
-                                                                onChange={(e) =>
-                                                                    setLocalConfig({
-                                                                        ...localConfig,
-                                                                        [m.configKeyDays]: parseInt(e.target.value, 10) || 1,
-                                                                    })
-                                                                }
+                                                                value={inputVal}
+                                                                onChange={(e) => {
+                                                                    const raw = e.target.value;
+                                                                    if (raw === "") {
+                                                                        setLocalConfig(prev => ({
+                                                                            ...prev,
+                                                                            [m.configKeyDays]: "" as any,
+                                                                        }));
+                                                                        return;
+                                                                    }
+                                                                    const parsed = parseInt(raw, 10);
+                                                                    if (!isNaN(parsed)) {
+                                                                        setLocalConfig(prev => ({
+                                                                            ...prev,
+                                                                            [m.configKeyDays]: parsed,
+                                                                        }));
+                                                                    }
+                                                                }}
+                                                                onBlur={() => {
+                                                                    const current = localConfig[m.configKeyDays];
+                                                                    if (current === "" || current === undefined || Number(current) < 1) {
+                                                                        setLocalConfig(prev => ({
+                                                                            ...prev,
+                                                                            [m.configKeyDays]: m.defaultDays,
+                                                                        }));
+                                                                    } else if (Number(current) > 60) {
+                                                                        setLocalConfig(prev => ({
+                                                                            ...prev,
+                                                                            [m.configKeyDays]: 60,
+                                                                        }));
+                                                                    }
+                                                                }}
                                                                 className="w-16 px-2.5 py-1.5 text-xs text-center font-bold rounded-xl border border-surface-300 bg-surface-200/50 disabled:opacity-40"
                                                             />
                                                         </div>
@@ -508,10 +542,10 @@ function ScheduleResponsiblesPage() {
                                                             <Switch
                                                                 checked={enabled}
                                                                 onCheckedChange={(val) =>
-                                                                    setLocalConfig({
-                                                                        ...localConfig,
+                                                                    setLocalConfig(prev => ({
+                                                                        ...prev,
                                                                         [m.configKeyEnabled]: val,
-                                                                    })
+                                                                    }))
                                                                 }
                                                             />
                                                         </div>
