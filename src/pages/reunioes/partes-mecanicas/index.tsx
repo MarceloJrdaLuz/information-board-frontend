@@ -511,6 +511,7 @@ function MechanicalSchedulePage() {
                                                         congregationId={congregationId!}
                                                         combineSoundAndMedia={config?.combineSoundAndMedia ?? false}
                                                         onAssignmentUpdated={handleAssignmentUpdated}
+                                                        onRefresh={fetchData}
                                                     />
                                                 ) : (
                                                     <div className="flex-1 flex items-center justify-center py-8 text-xs text-typography-400">
@@ -527,6 +528,7 @@ function MechanicalSchedulePage() {
                                                         congregationId={congregationId!}
                                                         combineSoundAndMedia={config?.combineSoundAndMedia ?? false}
                                                         onAssignmentUpdated={handleAssignmentUpdated}
+                                                        onRefresh={fetchData}
                                                     />
                                                 ) : (
                                                     <div className="flex-1 flex items-center justify-center py-8 text-xs text-typography-400">
@@ -783,13 +785,15 @@ interface MeetingDutiesCardProps {
     congregationId: string;
     combineSoundAndMedia: boolean;
     onAssignmentUpdated: (assignment: IMechanicalAssignment) => void;
+    onRefresh?: () => void;
 }
 
 const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
     schedule,
     congregationId,
     combineSoundAndMedia,
-    onAssignmentUpdated
+    onAssignmentUpdated,
+    onRefresh
 }) => {
     const isMidweek = schedule.meetingType === "MIDWEEK";
     const meetingDateFormatted = dayjs(schedule.date).format("dddd, DD [de] MMMM");
@@ -800,6 +804,11 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
     const media = schedule.assignments.filter((a: any) => a.role === MechanicalRole.MEDIA);
     const rovingMics = schedule.assignments.filter((a: any) => a.role === MechanicalRole.ROVING_MIC);
     const stageMics = schedule.assignments.filter((a: any) => a.role === MechanicalRole.STAGE_MIC);
+
+    const handleSlotUpdated = (assign: IMechanicalAssignment) => {
+        onAssignmentUpdated(assign);
+        if (onRefresh) onRefresh();
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -841,7 +850,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
@@ -866,7 +875,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
@@ -880,7 +889,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
@@ -894,7 +903,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
@@ -919,7 +928,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
@@ -944,7 +953,7 @@ const MeetingDutiesCard: React.FC<MeetingDutiesCardProps> = ({
                                         assignment={assign}
                                         scheduleId={schedule.id}
                                         congregationId={congregationId}
-                                        onAssignmentUpdated={onAssignmentUpdated}
+                                        onAssignmentUpdated={handleSlotUpdated}
                                     />
                                 </div>
                             ))}
