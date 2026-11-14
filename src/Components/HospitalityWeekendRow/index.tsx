@@ -102,7 +102,7 @@ export default function HospitalityRow({ date }: Props) {
 
   // Atualiza checkboxes quando os dados do backend chegam
   useEffect(() => {
-    const assignedTypes = weekend.assignments.map(a => a.eventType)
+    const assignedTypes = (weekend?.assignments ?? []).map(a => a?.eventType)
     const newActiveEvents = {
       [IHospitalityEventType.HOSTING]: assignedTypes.includes(IHospitalityEventType.HOSTING),
       [IHospitalityEventType.LUNCH]: assignedTypes.includes(IHospitalityEventType.LUNCH),
@@ -116,30 +116,32 @@ export default function HospitalityRow({ date }: Props) {
     if (changed) {
       setActiveEvents(newActiveEvents)
     }
-  }, [weekend.assignments])
+  }, [weekend?.assignments])
 
   useEffect(() => {
     if (!weekend?.assignments?.length) return
 
     setWhatsappLinks(prevLinks => {
       const updatedLinks = { ...prevLinks }
-      let changed = false
+      let changed = false;
 
-      weekend.assignments
-        .filter(a => a.completed && a.group_id)
+      (weekend.assignments ?? [])
+        .filter(a => a && a.completed && a.group_id)
         .forEach(assignment => {
-          const group = groups.find(g => g.id === assignment.group_id)
+          const group = (groups ?? []).find(g => g && g.id === assignment.group_id)
           if (!group) return
 
           if (updatedLinks[assignment.eventType]?.length) return
 
-          const message = `Olá, tudo bem?\n\n Gostaria de lembrar que o grupo de vocês: *${
-            group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName
-          }*, *${
-            group.members
-              .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
-              .join(", ")
-          }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${dayjs(
+          const hostName =
+            group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName || "Anfitrião"
+          const membersList = (group.members ?? [])
+            .map(g => g?.nickname?.trim() || g?.fullName?.trim() || "Sem nome")
+            .join(", ")
+
+          const message = `Olá, tudo bem?\n\n Gostaria de lembrar que o grupo de vocês: *${hostName}*${
+            membersList ? `, *${membersList}*` : ""
+          } está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${dayjs(
             date
           ).format("DD/MM/YYYY")}*.\n\n O orador já confirmou.`
 
@@ -151,18 +153,18 @@ export default function HospitalityRow({ date }: Props) {
               link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                 group.host.phone
               )}&text=${encodedMessage}`,
-              destinationName: `${group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName || "Anfitrião"} (Anfitrião)`,
+              destinationName: `${hostName} (Anfitrião)`,
             })
           }
 
-          group.members
-            .filter(m => m.phone)
+          ;(group.members ?? [])
+            .filter(m => m?.phone)
             .forEach(m => {
               links.push({
                 link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                   m.phone!
                 )}&text=${encodedMessage}`,
-                destinationName: m.nickname && m.nickname !== "" ? m.nickname : m.fullName || "Contato",
+                destinationName: m?.nickname && m.nickname !== "" ? m.nickname : m?.fullName || "Contato",
               })
             })
 
@@ -172,7 +174,7 @@ export default function HospitalityRow({ date }: Props) {
 
       return changed ? updatedLinks : prevLinks
     })
-  }, [groups, weekend.date, weekend.assignments, date])
+  }, [groups, weekend?.date, weekend?.assignments, date])
 
   // Toggle do evento (adiciona ou remove assignment)
   function onEventToggle(eventType: IHospitalityEventType, enabled: boolean) {
@@ -244,15 +246,17 @@ export default function HospitalityRow({ date }: Props) {
     updateAssignmentStatus({ assignment_id: assignment.id, completed })
 
     if (completed && assignment.group_id) {
-      const group = groups.find(g => g.id === assignment.group_id)
+      const group = (groups ?? []).find(g => g && g.id === assignment.group_id)
       if (group) {
-        const message = `Olá!\n\n Gostaria de lembrar que o grupo de vocês: *${
-          group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName
-        }*, *${
-          group.members
-            .map(g => g.nickname?.trim() || g.fullName?.trim() || "Sem nome")
-            .join(", ")
-        }* está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${dayjs(
+        const hostName =
+          group.host?.nickname && group.host.nickname !== "" ? group.host.nickname : group.host?.fullName || "Anfitrião"
+        const membersList = (group.members ?? [])
+          .map(g => g?.nickname?.trim() || g?.fullName?.trim() || "Sem nome")
+          .join(", ")
+
+        const message = `Olá!\n\n Gostaria de lembrar que o grupo de vocês: *${hostName}*${
+          membersList ? `, *${membersList}*` : ""
+        } está responsável para dar a(o) ${hospitalityMap[assignment.eventType]} ao orador no dia: *${dayjs(
           date
         ).format("DD/MM/YYYY")}*.\n\n O orador já confirmou.`
 
@@ -264,18 +268,18 @@ export default function HospitalityRow({ date }: Props) {
             link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
               group.host.phone
             )}&text=${encodedMessage}`,
-            destinationName: `${group.host.fullName || group.host.nickname || "Anfitrião"} (Anfitrião)`,
+            destinationName: `${hostName} (Anfitrião)`,
           })
         }
 
-        group.members
-          .filter(m => m.phone)
+        ;(group.members ?? [])
+          .filter(m => m?.phone)
           .forEach(m => {
             links.push({
               link: `https://api.whatsapp.com/send?phone=55${formatPhoneNumber(
                 m.phone!
               )}&text=${encodedMessage}`,
-              destinationName: m.fullName || "Contato",
+              destinationName: m?.nickname && m.nickname !== "" ? m.nickname : m?.fullName || "Contato",
             })
           })
 
@@ -288,8 +292,8 @@ export default function HospitalityRow({ date }: Props) {
 
   // Estatísticas e status do card
   const activeCount = Object.values(activeEvents).filter(Boolean).length
-  const assignedCount = weekend.assignments.filter(a => !!a.group_id).length
-  const confirmedCount = weekend.assignments.filter(a => !!a.group_id && a.completed).length
+  const assignedCount = (weekend?.assignments ?? []).filter(a => a && !!a.group_id).length
+  const confirmedCount = (weekend?.assignments ?? []).filter(a => a && !!a.group_id && a.completed).length
 
   const dayOfWeek = dayjs(date).format("dddd")
   const formattedDay = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)

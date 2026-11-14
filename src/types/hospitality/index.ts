@@ -10,7 +10,7 @@ export type IHospitalityAssignment = {
   id: string
   eventType: IHospitalityEventType
   completed: boolean
-  group: IHospitalityGroup
+  group?: IHospitalityGroup | null
 }
 
 export type IHospitalityWeekend = {

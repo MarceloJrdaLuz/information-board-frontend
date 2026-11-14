@@ -7,16 +7,17 @@ export function buildHospitalityOptions<
   groups: T[] | undefined | null,
   weekends: Record<string, IRecordHospitalityWeekend>
 ): (T & { displayLabel: string; lastDate?: string })[] {
-  if (!groups) return [];
+  if (!groups || !Array.isArray(groups)) return [];
 
   const completedMap = new Map<string, string>();
   const fallbackMap = new Map<string, string>();
 
   // percorre todos os fins de semana e registra a data mais recente de participação
-  Object.values(weekends).forEach(w => {
+  Object.values(weekends ?? {}).forEach(w => {
+    if (!w || !w.date) return;
     const wDate = dayjs(w.date);
     (w.assignments ?? []).forEach(a => {
-      if (!a.group_id) return;
+      if (!a || !a.group_id) return;
 
       // fallback → data mais recente de qualquer participação
       const prevFallback = fallbackMap.get(a.group_id);
