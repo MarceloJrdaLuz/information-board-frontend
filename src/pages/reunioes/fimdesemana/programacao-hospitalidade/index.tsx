@@ -78,12 +78,16 @@ function HospitalityWeekendPage() {
     useEffect(() => {
         if (!data) return
         const weekendsByDate = (data ?? []).reduce<Record<string, IRecordHospitalityWeekend>>((acc, weekend) => {
-            const assignments: IRecordHospitalityAssignment[] = (weekend.assignments ?? []).map(a => ({
-                id: a.id,
-                eventType: a.eventType,
-                completed: a.completed,
-                group_id: a.group.id,
-            }))
+            const assignments: IRecordHospitalityAssignment[] = (weekend.assignments ?? [])
+                .filter(a => !!a && !!a.group && !!a.group.id)
+                .map(a => ({
+                    id: a.id,
+                    eventType: a.eventType,
+                    completed: Boolean(a.completed),
+                    group_id: a.group?.id ?? "",
+                    group_host_fullName: a.group?.host?.fullName ?? "",
+                    group_host_nickname: a.group?.host?.nickname ?? "",
+                }))
 
             acc[weekend.date] = {
                 id: weekend.id,
@@ -104,8 +108,8 @@ function HospitalityWeekendPage() {
     }, [groups, setGroups])
 
     useEffect(() => {
-        if (!congregation?.dayMeetingPublic) return
-        setWeekendMeetingDay(getWeekendDays(monthOffset, congregation?.dayMeetingPublic as DayMeetingPublic))
+        const publicMeetingDay = (congregation?.dayMeetingPublic as DayMeetingPublic) || "Domingo"
+        setWeekendMeetingDay(getWeekendDays(monthOffset, publicMeetingDay))
     }, [monthOffset, congregation?.dayMeetingPublic])
 
     useEffect(() => {
@@ -126,7 +130,7 @@ function HospitalityWeekendPage() {
         let assignedCount = 0
 
         weekendMeetingDay.forEach(d => {
-            const dateStr = d.toISOString().split("T")[0]
+            const dateStr = dayjs(d).format("YYYY-MM-DD")
             const weekend = hospitalityWeekends?.[dateStr]
             if (weekend?.assignments && weekend.assignments.length > 0) {
                 const hasValidGroup = weekend.assignments.some(a => !!a.group_id)
