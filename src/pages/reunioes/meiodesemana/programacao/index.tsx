@@ -185,11 +185,20 @@ function MidweekScheduleAssistantPage() {
                 if (s.id === currentSchedule.id) {
                     return {
                         ...s,
-                        parts: s.parts.map(p => p.id === partId ? res.data : p)
+                        parts: s.parts.map(p => {
+                            if (p.id === partId) return res.data;
+                            if (data.title && p.section === res.data.section && p.orderIndex === res.data.orderIndex) {
+                                return { ...p, title: res.data.title };
+                            }
+                            return p;
+                        })
                     };
                 }
                 return s;
             }));
+            if (data.title) {
+                toast.success("Tema da parte atualizado com sucesso!");
+            }
         } catch (error) {
             toast.error("Erro ao atualizar designação.");
         }
@@ -509,6 +518,7 @@ function MidweekScheduleAssistantPage() {
                             parts={currentTreasuresParts}
                             onUpdatePart={handleUpdatePart}
                             onDeletePart={handleDeletePart}
+                            onOpenCustomPartModal={() => openCustomPartForSection(MidweekSection.TREASURES)}
                         />
 
                         {/* Seção 2: Faça Seu Melhor no Ministério */}
@@ -518,6 +528,7 @@ function MidweekScheduleAssistantPage() {
                             onDuplicateRoom={handleDuplicateRoom}
                             onDeletePart={handleDeletePart}
                             startPartNumber={startMinistryPartNumber}
+                            onOpenCustomPartModal={() => openCustomPartForSection(MidweekSection.MINISTRY)}
                         />
 
                         {/* Seção 3: Nossa Vida Cristã */}
@@ -528,7 +539,7 @@ function MidweekScheduleAssistantPage() {
                             onUpdatePart={handleUpdatePart}
                             onAddCustomPart={handleAddCustomPart}
                             onDeletePart={handleDeletePart}
-                            onOpenCustomPartModal={() => setIsCustomPartModalOpen(true)}
+                            onOpenCustomPartModal={() => openCustomPartForSection(MidweekSection.LIVING)}
                             startPartNumber={startLivingPartNumber}
                         />
                     </div>

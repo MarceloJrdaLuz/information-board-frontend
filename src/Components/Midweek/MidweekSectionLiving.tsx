@@ -1,7 +1,7 @@
 import { MidweekLivingIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, IMidweekSchedule, MidweekPartType, MidweekRoom, MidweekSection, MidweekSpecialType } from "@/types/midweek";
-import { BookOpen, Check, Clock, Loader2, Pencil, Plus, Trash2, User } from "lucide-react";
+import { BookOpen, Check, Clock, Loader2, Pencil, Plus, Trash2, User, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
@@ -66,6 +66,26 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
     const [savedSuccess, setSavedSuccess] = useState(false);
     const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
     const [editingTimeValue, setEditingTimeValue] = useState<number>(0);
+
+    const [editingTitlePartId, setEditingTitlePartId] = useState<string | null>(null);
+    const [editingTitleValue, setEditingTitleValue] = useState<string>("");
+
+    const getRawTitle = (title: string) => {
+        return title.replace(/^\d+\.\s*/, "").trim();
+    };
+
+    const startEditTitle = (part: IMidweekMeetingPart) => {
+        setEditingTitlePartId(part.id);
+        setEditingTitleValue(getRawTitle(part.title));
+    };
+
+    const saveEditTitle = async (partId: string) => {
+        const trimmed = editingTitleValue.trim();
+        if (trimmed) {
+            await onUpdatePart(partId, { title: trimmed });
+        }
+        setEditingTitlePartId(null);
+    };
 
     const startEditTime = (part: IMidweekMeetingPart) => {
         setEditingTimePartId(part.id);
@@ -218,9 +238,55 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     )}
                                 </div>
 
-                                <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 leading-snug">
-                                    {formatNumberedTitle(partNum, part.title)}
-                                </h4>
+                                {editingTitlePartId === part.id ? (
+                                    <div className="flex items-center gap-1.5 w-full my-0.5">
+                                        <span className="text-xs font-bold text-typography-500 whitespace-nowrap">
+                                            {partNum}.
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={editingTitleValue}
+                                            onChange={(e) => setEditingTitleValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") saveEditTitle(part.id);
+                                                if (e.key === "Escape") setEditingTitlePartId(null);
+                                            }}
+                                            autoFocus
+                                            placeholder="Tema da parte..."
+                                            className="flex-1 text-xs font-semibold text-typography-900 bg-white dark:bg-surface-200 border border-[#BA2A12] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#BA2A12]"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => saveEditTitle(part.id)}
+                                            className="text-emerald-600 hover:text-emerald-700 p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                            title="Confirmar alteração do tema"
+                                        >
+                                            <Check className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingTitlePartId(null)}
+                                            className="text-typography-400 hover:text-red-500 p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/30"
+                                            title="Cancelar"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="group/title flex items-center gap-1.5 flex-wrap">
+                                        <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400 leading-snug">
+                                            {formatNumberedTitle(partNum, part.title)}
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={() => startEditTitle(part)}
+                                            title="Editar tema da parte"
+                                            className="opacity-40 group-hover/title:opacity-100 hover:!opacity-100 p-0.5 text-typography-400 hover:text-[#BA2A12] hover:bg-[#BA2A12]/10 rounded transition-all cursor-pointer"
+                                        >
+                                            <Pencil className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
 
                                 {part.sourceMaterial && (
                                     <p className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
@@ -374,9 +440,57 @@ export const MidweekSectionLiving: React.FC<MidweekSectionLivingProps> = ({
                                     )}
                                 </div>
 
-                                <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400">
-                                    {formatNumberedTitle(startPartNumber + mainParts.length, "Estudo Bíblico de Congregação")}
-                                </h4>
+                                {cbsPart && editingTitlePartId === cbsPart.id ? (
+                                    <div className="flex items-center gap-1.5 w-full my-0.5">
+                                        <span className="text-xs font-bold text-typography-500 whitespace-nowrap">
+                                            {startPartNumber + mainParts.length}.
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={editingTitleValue}
+                                            onChange={(e) => setEditingTitleValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") saveEditTitle(cbsPart.id);
+                                                if (e.key === "Escape") setEditingTitlePartId(null);
+                                            }}
+                                            autoFocus
+                                            placeholder="Tema do estudo bíblico..."
+                                            className="flex-1 text-xs font-semibold text-typography-900 bg-white dark:bg-surface-200 border border-[#BA2A12] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#BA2A12]"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => saveEditTitle(cbsPart.id)}
+                                            className="text-emerald-600 hover:text-emerald-700 p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                            title="Confirmar alteração do tema"
+                                        >
+                                            <Check className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingTitlePartId(null)}
+                                            className="text-typography-400 hover:text-red-500 p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/30"
+                                            title="Cancelar"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="group/title flex items-center gap-1.5 flex-wrap">
+                                        <h4 className="font-bold text-sm text-[#BA2A12] dark:text-rose-400">
+                                            {formatNumberedTitle(startPartNumber + mainParts.length, cbsPart?.title || "Estudo Bíblico de Congregação")}
+                                        </h4>
+                                        {cbsPart && (
+                                            <button
+                                                type="button"
+                                                onClick={() => startEditTitle(cbsPart)}
+                                                title="Editar tema do estudo bíblico"
+                                                className="opacity-40 group-hover/title:opacity-100 hover:!opacity-100 p-0.5 text-typography-400 hover:text-[#BA2A12] hover:bg-[#BA2A12]/10 rounded transition-all cursor-pointer"
+                                            >
+                                                <Pencil className="h-3 w-3" />
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             {cbsPart?.sourceMaterial && (
                                 <span className="text-xs text-typography-500 italic">

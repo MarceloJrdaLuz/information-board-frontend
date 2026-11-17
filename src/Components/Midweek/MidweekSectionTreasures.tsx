@@ -2,7 +2,7 @@ import { MidweekTreasuresIcon } from "@/Components/Icons/MidweekIcons";
 import { Button } from "@/Components/ui/button";
 import { IMidweekMeetingPart, MidweekPartType, MidweekRoom } from "@/types/midweek";
 import { getLessonDetails } from "@/utils/midweekLessons";
-import { Check, Clock, Pencil, Trash2 } from "lucide-react";
+import { Check, Clock, Pencil, Plus, Trash2, X } from "lucide-react";
 import React, { useState } from "react";
 import { MidweekPublisherSelect } from "./MidweekPublisherSelect";
 
@@ -10,6 +10,7 @@ interface MidweekSectionTreasuresProps {
     parts: IMidweekMeetingPart[];
     onUpdatePart: (partId: string, data: Partial<IMidweekMeetingPart>) => Promise<void>;
     onDeletePart?: (partId: string) => Promise<void>;
+    onOpenCustomPartModal?: () => void;
 }
 
 
@@ -17,9 +18,30 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
     parts,
     onUpdatePart,
     onDeletePart,
+    onOpenCustomPartModal,
 }) => {
     const [editingTimePartId, setEditingTimePartId] = useState<string | null>(null);
     const [editingTimeValue, setEditingTimeValue] = useState<number>(0);
+
+    const [editingTitlePartId, setEditingTitlePartId] = useState<string | null>(null);
+    const [editingTitleValue, setEditingTitleValue] = useState<string>("");
+
+    const getRawTitle = (title: string) => {
+        return title.replace(/^\d+\.\s*/, "").trim();
+    };
+
+    const startEditTitle = (part: IMidweekMeetingPart) => {
+        setEditingTitlePartId(part.id);
+        setEditingTitleValue(getRawTitle(part.title));
+    };
+
+    const saveEditTitle = async (partId: string) => {
+        const trimmed = editingTitleValue.trim();
+        if (trimmed) {
+            await onUpdatePart(partId, { title: trimmed });
+        }
+        setEditingTitlePartId(null);
+    };
 
     // Ordenação canônica estrita para a seção Tesouros da Palavra de Deus
     const typeOrder: Record<string, number> = {
@@ -58,6 +80,18 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                         Tesouros da Palavra de Deus
                     </h3>
                 </div>
+
+                {onOpenCustomPartModal && (
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={onOpenCustomPartModal}
+                        className="text-xs text-white hover:bg-[#255f69] flex items-center gap-1 h-7 px-2 cursor-pointer"
+                    >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Adicionar Parte</span>
+                    </Button>
+                )}
             </div>
 
             {/* Lista de Partes */}
@@ -147,9 +181,55 @@ export const MidweekSectionTreasures: React.FC<MidweekSectionTreasuresProps> = (
                                     )}
                                 </div>
 
-                                <h4 className="font-bold text-sm text-[#2F7682] dark:text-teal-400 leading-snug">
-                                    {/^\d+\./.test(part.title) ? part.title : `${index + 1}. ${part.title}`}
-                                </h4>
+                                {editingTitlePartId === part.id ? (
+                                    <div className="flex items-center gap-1.5 w-full my-0.5">
+                                        <span className="text-xs font-bold text-typography-500 whitespace-nowrap">
+                                            {index + 1}.
+                                        </span>
+                                        <input
+                                            type="text"
+                                            value={editingTitleValue}
+                                            onChange={(e) => setEditingTitleValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") saveEditTitle(part.id);
+                                                if (e.key === "Escape") setEditingTitlePartId(null);
+                                            }}
+                                            autoFocus
+                                            placeholder="Tema da parte..."
+                                            className="flex-1 text-xs font-semibold text-typography-900 bg-white dark:bg-surface-200 border border-[#2F7682] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#2F7682]"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => saveEditTitle(part.id)}
+                                            className="text-emerald-600 hover:text-emerald-700 p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                                            title="Confirmar alteração do tema"
+                                        >
+                                            <Check className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingTitlePartId(null)}
+                                            className="text-typography-400 hover:text-red-500 p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/30"
+                                            title="Cancelar"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="group/title flex items-center gap-1.5 flex-wrap">
+                                        <h4 className="font-bold text-sm text-[#2F7682] dark:text-teal-400 leading-snug">
+                                            {/^\d+\./.test(part.title) ? part.title : `${index + 1}. ${part.title}`}
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={() => startEditTitle(part)}
+                                            title="Editar tema da parte"
+                                            className="opacity-40 group-hover/title:opacity-100 hover:!opacity-100 p-0.5 text-typography-400 hover:text-[#2F7682] hover:bg-[#2F7682]/10 rounded transition-all cursor-pointer"
+                                        >
+                                            <Pencil className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
 
                                 {part.sourceMaterial && (
                                     <p className="text-xs text-typography-500 italic mt-0.5 leading-relaxed">
