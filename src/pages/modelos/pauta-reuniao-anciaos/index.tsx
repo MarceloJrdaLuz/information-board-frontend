@@ -514,7 +514,7 @@ function EldersMeetingAgendaPage() {
                             className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-800 font-semibold shadow-2xs cursor-pointer"
                             title="Exportar pauta em arquivo JSON para usar em outro dispositivo ou guardar backup"
                         >
-                            <Download className="w-3.5 h-3.5 text-primary-200" />
+                            <Upload className="w-3.5 h-3.5 text-primary-200" />
                             <span>Exportar Arquivo</span>
                         </Button>
 
@@ -527,7 +527,7 @@ function EldersMeetingAgendaPage() {
                             className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-800 font-semibold shadow-2xs cursor-pointer"
                             title="Importar pauta de um arquivo JSON salvo anteriormente"
                         >
-                            <Upload className="w-3.5 h-3.5 text-primary-200" />
+                            <Download className="w-3.5 h-3.5 text-primary-200" />
                             <span>Importar Arquivo</span>
                         </Button>
                         <input
