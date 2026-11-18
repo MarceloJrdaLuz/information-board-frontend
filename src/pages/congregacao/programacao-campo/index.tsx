@@ -425,71 +425,200 @@ function FieldServiceSchedulePage() {
                 </div>
 
                 {/* =========================================================
-                 * SELETOR VISUAL EM ABAS / CHIPS DE SAÍDAS (RODÍZIO)
+                 * PAINEL DE CONTROLE UNIFICADO (MÊS + AÇÕES + SELETOR DE SAÍDAS)
                  * ========================================================= */}
-                {rotationTemplates.length > 0 && (
-                    <div className="flex flex-col gap-2.5 bg-surface-100 p-4 rounded-2xl border border-surface-300 shadow-xs">
-                        <div className="flex items-center justify-between text-xs font-semibold text-typography-700 px-0.5">
-                            <span className="flex items-center gap-1.5">
-                                <Layers className="w-3.5 h-3.5 text-primary-200" />
-                                Escolha a saída para visualizar e gerenciar:
-                            </span>
-                            <span className="text-[11px] text-typography-500 hidden sm:inline">
-                                Status referente a {currentMonth.format("MMMM [de] YYYY")}
-                            </span>
+                <div className="flex flex-col gap-4 p-4 sm:p-5 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                    {/* Linha Superior: Navegador de Mês, Estatísticas e Ações Rápidas */}
+                    <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                        {/* Navegador de Mês */}
+                        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full lg:w-auto">
+                            <div className="flex items-center gap-1.5 flex-1 sm:flex-none">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={handlePrevMonth}
+                                    className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200 cursor-pointer"
+                                    title="Mês anterior"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                </Button>
+
+                                <div className="flex-1 sm:flex-none px-3 sm:px-4 py-2 min-w-0 sm:min-w-[200px] text-center font-bold text-base sm:text-lg text-typography-800 bg-surface-200/50 rounded-xl border border-surface-300 truncate">
+                                    {currentMonth.format("MMMM [de] YYYY").replace(/^\w/, (c) => c.toUpperCase())}
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={handleNextMonth}
+                                    className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200 cursor-pointer"
+                                    title="Próximo mês"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </Button>
+                            </div>
+
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCurrentMonth}
+                                className="text-xs text-primary-200 hover:text-primary-300 font-semibold px-2.5 h-9 rounded-lg shrink-0 cursor-pointer"
+                            >
+                                Mês Atual
+                            </Button>
+
+                            {/* Estatística rápida do mês */}
+                            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-200/60 border border-surface-300/60 text-xs text-typography-600 font-medium">
+                                <CalendarCheck2 className="w-4 h-4 text-primary-200" />
+                                <span>
+                                    {loadingSchedules || !allSchedules ? (
+                                        <span className="inline-block h-3.5 w-6 rounded bg-surface-300/70 animate-pulse align-middle" />
+                                    ) : (
+                                        stats.total
+                                    )}{" "}
+                                    {stats.total === 1 ? "saída programada" : "saídas programadas"}
+                                </span>
+                            </div>
+
+                            {stats.conflictCount > 0 && (
+                                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-700 dark:text-amber-400 font-semibold animate-pulse">
+                                    <AlertTriangle className="w-3.5 h-3.5" />
+                                    <span>{stats.conflictCount} indisponibilidade</span>
+                                </div>
+                            )}
                         </div>
 
-                        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
-                            {rotationTemplates.map((template) => {
-                                const count = getTemplateMonthScheduleCount(template.id);
-                                const isSelected = selectedTemplate?.id === template.id;
-                                const isPending = count === 0;
+                        {/* Botões de Ação */}
+                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto">
+                            <Button
+                                onClick={() => setIsGenerateModalOpen(true)}
+                                className="col-span-2 sm:col-auto gap-2 bg-primary-200 hover:bg-primary-300 text-white shadow-sm h-10 rounded-xl font-semibold cursor-pointer"
+                                disabled={!selectedTemplate}
+                            >
+                                <Wand2 className="w-4 h-4" />
+                                <span>Gerar Programação</span>
+                            </Button>
 
-                                return (
-                                    <button
-                                        key={template.id}
-                                        type="button"
-                                        onClick={() => setSelectedTemplate(template)}
-                                        className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-left transition-all shrink-0 cursor-pointer ${
-                                            isSelected
-                                                ? "bg-white dark:bg-surface-100 border-primary-200 shadow-sm ring-2 ring-primary-200/20"
-                                                : "bg-surface-50 dark:bg-surface-200/40 border-surface-300 hover:border-surface-400 hover:bg-surface-100 text-typography-700"
-                                        }`}
-                                    >
-                                        <div className="flex flex-col min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-xs font-bold ${isSelected ? "text-primary-200" : "text-typography-800"}`}>
-                                                    {WEEKDAY_LABEL[template.weekday as Weekday]}
-                                                </span>
-                                                <span className="text-[11px] font-semibold text-typography-500">
-                                                    {formatHour(template.time)}
-                                                </span>
-                                            </div>
-                                            <span className="text-[10px] text-typography-500 truncate max-w-[170px]">
-                                                {template.location}
-                                            </span>
-                                        </div>
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="gap-2 h-10 rounded-xl border-surface-300 font-medium cursor-pointer"
+                                disabled={!selectedTemplate}
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span>Nova Saída</span>
+                            </Button>
 
-                                        {/* Badge de Status no Mês */}
-                                        <div className="shrink-0">
-                                            {isPending ? (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                                    Pendente
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                    {count} {count === 1 ? "saída" : "saídas"}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </button>
-                                );
-                            })}
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsExceptionsModalOpen(true)}
+                                className="gap-2 h-10 rounded-xl border-surface-300 font-medium cursor-pointer"
+                            >
+                                <CalendarOff className="w-4 h-4 text-rose-500" />
+                                <span>Exceções</span>
+                            </Button>
+
+                            {congregationId && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsPdfModalOpen(true)}
+                                    className="col-span-2 sm:col-auto gap-2 h-10 rounded-xl border-surface-300 font-medium cursor-pointer"
+                                >
+                                    <FileDown className="w-4 h-4 text-emerald-600" />
+                                    <span>Exportar PDF</span>
+                                </Button>
+                            )}
                         </div>
                     </div>
-                )}
+
+                    {/* Divisor sutil */}
+                    <div className="border-t border-surface-200" />
+
+                    {/* Linha Inferior: Seletor de Saídas de Rodízio (Abas imediatamente coladas ao mês) */}
+                    {rotationTemplates.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between text-xs font-semibold text-typography-700 px-0.5">
+                                <span className="flex items-center gap-1.5">
+                                    <Layers className="w-3.5 h-3.5 text-primary-200" />
+                                    Saída de Campo ({rotationTemplates.length}):
+                                </span>
+                                {selectedTemplate && (
+                                    <span className="text-[11px] text-typography-500 hidden sm:flex items-center gap-2">
+                                        <Users className="w-3.5 h-3.5 text-emerald-600" />
+                                        <span>{selectedTemplate.rotation_members?.length || 0} dirigentes no rodízio</span>
+                                        <span>·</span>
+                                        <MapPin className="w-3.5 h-3.5 text-typography-400" />
+                                        <span className="truncate max-w-[240px]">{selectedTemplate.location}</span>
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                                {rotationTemplates.map((template) => {
+                                    const count = getTemplateMonthScheduleCount(template.id);
+                                    const isSelected = selectedTemplate?.id === template.id;
+                                    const isPending = count === 0;
+
+                                    return (
+                                        <button
+                                            key={template.id}
+                                            type="button"
+                                            onClick={() => setSelectedTemplate(template)}
+                                            className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-left transition-all shrink-0 cursor-pointer ${
+                                                isSelected
+                                                    ? "bg-white dark:bg-surface-200/70 border-primary-200 shadow-xs ring-2 ring-primary-200/20"
+                                                    : "bg-surface-200/40 border-surface-300 hover:border-surface-400 hover:bg-surface-200/70 text-typography-700"
+                                            }`}
+                                        >
+                                            <div className="flex flex-col min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-xs font-bold ${isSelected ? "text-primary-200" : "text-typography-800"}`}>
+                                                        {WEEKDAY_LABEL[template.weekday as Weekday]}
+                                                    </span>
+                                                    <span className="text-[11px] font-semibold text-typography-500">
+                                                        {formatHour(template.time)}
+                                                    </span>
+                                                </div>
+                                                <span className="text-[10px] text-typography-500 truncate max-w-[170px]">
+                                                    {template.location}
+                                                </span>
+                                            </div>
+
+                                            {/* Badge de Status no Mês */}
+                                            <div className="shrink-0">
+                                                {isPending ? (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                                        Pendente
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                        {count} {count === 1 ? "saída" : "saídas"}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Informações da saída ativa no mobile */}
+                            {selectedTemplate && (
+                                <div className="sm:hidden flex items-center justify-between text-[11px] text-typography-500 pt-1 px-1 border-t border-surface-200/60">
+                                    <span className="truncate max-w-[200px] flex items-center gap-1">
+                                        <MapPin className="w-3 h-3 shrink-0 text-typography-400" />
+                                        {selectedTemplate.location}
+                                    </span>
+                                    <span className="flex items-center gap-1 shrink-0 font-medium text-emerald-700 dark:text-emerald-400">
+                                        <Users className="w-3 h-3 shrink-0" />
+                                        {selectedTemplate.rotation_members?.length || 0} dirigentes
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {/* =========================================================
                  * BANNER DE ALERTA DE SAÍDAS PENDENTES NO MÊS
@@ -528,142 +657,6 @@ function FieldServiceSchedulePage() {
                         </div>
                     </div>
                 )}
-
-                {/* =========================================================
-                 * CHIPS INFORMATIVOS DO TEMPLATE SELECIONADO
-                 * ========================================================= */}
-                {selectedTemplate && (
-                    <div className="flex flex-wrap items-center gap-3 p-4 bg-primary-200/5 dark:bg-primary-200/10 border border-primary-200/20 rounded-xl">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-primary-200/30 text-xs font-semibold text-primary-200">
-                            <CalendarDays className="w-4 h-4" />
-                            <span>{WEEKDAY_LABEL[selectedTemplate.weekday as Weekday]}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
-                            <Clock className="w-4 h-4 text-typography-400" />
-                            <span>{formatHour(selectedTemplate.time)}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
-                            <MapPin className="w-4 h-4 text-typography-400" />
-                            <span className="truncate max-w-[200px]">{selectedTemplate.location}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-100 rounded-lg border border-surface-300 text-xs font-medium text-typography-700">
-                            <Users className="w-4 h-4 text-emerald-600" />
-                            <span>
-                                {selectedTemplate.rotation_members?.length || 0} dirigentes no rodízio
-                            </span>
-                        </div>
-                    </div>
-                )}
-
-                {/* =========================================================
-                 * NAVEGADOR DE MÊS, ESTATÍSTICAS E AÇÕES RÁPIDAS
-                 * ========================================================= */}
-                <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
-                    {/* Navegador de Mês */}
-                    <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full lg:w-auto">
-                        <div className="flex items-center gap-1.5 flex-1 sm:flex-none">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={handlePrevMonth}
-                                className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200"
-                                title="Mês anterior"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </Button>
-
-                            <div className="flex-1 sm:flex-none px-3 sm:px-4 py-2 min-w-0 sm:min-w-[200px] text-center font-bold text-base sm:text-lg text-typography-800 bg-surface-200/50 rounded-xl border border-surface-300 truncate">
-                                {currentMonth.format("MMMM [de] YYYY").replace(/^\w/, (c) => c.toUpperCase())}
-                            </div>
-
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={handleNextMonth}
-                                className="h-10 w-10 rounded-xl shrink-0 border-surface-300 hover:bg-surface-200"
-                                title="Próximo mês"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </Button>
-                        </div>
-
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleCurrentMonth}
-                            className="text-xs text-primary-200 hover:text-primary-300 font-semibold px-2.5 h-9 rounded-lg shrink-0"
-                        >
-                            Mês Atual
-                        </Button>
-                    </div>
-
-                    {/* Estatísticas Rápidas */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-200/60 border border-surface-300/60 text-xs text-typography-600 font-medium">
-                            <CalendarCheck2 className="w-4 h-4 text-primary-200" />
-                            <span>
-                                {loadingSchedules || !allSchedules ? (
-                                    <span className="inline-block h-3.5 w-6 rounded bg-surface-300/70 animate-pulse align-middle" />
-                                ) : (
-                                    stats.total
-                                )}{" "}
-                                {stats.total === 1 ? "saída programada" : "saídas programadas"}
-                            </span>
-                        </div>
-
-                        {stats.conflictCount > 0 && (
-                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-700 dark:text-amber-400 font-semibold animate-pulse">
-                                <AlertTriangle className="w-4 h-4" />
-                                <span>{stats.conflictCount} com indisponibilidade</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Botões de Ação */}
-                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto">
-                        <Button
-                            onClick={() => setIsGenerateModalOpen(true)}
-                            className="col-span-2 sm:col-auto gap-2 bg-primary-200 hover:bg-primary-300 text-white shadow-sm h-10 rounded-xl font-semibold"
-                            disabled={!selectedTemplate}
-                        >
-                            <Wand2 className="w-4 h-4" />
-                            <span>Gerar Programação</span>
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="gap-2 h-10 rounded-xl border-surface-300 font-medium"
-                            disabled={!selectedTemplate}
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span>Nova Saída</span>
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsExceptionsModalOpen(true)}
-                            className="gap-2 h-10 rounded-xl border-surface-300 font-medium"
-                        >
-                            <CalendarOff className="w-4 h-4 text-rose-500" />
-                            <span>Exceções</span>
-                        </Button>
-
-                        {congregationId && (
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsPdfModalOpen(true)}
-                                className="col-span-2 sm:col-auto gap-2 h-10 rounded-xl border-surface-300 font-medium"
-                            >
-                                <FileDown className="w-4 h-4 text-emerald-600" />
-                                <span>Exportar PDF</span>
-                            </Button>
-                        )}
-                    </div>
-                </div>
 
                 {/* =========================================================
                  * GRID / LISTA DE CARDS DE SAÍDAS DO MÊS
