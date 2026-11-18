@@ -110,6 +110,7 @@ function FieldServiceSchedulePage() {
         currentMonth.endOf("month").format("YYYY-MM-DD")
     );
     const [genMode, setGenMode] = useState<"append" | "reconcile">("append");
+    const [genScope, setGenScope] = useState<"current" | "all">("all");
     const [generating, setGenerating] = useState(false);
 
     // Estados de formulário de Criação Avulsa
@@ -192,20 +193,32 @@ function FieldServiceSchedulePage() {
     }, [congregationId]);
 
     /* ==============================================
-     * 3. Buscar Agendamentos do Template Selecionado
+     * 3. Buscar Agendamentos de Campo da Congregação
      * ============================================== */
     const {
-        data: allSchedules,
-        mutate: mutateSchedules,
+        data: congregationSchedules,
+        mutate: mutateCongregationSchedules,
         isLoading: loadingSchedules,
     } = useAuthorizedFetch<IFieldServiceSchedule[]>(
-        selectedTemplate
-            ? `${API_ROUTES.FIELD_SERVICE_TEMPLATES}/${selectedTemplate.id}/schedules`
+        congregationId
+            ? `${API_ROUTES.FIELD_SERVICE_SCHEDULES}/congregation/${congregationId}`
             : "",
         {
             allowedRoles: ["ADMIN_CONGREGATION", "FIELD_SERVICE_MANAGER"],
         }
     );
+
+    const mutateSchedules = mutateCongregationSchedules;
+
+    // Agendamentos do template selecionado
+    const allSchedules = useMemo(() => {
+        if (!congregationSchedules || !selectedTemplate) return [];
+        return congregationSchedules.filter(
+            (s) =>
+                s.template?.id === selectedTemplate.id ||
+                s.template_id === selectedTemplate.id
+        );
+    }, [congregationSchedules, selectedTemplate]);
 
     // Filtrar agendamentos do mês ativo
     const currentMonthSchedules = useMemo(() => {
@@ -214,6 +227,24 @@ function FieldServiceSchedulePage() {
             .filter((s) => dayjs(s.date).isSame(currentMonth, "month"))
             .sort((a, b) => (dayjs(a.date).isBefore(dayjs(b.date)) ? -1 : 1));
     }, [allSchedules, currentMonth]);
+
+    // Helper para contagem de saídas de um template no mês ativo
+    const getTemplateMonthScheduleCount = (templateId: string) => {
+        if (!congregationSchedules) return 0;
+        return congregationSchedules.filter(
+            (s) =>
+                (s.template?.id === templateId || s.template_id === templateId) &&
+                dayjs(s.date).isSame(currentMonth, "month")
+        ).length;
+    };
+
+    // Templates de rodízio que ainda não possuem escalas geradas no mês ativo
+    const pendingTemplatesInCurrentMonth = useMemo(() => {
+        if (!rotationTemplates.length || !congregationSchedules) return [];
+        return rotationTemplates.filter(
+            (t) => getTemplateMonthScheduleCount(t.id) === 0
+        );
+    }, [rotationTemplates, congregationSchedules, currentMonth]);
 
     /* ==============================================
      * 4. Navegação de Meses
@@ -234,8 +265,20 @@ function FieldServiceSchedulePage() {
      * 5. Ação: Gerar Programação
      * ============================================== */
     const handleGenerateSchedules = async () => {
-        if (!selectedTemplate || !genStartDate || !genEndDate) {
-            toast.warning("Selecione a saída e o período desejado.");
+        if (!genStartDate || !genEndDate) {
+            toast.warning("Selecione o período desejado.");
+            return;
+        }
+
+        const targets =
+            genScope === "all"
+                ? rotationTemplates
+                : selectedTemplate
+                ? [selectedTemplate]
+                : [];
+
+        if (targets.length === 0) {
+            toast.warning("Selecione ao menos uma saída para gerar.");
             return;
         }
 
@@ -247,10 +290,20 @@ function FieldServiceSchedulePage() {
                 mode: genMode,
             };
 
-            await generateFieldService(selectedTemplate.id, payload);
-            toast.success("Programação gerada com sucesso!");
+            for (const target of targets) {
+                await generateFieldService(target.id, payload);
+            }
+
+            if (targets.length > 1) {
+                toast.success(
+                    `Programação gerada com sucesso para todas as ${targets.length} saídas de rodízio!`
+                );
+            } else {
+                toast.success("Programação gerada com sucesso!");
+            }
+
             setIsGenerateModalOpen(false);
-            await mutateSchedules();
+            await mutateCongregationSchedules();
         } catch (err: any) {
             console.error(err);
             toast.error(
@@ -350,48 +403,131 @@ function FieldServiceSchedulePage() {
                 {/* =========================================================
                  * CABEÇALHO & SELEÇÃO DE SAÍDA (RODÍZIO)
                  * ========================================================= */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 sm:p-6 bg-surface-100 rounded-2xl border border-surface-300 shadow-sm">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <CalendarMicIcon className="w-6 h-6 text-primary-200" />
-                            <h1 className="text-2xl font-bold text-typography-800">
+                            <h1 className="text-xl sm:text-2xl font-bold text-typography-800">
                                 Programação do Campo
                             </h1>
                         </div>
-                        <p className="text-sm text-typography-500">
-                            Distribuição inteligente de dirigentes por antiguidade e gestão manual por data.
+                        <p className="text-xs sm:text-sm text-typography-500">
+                            Distribuição inteligente de dirigentes por antiguidade e gestão de escalas por saída.
                         </p>
                     </div>
 
-                    {/* Seletor de Template de Saída */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-sm font-medium text-typography-600">
-                            Saída:
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-200/70 border border-surface-300 text-xs font-semibold text-typography-700">
+                            <Layers className="w-3.5 h-3.5 text-primary-200" />
+                            <span>{rotationTemplates.length} {rotationTemplates.length === 1 ? "saída de rodízio" : "saídas de rodízio"}</span>
                         </span>
-                        <div className="min-w-[280px]">
-                            <Select
-                                value={selectedTemplate?.id || undefined}
-                                onValueChange={(val) => {
-                                    const t = rotationTemplates.find(
-                                        (temp) => temp.id === val
-                                    );
-                                    if (t) setSelectedTemplate(t);
-                                }}
-                            >
-                                <SelectTrigger className="w-full h-11 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-typography-800">
-                                    <SelectValue placeholder={rotationTemplates.length === 0 ? "Nenhuma saída cadastrada" : "Selecione a saída..."} />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl max-h-64">
-                                    {rotationTemplates.map((t) => (
-                                        <SelectItem key={t.id} value={t.id} className="text-sm">
-                                            {WEEKDAY_LABEL[t.weekday as Weekday]} · {formatHour(t.time)} · {t.location}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
                     </div>
                 </div>
+
+                {/* =========================================================
+                 * SELETOR VISUAL EM ABAS / CHIPS DE SAÍDAS (RODÍZIO)
+                 * ========================================================= */}
+                {rotationTemplates.length > 0 && (
+                    <div className="flex flex-col gap-2.5 bg-surface-100 p-4 rounded-2xl border border-surface-300 shadow-xs">
+                        <div className="flex items-center justify-between text-xs font-semibold text-typography-700 px-0.5">
+                            <span className="flex items-center gap-1.5">
+                                <Layers className="w-3.5 h-3.5 text-primary-200" />
+                                Escolha a saída para visualizar e gerenciar:
+                            </span>
+                            <span className="text-[11px] text-typography-500 hidden sm:inline">
+                                Status referente a {currentMonth.format("MMMM [de] YYYY")}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                            {rotationTemplates.map((template) => {
+                                const count = getTemplateMonthScheduleCount(template.id);
+                                const isSelected = selectedTemplate?.id === template.id;
+                                const isPending = count === 0;
+
+                                return (
+                                    <button
+                                        key={template.id}
+                                        type="button"
+                                        onClick={() => setSelectedTemplate(template)}
+                                        className={`group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-left transition-all shrink-0 cursor-pointer ${
+                                            isSelected
+                                                ? "bg-white dark:bg-surface-100 border-primary-200 shadow-sm ring-2 ring-primary-200/20"
+                                                : "bg-surface-50 dark:bg-surface-200/40 border-surface-300 hover:border-surface-400 hover:bg-surface-100 text-typography-700"
+                                        }`}
+                                    >
+                                        <div className="flex flex-col min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-xs font-bold ${isSelected ? "text-primary-200" : "text-typography-800"}`}>
+                                                    {WEEKDAY_LABEL[template.weekday as Weekday]}
+                                                </span>
+                                                <span className="text-[11px] font-semibold text-typography-500">
+                                                    {formatHour(template.time)}
+                                                </span>
+                                            </div>
+                                            <span className="text-[10px] text-typography-500 truncate max-w-[170px]">
+                                                {template.location}
+                                            </span>
+                                        </div>
+
+                                        {/* Badge de Status no Mês */}
+                                        <div className="shrink-0">
+                                            {isPending ? (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                                    Pendente
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                    {count} {count === 1 ? "saída" : "saídas"}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* =========================================================
+                 * BANNER DE ALERTA DE SAÍDAS PENDENTES NO MÊS
+                 * ========================================================= */}
+                {pendingTemplatesInCurrentMonth.length > 0 && (
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs shadow-xs">
+                        <div className="flex items-start sm:items-center gap-3">
+                            <div className="p-2 bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl shrink-0 mt-0.5 sm:mt-0">
+                                <AlertTriangle className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-amber-900 dark:text-amber-200">
+                                    {pendingTemplatesInCurrentMonth.length === 1
+                                        ? `A saída de ${WEEKDAY_LABEL[pendingTemplatesInCurrentMonth[0].weekday as Weekday]} às ${formatHour(pendingTemplatesInCurrentMonth[0].time)} ainda não foi gerada para ${currentMonth.format("MMMM [de] YYYY")}.`
+                                        : `${pendingTemplatesInCurrentMonth.length} saídas de rodízio ainda não foram geradas para ${currentMonth.format("MMMM [de] YYYY")}: ${pendingTemplatesInCurrentMonth.map(t => `${WEEKDAY_LABEL[t.weekday as Weekday]} às ${formatHour(t.time)}`).join(", ")}.`}
+                                </p>
+                                <p className="text-[11px] text-typography-600 mt-0.5">
+                                    Gere as escalas pendentes para garantir que todos os dias tenham dirigentes escalados.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => {
+                                    setGenScope("all");
+                                    setIsGenerateModalOpen(true);
+                                }}
+                                className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
+                            >
+                                <Wand2 className="w-3.5 h-3.5" />
+                                <span>Gerar Pendentes</span>
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 {/* =========================================================
                  * CHIPS INFORMATIVOS DO TEMPLATE SELECIONADO
@@ -625,6 +761,54 @@ function FieldServiceSchedulePage() {
                                 <li>Se alguém estiver ausente, passa para o próximo sem perder a vez no rodízio.</li>
                             </ul>
                         </div>
+
+                        {/* Escopo de Saídas */}
+                        {rotationTemplates.length > 1 && (
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-semibold text-typography-700">
+                                    Aplicar a quais saídas:
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setGenScope("all")}
+                                        className={`p-3 text-left rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+                                            genScope === "all"
+                                                ? "border-primary-200 bg-primary-200/10 text-primary-300 font-semibold ring-1 ring-primary-200/30"
+                                                : "border-surface-300 hover:bg-surface-200 text-typography-600"
+                                        }`}
+                                    >
+                                        <div className="font-semibold mb-0.5 flex items-center justify-between">
+                                            <span>Todas as saídas ({rotationTemplates.length})</span>
+                                            {genScope === "all" && <Check className="w-3.5 h-3.5 text-primary-200" />}
+                                        </div>
+                                        <span className="text-[11px] opacity-80 block">
+                                            Gera escalas de Sábado, Domingo e outras saídas de uma vez só.
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setGenScope("current")}
+                                        className={`p-3 text-left rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+                                            genScope === "current"
+                                                ? "border-primary-200 bg-primary-200/10 text-primary-300 font-semibold ring-1 ring-primary-200/30"
+                                                : "border-surface-300 hover:bg-surface-200 text-typography-600"
+                                        }`}
+                                    >
+                                        <div className="font-semibold mb-0.5 flex items-center justify-between">
+                                            <span className="truncate">
+                                                Apenas {selectedTemplate ? `${WEEKDAY_LABEL[selectedTemplate.weekday as Weekday]}` : "esta saída"}
+                                            </span>
+                                            {genScope === "current" && <Check className="w-3.5 h-3.5 text-primary-200" />}
+                                        </div>
+                                        <span className="text-[11px] opacity-80 block">
+                                            Gera apenas a escala da saída atualmente selecionada.
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Calendar

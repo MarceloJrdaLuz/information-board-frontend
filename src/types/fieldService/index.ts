@@ -92,6 +92,8 @@ export interface IFieldServiceSchedule {
     id: string
     date: string
     leader: IPublisher
+    template?: IFieldServiceTemplate
+    template_id?: string
 }
 
 export interface IFieldServiceException {
