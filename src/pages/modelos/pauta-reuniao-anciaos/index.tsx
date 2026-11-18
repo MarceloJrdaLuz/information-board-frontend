@@ -45,11 +45,12 @@ import {
     RotateCcw,
     Sparkles,
     Trash2,
+    Upload,
     UserCheck,
     UserMinus,
     Users
 } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 const DRAFT_STORAGE_KEY = "@information_board:pauta_reuniao_anciaos_draft";
@@ -68,6 +69,8 @@ function EldersMeetingAgendaPage() {
     const [previewMode, setPreviewMode] = useState<"sheets" | "pdf">("sheets");
     const [activeDocView, setActiveDocView] = useState<"pauta" | "ata">("pauta");
     const [openExcerptIds, setOpenExcerptIds] = useState<Record<string, boolean>>({});
+    const [isMeetingMode, setIsMeetingMode] = useState<boolean>(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState<IEldersMeetingAgendaData>(() => ({
         ...DEFAULT_ELDERS_MEETING_AGENDA,
@@ -299,6 +302,84 @@ function EldersMeetingAgendaPage() {
         }
     };
 
+    // Exportar Pauta como arquivo JSON para transferir entre dispositivos
+    const handleExportFile = () => {
+        try {
+            const dateStr = dayjs().format("YYYY-MM-DD");
+            const cleanCongregation = formData.congregationName
+                ? formData.congregationName.toLowerCase().replace(/[^a-z0-9]/gi, "-").replace(/-+/g, "-") + "-"
+                : "";
+            const fileName = `pauta-anciaos-${cleanCongregation}${dateStr}.json`;
+
+            const payload = {
+                type: "ELDERS_MEETING_AGENDA",
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                data: formData,
+            };
+
+            const jsonStr = JSON.stringify(payload, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Arquivo da pauta baixado com sucesso! Você pode transferi-lo para outro dispositivo.");
+        } catch (e) {
+            console.error("Erro ao exportar arquivo da pauta:", e);
+            toast.error("Não foi possível exportar o arquivo da pauta.");
+        }
+    };
+
+    // Importar Pauta de arquivo JSON de outro dispositivo
+    const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const text = event.target?.result as string;
+                if (!text) throw new Error("Arquivo vazio");
+
+                const parsed = JSON.parse(text);
+                const importedData: IEldersMeetingAgendaData = parsed?.data && Array.isArray(parsed.data.topics)
+                    ? parsed.data
+                    : parsed;
+
+                if (!importedData || !Array.isArray(importedData.topics)) {
+                    toast.error("Formato inválido. Certifique-se de selecionar um arquivo de pauta gerado pelo sistema.");
+                    return;
+                }
+
+                setFormData(importedData);
+
+                // Atualiza também o rascunho salvo no dispositivo atual
+                const draftPayload: IDraftStorage = {
+                    savedAt: new Date().toISOString(),
+                    data: importedData,
+                };
+                localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftPayload));
+                setSavedDraftInfo(draftPayload);
+
+                toast.success("Pauta e decisões importadas com sucesso!");
+            } catch (err) {
+                console.error("Erro ao importar arquivo:", err);
+                toast.error("Erro ao ler o arquivo JSON selecionado.");
+            } finally {
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                }
+            }
+        };
+        reader.readAsText(file);
+    };
+
     // Carregar Exemplo Prático Completo (com decisões preenchidas)
     const handleLoadSample = () => {
         setFormData({
@@ -424,12 +505,45 @@ function EldersMeetingAgendaPage() {
                     </div>
 
                     <div className="flex items-center gap-2 self-end md:self-auto shrink-0 flex-wrap">
+                        {/* Exportar arquivo JSON */}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleExportFile}
+                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-800 font-semibold shadow-2xs cursor-pointer"
+                            title="Exportar pauta em arquivo JSON para usar em outro dispositivo ou guardar backup"
+                        >
+                            <Download className="w-3.5 h-3.5 text-primary-200" />
+                            <span>Exportar Arquivo</span>
+                        </Button>
+
+                        {/* Importar arquivo JSON */}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-800 font-semibold shadow-2xs cursor-pointer"
+                            title="Importar pauta de um arquivo JSON salvo anteriormente"
+                        >
+                            <Upload className="w-3.5 h-3.5 text-primary-200" />
+                            <span>Importar Arquivo</span>
+                        </Button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".json,application/json"
+                            className="hidden"
+                            onChange={handleImportFile}
+                        />
+
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={handleSaveDraftToDevice}
-                            className="gap-1.5 text-xs border-primary-200/50 text-primary-200 hover:bg-primary-200/10 font-semibold shadow-2xs"
+                            className="gap-1.5 text-xs border-primary-200/50 text-primary-200 hover:bg-primary-200/10 font-semibold shadow-2xs cursor-pointer"
                             title="Salva os dados no disco deste aparelho"
                         >
                             <HardDrive className="w-3.5 h-3.5" />
@@ -441,7 +555,7 @@ function EldersMeetingAgendaPage() {
                             variant="outline"
                             size="sm"
                             onClick={handleLoadSample}
-                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-700"
+                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-typography-700 cursor-pointer"
                         >
                             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                             <span>Carregar Exemplo</span>
@@ -452,7 +566,7 @@ function EldersMeetingAgendaPage() {
                             variant="outline"
                             size="sm"
                             onClick={handleClearForm}
-                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-red-500 hover:text-red-600"
+                            className="gap-1.5 text-xs border-surface-300 hover:bg-surface-200 text-red-500 hover:text-red-600 cursor-pointer"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span>Limpar</span>
@@ -539,6 +653,64 @@ function EldersMeetingAgendaPage() {
                             activeTabMobile === "preview" ? "hidden lg:flex" : "flex"
                         }`}
                     >
+                        {/* Seletor de Modo: Elaborar Pauta vs Preencher Decisões (Modo Reunião) */}
+                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <span className="text-[11px] font-bold text-typography-700 uppercase tracking-wide flex items-center gap-1.5">
+                                <span className={`w-2 h-2 rounded-full ${isMeetingMode ? "bg-emerald-500 animate-pulse" : "bg-primary-200"}`}></span>
+                                Modo de Uso:
+                            </span>
+
+                            <div className="flex items-center gap-1 bg-surface-200 p-1 rounded-xl w-full sm:w-auto">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsMeetingMode(false);
+                                        setActiveDocView("pauta");
+                                    }}
+                                    className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                                        !isMeetingMode
+                                            ? "bg-white dark:bg-surface-100 text-primary-200 shadow-2xs font-bold"
+                                            : "text-typography-600 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <FileEdit className="w-3.5 h-3.5 shrink-0" />
+                                    <span>Montar Pauta</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsMeetingMode(true);
+                                        setActiveDocView("ata");
+                                    }}
+                                    className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                                        isMeetingMode
+                                            ? "bg-emerald-600 text-white shadow-2xs font-bold"
+                                            : "text-typography-600 hover:text-typography-900"
+                                    }`}
+                                >
+                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                    <span>Preencher Decisões</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Banner Informativo no Modo Reunião */}
+                        {isMeetingMode && (
+                            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3.5 flex items-start gap-3">
+                                <div className="p-1.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-lg shrink-0 mt-0.5">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                </div>
+                                <div className="text-xs space-y-0.5">
+                                    <strong className="font-bold text-emerald-800 dark:text-emerald-300 block">
+                                        Modo Reunião Ativo: Preenchimento de Decisões
+                                    </strong>
+                                    <p className="text-typography-600 leading-relaxed text-[11px]">
+                                        Os assuntos e referências da pauta estão em modo leitura para evitar alterações acidentais. Preencha abaixo as <strong>Decisões Tomadas</strong> em cada ponto. A <strong>Ata oficial</strong> é atualizada em tempo real!
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Seção 1: Dados Gerais da Reunião */}
                         <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
                             <div className="flex items-center gap-2 pb-2 border-b border-surface-200">
@@ -613,20 +785,28 @@ function EldersMeetingAgendaPage() {
                                         Assuntos & Decisões ({formData.topics.length})
                                     </h3>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleAddTopic}
-                                    className="gap-1 text-[11px] h-7 px-2 border-surface-300"
-                                >
-                                    <Plus className="w-3 h-3" />
-                                    <span>Adicionar Assunto</span>
-                                </Button>
+                                {!isMeetingMode ? (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleAddTopic}
+                                        className="gap-1 text-[11px] h-7 px-2 border-surface-300 cursor-pointer"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        <span>Adicionar Assunto</span>
+                                    </Button>
+                                ) : (
+                                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                        Pauta em Modo Leitura
+                                    </span>
+                                )}
                             </div>
 
                             <p className="text-[11px] text-typography-500">
-                                Cada assunto contém a referência para a pauta e o campo de <strong>Decisão Tomada</strong> para gerar a Ata com responsáveis e prazos.
+                                {isMeetingMode
+                                    ? "Os assuntos e fontes abaixo estão fixos para condução da reunião. Registre as decisões tomadas pelo corpo em cada ponto."
+                                    : "Cada assunto contém a referência para a pauta e o campo de Decisão Tomada para gerar a Ata com responsáveis e prazos."}
                             </p>
 
                             <div className="space-y-4">
@@ -637,20 +817,28 @@ function EldersMeetingAgendaPage() {
                                     return (
                                         <div
                                             key={topicKey}
-                                            className="p-3.5 rounded-2xl border border-surface-300 bg-surface-50/60 space-y-3 relative transition-all"
+                                            className={`p-3.5 rounded-2xl border transition-all ${
+                                                isMeetingMode
+                                                    ? "border-emerald-500/30 bg-emerald-500/5 space-y-3"
+                                                    : "border-surface-300 bg-surface-50/60 space-y-3"
+                                            }`}
                                         >
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[11px] font-bold text-typography-600 uppercase flex items-center gap-1.5">
-                                                    <span className="w-5 h-5 rounded-full bg-primary-200/10 text-primary-200 flex items-center justify-center text-[10px]">
+                                                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                                        isMeetingMode
+                                                            ? "bg-emerald-600 text-white"
+                                                            : "bg-primary-200/10 text-primary-200"
+                                                    }`}>
                                                         {idx + 1}
                                                     </span>
                                                     Assunto #{idx + 1}
                                                 </span>
-                                                {formData.topics.length > 1 && (
+                                                {!isMeetingMode && formData.topics.length > 1 && (
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveTopic(idx)}
-                                                        className="text-red-400 hover:text-red-600 p-1 rounded-lg"
+                                                        className="text-red-400 hover:text-red-600 p-1 rounded-lg cursor-pointer"
                                                         title="Remover assunto"
                                                     >
                                                         <Trash2 className="w-3.5 h-3.5" />
@@ -658,127 +846,176 @@ function EldersMeetingAgendaPage() {
                                                 )}
                                             </div>
 
-                                            {/* Assunto e Duração */}
-                                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                                                <div className="sm:col-span-3">
-                                                    <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
-                                                        Tema / Assunto (Caixa Alta)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={topic.subject}
-                                                        onChange={e => handleTopicChange(idx, "subject", e.target.value)}
-                                                        placeholder="Ex: PASTOREIO E ASSISTÊNCIA"
-                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 font-bold uppercase focus:outline-hidden focus:border-primary-200 text-typography-800"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
-                                                        Tempo (Opcional)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={topic.duration || ""}
-                                                        onChange={e => handleTopicChange(idx, "duration", e.target.value)}
-                                                        placeholder="Ex: 10 min"
-                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-center focus:outline-hidden focus:border-primary-200 text-typography-800 font-semibold"
-                                                    />
-                                                </div>
-                                            </div>
+                                            {isMeetingMode ? (
+                                                /* MODO REUNIÃO: Assunto e Referências em modo leitura limpo */
+                                                <div className="space-y-2 bg-white dark:bg-surface-100 p-3 rounded-xl border border-surface-200/80 shadow-2xs">
+                                                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-typography-900 uppercase leading-snug">
+                                                            {topic.subject || <span className="text-typography-400 italic font-normal">Sem tema definido</span>}
+                                                        </h4>
+                                                        {topic.duration && (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-200 bg-primary-200/10 px-2 py-0.5 rounded-md shrink-0">
+                                                                <Clock className="w-3 h-3" />
+                                                                {topic.duration}
+                                                            </span>
+                                                        )}
+                                                    </div>
 
-                                            {/* Referência e Indicado por */}
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                <div>
-                                                    <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
-                                                        Referência Teocrática (livro, carta, etc.)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={topic.reference}
-                                                        onChange={e => handleTopicChange(idx, "reference", e.target.value)}
-                                                        placeholder="Ex: sfl cap. 25 §§ 1-6"
-                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
-                                                        Indicado por (Opcional)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={topic.suggestedBy || ""}
-                                                        onChange={e => handleTopicChange(idx, "suggestedBy", e.target.value)}
-                                                        placeholder="Ex: Coordenador"
-                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
-                                                    />
-                                                </div>
-                                            </div>
+                                                    {(topic.reference || topic.suggestedBy) && (
+                                                        <div className="flex items-center gap-2 flex-wrap text-xs text-typography-600">
+                                                            {topic.reference && (
+                                                                <span className="font-semibold text-typography-800 bg-surface-200/70 px-2 py-0.5 rounded text-[11px]">
+                                                                    Ref: {topic.reference}
+                                                                </span>
+                                                            )}
+                                                            {topic.suggestedBy && (
+                                                                <span className="text-[11px] text-typography-500">
+                                                                    Sugerido por: <strong>{topic.suggestedBy}</strong>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    )}
 
-                                            {/* Parágrafo de Referência Colado (Aparece na Pauta) */}
-                                            {!isExcerptOpen ? (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handlePasteParagraph(idx, topicKey)}
-                                                    className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary-200 hover:underline pt-0.5"
-                                                >
-                                                    <ClipboardPaste className="w-3.5 h-3.5" />
-                                                    <span>+ Colar parágrafo da referência da área de transferência (para Pauta)</span>
-                                                </button>
+                                                    {topic.referenceText && (
+                                                        <div className="text-xs italic text-typography-700 bg-surface-50 p-2.5 rounded-lg border-l-2 border-primary-200 leading-relaxed whitespace-pre-wrap">
+                                                            &ldquo;{topic.referenceText}&rdquo;
+                                                        </div>
+                                                    )}
+                                                </div>
                                             ) : (
-                                                <div className="bg-primary-200/5 border-l-4 border-l-primary-200 border border-surface-300 rounded-r-xl rounded-l-xs p-2.5 space-y-2">
-                                                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1">
-                                                            <Quote className="w-3 h-3" />
-                                                            Trecho da Referência (Aparece na Pauta)
-                                                        </span>
-                                                        <div className="flex items-center gap-2">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handlePasteParagraph(idx, topicKey)}
-                                                                className="text-[10px] font-bold text-primary-200 hover:underline inline-flex items-center gap-1"
-                                                            >
-                                                                <ClipboardPaste className="w-3 h-3" />
-                                                                <span>Colar copiado</span>
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    handleTopicChange(idx, "referenceText", "");
-                                                                    setOpenExcerptIds(prev => ({ ...prev, [topicKey]: false }));
-                                                                }}
-                                                                className="text-[10px] font-semibold text-typography-400 hover:text-red-500"
-                                                            >
-                                                                Remover
-                                                            </button>
+                                                /* MODO MONTAGEM: Campos editáveis da pauta */
+                                                <>
+                                                    {/* Assunto e Duração */}
+                                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                                                        <div className="sm:col-span-3">
+                                                            <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
+                                                                Tema / Assunto (Caixa Alta)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={topic.subject}
+                                                                onChange={e => handleTopicChange(idx, "subject", e.target.value)}
+                                                                placeholder="Ex: PASTOREIO E ASSISTÊNCIA"
+                                                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 font-bold uppercase focus:outline-hidden focus:border-primary-200 text-typography-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
+                                                                Tempo (Opcional)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={topic.duration || ""}
+                                                                onChange={e => handleTopicChange(idx, "duration", e.target.value)}
+                                                                placeholder="Ex: 10 min"
+                                                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-center focus:outline-hidden focus:border-primary-200 text-typography-800 font-semibold"
+                                                            />
                                                         </div>
                                                     </div>
-                                                    <textarea
-                                                        rows={2}
-                                                        value={topic.referenceText || ""}
-                                                        onChange={e => handleTopicChange(idx, "referenceText", e.target.value)}
-                                                        placeholder="Cole aqui o trecho copiado do JW Library ou WOL para ser exibido na pauta..."
-                                                        className="w-full text-xs p-2 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800 resize-y leading-relaxed"
-                                                    />
-                                                </div>
+
+                                                    {/* Referência e Indicado por */}
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
+                                                                Referência Teocrática (livro, carta, etc.)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={topic.reference}
+                                                                onChange={e => handleTopicChange(idx, "reference", e.target.value)}
+                                                                placeholder="Ex: sfl cap. 25 §§ 1-6"
+                                                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-semibold text-typography-500 mb-0.5 block">
+                                                                Indicado por (Opcional)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={topic.suggestedBy || ""}
+                                                                onChange={e => handleTopicChange(idx, "suggestedBy", e.target.value)}
+                                                                placeholder="Ex: Coordenador"
+                                                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Parágrafo de Referência Colado (Aparece na Pauta) */}
+                                                    {!isExcerptOpen ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handlePasteParagraph(idx, topicKey)}
+                                                            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary-200 hover:underline pt-0.5 cursor-pointer"
+                                                        >
+                                                            <ClipboardPaste className="w-3.5 h-3.5" />
+                                                            <span>+ Colar parágrafo da referência da área de transferência (para Pauta)</span>
+                                                        </button>
+                                                    ) : (
+                                                        <div className="bg-primary-200/5 border-l-4 border-l-primary-200 border border-surface-300 rounded-r-xl rounded-l-xs p-2.5 space-y-2">
+                                                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-primary-200 flex items-center gap-1">
+                                                                    <Quote className="w-3 h-3" />
+                                                                    Trecho da Referência (Aparece na Pauta)
+                                                                </span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handlePasteParagraph(idx, topicKey)}
+                                                                        className="text-[10px] font-bold text-primary-200 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                                                                    >
+                                                                        <ClipboardPaste className="w-3 h-3" />
+                                                                        <span>Colar copiado</span>
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            handleTopicChange(idx, "referenceText", "");
+                                                                            setOpenExcerptIds(prev => ({ ...prev, [topicKey]: false }));
+                                                                        }}
+                                                                        className="text-[10px] font-semibold text-typography-400 hover:text-red-500 cursor-pointer"
+                                                                    >
+                                                                        Remover
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <textarea
+                                                                rows={2}
+                                                                value={topic.referenceText || ""}
+                                                                onChange={e => handleTopicChange(idx, "referenceText", e.target.value)}
+                                                                placeholder="Cole aqui o trecho copiado do JW Library ou WOL para ser exibido na pauta..."
+                                                                className="w-full text-xs p-2 rounded-lg border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800 resize-y leading-relaxed"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
 
                                             {/* CAMPO DE DECISÃO TOMADA (APARECE NA ATA) */}
-                                            <div className="bg-emerald-500/5 border border-emerald-500/25 rounded-xl p-2.5 space-y-1.5">
+                                            <div className={`rounded-xl p-3 space-y-1.5 transition-all ${
+                                                isMeetingMode
+                                                    ? "bg-emerald-500/10 border-2 border-emerald-500/40 shadow-xs"
+                                                    : "bg-emerald-500/5 border border-emerald-500/25"
+                                            }`}>
                                                 <div className="flex items-center justify-between gap-1 flex-wrap">
-                                                    <label className="text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
-                                                        <FileCheck className="w-3.5 h-3.5" />
+                                                    <label className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide flex items-center gap-1.5">
+                                                        <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
                                                         Decisão Tomada / Deliberação (Aparece na Ata)
                                                     </label>
-                                                    <span className="text-[9.5px] text-typography-500">
+                                                    <span className="text-[10px] text-typography-500">
                                                         Quem fará, providências e data/prazo
                                                     </span>
                                                 </div>
                                                 <textarea
-                                                    rows={2}
+                                                    rows={isMeetingMode ? 3 : 2}
                                                     value={topic.decision || ""}
                                                     onChange={e => handleTopicChange(idx, "decision", e.target.value)}
                                                     placeholder="Descreva a decisão tomada pelo corpo, quem foi designado para fazer e até que data..."
-                                                    className="w-full text-xs p-2 rounded-lg border border-emerald-500/30 bg-surface-50 focus:outline-hidden focus:border-emerald-500 text-typography-800 resize-y leading-relaxed"
+                                                    className={`w-full text-xs p-2.5 rounded-lg border bg-surface-50 focus:outline-hidden text-typography-800 resize-y leading-relaxed ${
+                                                        isMeetingMode
+                                                            ? "border-emerald-500 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 font-medium"
+                                                            : "border-emerald-500/30 focus:border-emerald-500"
+                                                    }`}
                                                 />
                                             </div>
                                         </div>
@@ -796,38 +1033,44 @@ function EldersMeetingAgendaPage() {
                                         Recomendações & Remoções
                                     </h3>
                                 </div>
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleAddRecommendation("elder")}
-                                        className="gap-1 text-[10px] h-6 px-2 border-surface-300"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        <span>+ Ancião</span>
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleAddRecommendation("servant")}
-                                        className="gap-1 text-[10px] h-6 px-2 border-surface-300"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        <span>+ Servo</span>
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleAddRemoval}
-                                        className="gap-1 text-[10px] h-6 px-2 border-surface-300"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        <span>+ Remoção</span>
-                                    </Button>
-                                </div>
+                                {!isMeetingMode ? (
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleAddRecommendation("elder")}
+                                            className="gap-1 text-[10px] h-6 px-2 border-surface-300 cursor-pointer"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            <span>+ Ancião</span>
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleAddRecommendation("servant")}
+                                            className="gap-1 text-[10px] h-6 px-2 border-surface-300 cursor-pointer"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            <span>+ Servo</span>
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAddRemoval}
+                                            className="gap-1 text-[10px] h-6 px-2 border-surface-300 cursor-pointer"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            <span>+ Remoção</span>
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                        Decisões do Corpo
+                                    </span>
+                                )}
                             </div>
 
                             {/* Recomendações de Anciãos */}
@@ -842,60 +1085,94 @@ function EldersMeetingAgendaPage() {
                                                 <span className="text-[10px] font-bold text-typography-500 uppercase">
                                                     Ancião #{idx + 1}
                                                 </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveRecommendation("elder", idx)}
-                                                    className="text-red-400 hover:text-red-600 p-1"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
+                                                {!isMeetingMode && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveRecommendation("elder", idx)}
+                                                        className="text-red-400 hover:text-red-600 p-1 cursor-pointer"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                )}
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={rec.name}
-                                                    onChange={e => handleRecommendationChange("elder", idx, "name", e.target.value)}
-                                                    placeholder="Nome completo do irmão"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={rec.decision}
-                                                    onChange={e => handleRecommendationChange("elder", idx, "decision", e.target.value)}
-                                                    placeholder="Decisão (ex: Aprovado)"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={rec.birthDate || ""}
-                                                    onChange={e => handleRecommendationChange("elder", idx, "birthDate", e.target.value)}
-                                                    placeholder="Nascimento (ex: 12/04/1980)"
-                                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={rec.baptismDate || ""}
-                                                    onChange={e => handleRecommendationChange("elder", idx, "baptismDate", e.target.value)}
-                                                    placeholder="Batismo (ex: 15/09/1998)"
-                                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={rec.yearsAsServant || ""}
-                                                    onChange={e => handleRecommendationChange("elder", idx, "yearsAsServant", e.target.value)}
-                                                    placeholder="Anos como servo (ex: 6 anos)"
-                                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                                />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={rec.notes || ""}
-                                                onChange={e => handleRecommendationChange("elder", idx, "notes", e.target.value)}
-                                                placeholder="Observações complementares..."
-                                                className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                            />
+
+                                            {isMeetingMode ? (
+                                                <div className="space-y-1 bg-white dark:bg-surface-100 p-2.5 rounded-lg border border-surface-200">
+                                                    <div className="text-xs font-bold text-typography-900">
+                                                        {rec.name || "Nome não informado"}
+                                                    </div>
+                                                    <div className="text-[11px] text-typography-500 flex gap-2 flex-wrap">
+                                                        {rec.birthDate && <span>Nasc: {rec.birthDate}</span>}
+                                                        {rec.baptismDate && <span>Bat: {rec.baptismDate}</span>}
+                                                        {rec.yearsAsServant && <span>{rec.yearsAsServant}</span>}
+                                                    </div>
+                                                    {rec.notes && <p className="text-[11px] text-typography-600 italic">{rec.notes}</p>}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={rec.name}
+                                                            onChange={e => handleRecommendationChange("elder", idx, "name", e.target.value)}
+                                                            placeholder="Nome completo do irmão"
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={rec.decision}
+                                                            onChange={e => handleRecommendationChange("elder", idx, "decision", e.target.value)}
+                                                            placeholder="Decisão (ex: Aprovado)"
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={rec.birthDate || ""}
+                                                            onChange={e => handleRecommendationChange("elder", idx, "birthDate", e.target.value)}
+                                                            placeholder="Nascimento (ex: 12/04/1980)"
+                                                            className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={rec.baptismDate || ""}
+                                                            onChange={e => handleRecommendationChange("elder", idx, "baptismDate", e.target.value)}
+                                                            placeholder="Batismo (ex: 15/09/1998)"
+                                                            className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={rec.yearsAsServant || ""}
+                                                            onChange={e => handleRecommendationChange("elder", idx, "yearsAsServant", e.target.value)}
+                                                            placeholder="Anos como servo (ex: 6 anos)"
+                                                            className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        value={rec.notes || ""}
+                                                        onChange={e => handleRecommendationChange("elder", idx, "notes", e.target.value)}
+                                                        placeholder="Observações complementares..."
+                                                        className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                    />
+                                                </>
+                                            )}
+
+                                            {isMeetingMode && (
+                                                <div>
+                                                    <label className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5 uppercase">
+                                                        Decisão do Corpo (Aparece na Ata)
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={rec.decision}
+                                                        onChange={e => handleRecommendationChange("elder", idx, "decision", e.target.value)}
+                                                        placeholder="Decisão (ex: Aprovado, Recomendado ao SC)"
+                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-emerald-500 bg-surface-50 text-typography-800 font-semibold focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -913,46 +1190,78 @@ function EldersMeetingAgendaPage() {
                                                 <span className="text-[10px] font-bold text-typography-500 uppercase">
                                                     Servo #{idx + 1}
                                                 </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveRecommendation("servant", idx)}
-                                                    className="text-red-400 hover:text-red-600 p-1"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
+                                                {!isMeetingMode && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveRecommendation("servant", idx)}
+                                                        className="text-red-400 hover:text-red-600 p-1 cursor-pointer"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                )}
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={rec.name}
-                                                    onChange={e => handleRecommendationChange("servant", idx, "name", e.target.value)}
-                                                    placeholder="Nome completo do irmão"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={rec.decision}
-                                                    onChange={e => handleRecommendationChange("servant", idx, "decision", e.target.value)}
-                                                    placeholder="Decisão (ex: Aprovado)"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={rec.birthDate || ""}
-                                                    onChange={e => handleRecommendationChange("servant", idx, "birthDate", e.target.value)}
-                                                    placeholder="Nascimento (ex: 03/11/1997)"
-                                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={rec.baptismDate || ""}
-                                                    onChange={e => handleRecommendationChange("servant", idx, "baptismDate", e.target.value)}
-                                                    placeholder="Batismo (ex: 12/04/2014)"
-                                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
-                                                />
-                                            </div>
+
+                                            {isMeetingMode ? (
+                                                <div className="space-y-1 bg-white dark:bg-surface-100 p-2.5 rounded-lg border border-surface-200">
+                                                    <div className="text-xs font-bold text-typography-900">
+                                                        {rec.name || "Nome não informado"}
+                                                    </div>
+                                                    <div className="text-[11px] text-typography-500 flex gap-2 flex-wrap">
+                                                        {rec.birthDate && <span>Nasc: {rec.birthDate}</span>}
+                                                        {rec.baptismDate && <span>Bat: {rec.baptismDate}</span>}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={rec.name}
+                                                            onChange={e => handleRecommendationChange("servant", idx, "name", e.target.value)}
+                                                            placeholder="Nome completo do irmão"
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={rec.decision}
+                                                            onChange={e => handleRecommendationChange("servant", idx, "decision", e.target.value)}
+                                                            placeholder="Decisão (ex: Aprovado)"
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={rec.birthDate || ""}
+                                                            onChange={e => handleRecommendationChange("servant", idx, "birthDate", e.target.value)}
+                                                            placeholder="Nascimento (ex: 03/11/1997)"
+                                                            className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={rec.baptismDate || ""}
+                                                            onChange={e => handleRecommendationChange("servant", idx, "baptismDate", e.target.value)}
+                                                            placeholder="Batismo (ex: 12/04/2014)"
+                                                            className="w-full text-[11px] px-2 py-1 rounded-lg border border-surface-300 bg-surface-50 text-typography-700"
+                                                        />
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {isMeetingMode && (
+                                                <div>
+                                                    <label className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5 uppercase">
+                                                        Decisão do Corpo (Aparece na Ata)
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={rec.decision}
+                                                        onChange={e => handleRecommendationChange("servant", idx, "decision", e.target.value)}
+                                                        placeholder="Decisão (ex: Aprovado, Recomendado ao SC)"
+                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-emerald-500 bg-surface-50 text-typography-800 font-semibold focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -970,38 +1279,56 @@ function EldersMeetingAgendaPage() {
                                                 <span className="text-[10px] font-bold text-typography-500 uppercase">
                                                     Registro #{idx + 1}
                                                 </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveRemoval(idx)}
-                                                    className="text-red-400 hover:text-red-600 p-1"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
+                                                {!isMeetingMode && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveRemoval(idx)}
+                                                        className="text-red-400 hover:text-red-600 p-1 cursor-pointer"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                )}
                                             </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                                <select
-                                                    value={rem.role}
-                                                    onChange={e => handleRemovalChange(idx, "role", e.target.value)}
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
-                                                >
-                                                    <option value="elder">Ancião</option>
-                                                    <option value="servant">Servo Ministerial</option>
-                                                </select>
-                                                <input
-                                                    type="text"
-                                                    value={rem.name}
-                                                    onChange={e => handleRemovalChange(idx, "name", e.target.value)}
-                                                    placeholder="Nome do irmão"
-                                                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 sm:col-span-2"
-                                                />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={rem.reason}
-                                                onChange={e => handleRemovalChange(idx, "reason", e.target.value)}
-                                                placeholder="Motivo ou congregação de destino..."
-                                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
-                                            />
+
+                                            {isMeetingMode ? (
+                                                <div className="space-y-1 bg-white dark:bg-surface-100 p-2.5 rounded-lg border border-surface-200 text-xs">
+                                                    <div className="font-bold text-typography-900">
+                                                        {rem.role === "elder" ? "Ancião" : "Servo Ministerial"}: {rem.name || "Nome não informado"}
+                                                    </div>
+                                                    {rem.reason && (
+                                                        <p className="text-[11px] text-typography-600">
+                                                            Motivo/Destino: {rem.reason}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                        <select
+                                                            value={rem.role}
+                                                            onChange={e => handleRemovalChange(idx, "role", e.target.value)}
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 font-semibold"
+                                                        >
+                                                            <option value="elder">Ancião</option>
+                                                            <option value="servant">Servo Ministerial</option>
+                                                        </select>
+                                                        <input
+                                                            type="text"
+                                                            value={rem.name}
+                                                            onChange={e => handleRemovalChange(idx, "name", e.target.value)}
+                                                            placeholder="Nome do irmão"
+                                                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800 sm:col-span-2"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        value={rem.reason}
+                                                        onChange={e => handleRemovalChange(idx, "reason", e.target.value)}
+                                                        placeholder="Motivo ou congregação de destino..."
+                                                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-50 text-typography-800"
+                                                    />
+                                                </>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -1057,19 +1384,21 @@ function EldersMeetingAgendaPage() {
                             </div>
                         </div>
 
-                        {/* Seção 5: Rodapé Bíblico da Pauta */}
-                        <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-typography-700">
-                                Lembrete Bíblico do Rodapé da Pauta
-                            </h3>
-                            <textarea
-                                rows={2}
-                                value={formData.footerNote}
-                                onChange={e => handleFieldChange("footerNote", e.target.value)}
-                                placeholder="Texto do rodapé bíblico..."
-                                className="w-full text-xs p-2.5 rounded-xl border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800 italic resize-y leading-relaxed"
-                            />
-                        </div>
+                        {/* Seção 5: Rodapé Bíblico da Pauta (Visível apenas na montagem da Pauta) */}
+                        {!isMeetingMode && (
+                            <div className="bg-surface-100 border border-surface-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-typography-700">
+                                    Lembrete Bíblico do Rodapé da Pauta
+                                </h3>
+                                <textarea
+                                    rows={2}
+                                    value={formData.footerNote}
+                                    onChange={e => handleFieldChange("footerNote", e.target.value)}
+                                    placeholder="Texto do rodapé bíblico..."
+                                    className="w-full text-xs p-2.5 rounded-xl border border-surface-300 bg-surface-50 focus:outline-hidden focus:border-primary-200 text-typography-800 italic resize-y leading-relaxed"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Painel de Visualização & Ações de Exportação */}
