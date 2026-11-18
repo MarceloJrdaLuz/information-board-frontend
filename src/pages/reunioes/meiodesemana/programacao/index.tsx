@@ -339,7 +339,7 @@ function MidweekScheduleAssistantPage() {
                             className="text-xs flex items-center gap-1.5 border-surface-300 hover:bg-surface-200 text-typography-800"
                         >
                             <UploadCloud className="h-4 w-4 text-primary-200" />
-                            <span>Importar XML</span>
+                            <span>Importar Apostila (ZIP/XML)</span>
                         </Button>
 
                         <Button
@@ -463,7 +463,7 @@ function MidweekScheduleAssistantPage() {
                             Nenhuma semana encontrada para este mês
                         </h3>
                         <p className="text-xs text-typography-500 max-w-md">
-                            Importe o arquivo XML da apostila para que as semanas e partes sejam cadastradas automaticamente para a congregação.
+                            Importe o arquivo ZIP ou XML da apostila para que as semanas e partes sejam cadastradas automaticamente para a congregação.
                         </p>
                         <Button
                             size="sm"
@@ -471,7 +471,7 @@ function MidweekScheduleAssistantPage() {
                             className="mt-2 bg-primary-200 hover:opacity-90 text-white text-xs font-semibold flex items-center gap-2"
                         >
                             <UploadCloud className="h-4 w-4" />
-                            Importar Arquivo XML da Apostila
+                            Importar Apostila (ZIP ou XML)
                         </Button>
                     </div>
                 ) : currentSchedule && isCancelledMeeting ? (
