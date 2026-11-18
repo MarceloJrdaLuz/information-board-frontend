@@ -667,13 +667,13 @@ function EldersMeetingAgendaPage() {
                                         setIsMeetingMode(false);
                                         setActiveDocView("pauta");
                                     }}
-                                    className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                    className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
                                         !isMeetingMode
                                             ? "bg-white dark:bg-surface-100 text-primary-200 shadow-2xs font-bold"
                                             : "text-typography-600 hover:text-typography-900"
                                     }`}
                                 >
-                                    <FileEdit className="w-3.5 h-3.5" />
+                                    <FileEdit className="w-3.5 h-3.5 shrink-0" />
                                     <span>Montar Pauta</span>
                                 </button>
                                 <button
@@ -682,14 +682,14 @@ function EldersMeetingAgendaPage() {
                                         setIsMeetingMode(true);
                                         setActiveDocView("ata");
                                     }}
-                                    className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                    className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
                                         isMeetingMode
                                             ? "bg-emerald-600 text-white shadow-2xs font-bold"
                                             : "text-typography-600 hover:text-typography-900"
                                     }`}
                                 >
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                    <span>Preencher Decisões (Reunião)</span>
+                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                    <span>Preencher Decisões</span>
                                 </button>
                             </div>
                         </div>
