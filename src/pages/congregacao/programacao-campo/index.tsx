@@ -732,26 +732,25 @@ function FieldServiceSchedulePage() {
              * MODAL: GERAR PROGRAMAÇÃO INTELIGENTE
              * ========================================================= */}
             <Dialog open={isGenerateModalOpen} onOpenChange={setIsGenerateModalOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-xl">
-                            <Sparkles className="w-5 h-5 text-primary-200" />
+                <DialogContent className="sm:max-w-[500px] max-h-[90dvh] flex flex-col p-4 sm:p-6 overflow-hidden">
+                    <DialogHeader className="shrink-0 text-left pr-6">
+                        <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                            <Sparkles className="w-5 h-5 text-primary-200 shrink-0" />
                             <span>Gerar Programação de Campo</span>
                         </DialogTitle>
-                        <DialogDescription>
-                            O algoritmo inteligente distribui as saídas priorizando irmãos há mais tempo sem dirigir e pula automaticamente os que estiverem indisponíveis.
+                        <DialogDescription className="text-xs text-typography-500 mt-1">
+                            Distribui as saídas priorizando irmãos há mais tempo sem dirigir e pula ausências registradas.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 py-3">
-                        <div className="p-3 bg-surface-200 rounded-xl text-xs space-y-1.5 text-typography-600 border border-surface-300">
+                    <div className="overflow-y-auto pr-1.5 py-1 space-y-3.5 flex-1 -mr-2">
+                        <div className="p-2.5 bg-surface-200/80 rounded-xl text-[11px] space-y-1 text-typography-600 border border-surface-300">
                             <p className="font-semibold text-typography-800">
                                 🎯 Regras da Distribuição Justa:
                             </p>
-                            <ul className="list-disc pl-4 space-y-1">
+                            <ul className="list-disc pl-4 space-y-0.5">
                                 <li>Ordenação por antiguidade (quem está há mais tempo sem dirigir).</li>
-                                <li>Consulta às ausências registradas dos publicadores.</li>
-                                <li>Se alguém estiver ausente, passa para o próximo sem perder a vez no rodízio.</li>
+                                <li>Consulta ausências registradas e avança sem o irmão perder a vez.</li>
                             </ul>
                         </div>
 
@@ -857,7 +856,7 @@ function FieldServiceSchedulePage() {
                         </div>
                     </div>
 
-                    <DialogFooter className="gap-2 sm:gap-0">
+                    <DialogFooter className="shrink-0 pt-3 border-t border-surface-200 gap-2 sm:gap-0 mt-2">
                         <Button
                             variant="outline"
                             onClick={() => setIsGenerateModalOpen(false)}
@@ -868,7 +867,7 @@ function FieldServiceSchedulePage() {
                         <Button
                             onClick={handleGenerateSchedules}
                             disabled={generating}
-                            className="bg-primary-200 hover:bg-primary-300 text-white gap-2"
+                            className="bg-primary-200 hover:bg-primary-300 text-white gap-2 font-semibold"
                         >
                             {generating && <Loader2 className="w-4 h-4 animate-spin" />}
                             <span>{generating ? "Gerando..." : "Gerar Programação"}</span>
