@@ -61,9 +61,7 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
         formData.append("file", file);
 
         try {
-            const res = await api.post("/midweek/import-xml", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const res = await api.post("/midweek/import-xml", formData);
 
             toast.success(res.data.message || "Apostila importada com sucesso!");
             setFile(null);
