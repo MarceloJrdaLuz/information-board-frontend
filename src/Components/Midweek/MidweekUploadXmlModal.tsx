@@ -1,7 +1,7 @@
 import { Button } from "@/Components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import { api } from "@/services/api";
-import { Check, CheckCircle, Copy, ExternalLink, FileCode, FolderArchive, Loader2, Mail, UploadCloud } from "lucide-react";
+import { Check, CheckCircle, Copy, ExternalLink, FileCode, FolderArchive, Loader2, Mail, Smartphone, UploadCloud } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -33,6 +33,7 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
     const [dragActive, setDragActive] = useState(false);
     const [copied, setCopied] = useState(false);
     const [congregationEmail, setCongregationEmail] = useState("");
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -40,6 +41,14 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
             if (savedEmail) {
                 setCongregationEmail(savedEmail);
             }
+
+            const checkMobile = () => {
+                const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+                setIsMobile(mobileRegex.test(navigator.userAgent) || window.innerWidth < 768);
+            };
+            checkMobile();
+            window.addEventListener("resize", checkMobile);
+            return () => window.removeEventListener("resize", checkMobile);
         }
     }, []);
 
@@ -54,7 +63,10 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
     const trimmedEmail = congregationEmail.trim();
     const gmailAuthUser = trimmedEmail ? `&authuser=${encodeURIComponent(trimmedEmail)}` : "";
     const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1${gmailAuthUser}&to=${encodeURIComponent(PTS_EMAIL_TO)}&su=${encodeURIComponent(PTS_EMAIL_SUBJECT)}&body=${encodeURIComponent(PTS_EMAIL_BODY)}`;
-    const mailtoUrl = `mailto:${PTS_EMAIL_TO}?${trimmedEmail ? `cc=${encodeURIComponent(trimmedEmail)}&` : ""}subject=${encodeURIComponent(PTS_EMAIL_SUBJECT)}&body=${encodeURIComponent(PTS_EMAIL_BODY)}`;
+
+    const encodedSubject = encodeURIComponent(PTS_EMAIL_SUBJECT);
+    const encodedBody = encodeURIComponent(PTS_EMAIL_BODY).replace(/%0A/g, "%0D%0A");
+    const mailtoUrl = `mailto:${PTS_EMAIL_TO}?subject=${encodedSubject}&body=${encodedBody}`;
 
     const isAllowedFile = (fileName: string) => {
         const lower = fileName.toLowerCase();
@@ -240,50 +252,79 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
                         </button>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="mwb-cong-email-input" className="text-[11px] font-medium text-typography-700 flex items-center justify-between">
-                            <span>E-mail da congregação (para receber o anexo):</span>
-                            {trimmedEmail && (
-                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
-                                    ✓ Salvo
-                                </span>
-                            )}
-                        </label>
-                        <input
-                            id="mwb-cong-email-input"
-                            type="email"
-                            value={congregationEmail}
-                            onChange={handleEmailChange}
-                            placeholder="ex: congregacao...@gmail.com"
-                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-100 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-1 focus:ring-primary-200 transition-all"
-                        />
-                    </div>
+                    {!isMobile && (
+                        <div className="flex flex-col gap-1">
+                            <label htmlFor="mwb-cong-email-input" className="text-[11px] font-medium text-typography-700 flex items-center justify-between">
+                                <span>E-mail da congregação (para receber o anexo):</span>
+                                {trimmedEmail && (
+                                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                                        ✓ Salvo
+                                    </span>
+                                )}
+                            </label>
+                            <input
+                                id="mwb-cong-email-input"
+                                type="email"
+                                value={congregationEmail}
+                                onChange={handleEmailChange}
+                                placeholder="ex: congregacao...@gmail.com"
+                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-surface-300 bg-surface-100 text-typography-900 placeholder:text-typography-400 focus:outline-none focus:ring-1 focus:ring-primary-200 transition-all"
+                            />
+                        </div>
+                    )}
 
-                    <div className="flex items-center gap-2 pt-0.5">
-                        <a
-                            href={gmailComposeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-800 transition-colors shadow-sm"
-                        >
-                            <Mail className="h-3.5 w-3.5 text-red-500" />
-                            <span>
-                                {trimmedEmail ? `Solicitar via Gmail (${trimmedEmail.split("@")[0]})` : "Solicitar via Gmail"}
-                            </span>
-                            <ExternalLink className="h-3 w-3 text-typography-400" />
-                        </a>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-0.5">
+                        {isMobile ? (
+                            <>
+                                <a
+                                    href={mailtoUrl}
+                                    className="flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-lg text-xs font-semibold bg-primary-200 hover:opacity-90 text-white transition-all shadow-sm active:scale-[0.98]"
+                                >
+                                    <Mail className="h-4 w-4" />
+                                    <span>Abrir no App do Gmail / E-mail</span>
+                                </a>
 
-                        <a
-                            href={mailtoUrl}
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-700 transition-colors shadow-sm"
-                            title="Abrir no Outlook, app padrão do computador ou celular"
-                        >
-                            <span>Outro App</span>
-                        </a>
+                                <button
+                                    type="button"
+                                    onClick={handleCopyEmailData}
+                                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-700 transition-colors shadow-sm"
+                                >
+                                    <Copy className="h-3.5 w-3.5" />
+                                    <span>{copied ? "Copiado!" : "Copiar Texto"}</span>
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <a
+                                    href={gmailComposeUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-800 transition-colors shadow-sm"
+                                >
+                                    <Mail className="h-3.5 w-3.5 text-red-500" />
+                                    <span>
+                                        {trimmedEmail ? `Solicitar via Gmail (${trimmedEmail.split("@")[0]})` : "Solicitar via Gmail"}
+                                    </span>
+                                    <ExternalLink className="h-3 w-3 text-typography-400" />
+                                </a>
+
+                                <a
+                                    href={mailtoUrl}
+                                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-100 hover:bg-surface-200 border border-surface-300 text-typography-700 transition-colors shadow-sm"
+                                    title="Abrir no Outlook, app padrão do computador ou celular"
+                                >
+                                    <span>Outro App</span>
+                                </a>
+                            </>
+                        )}
                     </div>
 
                     <p className="text-[10px] text-typography-400 leading-snug">
-                        💡 <em>O Gmail abrirá diretamente na conta informada acima (se conectada no seu navegador), garantindo que a resposta chegue nela.</em>
+                        {isMobile ? (
+                            <>💡 <em>O aplicativo de e-mail no seu celular abrirá na tela de <strong>Nova Mensagem</strong> já preenchida. Confira o campo &quot;De&quot; antes de enviar.</em></>
+                        ) : (
+                            <>💡 <em>O Gmail abrirá diretamente na conta informada acima (se conectada no seu navegador), garantindo que a resposta chegue nela.</em></>
+                        )}
                     </p>
                 </div>
 
