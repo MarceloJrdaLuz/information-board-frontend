@@ -1,7 +1,7 @@
 import { isDesktopAtom, openSubMenuAtom, pageActiveAtom, toogleMenu } from "@/atoms/atom"
 import { useAuthContext } from "@/context/AuthContext"
 import { useAtom, useAtomValue } from "jotai"
-import { CalculatorIcon, CalendarDaysIcon, ClipboardList, Clock, CreditCard, DollarSign, FileSignature, FileTextIcon, FunctionSquareIcon, Globe, HomeIcon, KanbanSquareIcon, Layers, LineChart, Radio, Shield, ShieldCheck, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
+import { CalculatorIcon, CalendarDaysIcon, CalendarOff, ClipboardList, Clock, CreditCard, DollarSign, FileSignature, FileTextIcon, FunctionSquareIcon, Globe, HomeIcon, KanbanSquareIcon, Layers, LineChart, Radio, Shield, ShieldCheck, SquareStackIcon, Timer, UserCheck, UsersIcon, UtensilsIcon } from 'lucide-react'
 import Router, { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import CalendarMicIcon from "../Icons/CalendarMicIcon"
@@ -385,6 +385,18 @@ export default function Layout(props: LayoutProps) {
                                         }}
                                         icon={() => <UserCheck className="w-5 h-5 sm:w-6 sm:h-6" />}
                                         active={pageActive === 'Qualificações' || pageActive.startsWith('/reunioes/meiodesemana/qualificacoes')}
+                                    />
+                                )}
+                                {(isAdminCongregation || isAdmin || roleContains('ADMIN') || roleContains('MIDWEEK_MANAGER')) && (
+                                    <NavBar.Options
+                                        isSubItem
+                                        title="Indisponibilidades"
+                                        onClick={() => {
+                                             { !isDesktop && setIsMenuOpen(false) }
+                                             Router.push(`/reunioes/meiodesemana/indisponibilidades`)
+                                        }}
+                                        icon={() => <CalendarOff className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                        active={pageActive === 'Indisponibilidades' || pageActive.startsWith('/reunioes/meiodesemana/indisponibilidades')}
                                     />
                                 )}
                                 {(isAdminCongregation || isAdmin || roleContains('ADMIN')) && (
