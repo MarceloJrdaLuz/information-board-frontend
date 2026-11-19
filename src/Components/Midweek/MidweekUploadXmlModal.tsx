@@ -61,12 +61,13 @@ export const MidweekUploadXmlModal: React.FC<MidweekUploadXmlModalProps> = ({
     };
 
     const trimmedEmail = congregationEmail.trim();
-    const gmailAuthUser = trimmedEmail ? `&authuser=${encodeURIComponent(trimmedEmail)}` : "";
-    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1${gmailAuthUser}&to=${encodeURIComponent(PTS_EMAIL_TO)}&su=${encodeURIComponent(PTS_EMAIL_SUBJECT)}&body=${encodeURIComponent(PTS_EMAIL_BODY)}`;
-
     const encodedSubject = encodeURIComponent(PTS_EMAIL_SUBJECT);
     const encodedBody = encodeURIComponent(PTS_EMAIL_BODY).replace(/%0A/g, "%0D%0A");
     const mailtoUrl = `mailto:${PTS_EMAIL_TO}?subject=${encodedSubject}&body=${encodedBody}`;
+
+    // Interface tradicional completa do Gmail com janelinha clássica de composição sobreposta
+    const gmailAuthParam = trimmedEmail ? `authuser=${encodeURIComponent(trimmedEmail)}&` : "";
+    const gmailComposeUrl = `https://mail.google.com/mail/?${gmailAuthParam}extsrc=mailto&url=${encodeURIComponent(mailtoUrl)}`;
 
     const isAllowedFile = (fileName: string) => {
         const lower = fileName.toLowerCase();
