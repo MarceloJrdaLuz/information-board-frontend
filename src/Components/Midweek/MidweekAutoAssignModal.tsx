@@ -1,7 +1,8 @@
 import { Button } from "@/Components/ui/button";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
-import { Calendar, CheckCircle2, Info, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { Calendar, CheckCircle2, ExternalLink, Info, Loader2, Sparkles, Wand2 } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 
 interface MidweekAutoAssignModalProps {
@@ -119,6 +120,18 @@ export const MidweekAutoAssignModal: React.FC<MidweekAutoAssignModalProps> = ({
                         <p className="text-[11px] leading-relaxed">
                             <strong>Proteção:</strong> As designações que você já preencheu manualmente <u>não serão alteradas</u>. O preenchimento automático atua somente nas partes que estão vazias.
                         </p>
+                    </div>
+
+                    <div className="flex items-center justify-between px-1 text-[11px] text-typography-500">
+                        <span>Precisa registrar ausências antes?</span>
+                        <Link
+                            href="/reunioes/meiodesemana/indisponibilidades"
+                            target="_blank"
+                            className="font-medium text-primary-200 hover:underline flex items-center gap-1"
+                        >
+                            <span>Gerenciar Indisponibilidades</span>
+                            <ExternalLink className="h-3 w-3" />
+                        </Link>
                     </div>
                 </div>
 

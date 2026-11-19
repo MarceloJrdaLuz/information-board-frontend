@@ -388,6 +388,17 @@ function MidweekScheduleAssistantPage() {
                             <Users className="h-4 w-4" />
                             <span>Qualificações</span>
                         </Button>
+
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => router.push("/reunioes/meiodesemana/indisponibilidades")}
+                            className="text-xs flex items-center gap-1.5 text-typography-700 hover:bg-surface-200"
+                            title="Cadastrar e gerenciar indisponibilidades e ausências de publicadores"
+                        >
+                            <CalendarOff className="h-4 w-4 text-amber-500" />
+                            <span>Indisponibilidades</span>
+                        </Button>
                     </div>
                 </div>
 
