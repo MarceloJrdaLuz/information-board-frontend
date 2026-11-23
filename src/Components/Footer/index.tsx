@@ -85,8 +85,11 @@ export default function Footer({ ano, nomeCongregacao, aviso, nCong }: FooterPro
             ? "bg-gradient-to-t from-primary-200 via-primary-200 to-primary-150 text-white"
             : "border-t border-surface-300/40 bg-surface-100 text-typography-300"
         }
-        px-4 sm:px-6 py-6 sm:py-7
+        px-4 sm:px-6 pt-6 sm:pt-7 pb-6 sm:pb-7 pb-safe
       `}
+      style={{
+        paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))'
+      }}
     >
       <div className="max-w-4xl mx-auto flex flex-col gap-4 sm:gap-5">
         {/* Bloco Superior: Nome da Congregação e Ano */}

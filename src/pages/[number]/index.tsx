@@ -238,11 +238,16 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
 
             {/* Header com a Imagem do Salão do Reino */}
             <div className="relative w-full overflow-hidden bg-surface-200">
-                {/* Top Nav: Botão de Login no topo superior direito */}
-                <div className="absolute top-0 left-0 right-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-end">
+                {/* Top Nav: Botão de Login no topo superior direito com Safe Area do iOS/PWA */}
+                <div
+                    className="absolute top-0 left-0 right-0 z-30 px-4 sm:px-6 flex items-center justify-end pointer-events-none"
+                    style={{
+                        paddingTop: 'calc(0.875rem + env(safe-area-inset-top, 0px))'
+                    }}
+                >
                     <Link
                         href="/login"
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-200/95 hover:bg-primary-150 backdrop-blur-sm text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95"
+                        className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-200/95 hover:bg-primary-150 backdrop-blur-sm text-white text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95"
                         title="Acessar painel administrativo"
                     >
                         <LogIn size={15} />
@@ -251,7 +256,13 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
                 </div>
 
                 {/* Hero Banner com a Foto e Gradiente de Fusão */}
-                <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden flex items-center justify-center bg-typography-900">
+                <div
+                    className="relative w-full overflow-hidden flex items-center justify-center bg-typography-900"
+                    style={{
+                        minHeight: 'calc(14rem + env(safe-area-inset-top, 0px))',
+                        paddingTop: 'env(safe-area-inset-top, 0px)'
+                    }}
+                >
                     {congregation?.image_url ? (
                         <Image
                             src={congregation.image_url}

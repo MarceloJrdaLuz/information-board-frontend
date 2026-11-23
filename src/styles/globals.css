@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Utilitários de Safe Area para iOS PWA (iPhone Notch / Dynamic Island / Status Bar / Home Indicator) */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.top-bar-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 html, body {
   height: 100%;
   margin: 0;
