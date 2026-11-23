@@ -117,7 +117,7 @@ function NoticesPage({ serverNumber, serverCongregation, ogMeta }: PublicPageSer
             />
 
             {/* Cabeçalho da Página de Anúncios */}
-            <div className="w-full bg-surface-100 border-b border-surface-300/80 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-surface-100/90">
+            <div className="w-full bg-surface-100 border-b border-surface-300/80 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-surface-100/90 top-bar-safe">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
                     <Link
                         href={`/${number}`}
