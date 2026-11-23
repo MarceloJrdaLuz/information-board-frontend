@@ -10,7 +10,12 @@ export default function FooterDashboard() {
   const isAdminCongregation = roleContains("ADMIN_CONGREGATION")
 
   return (
-    <footer className="w-full bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 text-white shadow-md border-t border-white/10 py-3 sm:py-3.5 px-4 sm:px-6">
+    <footer
+      className="w-full bg-gradient-to-r from-primary-200 via-primary-200 to-primary-150 text-white shadow-md border-t border-white/10 px-4 sm:px-6 pt-3 sm:pt-3.5"
+      style={{
+        paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom, 0px))'
+      }}
+    >
       <div className="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Lado Esquerdo: Seletor de Tema */}
         <div className="flex items-center gap-2">

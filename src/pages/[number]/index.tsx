@@ -310,7 +310,7 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
             </div>
 
             {/* Conteúdo Principal / Grid dos Botões do Quadro */}
-            <main className="flex-1 bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col justify-center">
+            <main className="flex-1 bg-surface-200 max-w-4xl w-full mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-8 sm:pb-12 flex flex-col">
                 {isFetching ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {[

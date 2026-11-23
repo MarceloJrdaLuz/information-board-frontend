@@ -84,7 +84,7 @@ export default function Layout(props: LayoutProps) {
     const isAdminCongregation = roleContains('ADMIN_CONGREGATION')
 
     return (
-        <main className="flex w-full h-[100dvh] fixed inset-0 min-h-0 overflow-hidden">
+        <main className="flex w-full h-full fixed inset-0 min-h-0 overflow-hidden">
             <NavBar.Root>
                 <NavBar.Options
                     title="Início"
