@@ -12,9 +12,16 @@
 .top-bar-safe {
   padding-top: env(safe-area-inset-top, 0px);
 }
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+}
 
-html, body {
-  height: 100%;
+html {
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  min-height: calc(100dvh + env(safe-area-inset-bottom, 0px));
   margin: 0;
   overflow-x: hidden;
   overscroll-behavior-y: none;
@@ -22,13 +29,16 @@ html, body {
 
 body {
   min-height: 100%;
+  min-height: -webkit-fill-available;
+  min-height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+  margin: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: none;
   background-color: rgb(var(--color-secondary-100));
 }
 
-/* Barra de rolagem personalizada padrão da página (idêntica à página restrita) */
+/* Barra de rolagem personalizada padrão da página */
 html,
 body {
   scrollbar-width: thin;
@@ -51,9 +61,10 @@ body::-webkit-scrollbar-thumb {
   background-color: rgb(var(--color-primary-200));
 }
 
-
 #__next {
   min-height: 100%;
+  min-height: -webkit-fill-available;
+  min-height: calc(100dvh + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
 }
