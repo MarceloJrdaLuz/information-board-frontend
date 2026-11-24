@@ -22,7 +22,7 @@ export default function ContentDashboard(props: IContentDashboard) {
       </div>
 
       {/* Footer Fixo no Rodapé da Página */}
-      <div className="shrink-0 select-none overscroll-contain">
+      <div className="shrink-0 select-none overscroll-contain bg-primary-200">
         <FooterDashboard />
       </div>
     </section>
