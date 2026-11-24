@@ -147,15 +147,15 @@ export default function FormAddCleaningGroup() {
                 <div className="mt-4 flex flex-col gap-1">
                     <Input
                         type="text"
-                        placeholder={`Nome personalizado (opcional - padrão: "Grupo ${selectedNumber ?? '...'}")`}
+                        placeholder="Nome do grupo (opcional)"
                         registro={{ ...register("name") }}
                         invalid={errors?.name?.message ? "invalido" : ""}
                     />
                     {errors?.name?.type && (
                         <InputError type={errors.name.type} field="name" />
                     )}
-                    <span className="text-[11px] text-typography-500">
-                        Opcional. Deixe em branco se a congregação utiliza apenas o número padrão ("Grupo {selectedNumber ?? '...'}").
+                    <span className="text-[11px] text-typography-500 -mt-1 mb-1 px-1 block">
+                        Padrão se deixar em branco: <strong>Grupo {selectedNumber ?? '...'}</strong>
                     </span>
                 </div>
 

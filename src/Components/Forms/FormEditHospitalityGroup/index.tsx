@@ -117,11 +117,14 @@ export default function FormEditHospitalityGroup() {
 
                     <Input
                         type="text"
-                        placeholder={`Nome personalizado (opcional — padrão: Grupo ${selectedHospitalityGroup?.position ?? ""})`}
+                        placeholder="Nome do grupo (opcional)"
                         registro={{ ...register('name') }}
                         invalid={errors?.name?.message ? 'invalido' : ''}
                     />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
+                    <span className="text-[11px] text-typography-400 -mt-1.5 mb-2 px-1 block">
+                        Padrão se deixar em branco: <strong>Grupo {selectedHospitalityGroup?.position ?? ""}</strong>
+                    </span>
 
                     <div className="mt-2">
                         <DropdownObject<IPublisher>

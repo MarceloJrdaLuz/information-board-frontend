@@ -153,7 +153,7 @@ function Eventos({ serverNumber, serverCongregation, ogMeta }: PublicPageServerP
     const hasPdfDocs = Boolean(documentsFilter && documentsFilter.length > 0);
 
     return !pdfShow ? (
-        <div className="min-h-screen w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
+        <div className="min-h-screen-safe w-full bg-surface-200 text-typography-800 flex flex-col justify-between selection:bg-primary-200 selection:text-white transition-colors duration-300">
             <Head>
                 <link
                     key="manifest-link"
