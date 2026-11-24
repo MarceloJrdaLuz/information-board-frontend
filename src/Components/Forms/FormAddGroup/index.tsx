@@ -153,11 +153,14 @@ export default function FormAddGroup() {
 
                     <Input
                         type="text"
-                        placeholder={`Nome personalizado (opcional — padrão: Grupo ${selectedNumber || "X"})`}
+                        placeholder="Nome do grupo (opcional)"
                         registro={{ ...register('name') }}
                         invalid={errors?.name?.message ? 'invalido' : ''}
                     />
                     {errors?.name?.type && <InputError type={errors.name.type} field='name' />}
+                    <span className="text-[11px] text-typography-400 -mt-1.5 mb-2 px-1 block">
+                        Padrão se deixar em branco: <strong>Grupo {selectedNumber || "..."}</strong>
+                    </span>
 
                     <div className="mt-2">
                         <Dropdown selectedItem={selectedNumber} full border textVisible handleClick={option => handleClick(option)} title='Número do grupo' options={availableNumbers} />
