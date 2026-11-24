@@ -596,13 +596,27 @@ const MidweekModel1Document: React.FC<{
 
                     const hasAuxRoom = ministryAuxParts.length > 0 || !!auxBibleReadingPart;
 
+                    const isCoVisit = schedule.isSpecial && schedule.specialType === MidweekSpecialType.CIRCUIT_OVERSEER_VISIT;
+
+                    const coTalkPart = isCoVisit
+                        ? schedule.parts?.find(
+                            p => p.section === MidweekSection.LIVING &&
+                                p.isActive &&
+                                (p.title.toLowerCase().includes("discurso de serviço") || p.partType === MidweekPartType.CUSTOM)
+                        )
+                        : undefined;
+
                     const livingParts = schedule.parts
-                        ?.filter(p => p.section === MidweekSection.LIVING && p.isActive && p.partType !== MidweekPartType.CBS && !p.custom_speaker_name)
+                        ?.filter(p =>
+                            p.section === MidweekSection.LIVING &&
+                            p.isActive &&
+                            p.partType !== MidweekPartType.CBS &&
+                            (!isCoVisit || p.id !== coTalkPart?.id) &&
+                            !p.title.toLowerCase().includes("discurso de serviço")
+                        )
                         .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
 
                     const cbsPart = schedule.parts?.find(p => p.section === MidweekSection.LIVING && p.partType === MidweekPartType.CBS && p.isActive);
-                    const coTalkPart = schedule.parts?.find(p => p.section === MidweekSection.LIVING && p.isActive && p.custom_speaker_name);
-                    const isCoVisit = schedule.isSpecial && schedule.specialType === MidweekSpecialType.CIRCUIT_OVERSEER_VISIT;
 
                     const coTalkTheme = (coTalkPart?.sourceMaterial && coTalkPart.sourceMaterial !== "Discurso de Serviço")
                         ? coTalkPart.sourceMaterial
@@ -790,7 +804,7 @@ const MidweekModel1Document: React.FC<{
                                         </Text>
                                         <View style={styles1.colAssigneeContainer}>
                                             <Text style={styles1.assigneeSingleName}>
-                                                {part.custom_speaker_name || getDisplayName(part.assignedPublisher)}
+                                                {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                             </Text>
                                         </View>
                                     </View>
@@ -960,13 +974,27 @@ const MidweekModel2Document: React.FC<{
 
                     const hasAuxRoom = ministryAuxParts.length > 0 || !!auxBibleReadingPart;
 
+                    const isCoVisit = schedule.isSpecial && schedule.specialType === MidweekSpecialType.CIRCUIT_OVERSEER_VISIT;
+
+                    const coTalkPart = isCoVisit
+                        ? schedule.parts?.find(
+                            p => p.section === MidweekSection.LIVING &&
+                                p.isActive &&
+                                (p.title.toLowerCase().includes("discurso de serviço") || p.partType === MidweekPartType.CUSTOM)
+                        )
+                        : undefined;
+
                     const livingParts = schedule.parts
-                        ?.filter(p => p.section === MidweekSection.LIVING && p.isActive && p.partType !== MidweekPartType.CBS && !p.custom_speaker_name)
+                        ?.filter(p =>
+                            p.section === MidweekSection.LIVING &&
+                            p.isActive &&
+                            p.partType !== MidweekPartType.CBS &&
+                            (!isCoVisit || p.id !== coTalkPart?.id) &&
+                            !p.title.toLowerCase().includes("discurso de serviço")
+                        )
                         .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || [];
 
                     const cbsPart = schedule.parts?.find(p => p.section === MidweekSection.LIVING && p.partType === MidweekPartType.CBS && p.isActive);
-                    const coTalkPart = schedule.parts?.find(p => p.section === MidweekSection.LIVING && p.isActive && p.custom_speaker_name);
-                    const isCoVisit = schedule.isSpecial && schedule.specialType === MidweekSpecialType.CIRCUIT_OVERSEER_VISIT;
 
                     const coTalkTheme = (coTalkPart?.sourceMaterial && coTalkPart.sourceMaterial !== "Discurso de Serviço")
                         ? coTalkPart.sourceMaterial
@@ -1121,7 +1149,7 @@ const MidweekModel2Document: React.FC<{
                                         </Text>
                                         <Text style={styles2.colLabelTag} />
                                         <Text style={hasAuxRoom ? styles2.colAuxRoom : styles2.colSingleName}>
-                                            {part.custom_speaker_name || getDisplayName(part.assignedPublisher)}
+                                            {getDisplayName(part.assignedPublisher, part.custom_speaker_name)}
                                         </Text>
                                         {hasAuxRoom && <Text style={styles2.colMainRoom} />}
                                     </View>
