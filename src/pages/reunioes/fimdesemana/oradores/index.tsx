@@ -18,10 +18,12 @@ import { formatNameCongregation } from "@/utils/formatCongregationName"
 import { withProtectedLayout } from "@/utils/withProtectedLayout"
 import { BlobProvider, Document, PDFViewer } from "@react-pdf/renderer"
 import { useAtom, useSetAtom } from "jotai"
-import { Building2, Eye, FileDown, MapPin, Mic, Phone, Plus, Search, Users, X } from "lucide-react"
+import { Building2, Download, Eye, FileDown, MapPin, Mic, Phone, Plus, Search, Share2, Users, X } from "lucide-react"
 import Router from "next/router"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import SpeakerShareModal from "@/Components/Speakers/SpeakerShareModal"
+import SpeakerImportModal from "@/Components/Speakers/SpeakerImportModal"
 
 function SpeakersPage() {
     const { congregation } = useCongregationContext()
@@ -39,6 +41,8 @@ function SpeakersPage() {
     const [searchSpeaker, setSearchSpeaker] = useState("")
     const [searchTalkNumber, setSearchTalkNumber] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
     const { data: getSpeakers, mutate, isLoading } = useAuthorizedFetch<ISpeaker[]>("/speakers", {
         allowedRoles: ["ADMIN_CONGREGATION", "TALK_MANAGER"]
@@ -179,14 +183,36 @@ function SpeakersPage() {
                             </p>
                         </div>
 
-                        <Button
-                            outline
-                            onClick={() => Router.push('/reunioes/fimdesemana/oradores/add')}
-                            className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap self-start sm:self-center"
-                        >
-                            <Plus className="w-4 h-4" />
-                            <span className="font-semibold text-sm">Criar orador</span>
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                            <Button
+                                outline
+                                onClick={() => setIsImportModalOpen(true)}
+                                className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap"
+                                title="Importar oradores de outra congregação"
+                            >
+                                <Download className="w-4 h-4" />
+                                <span className="font-semibold text-sm">Importar</span>
+                            </Button>
+
+                            <Button
+                                outline
+                                onClick={() => setIsShareModalOpen(true)}
+                                className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap"
+                                title="Compartilhar oradores com outra congregação"
+                            >
+                                <Share2 className="w-4 h-4" />
+                                <span className="font-semibold text-sm">Compartilhar</span>
+                            </Button>
+
+                            <Button
+                                outline
+                                onClick={() => Router.push('/reunioes/fimdesemana/oradores/add')}
+                                className="text-primary-200 p-2.5 md:p-3 border-primary-200/30 hover:border-primary-200 rounded-xl hover:bg-primary-100/10 flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap"
+                            >
+                                <Plus className="w-4 h-4" />
+                                <span className="font-semibold text-sm">Criar orador</span>
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Metric Badges Strip */}
@@ -403,6 +429,17 @@ function SpeakersPage() {
                     />
                 )}
             </section>
+
+            <SpeakerShareModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+            />
+
+            <SpeakerImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={() => mutate()}
+            />
 
             <ScrollToTopButton />
         </ContentDashboard>
