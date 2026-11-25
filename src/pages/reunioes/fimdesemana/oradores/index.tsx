@@ -76,10 +76,14 @@ function SpeakersPage() {
 
         if (filteredByCongregation) {
             const filtered = getSpeakers.filter(
-                (s) => s.originCongregation.id === filteredByCongregation.id
+                (s) => s.originCongregation?.id === filteredByCongregation.id
             )
             setSpeakers(filtered)
-            setSpeakerCongregationName(formatNameCongregation(filteredByCongregation.name, filteredByCongregation.city))
+            setSpeakerCongregationName(
+                filteredByCongregation.city
+                    ? `${filteredByCongregation.name} - ${filteredByCongregation.city}`
+                    : filteredByCongregation.name
+            )
         } else {
             const sort = sortArrayByProperty(getSpeakers, "fullName")
             setSpeakers(sort)
