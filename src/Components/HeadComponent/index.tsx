@@ -58,4 +58,4 @@ export default function HeadComponent(props: HeadComponentProps) {
             )}
         </Head>
     )
-}
+}

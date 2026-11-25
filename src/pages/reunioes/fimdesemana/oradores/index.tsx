@@ -398,7 +398,7 @@ function SpeakersPage() {
                                             Discursos Preparados ({sortedTalks.length}):
                                         </span>
                                         {sortedTalks.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto pr-1">
+                                            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto pr-1 discrete-scrollbar">
                                                 {sortedTalks.map(t => (
                                                     <span
                                                         key={t.id || t.number}
