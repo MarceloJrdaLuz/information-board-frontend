@@ -83,11 +83,17 @@ function Home({ serverNumber, serverCongregation, ogMeta }: PublicPageServerProp
 
     const upcomingEvent = useMemo(() => {
         if (!specialEventsData || specialEventsData.length === 0) return null
-        const now = dayjs()
-        const oneMonthFromNow = now.add(1, "month").endOf("day")
+        const todayStart = dayjs().startOf("day")
+        const oneMonthFromNow = dayjs().add(1, "month").endOf("day")
+
         return specialEventsData.find((evt) => {
-            const start = dayjs(evt.startDate)
-            return start.isBefore(oneMonthFromNow)
+            const eventEnd = dayjs(evt.endDate || evt.startDate).endOf("day")
+            const eventStart = dayjs(evt.startDate).startOf("day")
+
+            const isNotEnded = eventEnd.isSame(todayStart) || eventEnd.isAfter(todayStart)
+            const isUpcoming = eventStart.isBefore(oneMonthFromNow)
+
+            return isNotEnded && isUpcoming
         }) || null
     }, [specialEventsData])
 
