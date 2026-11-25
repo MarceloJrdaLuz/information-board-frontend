@@ -316,17 +316,17 @@ textarea:-webkit-autofill:active {
   background-color: rgb(var(--color-primary-200));
 }
 
-/* Scrollbar discreto e moderno para textareas */
+/* Scrollbar discreto e moderno para textareas e listas compactas */
 textarea,
 .discrete-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
 }
 
 textarea::-webkit-scrollbar,
 .discrete-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 textarea::-webkit-scrollbar-track,
