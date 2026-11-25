@@ -19,7 +19,6 @@ function CongregationListContent({
   filteredList,
   selectedCongregation,
   handleSelect,
-  onClose,
 }: {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
@@ -27,30 +26,18 @@ function CongregationListContent({
   filteredList: ICongregation[];
   selectedCongregation: ICongregation | null;
   handleSelect: (cong: ICongregation | null) => void;
-  onClose?: () => void;
 }) {
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Cabeçalho */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-surface-300/80 px-1 shrink-0">
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-surface-300/80 px-1 pr-7 sm:pr-1 shrink-0">
         <div className="flex items-center gap-1.5 text-xs font-bold text-typography-800">
           <Building2 className="w-4 h-4 text-primary-200" />
           <span>Filtrar por Congregação</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-typography-400">
-            {sortedCongregations.length} opções
-          </span>
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1 rounded-lg text-typography-400 hover:text-typography-700 hover:bg-surface-200 transition-colors"
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+        <span className="text-[11px] text-typography-400">
+          {sortedCongregations.length} opções
+        </span>
       </div>
 
       {/* Campo de Busca Rápida */}
@@ -248,7 +235,6 @@ export default function FilterSpeakersCongregation({
               filteredList={filteredList}
               selectedCongregation={selectedCongregation}
               handleSelect={handleSelect}
-              onClose={() => setOpen(false)}
             />
           </DialogContent>
         </Dialog>
